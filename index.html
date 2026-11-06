@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--fg:#fff;--muted:#fff;--line:#fff}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.4 "Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh;padding:clamp(20px,5vw,64px)}
+header{max-width:1200px;margin:0 auto clamp(28px,6vw,64px)}
+h1{font-weight:300;font-size:clamp(40px,8vw,96px);line-height:1.02;letter-spacing:-.02em}
+.grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:24px}
+.card{display:block;color:inherit;text-decoration:none}
+.card img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000;border:2px solid var(--line);border-radius:16px}
+.cat{display:block;margin-top:14px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.title{display:block;margin-top:6px;font-size:24px;font-weight:400;letter-spacing:-.01em}
+.card:hover .title,.card:focus-visible .title{text-decoration:underline;text-underline-offset:4px}
+.card:focus-visible{outline:2px solid #fff;outline-offset:6px}
+</style>
+</head>
+<body>
+<header><h1>Apps</h1></header>
+<main class="grid">
+  <a class="card" href="hero-banner-engine/">
+    <img src="hero-banner-engine/thumb.png" alt="Hero Banner Engine preview: Lob's No-Code Design Suite banner">
+    <span class="cat">Interactive Engine</span>
+    <span class="title">Hero Banner Engine</span>
+  </a>
+</main>
+</body>
+</html>
