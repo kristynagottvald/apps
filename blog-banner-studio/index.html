@@ -22,6 +22,9 @@ body{background:var(--bg);color:var(--fg);font:500 14px/1.45 var(--font-ui);
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
 h1,h2,h3,p{margin:0}
 .wrap{max-width:1360px;margin:0 auto}
+nav.site{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px;font-size:14px;font-weight:700}
+nav.site a{color:var(--fg);text-decoration:none}
+nav.site a:hover{text-decoration:underline;text-underline-offset:4px}
 header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin-bottom:18px}
 header.top h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
 header.top p{color:var(--muted);font-size:13px}
@@ -91,6 +94,7 @@ textarea{width:100%;min-height:90px;font:400 11px var(--font-mono);background:va
 </style>
 
 <div class="wrap">
+  <nav class="site"><a href="../">Apps</a><a href="../">&larr; Back to all projects</a></nav>
   <header class="top">
     <h1>Blog Banner Studio</h1>
     <p>Landscape 2:1 blog banners built from code. Mail pieces, platform screens and line-work backgrounds. Stock photo slot is optional.</p>
