@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hero Banner Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#15153A; --ink:#0D0D2B; --line:#2B2B60; --indigo:#3F33F0; --magenta:#E85CF0;
+  --lime:#E4E890; --lav:#A99CF7; --coral:#F2694A; --text:#F3F2FF; --muted:#9E9BCB;
+  --font:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font:400 14px/1.4 var(--font);-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:360px 1fr;height:100vh;height:100dvh}
+
+/* ---------- panel ---------- */
+.panel{background:var(--navy);border-right:2px solid var(--line);overflow-y:auto;padding:20px 20px 40px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.brand i{width:22px;height:22px;background:var(--magenta);display:block;position:relative}
+.brand i::after{content:"";position:absolute;right:0;bottom:0;width:11px;height:11px;background:var(--lime)}
+.brand h1{font-size:16px;font-weight:600;letter-spacing:.01em}
+.brand small{display:block;color:var(--muted);font-size:12px;font-weight:400}
+details{border-top:2px solid var(--line);padding:14px 0}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--lime)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:16px;letter-spacing:0}
+details[open] summary::after{content:"–"}
+.fields{display:grid;gap:14px;margin-top:14px}
+label,.lbl{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.row{display:flex;justify-content:space-between;align-items:center}
+.row output{font-size:12px;color:var(--text);font-variant-numeric:tabular-nums}
+input[type=text],textarea{width:100%;background:var(--ink);border:2px solid var(--line);border-radius:6px;
+  padding:9px 11px;font-size:16px;resize:vertical}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--lav)}
+textarea:disabled{opacity:.4}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;background:var(--ink);
+  border:2px solid var(--line);border-radius:8px;padding:3px}
+.seg button{background:none;border:0;border-radius:5px;padding:9px 6px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);min-height:38px}
+.seg button[aria-pressed=true]{background:var(--indigo);color:#fff}
+.seg button:hover:not([aria-pressed=true]){color:var(--text)}
+button:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.ratio button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px}
+.ratio i{display:block;border:2px solid currentColor;border-radius:2px}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.swatches button{border:2px solid var(--line);border-radius:8px;background:none;padding:4px;cursor:pointer;text-align:left}
+.swatches button[aria-pressed=true]{border-color:var(--lime)}
+.swatches span{display:grid;grid-template-columns:repeat(4,1fr);height:30px;border-radius:4px;overflow:hidden}
+.swatches em{display:block;font-style:normal;font-size:10px;color:var(--muted);padding:5px 2px 1px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:none}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--line);border-radius:2px}
+input[type=range]::-moz-range-track{height:4px;background:var(--line);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;background:var(--lime);border:0;border-radius:2px}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;background:var(--lime);border:0;border-radius:2px}
+.check{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text);margin:0}
+.check input{width:18px;height:18px;accent-color:var(--indigo);margin:0}
+.seedrow{display:grid;grid-template-columns:1fr auto;gap:8px}
+.btn{background:var(--ink);border:2px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:600;font-size:13px;min-height:42px}
+.btn:hover{border-color:var(--lav)}
+.btn.primary{background:var(--lime);color:var(--navy);border-color:var(--lime)}
+.btn.primary:hover{background:#fff;border-color:#fff}
+.btns{display:grid;gap:8px}
+.hint{font-size:11px;color:var(--muted)}
+
+/* ---------- stage ---------- */
+.stage{display:grid;place-items:center;padding:24px;min-width:0;min-height:0;position:relative;
+  background-color:var(--ink)}
+.inner{position:absolute;inset:24px 24px 56px;display:grid;place-items:center}
+canvas{display:block;image-rendering:auto;background:#000}
+.meta{position:absolute;left:24px;right:24px;bottom:18px;display:flex;justify-content:space-between;gap:12px;
+  font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ---------- mobile: preview on top (sticky), controls stacked below ---------- */
+@media (max-width:860px){
+  .app{display:flex;flex-direction:column;height:auto;min-height:100dvh}
+  .stage{order:-1;position:sticky;top:0;z-index:5;height:46dvh;padding:12px;border-bottom:2px solid var(--line)}
+  .inner{inset:12px 12px 34px}
+  .meta{left:12px;right:12px;bottom:8px;font-size:11px}
+  .panel{border-right:0;overflow:visible;padding:16px 16px calc(40px + env(safe-area-inset-bottom))}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel" aria-label="Controls">
+    <div class="brand"><i></i><div><h1>Hero Banner Engine</h1><small>Email hero &amp; social template builder</small></div></div>
+
+    <details open>
+      <summary>Format</summary>
+      <div class="fields">
+        <div>
+          <span class="lbl">Aspect ratio</span>
+          <div class="seg ratio" data-key="aspect" role="group" aria-label="Aspect ratio">
+            <button data-v="1x1"><i style="width:22px;height:22px"></i>1:1</button>
+            <button data-v="16x9"><i style="width:30px;height:17px"></i>16:9</button>
+            <button data-v="9x16"><i style="width:17px;height:30px"></i>9:16</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Copy</summary>
+      <div class="fields">
+        <div><label for="eyebrow">Eyebrow</label><input type="text" id="eyebrow" data-text="eyebrow" autocomplete="off"></div>
+        <div><label for="heading">Heading</label><textarea id="heading" rows="2" data-text="heading"></textarea></div>
+        <label class="check"><input type="checkbox" data-key="showSub"> Show subheading</label>
+        <div><label for="sub">Subheading</label><textarea id="sub" rows="2" data-text="sub"></textarea></div>
+        <div>
+          <span class="lbl">Eyebrow position</span>
+          <div class="seg" data-key="eyebrowPos"><button data-v="above">Above</button><button data-v="below">Below</button></div>
+        </div>
+        <label class="check"><input type="checkbox" data-key="marker"> Pixel marker on eyebrow</label>
+        <div class="row"><label for="ts" style="margin:0">Type scale</label><output id="o-typeScale"></output></div>
+        <input type="range" id="ts" data-key="typeScale" min="0.7" max="1.3" step="0.05">
+      </div>
+    </details>
+
+    <details open>
+      <summary>Layout</summary>
+      <div class="fields">
+        <div>
+          <span class="lbl">Visual layout</span>
+          <div class="seg" data-key="layout">
+            <button data-v="stair">Stair</button><button data-v="around">Around</button><button data-v="band">Edge</button>
+          </div>
+        </div>
+        <div>
+          <span class="lbl">Text position</span>
+          <div class="seg" data-key="anchor"><button data-v="top">Top</button><button data-v="middle">Middle</button><button data-v="bottom">Bottom</button></div>
+        </div>
+        <div>
+          <span class="lbl">Logo</span>
+          <div class="seg" data-key="logo"><button data-v="word">Wordmark</button><button data-v="tile">Tile</button><button data-v="none">None</button></div>
+        </div>
+        <div><label for="logoText">Logo text</label><input type="text" id="logoText" data-text="logoText" autocomplete="off"></div>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Visual system</summary>
+      <div class="fields">
+        <div>
+          <span class="lbl">Theme</span>
+          <div class="swatches" data-key="theme" id="themes"></div>
+        </div>
+        <div>
+          <span class="lbl">Cell size</span>
+          <div class="seg" data-key="module">
+            <button data-v="40">Fine</button><button data-v="60">Medium</button><button data-v="120">Large</button>
+          </div>
+        </div>
+        <div><div class="row"><label for="density" style="margin:0">Density</label><output id="o-density"></output></div>
+          <input type="range" id="density" data-key="density" min="0.2" max="1" step="0.05"></div>
+        <div><div class="row"><label for="spread" style="margin:0">Spread</label><output id="o-spread"></output></div>
+          <input type="range" id="spread" data-key="spread" min="0" max="1" step="0.05"></div>
+        <div><div class="row"><label for="variety" style="margin:0">Block variety</label><output id="o-variety"></output></div>
+          <input type="range" id="variety" data-key="variety" min="0" max="1" step="0.05"></div>
+        <div><div class="row"><label for="dither" style="margin:0">Dither tiles</label><output id="o-dither"></output></div>
+          <input type="range" id="dither" data-key="dither" min="0" max="1" step="0.05"></div>
+        <label class="check"><input type="checkbox" data-key="glyphs"> Glyph tiles ({{ }} &amp; Aa)</label>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Pattern seed</summary>
+      <div class="fields">
+        <div class="seedrow">
+          <input type="text" id="seed" inputmode="numeric" aria-label="Seed" autocomplete="off">
+          <button class="btn" id="shuffle" title="Shortcut: R">Shuffle</button>
+        </div>
+        <p class="hint">Same seed + same settings = same pattern. Copy stays locked to the grid when you shuffle.</p>
+        <label class="check"><input type="checkbox" data-key="grid"> Show grid &amp; safe zones</label>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Export</summary>
+      <div class="fields">
+        <div><span class="lbl">File type</span>
+          <div class="seg" data-key="fmt"><button data-v="png">PNG</button><button data-v="jpg">JPG</button><button data-v="webp">WebP</button></div></div>
+        <div><span class="lbl">Size</span>
+          <div class="seg" data-key="size"><button data-v="social">Social 1×</button><button data-v="retina">Retina 2×</button><button data-v="email">Email 600w</button></div></div>
+        <div class="btns">
+          <button class="btn primary" id="dl">Download <span id="dlLabel"></span></button>
+          <button class="btn" id="dlAll">Download all 3 ratios</button>
+        </div>
+      </div>
+    </details>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div class="inner" id="inner"><canvas id="cv" role="img" aria-label="Banner preview"></canvas></div>
+    <div class="meta"><span id="metaDims"></span><span id="metaGrid"></span></div>
+  </main>
+</div>
+
+<script>
+/* =====================================================================
+   HERO BANNER ENGINE
+   ---------------------------------------------------------------------
+   Grid:   1 UNIT = 60px @ 1080 base. Every format is a whole number of units
+           (1:1 = 18×18, 16:9 = 32×18, 9:16 = 18×32). Margin = 2 units.
+   Type:   sizes are defined in units, so copy is identical in every format.
+   Visual: tiles are placed on a module grid (40 / 60 / 120 px) that
+           subdivides the unit grid. build() is pure (state -> model) and
+           draw() is pure (model -> pixels), so porting to p5.js is a
+           matter of swapping the draw calls.
+   ===================================================================== */
+const UNIT = 60;
+const MARGIN = 2 * UNIT;
+const ASPECTS = {
+  '1x1':  {w:1080, h:1080, textW:11*UNIT, wx:.5},
+  '16x9': {w:1920, h:1080, textW:16*UNIT, wx:.7},
+  '9x16': {w:1080, h:1920, textW:13*UNIT, wx:.3}
+};
+const C = {navy:'#15153A', indigo:'#3F33F0', magenta:'#E85CF0', lime:'#E4E890', lav:'#A99CF7', coral:'#F2694A', white:'#FFFFFF'};
+const THEMES = {
+  midnight:{name:'Midnight', bg:C.navy,   text:C.white, eyebrow:C.lime,   tiles:[C.indigo,C.magenta,C.lime,C.lav],        logoTile:C.indigo},
+  indigo:  {name:'Indigo',   bg:C.indigo, text:C.white, eyebrow:C.lime,   tiles:[C.magenta,C.lime,C.lav,C.coral,C.navy],  logoTile:C.navy},
+  lime:    {name:'Lime',     bg:C.lime,   text:C.navy,  eyebrow:C.indigo, tiles:[C.indigo,C.magenta,C.lav,C.navy,C.coral],logoTile:C.indigo},
+  lav:     {name:'Lavender', bg:C.lav,    text:C.navy,  eyebrow:C.navy,   tiles:[C.indigo,C.lime,C.magenta,C.navy,C.coral],logoTile:C.indigo}
+};
+const FONT = '"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif';
+const SERIF = 'Georgia,"Times New Roman",serif';
+const BAYER = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+
+const DEFAULTS = {
+  aspect:'16x9', eyebrow:'Introducing', heading:"Lob's No-Code\nDesign Suite",
+  sub:'Personalize every piece of direct mail without writing a line of code.',
+  showSub:false, eyebrowPos:'above', marker:false, typeScale:1,
+  layout:'stair', anchor:'middle', logo:'word', logoText:'Lob',
+  theme:'midnight', module:60, density:.85, spread:.5, variety:.5, dither:.3, glyphs:true,
+  seed:2417, grid:false, fmt:'png', size:'social'
+};
+const state = Object.assign({}, DEFAULTS);
+
+/* ---------- helpers ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const smooth=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+const lum=h=>{const n=parseInt(h.slice(1),16),f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};
+  return .2126*f(n>>16&255)+.7152*f(n>>8&255)+.0722*f(n&255)};
+const contrast=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+const mctx=document.createElement('canvas').getContext('2d');
+
+function wrapText(ctx,text,maxW){
+  const out=[];
+  for(const para of text.split('\n')){
+    const words=para.split(/\s+/).filter(Boolean); let line='';
+    if(!words.length){out.push('');continue}
+    for(const w of words){
+      const t=line?line+' '+w:w;
+      if(line && ctx.measureText(t).width>maxW){out.push(line);line=w}else line=t;
+    }
+    out.push(line);
+  }
+  return out;
+}
+function trackedW(ctx,t,tr){let w=0;for(const ch of t)w+=ctx.measureText(ch).width+tr;return w-tr}
+function drawTracked(ctx,t,x,y,tr){for(const ch of t){ctx.fillText(ch,x,y);x+=ctx.measureText(ch).width+tr}}
+
+/* =====================================================================
+   BUILD: state -> model
+   ===================================================================== */
+function build(S){
+  const A=ASPECTS[S.aspect], W=A.w, H=A.h, M=+S.module, th=THEMES[S.theme];
+  const cols=W/M, rows=H/M, ts=+S.typeScale;
+  const rng=mulberry32((+S.seed||1)*7919+13);
+
+  /* ---- type (all sizes in grid units => identical in every format) ---- */
+  const hs=1.6*UNIT*ts, es=.38*UNIT*ts, ss=.58*UNIT*ts, wmS=.8*UNIT;
+  const hLH=hs*1.08, sLH=ss*1.35, gapE=.6*UNIT*ts, gapS=.5*UNIT*ts;
+  const maxW=A.textW;
+  mctx.font=`300 ${hs}px ${FONT}`;
+  const hLines=wrapText(mctx,S.heading.trim()||' ',maxW);
+  let sLines=[];
+  if(S.showSub && S.sub.trim()){mctx.font=`400 ${ss}px ${FONT}`;sLines=wrapText(mctx,S.sub.trim(),maxW*.92)}
+  const eyebrow=(S.eyebrow||'').trim().toUpperCase();
+  const eTr=es*.14, markW=S.marker?.34*UNIT*ts:0, markGap=S.marker?.22*UNIT*ts:0;
+  mctx.font=`600 ${es}px ${FONT}`;
+  const eW=eyebrow?trackedW(mctx,eyebrow,eTr)+markW+markGap:0;
+
+  // vertical stack
+  const items=[]; // {kind,h}
+  const E={kind:'eyebrow',h:es}, Hd={kind:'heading',h:hLH*hLines.length}, Sb=sLines.length?{kind:'sub',h:sLH*sLines.length}:null;
+  if(eyebrow && S.eyebrowPos==='above'){items.push(E,{gap:gapE})}
+  items.push(Hd);
+  if(Sb)items.push({gap:gapS},Sb);
+  if(eyebrow && S.eyebrowPos==='below'){items.push({gap:gapE*.8},E)}
+  const totalH=items.reduce((a,i)=>a+(i.h||i.gap),0);
+
+  const wmOn=S.logo==='word';
+  const bottomLimit=H-MARGIN-(wmOn?wmS+UNIT:0);
+  let y0;
+  if(S.anchor==='top') y0=MARGIN;
+  else if(S.anchor==='bottom') y0=bottomLimit-totalH;
+  else y0=Math.round(((H-totalH)/2)/(UNIT/2))*(UNIT/2);
+  y0=Math.max(MARGIN,y0);
+
+  const texts=[]; let y=y0, textR=MARGIN;
+  for(const it of items){
+    if(it.gap){y+=it.gap;continue}
+    if(it.kind==='eyebrow'){
+      texts.push({k:'eyebrow',t:eyebrow,x:MARGIN+markW+markGap,y:y+es*.8,font:`600 ${es}px ${FONT}`,color:th.eyebrow,tr:eTr});
+      if(S.marker)texts.push({k:'marker',x:MARGIN,y:y+(es-markW)/2+es*.02,s:markW});
+      textR=Math.max(textR,MARGIN+eW);
+    }else if(it.kind==='heading'){
+      mctx.font=`300 ${hs}px ${FONT}`;
+      hLines.forEach((l,i)=>{texts.push({k:'heading',t:l,x:MARGIN,y:y+i*hLH+(hLH-hs)/2+hs*.8,font:`300 ${hs}px ${FONT}`,color:th.text,tr:-hs*.01});
+        textR=Math.max(textR,MARGIN+mctx.measureText(l).width)});
+    }else{
+      mctx.font=`400 ${ss}px ${FONT}`;
+      sLines.forEach((l,i)=>{texts.push({k:'sub',t:l,x:MARGIN,y:y+i*sLH+(sLH-ss)/2+ss*.8,font:`400 ${ss}px ${FONT}`,color:th.text,alpha:.82,tr:0});
+        textR=Math.max(textR,MARGIN+mctx.measureText(l).width)});
+    }
+    y+=it.h;
+  }
+  const textRect={x0:MARGIN,y0:y0,x1:textR,y1:y0+totalH};
+  let wm=null;
+  if(wmOn){mctx.font=`700 ${wmS}px ${FONT}`;const w=mctx.measureText(S.logoText||'').width;
+    wm={t:S.logoText||'',x:MARGIN,y:H-MARGIN,size:wmS,color:th.text,rect:{x0:MARGIN,y0:H-MARGIN-wmS*.8,x1:MARGIN+w,y1:H-MARGIN}}}
+
+  /* ---- cell grid ---- */
+  const occ=new Int16Array(cols*rows).fill(-1), forb=new Uint8Array(cols*rows);
+  const idx=(c,r)=>r*cols+c;
+  const padC=M<=60?1:0;
+  const mark=(R)=>{
+    const c0=Math.max(0,Math.floor(R.x0/M)-padC), c1=Math.min(cols-1,Math.ceil(R.x1/M)-1+padC);
+    const r0=Math.max(0,Math.floor(R.y0/M)-padC), r1=Math.min(rows-1,Math.ceil(R.y1/M)-1+padC);
+    for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++)forb[idx(c,r)]=1;
+  };
+  mark(textRect); if(wm)mark(wm.rect);
+
+  // logo tile (top-right)
+  let logoTile=null;
+  if(S.logo==='tile'){
+    const L=Math.max(1,Math.ceil(2*UNIT/M));
+    logoTile={c:cols-L,r:0,w:L,h:L};
+    for(let r=0;r<L;r++)for(let c=cols-L;c<cols;c++)occ[idx(c,r)]=-2;
+  }
+
+  /* ---- probability field ---- */
+  const field=new Float32Array(cols*rows), dn=+S.density, sp=+S.spread;
+  const short=Math.min(W,H);
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const px=(c+.5)*M, py=(r+.5)*M, x=px/W, yy=py/H, j=rng()-.5; let p=0;
+    if(S.layout==='stair'){
+      const wx=A.wx, t=x*wx+yy*(1-wx), thr=1-(.12+.5*sp), tj=t+j*.12;
+      p=tj<thr?0:dn*(.35+.65*smooth(thr,1,tj));
+    }else if(S.layout==='band'){
+      const a=W<H?yy:x, thr=1-(.12+.4*sp), aj=a+j*.06;
+      p=aj<thr?0:dn*(.55+.45*smooth(thr,1,aj));
+    }else{
+      const de=Math.min(px,W-px,py,H-py)/short, k=.06+.28*sp;
+      const dx=Math.max(textRect.x0-px,0,px-textRect.x1), dy=Math.max(textRect.y0-py,0,py-textRect.y1);
+      const dt=Math.hypot(dx,dy)/short;
+      p=dn*Math.max(Math.exp(-de/k), .7*Math.exp(-dt/(.04+.12*sp)))*(1+j*.5);
+      if(p<.05)p=0;
+    }
+    field[idx(c,r)]=Math.min(1,Math.max(0,p));
+  }
+
+  /* ---- place blocks ---- */
+  const v=+S.variety;
+  const SIZES=[[1,1,1],[2,1,.6*v],[1,2,.6*v],[2,2,.8*v],[3,3,(M<=60?.6:0)*v],[4,4,(M<=40?.25:0)*v]].filter(s=>s[2]>0);
+  const order=[...Array(cols*rows).keys()];
+  for(let i=order.length-1;i>0;i--){const k=Math.floor(rng()*(i+1));[order[i],order[k]]=[order[k],order[i]]}
+  const blocks=[]; let lastColor=null;
+  const fits=(c,r,w,h)=>{
+    if(c+w>cols||r+h>rows)return false;
+    for(let rr=r;rr<r+h;rr++)for(let cc=c;cc<c+w;cc++){const i=idx(cc,rr);if(occ[i]!==-1||forb[i]||field[i]<=0)return false}
+    return true;
+  };
+  const pickColor=(avoid)=>{
+    let col=th.tiles[Math.floor(rng()*th.tiles.length)];
+    if(col===avoid)col=th.tiles[Math.floor(rng()*th.tiles.length)];
+    return col;
+  };
+  for(const i of order){
+    if(occ[i]!==-1||forb[i])continue;
+    const c=i%cols, r=(i/cols)|0;
+    if(rng()>field[i])continue;
+    const ranked=SIZES.map(s=>({s,k:-Math.log(rng()+1e-9)/s[2]})).sort((a,b)=>a.k-b.k);
+    let pick=null; for(const {s} of ranked){if(fits(c,r,s[0],s[1])){pick=s;break}}
+    if(!pick)continue;
+    const b={c,r,w:pick[0],h:pick[1],type:'solid',fill:pickColor(lastColor)}; lastColor=b.fill;
+    const id=blocks.length;
+    for(let rr=r;rr<r+b.h;rr++)for(let cc=c;cc<c+b.w;cc++)occ[idx(cc,rr)]=id;
+    blocks.push(b);
+  }
+
+  /* ---- assign tile types ---- */
+  const eligible=blocks.filter(b=>b.w===b.h && b.w*M>=100);
+  const glyphSet=new Set();
+  if(S.glyphs){
+    const pool=[...eligible]; const n=Math.min(pool.length,2+Math.round(dn*3));
+    for(let i=0;i<n;i++){const k=Math.floor(rng()*pool.length);glyphSet.add(pool.splice(k,1)[0])}
+  }
+  for(const b of blocks){
+    if(glyphSet.has(b)){
+      b.type='glyph'; b.glyph=['{{}}','Aa','{{}}','Aa','{ }'][Math.floor(rng()*5)];
+      b.italic=b.glyph!=='Aa'||rng()<.5;
+      const inks=[...th.tiles,C.navy,C.white].filter(c=>c!==b.fill&&contrast(c,b.fill)>=2.2);
+      b.fg=inks[Math.floor(rng()*inks.length)]||C.navy;
+    }else if(rng()<S.dither){
+      b.type='dither';
+      const others=th.tiles.filter(c=>c!==b.fill&&contrast(c,b.fill)>=1.4);
+      b.fg=others[Math.floor(rng()*others.length)]||C.white;
+      b.onBg=rng()<.45; // dots only, straight on the page background
+      if(b.onBg){b.fg=b.fill}
+      b.mode=rng()<.55?'grad':'uni'; b.dir=Math.floor(rng()*4);
+      b.lo=.05+rng()*.1; b.hi=.55+rng()*.2; b.level=.22+rng()*.28;
+    }
+  }
+  return {W,H,M,cols,rows,blocks,texts,wm,logoTile,textRect,theme:th,S,margin:MARGIN,forb,
+          logoText:S.logoText||''};
+}
+
+/* =====================================================================
+   DRAW: model -> pixels   (sc = output scale)
+   ===================================================================== */
+function fillR(ctx,x,y,w,h,sc){
+  const x0=Math.round(x*sc),y0=Math.round(y*sc),x1=Math.round((x+w)*sc),y1=Math.round((y+h)*sc);
+  ctx.fillRect(x0,y0,Math.max(1,x1-x0),Math.max(1,y1-y0));
+}
+function drawDither(ctx,b,x,y,w,h,M,sc){
+  const ds=M/8, nx=Math.round(w/ds), ny=Math.round(h/ds), dot=ds*.78, off=(ds-dot)/2;
+  ctx.fillStyle=b.fg;
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){
+    const u=[i/Math.max(1,nx-1),1-i/Math.max(1,nx-1),j/Math.max(1,ny-1),1-j/Math.max(1,ny-1)][b.dir];
+    const g=b.mode==='grad'?b.lo+(b.hi-b.lo)*u:b.level;
+    if(g>(BAYER[j%4][i%4]+.5)/16)fillR(ctx,x+i*ds+off,y+j*ds+off,dot,dot,sc);
+  }
+}
+function drawGlyph(ctx,b,x,y,w,h,sc){
+  ctx.save();ctx.scale(sc,sc);
+  const style=b.italic?'italic 400':'700';
+  ctx.font=`${style} 100px ${SERIF}`; ctx.fillStyle=b.fg; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+  const m=ctx.measureText(b.glyph);
+  const bw=(m.actualBoundingBoxLeft+m.actualBoundingBoxRight)||m.width, bh=(m.actualBoundingBoxAscent+m.actualBoundingBoxDescent)||100;
+  const k=Math.min(w*.74/bw,h*.74/bh)*100;
+  ctx.font=`${style} ${k}px ${SERIF}`;
+  const m2=ctx.measureText(b.glyph);
+  const asc=m2.actualBoundingBoxAscent||k*.7, desc=m2.actualBoundingBoxDescent||0;
+  ctx.fillText(b.glyph,x+w/2,y+h/2+(asc-desc)/2);
+  ctx.restore();
+}
+function draw(ctx,m,sc,opts={}){
+  const {W,H,M,theme}=m;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.fillStyle=theme.bg; ctx.fillRect(0,0,Math.ceil(W*sc),Math.ceil(H*sc));
+
+  for(const b of m.blocks){
+    const x=b.c*M,y=b.r*M,w=b.w*M,h=b.h*M;
+    if(b.type==='dither'){
+      if(!b.onBg){ctx.fillStyle=b.fill;fillR(ctx,x,y,w,h,sc)}
+      drawDither(ctx,b,x,y,w,h,M,sc);
+    }else{
+      ctx.fillStyle=b.fill; fillR(ctx,x,y,w,h,sc);
+      if(b.type==='glyph')drawGlyph(ctx,b,x,y,w,h,sc);
+    }
+  }
+  if(m.logoTile){
+    const L=m.logoTile,x=L.c*M,y=L.r*M,w=L.w*M;
+    ctx.fillStyle=theme.logoTile; fillR(ctx,x,y,w,w,sc);
+    ctx.save();ctx.scale(sc,sc);ctx.fillStyle=C.white;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    const fs=w*.3; ctx.font=`700 ${fs}px ${FONT}`; ctx.fillText(m.logoText,x+w/2,y+w/2+fs*.35);ctx.restore();
+  }
+
+  ctx.save(); ctx.scale(sc,sc); ctx.textBaseline='alphabetic'; ctx.textAlign='left';
+  for(const t of m.texts){
+    if(t.k==='marker'){
+      const u=t.s/3; ctx.fillStyle=C.magenta;
+      for(let j=0;j<3;j++)for(let i=0;i<3;i++)if((i+j)%2===0)ctx.fillRect(t.x+i*u,t.y+j*u,u,u);
+      continue;
+    }
+    ctx.font=t.font; ctx.fillStyle=t.color; ctx.globalAlpha=t.alpha||1;
+    if(t.k==='eyebrow')drawTracked(ctx,t.t,t.x,t.y,t.tr);
+    else if(t.k==='heading')drawTracked(ctx,t.t,t.x,t.y,t.tr);
+    else ctx.fillText(t.t,t.x,t.y);
+    ctx.globalAlpha=1;
+  }
+  if(m.wm){ctx.font=`700 ${m.wm.size}px ${FONT}`;ctx.fillStyle=m.wm.color;ctx.fillText(m.wm.t,m.wm.x,m.wm.y)}
+  ctx.restore();
+
+  if(opts.grid){
+    ctx.save();ctx.scale(sc,sc);
+    const lw=1/sc*Math.max(1,sc);
+    ctx.lineWidth=lw;
+    for(let c=0;c<=m.cols;c++){ctx.strokeStyle=(c*M)%UNIT===0?'rgba(255,255,255,.35)':'rgba(255,255,255,.12)';ctx.beginPath();ctx.moveTo(c*M,0);ctx.lineTo(c*M,H);ctx.stroke()}
+    for(let r=0;r<=m.rows;r++){ctx.strokeStyle=(r*M)%UNIT===0?'rgba(255,255,255,.35)':'rgba(255,255,255,.12)';ctx.beginPath();ctx.moveTo(0,r*M);ctx.lineTo(W,r*M);ctx.stroke()}
+    ctx.setLineDash([10,8]);ctx.strokeStyle='#FF3B6B';ctx.lineWidth=2/sc*Math.max(1,sc);
+    ctx.strokeRect(MARGIN,MARGIN,W-2*MARGIN,H-2*MARGIN);
+    ctx.strokeStyle='#00E5FF';const R=m.textRect;ctx.strokeRect(R.x0,R.y0,R.x1-R.x0,R.y1-R.y0);
+    ctx.restore();
+  }
+}
+
+/* =====================================================================
+   UI
+   ===================================================================== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const cv=$('#cv'), cctx=cv.getContext('2d'), inner=$('#inner');
+
+// theme swatches
+$('#themes').innerHTML=Object.entries(THEMES).map(([k,t])=>
+  `<button data-v="${k}" aria-label="${t.name} theme"><span style="background:${t.bg}">${
+    t.tiles.slice(0,4).map(c=>`<b style="background:${c}"></b>`).join('')}</span><em>${t.name}</em></button>`).join('');
+$$('#themes b').forEach(b=>b.style.display='block');
+$$('#themes span').forEach((s,i)=>{const t=Object.values(THEMES)[i];s.style.background=t.bg});
+
+function syncUI(){
+  $$('[data-key]').forEach(el=>{
+    const k=el.dataset.key;
+    if(el.matches('.seg,.swatches'))el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v)===String(state[k])));
+    else if(el.type==='checkbox')el.checked=!!state[k];
+    else if(el.type==='range'){el.value=state[k];const o=$('#o-'+k);if(o)o.textContent=(+state[k]).toFixed(2).replace(/0$/,'')}
+  });
+  $$('[data-text]').forEach(el=>{if(document.activeElement!==el)el.value=state[el.dataset.text]});
+  $('#sub').disabled=!state.showSub;
+  if(document.activeElement!==$('#seed'))$('#seed').value=state.seed;
+  const d=outDims(state.aspect);
+  $('#dlLabel').textContent=`${d.w} × ${d.h} ${state.fmt.toUpperCase()}`;
+}
+function outScale(W){return state.size==='retina'?2:state.size==='email'?600/W:1}
+function outDims(aspect){const A=ASPECTS[aspect],s=outScale(A.w);return{w:Math.round(A.w*s),h:Math.round(A.h*s),s}}
+
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.seg button,.swatches button'); if(!btn)return;
+  const key=btn.closest('[data-key]').dataset.key; let v=btn.dataset.v;
+  if(key==='module')v=+v;
+  state[key]=v; syncUI(); schedule();
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.dataset.text){state[el.dataset.text]=el.value;schedule()}
+  else if(el.dataset.key){const k=el.dataset.key;state[k]=el.type==='checkbox'?el.checked:el.type==='range'?+el.value:el.value;syncUI();schedule()}
+});
+$('#seed').addEventListener('input',e=>{const n=parseInt(e.target.value,10);if(n>0){state.seed=n;schedule()}});
+function shuffle(){state.seed=1+Math.floor(Math.random()*99999);syncUI();schedule()}
+$('#shuffle').addEventListener('click',shuffle);
+document.addEventListener('keydown',e=>{
+  if((e.key==='r'||e.key==='R')&&!e.metaKey&&!e.ctrlKey&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName))shuffle();
+});
+
+/* ---------- preview ---------- */
+let raf=0;
+function schedule(){cancelAnimationFrame(raf);raf=requestAnimationFrame(renderPreview)}
+function renderPreview(){
+  const m=build(state);
+  const aw=inner.clientWidth, ah=inner.clientHeight;
+  const cs=Math.max(.05,Math.min(aw/m.W,ah/m.H));
+  cv.style.width=m.W*cs+'px'; cv.style.height=m.H*cs+'px';
+  const pv=Math.min(1,cs*(window.devicePixelRatio||1));
+  cv.width=Math.round(m.W*pv); cv.height=Math.round(m.H*pv);
+  draw(cctx,m,pv,{grid:state.grid});
+  const d=outDims(state.aspect);
+  $('#metaDims').textContent=`${state.aspect.replace('x',':')} · export ${d.w} × ${d.h}`;
+  $('#metaGrid').textContent=`${m.W/UNIT}×${m.H/UNIT} units · ${m.cols}×${m.rows} cells · ${m.blocks.length} tiles`;
+}
+new ResizeObserver(schedule).observe(inner);
+window.addEventListener('resize',schedule);
+
+/* ---------- export ---------- */
+function renderFull(aspect){
+  const st=Object.assign({},state,{aspect}), m=build(st), s=outScale(m.W);
+  const c=document.createElement('canvas'); c.width=Math.round(m.W*s); c.height=Math.round(m.H*s);
+  draw(c.getContext('2d'),m,s,{grid:false}); return c;
+}
+function download(aspect){
+  return new Promise(res=>{
+    const c=renderFull(aspect), type={png:'image/png',jpg:'image/jpeg',webp:'image/webp'}[state.fmt];
+    c.toBlob(b=>{
+      const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+      a.download=`hero-${aspect}-s${state.seed}-${c.width}x${c.height}.${state.fmt}`;
+      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);res();
+    },type,.92);
+  });
+}
+$('#dl').addEventListener('click',()=>download(state.aspect));
+$('#dlAll').addEventListener('click',async()=>{for(const a of Object.keys(ASPECTS)){await download(a);await new Promise(r=>setTimeout(r,400))}});
+
+/* ---------- boot (wait for fonts so text metrics are right) ---------- */
+syncUI(); schedule();
+Promise.allSettled([
+  document.fonts.load(`300 96px "Inter Tight"`),document.fonts.load(`400 36px "Inter Tight"`),
+  document.fonts.load(`600 23px "Inter Tight"`),document.fonts.load(`700 48px "Inter Tight"`)
+]).then(()=>document.fonts.ready).then(schedule);
+</script>
+</body>
+</html>
