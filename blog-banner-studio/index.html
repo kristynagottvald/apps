@@ -170,7 +170,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
               <div class="chips" id="mergeChips"></div>
               <p class="note" style="margin-top:6px">Chips insert into the field you last clicked. Anything in double braces renders as a dashed merge field. Address lines also fill the letter window.</p></div>
             <div><label class="lbl" for="cta">Call to action</label><input type="text" id="cta" data-k="copy.cta"></div>
-            <div><span class="lbl">Link chip (flat postcard)</span><div class="seg" data-k="copy.tag"><button data-v="URL/">URL</button><button data-v="20% OFF">20% OFF</button></div></div>
+            <div><span class="lbl">Link chip (flat postcard)</span><div class="seg" data-k="copy.tag"><button data-v="URL/">URL</button><button data-v="PURL/">PURL</button><button data-v="20% OFF">20% OFF</button></div></div>
             <span class="lbl" style="margin:6px 0 -2px;padding-top:10px;border-top:1px solid var(--line)">Split postcard chips</span>
             <div><label class="lbl" for="chip1">Chip 1</label><input type="text" id="chip1" data-k="copy.chip1"></div>
             <div><label class="lbl" for="chip2">Chip 2</label><input type="text" id="chip2" data-k="copy.chip2"></div>
@@ -439,7 +439,7 @@ function flatCard(K){
     o+=R(232,134,115,12,6,'#DDDDDD')+R(232,153,84,12,6,'#DDDDDD');
     o+='<rect x="230" y="193" width="140" height="40" rx="20" fill="none" stroke="'+chip+'" stroke-width="3.5" stroke-dasharray="3.5 3.5"/>';
     if(!K.clean){
-      var icon1=S.copy.tag==='URL/',tw1=tw(S.copy.tag,22,700),cw=(icon1?66:34)+tw1+30,ink=K.chipInk;
+      var icon1=S.copy.tag!=='20% OFF',tw1=tw(S.copy.tag,22,700),cw=(icon1?66:34)+tw1+30,ink=K.chipInk;
       o+=R(-136,152,cw,66,33,chip);
       if(icon1)o+='<g fill="none" stroke="'+ink+'" stroke-width="3.5" stroke-linecap="round"><rect x="-112" y="176" width="24" height="16" rx="8"/><rect x="-96" y="176" width="24" height="16" rx="8"/><path d="M-100 184H-84"/></g>';
       o+=T(icon1?-60:-102,194,S.copy.tag,22,700,ink,'letter-spacing="1.5"');
@@ -748,7 +748,7 @@ function onChange(e){
 }
 var lastField=null;
 if(S.flatStyle==='tag')S.flatStyle='link';
-if(S.copy.tag!=='20% OFF')S.copy.tag='URL/';
+if(['URL/','PURL/','20% OFF'].indexOf(S.copy.tag)<0)S.copy.tag='URL/';
 document.addEventListener('focusin',function(e){if(e.target.dataset&&/^copy\./.test(e.target.dataset.k||'')&&e.target.type!=='checkbox')lastField=e.target});
 document.addEventListener('input',onChange);
 document.addEventListener('change',onChange);
