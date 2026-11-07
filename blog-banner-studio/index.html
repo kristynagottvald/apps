@@ -376,7 +376,7 @@ function makeCtx(S){
   if(S.palette===0&&bgc==='#1E2247')others=['#4131F1','#F6C93F']; /* navy background: bright blue for pieces, yellow as the second accent */
   var pal={bg:bgc,line:PL.safe[bgc],a:others[0],b:others[1],c:others[1],colors:PL.colors};
   var fillKey=S.fill==='auto'?(S.piece==='letter'?'white':(S.piece==='flat'?(S.flatStyle==='outline'?'accent':'white'):'accent')):S.fill;
-  var fill=fillKey==='accent'?pal.a:fillKey==='lav'?'#E8E4FF':fillKey==='purple'?'#614BBA':'#FFFFFF';
+  var fill=fillKey==='accent'?pal.a:fillKey==='lav'?'#E8E4FF':fillKey==='purple'?'#4131F1':'#FFFFFF';
   var prim=lum(pal.bg)<.3?pal.bg:(lum(pal.a)<.4?pal.a:'#4131F1');
   var light=lum(fill)>.6,tc=textOn(fill);
   var sel=[pal.c,pal.b,pal.a,INK].filter(function(c){return contrast(c,fill)>=2.2})[0]||INK;
