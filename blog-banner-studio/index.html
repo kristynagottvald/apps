@@ -34,6 +34,10 @@ header.top p{color:var(--muted);font-size:13px}
 .frame{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
 #banner{display:block;width:100%;aspect-ratio:2/1;border-radius:6px;overflow:hidden}
 #banner svg{display:block;width:100%;height:100%}
+#banner{user-select:none;-webkit-user-select:none}
+#banner svg [data-el]{cursor:grab}
+#banner.carrying,#banner.carrying svg [data-el]{cursor:grabbing}
+.hint{font-size:12px;color:var(--muted);padding:8px 4px 0}
 .meta{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;padding:8px 4px 0;font:400 11px var(--font-mono);color:var(--muted)}
 .brief{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px}
 .brief h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
@@ -62,7 +66,7 @@ details.sec[open]>summary::after{content:"–"}
 .feat button b{font-size:13px;font-weight:700}
 .feat button span{font:400 11px var(--font-mono);color:var(--muted);overflow-wrap:anywhere}
 .feat button[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
-.row{display:grid;grid-template-columns:96px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:13px}
+.row{display:grid;grid-template-columns:118px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:13px}
 .row output{font:400 12px var(--font-mono);color:var(--muted);text-align:right}
 input[type=range]{width:100%;accent-color:var(--accent)}
 input[type=text],select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);font:inherit}
@@ -108,6 +112,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
     <div class="stage">
       <div class="frame">
         <div id="banner" role="img" aria-label="Banner preview"></div>
+        <p class="hint">Click the postcard, screen or badge to pick it up, then click again to place it. Esc cancels.</p>
         <div class="meta"><span id="dims">1200 × 600 px · 2:1</span><span id="seedlbl"></span></div>
       </div>
     </div>
@@ -189,13 +194,16 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
       <details class="sec">
         <summary>Composition</summary>
         <div class="body">
-          <div><span class="lbl">Third line for screen corner and postcard</span><div class="seg" data-k="line"><button data-v="left">Left third</button><button data-v="right">Right third</button></div></div>
+          <div><span class="lbl">Layout preset</span><div class="btns"><button class="btn" data-act="preset-left">Leans left</button><button class="btn" data-act="preset-right">Leans right</button></div></div>
           <div><span class="lbl">Postcard overlays screen corner</span><div class="seg" data-k="corner"><button data-v="left">Lower left</button><button data-v="right">Lower right</button></div>
-            <p class="note" style="margin-top:6px">The postcard always overlaps a lower corner of the screen. The corner and the postcard centre sit on the chosen third line.</p></div>
-          <label class="row"><span>Screen height</span><input type="range" data-k="uiY" min="-80" max="80" step="5"><output data-o="uiY"></output></label>
-          <label class="row"><span>Postcard height</span><input type="range" data-k="pieceY" min="-80" max="80" step="5"><output data-o="pieceY"></output></label>
-          <div><span class="lbl">Badge on</span><div class="seg" data-k="badgeLine"><button data-v="left">Left third</button><button data-v="right">Right third</button></div></div>
-          <label class="row"><span>Badge height</span><input type="range" data-k="badgeY" min="5" max="95" step="2.5"><output data-o="badgeY"></output></label>
+            <p class="note" style="margin-top:6px">The postcard always overlaps a lower corner of the screen. Pick up objects on the preview with a click and click again to place them.</p></div>
+          <label class="row"><span>Postcard sideways</span><input type="range" data-k="pieceX" min="-170" max="170" step="5"><output data-o="pieceX"></output></label>
+          <label class="row"><span>Postcard height</span><input type="range" data-k="pieceY" min="-100" max="100" step="5"><output data-o="pieceY"></output></label>
+          <label class="row"><span>Screen across</span><input type="range" data-k="uiCx" min="150" max="1050" step="5"><output data-o="uiCx"></output></label>
+          <label class="row"><span>Screen down</span><input type="range" data-k="uiCy" min="130" max="470" step="5"><output data-o="uiCy"></output></label>
+          <label class="row"><span>Badge across</span><input type="range" data-k="badgeX" min="60" max="1140" step="5"><output data-o="badgeX"></output></label>
+          <label class="row"><span>Badge down</span><input type="range" data-k="badgeCy" min="30" max="570" step="5"><output data-o="badgeCy"></output></label>
+          <label class="chk"><input type="checkbox" data-k="snap"> Snap to the vertical third lines</label>
           <label class="row"><span>Scale</span><input type="range" data-k="scale" min="70" max="125" step="5"><output data-o="scale"></output></label>
           <label class="chk"><input type="checkbox" data-k="badge"> Industry icon badge</label>
           <label class="chk"><input type="checkbox" data-k="slot"> Reserve a stock photo slot</label>
@@ -271,10 +279,10 @@ var FEATURES={
 var MERGE=['{{first_name}}','{{last_name}}','{{offer_code}}','{{address_line1}}','{{appointment_date}}','{{account_id}}'];
 
 /* ---------- state ---------- */
-var LS='blogBannerStudio.v4';
+var LS='blogBannerStudio.v5';
 function defaults(){
   var S={industry:'insurance',feature:'personalization',piece:'postcard',face:'front',ui:'editor',fill:'auto',
-    uiOn:true,line:'left',corner:'left',uiY:0,pieceY:0,badgeLine:'left',badgeY:12.5,scale:100,badge:true,slot:false,slotSide:'left',rounded:false,
+    uiOn:true,uiCx:645,uiCy:270,corner:'left',pieceX:-60,pieceY:0,badgeX:400,badgeCy:75,snap:true,scale:100,badge:true,slot:false,slotSide:'left',rounded:false,
     palette:1,base:0,comp:'auto',seed:7,copy:{brand:'',headline:'',cta:'',dirty:false}};
   applyIndustry(S,'insurance');return S;
 }
@@ -556,32 +564,59 @@ function badgeCore(K){var c=K.pal.a;
   return '<circle r="38" fill="'+c+'"/><circle r="25" fill="#fff"/>'+icon(K,-14,-14,28,'#0B0B1E',2,'butt')}
 
 /* ---------- banner ---------- */
-function renderBanner(S){
+var LASTG=null,LINES=[W/3,2*W/3];
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function renderBanner(S,view){
   var K=makeCtx(S);
   var o='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">';
   o+='<defs><clipPath id="bclip"><rect width="'+W+'" height="'+H+'" rx="'+(S.rounded?20:0)+'"/></clipPath><clipPath id="uiClip"><rect width="490" height="320" rx="8"/></clipPath></defs>';
   o+='<g clip-path="url(#bclip)"><rect width="'+W+'" height="'+H+'" fill="'+K.pal.bg+'"/>';
   o+=bgSVG(K);
-  /* Thirds: the screen's overlaid corner and the postcard's centre sit on one third line; the badge sits on a third line too. */
-  var L1=W/3,L2=2*W/3,k=S.scale/100,bT='translate('+(S.badgeLine==='right'?L2:L1)+' '+(H*S.badgeY/100).toFixed(1)+') scale('+k+')';
-  if(S.badge)o+='<g transform="'+bT+'">'+badgeRipples(K)+'</g>';
-  var slotL=S.slotSide!=='right',slotX=slotL?0:L2;
+  var L1=W/3,k=S.scale/100,bT='translate('+S.badgeX+' '+S.badgeCy+') scale('+k+')';
+  if(S.badge)o+='<g pointer-events="none" transform="'+bT+'">'+badgeRipples(K)+'</g>';
+  var slotL=S.slotSide!=='right',slotX=slotL?0:2*L1;
   if(S.slot){var sc=mix(K.pal.bg,'#000000',.2),tcn=textOn(sc);
     o+='<g transform="translate('+slotX+' 0)"><rect width="'+L1+'" height="'+H+'" fill="'+sc+'"/><rect x="24" y="24" width="'+(L1-48)+'" height="552" fill="none" stroke="'+tcn+'" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="6 5"/>';
     o+='<g fill="none" stroke="'+tcn+'" stroke-opacity=".6" stroke-width="3" stroke-linejoin="round"><circle cx="227" cy="262" r="14"/><path d="M135 380L190 316L227 356L257 330L301 380Z"/></g>'+T(L1/2,420,'STOCK IMAGE',11,700,tcn,'text-anchor="middle" letter-spacing="1.6" fill-opacity=".7"')+'</g>';}
-  function at(svg,cx,cy,w,h,kk){return '<g transform="translate('+(cx-w*kk/2).toFixed(1)+' '+(cy-h*kk/2).toFixed(1)+') scale('+kk+')">'+svg+'</g>'}
-  var piece=renderPiece(K),post=S.piece==='postcard',X=S.line==='right'?L2:L1,g='';
+  function grp(name,tr,inner){return '<g'+(view?' data-el="'+name+'"':'')+' transform="'+tr+'">'+inner+'</g>'}
+  var piece=renderPiece(K),post=S.piece==='postcard',g='',G={};
   if(S.uiOn){
-    var uw=490*k,uh=320*k,ux=S.corner==='right'?X-uw:X,uc=270+S.uiY,ubot=uc+uh/2;
-    g+='<g transform="translate('+ux.toFixed(1)+' '+(uc-uh/2).toFixed(1)+') scale('+k+')">'+renderUI(K)+'</g>';
-    g+=at(piece.svg,X,ubot-30*k+S.pieceY,piece.w,piece.h,k);
+    var uw=490*k,uh=320*k,uTop=S.uiCy-uh/2,uLeft=S.uiCx-uw/2,ubot=uTop+uh,cornerX=S.corner==='right'?uLeft+uw:uLeft;
+    G.ui={cx:S.uiCx,cy:S.uiCy,w:uw,h:uh};
+    g+=grp('ui','translate('+uLeft.toFixed(1)+' '+uTop.toFixed(1)+') scale('+k+')',renderUI(K));
+    var pcx=cornerX+clamp(S.pieceX,-170,170),pcy=ubot-30*k+clamp(S.pieceY,-100,100);
+    G.piece={cx:pcx,cy:pcy,w:piece.w*k,h:piece.h*k};
+    g+=grp('piece','translate('+(pcx-piece.w*k/2).toFixed(1)+' '+(pcy-piece.h*k/2).toFixed(1)+') scale('+k+')',piece.svg);
   }else{
-    g+=at(piece.svg,X,300+S.pieceY,piece.w,piece.h,(post?1.35:1.3)*k);
+    var f=(post?1.35:1.3)*k,pcx2=(S.corner==='right'?2*L1:L1)+S.pieceX,pcy2=300+S.pieceY;
+    G.piece={cx:pcx2,cy:pcy2,w:piece.w*f,h:piece.h*f};
+    g+=grp('piece','translate('+(pcx2-piece.w*f/2).toFixed(1)+' '+(pcy2-piece.h*f/2).toFixed(1)+') scale('+f+')',piece.svg);
   }
-  if(S.badge)g+='<g transform="'+bT+'">'+badgeCore(K)+'</g>';
-  o+=g;
-  return o+'</g></svg>';
+  if(S.badge){G.badge={cx:S.badgeX,cy:S.badgeCy,w:76*k,h:76*k,round:true};g+=grp('badge',bT,badgeCore(K))}
+  o+=g+'</g>';
+  LASTG=G;
+  /* selection indicator (preview only, never exported) */
+  if(view&&view.sel&&G[view.sel]){var q=G[view.sel],pad=10,x=q.cx-q.w/2-pad,y=q.cy-q.h/2-pad,w=q.w+pad*2,h=q.h+pad*2,hs='';
+    var ring=function(sw,col,op){return q.round?'<circle cx="'+q.cx+'" cy="'+q.cy+'" r="'+(q.w/2+pad)+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-opacity="'+op+'"/>':'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-opacity="'+op+'"/>'};
+    o+='<g pointer-events="none">'+ring(6,'#0B0B1E',.5)+ring(2.5,'#FFFFFF',1);
+    if(!q.round)[[x,y],[x+w,y],[x,y+h],[x+w,y+h]].forEach(function(c){o+='<rect x="'+(c[0]-6)+'" y="'+(c[1]-6)+'" width="12" height="12" fill="#fff" stroke="#0B0B1E" stroke-width="2"/>'});
+    var lbl=view.carry?'Carrying: click to place':'Selected: click to pick up',lw=tw(lbl,13,700)+20,ly=Math.max(8,y-30);
+    o+='<rect x="'+clamp(x,6,W-lw-6)+'" y="'+ly+'" width="'+lw+'" height="24" rx="12" fill="#0B0B1E"/>'+T(clamp(x,6,W-lw-6)+lw/2,ly+16.5,lbl,13,700,'#fff','text-anchor="middle"')+'</g>';}
+  return o+'</svg>';
 }
+
+/* placing an element: x snaps to the vertical third lines when Snap is on */
+function snapAxis(c,half){if(!S.snap)return c;var best=null;[-half,0,half].forEach(function(o){LINES.forEach(function(L){var d=L-(c+o);if(Math.abs(d)<=36&&(best===null||Math.abs(d)<Math.abs(best)))best=d})});return best===null?c:c+best}
+function setPos(el,cx,cy){var k=S.scale/100;
+  if(el==='ui'){S.uiCx=Math.round(clamp(snapAxis(cx,245*k),150,1050));S.uiCy=Math.round(clamp(cy,130,470))}
+  else if(el==='badge'){S.badgeX=Math.round(clamp(snapAxis(cx,0),60,1140));S.badgeCy=Math.round(clamp(cy,30,570))}
+  else if(el==='piece'){var hw=(S.piece==='postcard'?200:135)*(S.uiOn?k:(S.piece==='postcard'?1.35:1.3)*k),sx=snapAxis(cx,hw);
+    if(S.uiOn){S.corner=cx<S.uiCx?'left':'right';var cornerX=S.corner==='left'?S.uiCx-245*k:S.uiCx+245*k;
+      S.pieceX=clamp(Math.round(sx-cornerX),-170,170);S.pieceY=clamp(Math.round(cy-(S.uiCy+160*k-30*k)),-100,100)}
+    else{S.corner=cx<W/2?'left':'right';S.pieceX=clamp(Math.round(sx-(S.corner==='left'?LINES[0]:LINES[1])),-170,170);S.pieceY=clamp(Math.round(cy-300),-100,100)}}}
+function presetLayout(side){
+  if(side==='left'){S.uiCx=645;S.corner='left';S.pieceX=-60;S.badgeX=400}else{S.uiCx=555;S.corner='right';S.pieceX=60;S.badgeX=800}
+  S.uiCy=270;S.pieceY=0;S.badgeCy=75}
 
 /* ---------- randomizer ---------- */
 function shuffleColors(S,r){var ok=okBases(S.palette),old=S.base,n=0;do{S.base=ok[ri(r,0,ok.length-1)]}while(S.base===old&&++n<20);S.seed=ri(r,1,99999)}
@@ -601,20 +636,21 @@ function sync(){
     if(el.classList.contains('seg')){el.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===String(v)))})}
     else if(el.type==='checkbox')el.checked=!!v;
     else if(document.activeElement!==el)el.value=v});
-  document.querySelectorAll('[data-o]').forEach(function(el){var v=get(S,el.dataset.o);el.textContent=el.dataset.o==='scale'||el.dataset.o==='badgeY'?v+'%':v});
+  document.querySelectorAll('[data-o]').forEach(function(el){var v=get(S,el.dataset.o);el.textContent=el.dataset.o==='scale'?v+'%':v});
   document.querySelectorAll('[data-feat]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.feat===S.feature))});
   document.querySelectorAll('[data-pre]').forEach(function(b){b.setAttribute('aria-pressed',String(Number(b.dataset.pre)===S.palette))});
   var PL=PALETTES[S.palette];
   $('#bases').innerHTML=okBases(S.palette).map(function(i){var c=PL.colors[i];return '<button class="base" data-base="'+i+'" aria-pressed="'+(i===S.base)+'" aria-label="Background '+c+'" title="'+c+'"><i style="background:'+c+'"></i><span>'+c+'</span></button>'}).join('');
   $('#lineinfo').innerHTML='Lines and stripes on this background: <b style="display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;background:'+PL.safe[PL.colors[S.base]]+'"></b> '+PL.safe[PL.colors[S.base]]+' (fixed safe pairing)';
   document.querySelectorAll('.seg[data-k="face"] button').forEach(function(b){b.disabled=S.piece==='letter'&&b.dataset.v==='back'});
-  document.querySelectorAll('.seg[data-k="corner"] button,[data-k="uiY"]').forEach(function(b){b.disabled=!S.uiOn});
+  document.querySelectorAll('.seg[data-k="corner"] button,[data-k="uiCx"],[data-k="uiCy"]').forEach(function(b){b.disabled=!S.uiOn});
   document.querySelectorAll('.seg[data-k="slotSide"] button').forEach(function(b){b.disabled=!S.slot});
 }
 function uiName(){return !S.uiOn?'':S.ui==='tracking'?'campaign tracking screen':S.ui==='editor'?'live design editor':''}
 function paint(){
-  var svg=renderBanner(S);
+  var svg=renderBanner(S,{sel:SEL,carry:CARRY});
   $('#banner').innerHTML=svg;
+  $('#banner').classList.toggle('carrying',CARRY);
   $('#banner').setAttribute('aria-label',altText());
   $('#seedlbl').textContent='seed '+S.seed;
   var F=FEATURES[S.feature],I=INDUSTRIES[S.industry];
@@ -630,7 +666,7 @@ function status(m){$('#status').textContent=m;clearTimeout(status.t);status.t=se
 
 /* ---------- events ---------- */
 function applySlot(){if(!S.slot)return;
-  if(S.slotSide==='left'){S.line='right';S.corner='right';S.badgeLine='left'}else{S.line='left';S.corner='left';S.badgeLine='right'}}
+  presetLayout(S.slotSide==='left'?'right':'left');S.badgeX=S.slotSide==='left'?400:800;S.badgeCy=300}
 function onChange(e){
   var el=e.target.closest('[data-k]');if(!el||el.classList.contains('seg'))return;
   var k=el.dataset.k,v=el.type==='checkbox'?el.checked:el.type==='range'?Number(el.value):el.value;
@@ -649,6 +685,7 @@ document.addEventListener('click',function(e){
     else set(S,k,b.dataset.v);
     if(k==='piece'&&S.piece==='letter')S.face='front';
     if(k==='slotSide')applySlot();
+    if(k==='corner')S.pieceX=S.corner==='left'?-60:60;
     paint();return}
   if(b.dataset.feat){applyFeature(S,b.dataset.feat);paint();return}
   if(b.dataset.pre){S.palette=Number(b.dataset.pre);paint();return}
@@ -659,13 +696,32 @@ document.addEventListener('click',function(e){
   var r=rng((Date.now()^(Math.random()*1e9))>>>0);
   if(act==='shuffle-colors'){shuffleColors(S,r);paint()}
   else if(act==='random-palette'){randomPalette(S,r);paint()}
-  else if(act==='shuffle-all'){shuffleColors(S,r);S.comp='auto';S.line=pick(r,['left','right']);S.corner=pick(r,['left','right']);paint()}
+  else if(act==='shuffle-all'){shuffleColors(S,r);S.comp='auto';presetLayout(pick(r,['left','right']));paint()}
+  else if(act==='preset-left'){presetLayout('left');paint()}
+  else if(act==='preset-right'){presetLayout('right');paint()}
   else if(act==='reroll'){shuffleLayout(S,r);paint()}
   else if(act==='copy-svg')copySVG();
   else if(act==='copy-png')copyPNG();
   else if(act==='dl-svg')download(new Blob([renderBanner(S)],{type:'image/svg+xml'}),fileName()+'.svg');
   else if(act==='dl-png')pngBlob().then(function(bl){download(bl,fileName()+'.png')}).catch(function(){status('PNG export failed.')});
 });
+
+/* ---------- pick up / place on the preview ---------- */
+var SEL=null,CARRY=false,GRAB=null,SNAPSHOT=null,POSKEYS=['uiCx','uiCy','corner','pieceX','pieceY','badgeX','badgeCy'],raf=0;
+function ptr(e){var sv=$('#banner svg');if(!sv)return null;var r=sv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function drawBanner(){$('#banner').innerHTML=renderBanner(S,{sel:SEL,carry:CARRY});$('#banner').classList.toggle('carrying',CARRY)}
+$('#banner').addEventListener('click',function(e){
+  var P=ptr(e);if(!P)return;var t=e.target.closest&&e.target.closest('[data-el]'),el=t?t.dataset.el:null;
+  if(CARRY){CARRY=false;setPos(SEL,P.x-GRAB.dx,P.y-GRAB.dy);paint();return}
+  if(el){var c=LASTG[el];SEL=el;CARRY=true;GRAB={dx:P.x-c.cx,dy:P.y-c.cy};SNAPSHOT={};POSKEYS.forEach(function(k){SNAPSHOT[k]=S[k]});drawBanner()}
+  else{SEL=null;drawBanner()}
+});
+$('#banner').addEventListener('pointermove',function(e){
+  if(!CARRY)return;var P=ptr(e);if(!P)return;
+  cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){setPos(SEL,P.x-GRAB.dx,P.y-GRAB.dy);drawBanner()})});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape'||!SEL)return;
+  if(CARRY){CARRY=false;POSKEYS.forEach(function(k){S[k]=SNAPSHOT[k]});paint()}else{SEL=null;drawBanner()}});
 
 /* ---------- export ---------- */
 function copySVG(){var svg=renderBanner(S);
