@@ -244,10 +244,10 @@ var PALETTES=[
   {name:'Navy / Blue / Purple',colors:['#1E2247','#4131F1','#614BBA'],safe:{'#1E2247':'#614BBA','#4131F1':'#1E2247','#614BBA':'#1E2247'}},
   {name:'Blue / Pink / Yellow',colors:['#4131F1','#D045DC','#F6C93F'],safe:{'#4131F1':'#F6C93F','#D045DC':'#F6C93F','#F6C93F':'#4131F1'}},
   {name:'Blue / Pink / Light purple',colors:['#4131F1','#D045DC','#9D8DF1'],safe:{'#4131F1':'#9D8DF1','#D045DC':'#9D8DF1','#9D8DF1':'#4131F1'}},
-  {name:'Teal / Blue / Lime',colors:['#163E44','#4131F1','#839E2F'],safe:{'#163E44':'#839E2F','#4131F1':'#163E44','#839E2F':'#163E44'}},
+  {name:'Teal / Blue / Lime',colors:['#163E44','#4131F1','#C0CE00'],safe:{'#163E44':'#C0CE00','#4131F1':'#163E44','#C0CE00':'#163E44'}},
   {name:'Pink / Blue / Light pink',colors:['#D045DC','#4131F1','#EAA9F4'],safe:{'#D045DC':'#EAA9F4','#4131F1':'#EAA9F4','#EAA9F4':'#4131F1'}}
 ];
-var NO_BG=['#F6C93F','#839E2F']; /* yellow and lime are never used as a background; dark green is */
+var NO_BG=['#F6C93F','#C0CE00']; /* yellow and lime are never used as a background; dark green is */
 function bgOK(pl,i){return NO_BG.indexOf(PALETTES[pl].colors[i])<0}
 function okBases(pl){return [0,1,2].filter(function(i){return bgOK(pl,i)})}
 var COMPS=[['auto','Auto'],['lines','Line network'],['grid','Colour grid']];
