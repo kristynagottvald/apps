@@ -169,7 +169,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
               <div class="chips" id="mergeChips"></div>
               <p class="note" style="margin-top:6px">Chips insert into the field you last clicked. Anything in double braces renders as a dashed merge field. Address lines also fill the letter window.</p></div>
             <div><label class="lbl" for="cta">Call to action</label><input type="text" id="cta" data-k="copy.cta"></div>
-            <div><label class="lbl" for="tagtxt">Link chip text (flat postcard)</label><input type="text" id="tagtxt" data-k="copy.tag"></div>
+            <div><span class="lbl">Link chip (flat postcard)</span><div class="seg" data-k="copy.tag"><button data-v="URL/">URL</button><button data-v="20% OFF">20% OFF</button></div></div>
             <span class="lbl" style="margin:6px 0 -2px;padding-top:10px;border-top:1px solid var(--line)">Split postcard chips</span>
             <div><label class="lbl" for="chip1">Chip 1</label><input type="text" id="chip1" data-k="copy.chip1"></div>
             <div><label class="lbl" for="chip2">Chip 2</label><input type="text" id="chip2" data-k="copy.chip2"></div>
@@ -427,7 +427,7 @@ function flatCard(K){
   function R(x,y,w,h,rx,f,extra){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rx+'" fill="'+f+'"'+(extra||'')+'/>'}
   if(st==='outline'){
     var oc=K.blk;
-    o+=R(2,2,396,263,7,fill,' stroke="'+oc+'" stroke-width="4"');
+    o+=R(2,2,396,263,7,fill,K.clean?'':' stroke="'+oc+'" stroke-width="4"');
     o+=(S.flatLogo==='name'?T(38,60,S.copy.brand.toUpperCase(),12,800,oc,'letter-spacing=".8"'):R(38,43,112,21,5,oc))+R(38,76,85,21,5,oc)+R(38,119,140,47,5,oc)+R(38,192,85,39,5,oc)+bracket(134,192,38,prim,3.5);
     o+=R(198.5,24,4,218,0,prim)+R(301,25,74,40,5,prim);
     o+='<rect x="236" y="138" width="140" height="106" rx="5" fill="'+K.blk+'" stroke="'+prim+'" stroke-width="3.5" stroke-dasharray="4 4"/>';
@@ -437,12 +437,14 @@ function flatCard(K){
     o+='<rect x="322" y="22" width="46" height="54" rx="4" fill="none" stroke="'+chip+'" stroke-width="3"/>';
     o+=R(232,134,115,12,6,'#DDDDDD')+R(232,153,84,12,6,'#DDDDDD');
     o+='<rect x="230" y="193" width="140" height="40" rx="20" fill="none" stroke="'+chip+'" stroke-width="3.5" stroke-dasharray="3.5 3.5"/>';
-    var cw=66+tw(S.copy.tag,22,700)+30,ink=K.chipInk;
-    o+=R(-136,152,cw,66,33,chip);
-    o+='<g fill="none" stroke="'+ink+'" stroke-width="3.5" stroke-linecap="round"><rect x="-112" y="176" width="24" height="16" rx="8"/><rect x="-96" y="176" width="24" height="16" rx="8"/><path d="M-100 184H-84"/></g>';
-    o+=T(-60,194,S.copy.tag,22,700,ink,'letter-spacing="1.5"');
-    var sx=-136+cw+10;
-    o+='<path d="M'+sx+' 166C'+(sx+40)+' 146 190 150 212 184M196 182L213 186L207 169" fill="none" stroke="'+chip+'" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
+    if(!K.clean){
+      var icon1=S.copy.tag==='URL/',tw1=tw(S.copy.tag,22,700),cw=(icon1?66:34)+tw1+30,ink=K.chipInk;
+      o+=R(-136,152,cw,66,33,chip);
+      if(icon1)o+='<g fill="none" stroke="'+ink+'" stroke-width="3.5" stroke-linecap="round"><rect x="-112" y="176" width="24" height="16" rx="8"/><rect x="-96" y="176" width="24" height="16" rx="8"/><path d="M-100 184H-84"/></g>';
+      o+=T(icon1?-60:-102,194,S.copy.tag,22,700,ink,'letter-spacing="1.5"');
+      var sx=-136+cw+10;
+      o+='<path d="M'+sx+' 166C'+(sx+40)+' 146 190 150 212 184M196 182L213 186L207 169" fill="none" stroke="'+chip+'" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
+    }
   }
   return{svg:o,w:400,h:267,hb:{x:24,y:24,w:152,h:56}};
 }
@@ -485,9 +487,9 @@ function letter(K){
 }
 function renderPiece(K){
   var p=K.S.piece==='letter'?letter(K):K.S.piece==='split'?splitCard(K):K.S.piece==='flat'?flatCard(K):postcard(K),x='';
-  if(K.S.crop||hasDeco(K,'crop'))x+=crop(p.w,p.h,K.cropCol);
-  if(hasDeco(K,'handles')&&p.hb)x+=handles(p.hb,K.sel);
-  return{svg:stackSVG(K,p.w,p.h)+p.svg+x,w:p.w,h:p.h};
+  if(!K.clean&&(K.S.crop||hasDeco(K,'crop')))x+=crop(p.w,p.h,K.cropCol);
+  if(!K.clean&&hasDeco(K,'handles')&&p.hb)x+=handles(p.hb,K.sel);
+  return{svg:(K.clean?'':stackSVG(K,p.w,p.h))+p.svg+x,w:p.w,h:p.h,hb:p.hb};
 }
 
 /* ---------- platform screens (490 x 320) ---------- */
@@ -562,7 +564,7 @@ function uiEditor(K){
   o+='<rect x="414" y="6" width="62" height="19" rx="9.5" fill="'+P+'"/>'+UP(K,445,18.5,'Preview',8.5,textOn(P),'middle');
   for(var i=0;i<6;i++){o+='<rect x="10" y="'+(44+i*32)+'" width="22" height="22" rx="6" fill="'+(i===0?P:SO)+'"/><rect x="16" y="'+(53+i*32)+'" width="10" height="4" rx="2" fill="'+(i===0?textOn(P):P)+'" fill-opacity="'+(i===0?1:.6)+'"/>'}
   /* the selected mail piece, scaled into the canvas */
-  var pc=renderPiece(K),sc=S.piece==='letter'?.58:.5,pw=pc.w*sc,ph=pc.h*sc,cx=S.piece==='letter'?200:212,cy=176,bx=cx-pw/2,by=cy-ph/2;
+  var pc=renderPiece(Object.assign({},K,{clean:true})),sc=S.piece==='letter'?.58:.5,pw=pc.w*sc,ph=pc.h*sc,cx=S.piece==='letter'?200:212,cy=176,bx=cx-pw/2,by=cy-ph/2;
   var hb=pc.hb?{x:bx+pc.hb.x*sc,y:by+pc.hb.y*sc,w:pc.hb.w*sc,h:pc.hb.h*sc}:{x:bx,y:by,w:pw,h:ph};
   function dk(c){return contrast(c,'#ECEAFB')>=3?c:INK}
   if(f==='proof')o+='<rect x="'+(bx-9)+'" y="'+(by-9)+'" width="'+(pw+18)+'" height="'+(ph+18)+'" fill="none" stroke="'+dk(K.pal.a)+'" stroke-width="1.3" stroke-dasharray="4 3"/>';
@@ -708,7 +710,7 @@ function sync(){
   var PL=PALETTES[S.palette];
   $('#bases').innerHTML=okBases(S.palette).map(function(i){var c=PL.colors[i];return '<button class="base" data-base="'+i+'" aria-pressed="'+(i===S.base)+'" aria-label="Background '+c+'" title="'+c+'"><i style="background:'+c+'"></i><span>'+c+'</span></button>'}).join('');
   document.querySelectorAll('.seg[data-k="ripple"] button').forEach(function(b){b.disabled=!S.badge});
-  document.querySelectorAll('.seg[data-k="flatStyle"] button,.seg[data-k="flatLogo"] button').forEach(function(b){b.disabled=S.piece!=='flat'});
+  document.querySelectorAll('.seg[data-k="flatStyle"] button,.seg[data-k="flatLogo"] button,.seg[data-k="copy.tag"] button').forEach(function(b){b.disabled=S.piece!=='flat'});
   var tintHex=mix(PL.colors[S.base],'#ffffff',S.lineTint/100);
   $('#lineinfo').innerHTML='Lines and stripes are a lighter tint of the background: <b style="display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;background:'+tintHex+'"></b> '+tintHex+'.';
   document.querySelectorAll('.seg[data-k="face"] button').forEach(function(b){b.disabled=S.piece!=='postcard'&&b.dataset.v==='back'});
@@ -744,6 +746,7 @@ function onChange(e){
 }
 var lastField=null;
 if(S.flatStyle==='tag')S.flatStyle='link';
+if(S.copy.tag!=='20% OFF')S.copy.tag='URL/';
 document.addEventListener('focusin',function(e){if(e.target.dataset&&/^copy\./.test(e.target.dataset.k||'')&&e.target.type!=='checkbox')lastField=e.target});
 document.addEventListener('input',onChange);
 document.addEventListener('change',onChange);
