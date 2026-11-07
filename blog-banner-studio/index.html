@@ -149,7 +149,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
           </div>
           <div><span class="lbl">Platform screen</span><div class="seg" data-k="ui"><button data-v="tracking">Campaign tracking</button><button data-v="editor">Live design editor</button></div>
             <label class="chk" style="margin-top:10px"><input type="checkbox" data-k="uiOn"> Show platform screen</label></div>
-          <div><span class="lbl">Piece fill</span><div class="seg" data-k="fill"><button data-v="auto">Auto</button><button data-v="accent">Accent</button><button data-v="white">White</button><button data-v="lav">Lavender</button></div></div>
+          <div><span class="lbl">Piece fill</span><div class="seg" data-k="fill"><button data-v="auto">Auto</button><button data-v="accent">Accent</button><button data-v="white">White</button><button data-v="lav">Lavender</button><button data-v="purple">Purple</button></div></div>
                   <div><span class="lbl">Flat postcard style</span><div class="seg" data-k="flatStyle"><button data-v="link">Link chip</button><button data-v="outline">Outline</button></div></div>
           <div><span class="lbl">Flat postcard logo</span><div class="seg" data-k="flatLogo"><button data-v="block">Logo block</button><button data-v="name">Company name</button></div></div>
           <div class="two">
@@ -375,7 +375,7 @@ function makeCtx(S){
   if(S.palette===0&&bgc==='#1E2247')others=['#4131F1','#F6C93F']; /* navy background: bright blue for pieces, yellow as the second accent */
   var pal={bg:bgc,line:PL.safe[bgc],a:others[0],b:others[1],c:others[1],colors:PL.colors};
   var fillKey=S.fill==='auto'?(S.piece==='letter'?'white':(S.piece==='flat'?(S.flatStyle==='outline'?'accent':'white'):'accent')):S.fill;
-  var fill=fillKey==='accent'?pal.a:fillKey==='lav'?'#E8E4FF':'#FFFFFF';
+  var fill=fillKey==='accent'?pal.a:fillKey==='lav'?'#E8E4FF':fillKey==='purple'?'#614BBA':'#FFFFFF';
   var prim=lum(pal.bg)<.3?pal.bg:(lum(pal.a)<.4?pal.a:'#4131F1');
   var light=lum(fill)>.6,tc=textOn(fill);
   var sel=[pal.c,pal.b,pal.a,INK].filter(function(c){return contrast(c,fill)>=2.2})[0]||INK;
@@ -384,7 +384,7 @@ function makeCtx(S){
   var bc=PL.colors.filter(function(c){return c!==fill&&c!==bgc}).sort(function(x,y){return contrast(y,fill)-contrast(x,fill)});
   if(!bc.length)bc=PL.colors.filter(function(c){return c!==fill});
   var blk=contrast('#ffffff',fill)<1.2?bc[0]:'#ffffff';
-  return{S:S,I:I,F:F,blk:blk,absCol:absCol,chip:chip,chip2:chip2,chipInk:textOn(chip),pal:pal,fill:fill,tc:tc,light:light,ac:light?prim:tc,prim:prim,soft:mix(prim,'#ffffff',.86),
+  return{S:S,I:I,F:F,blk:blk,darkest:darkest,absCol:absCol,chip:chip,chip2:chip2,chipInk:textOn(chip),pal:pal,fill:fill,tc:tc,light:light,ac:light?prim:tc,prim:prim,soft:mix(prim,'#ffffff',.86),
     sel:sel,cropCol:lum(pal.bg)<.4?'#ffffff':INK,seed:S.seed};
 }
 function hasDeco(K,d){return K.F.deco.indexOf(d)>=0}
@@ -397,7 +397,7 @@ function pcFront(K){
   var gi=mix(K.chip,'#ffffff',.55);
   o+='<g fill="none" stroke="'+gi+'" stroke-width="2.5" stroke-linejoin="round"><circle cx="330" cy="64" r="10"/><path d="M228 160L284 100L318 138L340 116L372 160Z"/></g>';
   o+='<rect x="200" y="188" width="200" height="79" fill="#fff"/>';
-  o+='<rect x="216" y="212" width="168" height="30" rx="4" fill="'+soft+'"/>'+LBL(300,231,S.copy.cta,10.5,700,ABS?K.absCol:K.prim);
+  o+='<rect x="216" y="212" width="168" height="30" rx="4" fill="'+soft+'"/>'+LBL(300,231,S.copy.cta,10.5,700,ABS?K.darkest:K.prim);
   o+=brandRow(K,18,27,tc);
   var f=fit(S.copy.headline,[18,16,14,12],700,164,4,1.22);
   o+=drawLines(f,18,66+f.size*.2,700,tc);
@@ -495,7 +495,7 @@ var MUTED='#6B6890',EDGE='#E4E1F6',PILL='#D8D4F3',GREY='#B5B2C8';
 /* UI text is drawn as abstract pills; numbers and dates stay as real text */
 function UP(K,x,base,txt,size,col,anchor){
   var w=Math.max(12,tw(txt,size,700)*.78),h=Math.max(4,size*.62),xx=anchor==='middle'?x-w/2:anchor==='end'?x-w:x;
-  var c=col===INK?K.absCol:col===MUTED?mix(K.absCol,'#ffffff',.62):col;
+  var c=col===INK?K.darkest:col===MUTED?mix(K.darkest,'#ffffff',.62):col;
   return '<rect x="'+xx.toFixed(1)+'" y="'+(base-size*.35-h/2).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="'+(h/2).toFixed(1)+'" fill="'+c+'"/>'}
 function tile(K,x,y,w,h,label,val,vs){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6" fill="#fff" stroke="'+EDGE+'" stroke-width="1.5"/>'+UP(K,x+10,y+15,label,7.5,MUTED)+T(x+10,y+h-10,val,vs||15,700,INK)}
 function check2(K,cx,cy,r){return check(cx,cy,r,K.prim,'#fff')}
