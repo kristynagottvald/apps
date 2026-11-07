@@ -256,7 +256,7 @@ function tw(s,size,weight){mctx.font=weight+' '+size+'px '+FONT;return mctx.meas
 /* ---------- data ---------- */
 /* 3-colour palettes with fixed safe line colours (line colour is looked up per background, never chosen freely) */
 var PALETTES=[
-  {name:'Navy / Blue / Purple',colors:['#1E2247','#4131F1','#614BBA'],safe:{'#1E2247':'#614BBA','#4131F1':'#1E2247','#614BBA':'#1E2247'}},
+  {name:'Navy / Blue / Yellow',colors:['#1E2247','#4131F1','#F6C93F'],safe:{'#1E2247':'#F6C93F','#4131F1':'#1E2247','#F6C93F':'#1E2247'}},
   {name:'Blue / Pink / Yellow',colors:['#4131F1','#D045DC','#F6C93F'],safe:{'#4131F1':'#F6C93F','#D045DC':'#F6C93F','#F6C93F':'#4131F1'}},
   {name:'Blue / Pink / Light purple',colors:['#4131F1','#D045DC','#9D8DF1'],safe:{'#4131F1':'#9D8DF1','#D045DC':'#9D8DF1','#9D8DF1':'#4131F1'}},
   {name:'Teal / Blue / Lime',colors:['#163E44','#4131F1','#C0CE00'],safe:{'#163E44':'#C0CE00','#4131F1':'#163E44','#C0CE00':'#163E44'}},
@@ -370,7 +370,7 @@ function handles(b,col){var o='<rect x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" hei
 function makeCtx(S){
   var I=INDUSTRIES[S.industry],F=FEATURES[S.feature],PL=PALETTES[S.palette],bgc=PL.colors[bgOK(S.palette,S.base)?S.base:okBases(S.palette)[0]];
   var others=PL.colors.filter(function(c){return c!==bgc}).sort(function(x,y){return contrast(y,bgc)-contrast(x,bgc)});
-  if(S.palette===0&&bgc==='#1E2247')others=['#4131F1','#614BBA']; /* navy background: use the bright blue for pieces, not the duller purple */
+  if(S.palette===0&&bgc==='#1E2247')others=['#4131F1','#F6C93F']; /* navy background: bright blue for pieces, yellow as the second accent */
   var pal={bg:bgc,line:PL.safe[bgc],a:others[0],b:others[1],c:others[1],colors:PL.colors};
   var fillKey=S.fill==='auto'?(S.piece==='letter'?'white':(S.piece==='flat'?(S.flatStyle==='outline'?'accent':'white'):'accent')):S.fill;
   var fill=fillKey==='accent'?pal.a:fillKey==='lav'?'#E8E4FF':'#FFFFFF';
