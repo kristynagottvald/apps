@@ -113,9 +113,6 @@ textarea{width:100%;min-height:90px;font:400 11px var(--font-mono);background:va
 
     <div class="brief" id="brief">
         <h3 id="briefFeat">Value prop</h3>
-        <p class="pitch" id="pitch"></p>
-        <div><span class="lbl">Alt text</span><div class="alt" id="alt"></div></div>
-        <div><span class="lbl">File name</span><code id="fname"></code></div>
         <div class="btns">
           <button class="btn primary" data-act="copy-svg">Copy SVG</button>
           <button class="btn" data-act="copy-png">Copy PNG</button>
@@ -174,8 +171,9 @@ textarea{width:100%;min-height:90px;font:400 11px var(--font-mono);background:va
             <div style="display:flex;align-items:end;gap:8px;flex-wrap:wrap"><button class="btn" data-act="reroll">New layout</button></div>
           </div>
           <div class="btns">
-            <button class="btn primary" data-act="shuffle-colors">Shuffle colours</button>
-            <button class="btn" data-act="shuffle-all">Shuffle everything</button>
+            <button class="btn primary" data-act="shuffle-colors">Shuffle in this palette</button>
+            <button class="btn" data-act="shuffle-all">Shuffle everything in palette</button>
+            <button class="btn" data-act="random-palette">Random palette</button>
           </div>
         </div>
       </details>
@@ -183,10 +181,11 @@ textarea{width:100%;min-height:90px;font:400 11px var(--font-mono);background:va
       <details class="sec">
         <summary>Composition</summary>
         <div class="body">
-          <div><span class="lbl">Cluster position</span><div class="seg" data-k="layout"><button data-v="right">Right</button><button data-v="center">Centre</button><button data-v="left">Left</button></div></div>
+          <div><span class="lbl">Mail piece on</span><div class="seg" data-k="layout"><button data-v="left">Left third</button><button data-v="right">Right third</button></div><p class="note" style="margin-top:6px">The piece, screen and icon badge are always centred on a vertical third line.</p></div>
           <label class="row"><span>Scale</span><input type="range" data-k="scale" min="70" max="125" step="5"><output data-o="scale"></output></label>
           <label class="chk"><input type="checkbox" data-k="badge"> Industry icon badge</label>
-          <label class="chk"><input type="checkbox" data-k="slot"> Reserve a stock photo slot on the left</label>
+          <label class="chk"><input type="checkbox" data-k="slot"> Reserve a stock photo slot</label>
+          <div><span class="lbl">Slot side</span><div class="seg" data-k="slotSide"><button data-v="left">Left third</button><button data-v="right">Right third</button></div></div>
           <label class="chk"><input type="checkbox" data-k="rounded"> Rounded corners</label>
         </div>
       </details>
@@ -226,7 +225,7 @@ var PALETTES=[
   {name:'Teal / Blue / Lime',colors:['#163E44','#4131F1','#839E2F'],safe:{'#163E44':'#839E2F','#4131F1':'#163E44','#839E2F':'#163E44'}},
   {name:'Pink / Blue / Light pink',colors:['#D045DC','#4131F1','#EAA9F4'],safe:{'#D045DC':'#EAA9F4','#4131F1':'#EAA9F4','#EAA9F4':'#4131F1'}}
 ];
-var COMPS=[['auto','Auto'],['lines','Line network'],['grid','Colour grid'],['split','Split']];
+var COMPS=[['auto','Auto'],['lines','Line network'],['grid','Colour grid']];
 var ICONS={
   mail:'<path d="M3 6h18v12H3Z"/><path d="M3 7l9 6 9-6"/>',
   bank:'<path d="M3 10l9-6 9 6"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>',
@@ -255,10 +254,10 @@ var FEATURES={
 var MERGE=['{{first_name}}','{{last_name}}','{{offer_code}}','{{address_line1}}','{{appointment_date}}','{{account_id}}'];
 
 /* ---------- state ---------- */
-var LS='blogBannerStudio.v2';
+var LS='blogBannerStudio.v3';
 function defaults(){
   var S={industry:'insurance',feature:'personalization',piece:'postcard',face:'front',ui:'editor',fill:'auto',
-    layout:'right',scale:100,badge:true,slot:false,rounded:false,
+    layout:'left',scale:100,badge:true,slot:false,slotSide:'left',rounded:false,
     palette:1,base:0,comp:'auto',seed:7,copy:{brand:'',headline:'',cta:'',dirty:false}};
   applyIndustry(S,'insurance');return S;
 }
@@ -519,21 +518,15 @@ function bgSVG(K){
     return '<g fill="none" stroke="'+col+'" stroke-width="2">'+o+'</g>'}
   function stripes(x,y,w,h,col){var d='';for(var sx=x+8;sx<x+w;sx+=8)d+='M'+sx+' '+y+'V'+(y+h);return '<path d="'+d+'" stroke="'+col+'" stroke-width="2" fill="none"/>'}
   function R(x,y,w,h,c){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+c+'"/>'}
-  var comp=S.comp==='auto'?['lines','grid','split'][Math.floor(r()*3)]:S.comp,o='<g transform="scale(1.5)">'+R(0,0,800,400,bg);
+  var comp=S.comp==='auto'?['lines','grid'][Math.floor(r()*2)]:S.comp,o='<g transform="scale(1.5)">'+R(0,0,800,400,bg);
   if(comp==='lines')o+=net(0,0,800,400,line);
   else if(comp==='grid'){
-    var ra=r()>.5?[1/3,2/3]:[.382,.618],sx=800*ra[Math.floor(r()*2)],sy=400*ra[Math.floor(r()*2)];
+    var ra=[1/3,2/3],sx=800*ra[Math.floor(r()*2)],sy=400*ra[Math.floor(r()*2)];
     var c1=pk(PL.colors),c2=pk(PL.colors.filter(function(c){return c!==c1})),c3=pk(PL.colors.filter(function(c){return c!==c2})),bl;
     if(r()>.5)bl=[[0,0,sx,400,c1],[sx,0,800-sx,sy,c2],[sx,sy,800-sx,400-sy,c3]];
     else bl=[[0,0,sx,sy,c1],[0,sy,sx,400-sy,c2],[sx,0,800-sx,400,c3]];
     var si=Math.floor(r()*bl.length);
     bl.forEach(function(b,i){o+=R(b[0],b[1],b[2],b[3],b[4]);if(i===si)o+=stripes(b[0],b[1],b[2],b[3],PL.safe[b[4]])});
-  }else{
-    var spx=800*pk([.5,.618,.382]);
-    o+=net(0,0,spx,400,line);
-    var rc=pk(PL.colors.filter(function(c){return c!==bg}));
-    o+=R(spx,0,800-spx,400,rc);
-    if(r()>.5)o+=stripes(spx,0,800-spx,400,PL.safe[rc]);
   }
   return o+'</g>';
 }
@@ -544,28 +537,38 @@ function badge(K,cx,cy){var pal=K.pal,o='';
 
 /* ---------- banner ---------- */
 function renderBanner(S){
-  var K=makeCtx(S);K.layoutEff=S.slot?'right':S.layout;
+  var K=makeCtx(S);
   var o='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">';
   o+='<defs><clipPath id="bclip"><rect width="'+W+'" height="'+H+'" rx="'+(S.rounded?20:0)+'"/></clipPath><clipPath id="uiClip"><rect width="490" height="320" rx="8"/></clipPath></defs>';
   o+='<g clip-path="url(#bclip)"><rect width="'+W+'" height="'+H+'" fill="'+K.pal.bg+'"/>';
   o+=bgSVG(K);
+  /* Every foreground element is centred on a vertical third line (x = 400 or x = 800). */
+  var L1=W/3,L2=2*W/3,sc2=S.scale/100;
+  var slotL=S.slotSide!=='right',slotX=slotL?0:L2,stackX=slotL?L2:L1,slotEdge=slotL?L1:L2;
   if(S.slot){var sc=mix(K.pal.bg,'#000000',.2),tcn=textOn(sc);
-    o+='<rect width="470" height="'+H+'" fill="'+sc+'"/><rect x="24" y="24" width="422" height="552" fill="none" stroke="'+tcn+'" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="6 5"/>';
-    o+='<g fill="none" stroke="'+tcn+'" stroke-opacity=".6" stroke-width="3" stroke-linejoin="round"><circle cx="262" cy="262" r="14"/><path d="M170 380L225 316L262 356L292 330L336 380Z"/></g>'+T(235,420,'STOCK IMAGE',11,700,tcn,'text-anchor="middle" letter-spacing="1.6" fill-opacity=".7"');}
-  var sc2=S.scale/100,cx=K.layoutEff==='right'?850:K.layoutEff==='left'?350:600;
-  var tx=cx-320*sc2,ty=300-300*sc2;
-  var g='';
-  var piece=renderPiece(K),withUI=S.ui!=='none';
-  if(withUI)g+='<g transform="translate(150 60)">'+renderUI(K)+'</g>';
-  if(S.badge)g+=badge(K,withUI?70:560,withUI?150:130);
-  if(withUI){var px=S.piece==='postcard'?0:20,py=S.piece==='postcard'?250:215;g+='<g transform="translate('+px+' '+py+')">'+piece.svg+'</g>'}
-  else{var f=S.piece==='postcard'?1.35:1.3,pw=piece.w*f,ph=piece.h*f;g+='<g transform="translate('+(320-pw/2)+' '+(300-ph/2)+') scale('+f+')">'+piece.svg+'</g>'}
-  o+='<g transform="translate('+tx.toFixed(1)+' '+ty.toFixed(1)+') scale('+sc2+')">'+g+'</g>';
+    o+='<g transform="translate('+slotX+' 0)"><rect width="'+L1+'" height="'+H+'" fill="'+sc+'"/><rect x="24" y="24" width="'+(L1-48)+'" height="552" fill="none" stroke="'+tcn+'" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="6 5"/>';
+    o+='<g fill="none" stroke="'+tcn+'" stroke-opacity=".6" stroke-width="3" stroke-linejoin="round"><circle cx="227" cy="262" r="14"/><path d="M135 380L190 316L227 356L257 330L301 380Z"/></g>'+T(L1/2,420,'STOCK IMAGE',11,700,tcn,'text-anchor="middle" letter-spacing="1.6" fill-opacity=".7"')+'</g>';}
+  function at(svg,cx,cy,w,h,k){return '<g transform="translate('+(cx-w*k/2).toFixed(1)+' '+(cy-h*k/2).toFixed(1)+') scale('+k+')">'+svg+'</g>'}
+  var piece=renderPiece(K),withUI=S.ui!=='none',post=S.piece==='postcard';
+  var pieceX=S.slot?stackX:(S.layout==='right'?L2:L1),uiX=S.slot?stackX:(pieceX===L1?L2:L1),g='',bx,by;
+  if(withUI){
+    var uiY=S.slot?205:250,pY=S.slot?(post?400:375):(post?360:350);
+    g+=at(renderUI(K),uiX,uiY,490,320,sc2);
+    g+=at(piece.svg,pieceX,pY,piece.w,piece.h,sc2);
+    bx=S.slot?slotEdge:pieceX;by=S.slot?300:Math.max(75,pY-piece.h*sc2/2-85*sc2);
+  }else{
+    var f=(post?1.35:1.3)*sc2;
+    g+=at(piece.svg,pieceX,300,piece.w,piece.h,f);
+    bx=S.slot?slotEdge:(pieceX===L1?L2:L1);by=300;
+  }
+  if(S.badge)g+='<g transform="translate('+bx+' '+by+') scale('+sc2+')">'+badge(K,0,0)+'</g>';
+  o+=g;
   return o+'</g></svg>';
 }
 
 /* ---------- randomizer ---------- */
-function shuffleColors(S,r){S.palette=ri(r,0,PALETTES.length-1);S.base=ri(r,0,2)}
+function shuffleColors(S,r){var old=S.base;do{S.base=ri(r,0,2)}while(S.base===old);S.seed=ri(r,1,99999)}
+function randomPalette(S,r){var old=S.palette;do{S.palette=ri(r,0,PALETTES.length-1)}while(S.palette===old);S.base=ri(r,0,2);S.seed=ri(r,1,99999)}
 function shuffleLayout(S,r){S.seed=ri(r,1,99999)}
 
 /* ---------- build controls ---------- */
@@ -589,6 +592,7 @@ function sync(){
   $('#lineinfo').innerHTML='Lines and stripes on this background: <b style="display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;background:'+PL.safe[PL.colors[S.base]]+'"></b> '+PL.safe[PL.colors[S.base]]+' (fixed safe pairing)';
   document.querySelectorAll('.seg[data-k="face"] button').forEach(function(b){b.disabled=S.piece==='letter'&&b.dataset.v==='back'});
   document.querySelectorAll('.seg[data-k="layout"] button').forEach(function(b){b.disabled=S.slot});
+  document.querySelectorAll('.seg[data-k="slotSide"] button').forEach(function(b){b.disabled=!S.slot});
 }
 function uiName(){return S.ui==='tracking'?'campaign tracking screen':S.ui==='editor'?'live design editor':''}
 function paint(){
@@ -598,9 +602,6 @@ function paint(){
   $('#seedlbl').textContent='seed '+S.seed;
   var F=FEATURES[S.feature],I=INDUSTRIES[S.industry];
   $('#briefFeat').textContent=I.label+' · '+F.label;
-  $('#pitch').textContent=F.pitch;
-  $('#alt').textContent=altText();
-  $('#fname').textContent=fileName();
   sync();
   try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}
   return svg;
@@ -635,7 +636,8 @@ document.addEventListener('click',function(e){
   var act=b.dataset.act;if(!act)return;
   var r=rng((Date.now()^(Math.random()*1e9))>>>0);
   if(act==='shuffle-colors'){shuffleColors(S,r);paint()}
-  else if(act==='shuffle-all'){shuffleColors(S,r);shuffleLayout(S,r);S.comp='auto';S.layout=pick(r,['right','center','left']);paint()}
+  else if(act==='random-palette'){randomPalette(S,r);paint()}
+  else if(act==='shuffle-all'){shuffleColors(S,r);S.comp='auto';S.layout=pick(r,['left','right']);paint()}
   else if(act==='reroll'){shuffleLayout(S,r);paint()}
   else if(act==='copy-svg')copySVG();
   else if(act==='copy-png')copyPNG();
