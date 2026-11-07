@@ -150,7 +150,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
           <div><span class="lbl">Platform screen</span><div class="seg" data-k="ui"><button data-v="tracking">Campaign tracking</button><button data-v="editor">Live design editor</button></div>
             <label class="chk" style="margin-top:10px"><input type="checkbox" data-k="uiOn"> Show platform screen</label></div>
           <div><span class="lbl">Piece fill</span><div class="seg" data-k="fill"><button data-v="auto">Auto</button><button data-v="accent">Accent</button><button data-v="white">White</button><button data-v="lav">Lavender</button></div></div>
-                  <div><span class="lbl">Flat postcard style</span><div class="seg" data-k="flatStyle"><button data-v="link">Link chip</button><button data-v="tag">Brand tag</button><button data-v="outline">Outline</button></div></div>
+                  <div><span class="lbl">Flat postcard style</span><div class="seg" data-k="flatStyle"><button data-v="link">Link chip</button><button data-v="outline">Outline</button></div></div>
           <div class="two">
             <label class="chk"><input type="checkbox" data-k="abstract"> Abstract text blocks</label>
             <label class="chk"><input type="checkbox" data-k="crop"> Crop marks</label>
@@ -421,13 +421,7 @@ function pcBack(K){
 function flatCard(K){
   var S=K.S,st=S.flatStyle,o='',fill=K.fill,prim=K.prim,chip=K.chip,chip2=K.chip2,i;
   function R(x,y,w,h,rx,f,extra){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rx+'" fill="'+f+'"'+(extra||'')+'/>'}
-  if(st==='tag'){
-    var lav=mix(prim,'#ffffff',.88),tg=S.copy.brand.toUpperCase(),tcw=Math.max(110,tw(tg,24,700)+tg.length*3+40);
-    o+=R(1.5,1.5,397,264,7,fill,' stroke="'+prim+'" stroke-width="3"');
-    o+=R(29,37,147,46,4,lav)+R(29,92,147,79,4,lav)+R(80,194,96,39,4,lav)+bracket(31,194,38,prim,3.5);
-    o+=R(198.5,20,3.5,226,0,prim)+'<rect x="319" y="21" width="61" height="70" rx="4" fill="none" stroke="'+prim+'" stroke-width="3" stroke-dasharray="8 5"/>'+R(233,173,146,57,4,lav);
-    o+=R(-50,-30,tcw,77,6,chip,' stroke="'+prim+'" stroke-width="3.5"')+T(-50+tcw/2,26,tg,24,700,K.chipInk,'text-anchor="middle" letter-spacing="3"');
-  }else if(st==='outline'){
+  if(st==='outline'){
     var oc='#ffffff';
     o+=R(2,2,396,263,7,fill,' stroke="'+oc+'" stroke-width="4"');
     o+=R(38,43,112,21,5,oc)+R(38,76,85,21,5,oc)+R(38,119,140,47,5,oc)+R(38,192,85,39,5,oc)+bracket(134,192,38,prim,3.5);
@@ -757,6 +751,7 @@ function onChange(e){
   set(S,k,v);if(k==='copy.headline')S.copy.dirty=true;if(k==='slot')applySlot();paint();
 }
 var lastField=null;
+if(S.flatStyle==='tag')S.flatStyle='link';
 document.addEventListener('focusin',function(e){if(e.target.dataset&&/^copy\./.test(e.target.dataset.k||'')&&e.target.type!=='checkbox')lastField=e.target});
 document.addEventListener('input',onChange);
 document.addEventListener('change',onChange);
@@ -766,7 +761,7 @@ document.addEventListener('click',function(e){
   if(seg&&b.dataset.v!==undefined){var k=seg.dataset.k;
     if(k==='industry')applyIndustry(S,b.dataset.v),applyFeature(S,S.feature);
     else set(S,k,k==='stack'?Number(b.dataset.v):b.dataset.v);
-    if(k==='flatStyle'){if(S.flatStyle==='link'){S.crop=true;S.stack=0;if(S.pieceCx<460)S.pieceCx=460}else if(S.flatStyle==='tag'){S.crop=false;S.stack=2;S.stackStyle='ghost'}else{S.crop=false;S.stack=2;S.stackStyle='outline'}}
+    if(k==='flatStyle'){if(S.flatStyle==='link'){S.crop=true;S.stack=0;if(S.pieceCx<460)S.pieceCx=460}else{S.crop=false;S.stack=2;S.stackStyle='outline'}}
     if(k==='piece'&&S.piece!=='postcard')S.face='front';
     if(k==='slotSide')applySlot();
     paint();return}
