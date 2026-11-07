@@ -761,6 +761,7 @@ document.addEventListener('click',function(e){
     if(k==='flatStyle'){if(S.flatStyle==='link'){S.crop=true;S.stack=0;if(S.pieceCx<460)S.pieceCx=460}else{S.crop=false;S.stack=2}}
     if(k==='piece'&&S.piece!=='postcard')S.face='front';
     if(k==='slotSide')applySlot();
+    if(k==='comp')S.seed=1+Math.floor(Math.random()*99999); /* every click on a composition re-randomizes its lines or blocks */
     paint();return}
   if(b.dataset.feat){applyFeature(S,b.dataset.feat);paint();return}
   if(b.dataset.pre){S.palette=Number(b.dataset.pre);paint();return}
