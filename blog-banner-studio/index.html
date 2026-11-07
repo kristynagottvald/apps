@@ -341,7 +341,7 @@ function drawLines(f,x,y,weight,col){
     return ob}
   var o='',pad=f.size*.3;
   f.lines.forEach(function(ln,i){var ty=y+i*f.lh;ln.forEach(function(t){
-    if(t.m){o+='<rect x="'+(x+t.x).toFixed(1)+'" y="'+(ty-f.size*.95).toFixed(1)+'" width="'+t.w.toFixed(1)+'" height="'+(f.size*1.35).toFixed(1)+'" rx="3" fill="'+col+'" fill-opacity=".16" stroke="'+col+'" stroke-width="1.2" stroke-dasharray="3 2"/>';
+    if(t.m){o+='<rect x="'+(x+t.x).toFixed(1)+'" y="'+(ty-f.size*.95).toFixed(1)+'" width="'+t.w.toFixed(1)+'" height="'+(f.size*1.35).toFixed(1)+'" rx="3" fill="'+col+'" fill-opacity=".16"/>';
       o+='<text x="'+(x+t.x+pad).toFixed(1)+'" y="'+ty.toFixed(1)+'" font-family="'+FONT+'" font-size="'+f.size+'" font-weight="'+weight+'" fill="'+col+'">'+esc(t.t)+'</text>';}
     else o+='<text x="'+(x+t.x).toFixed(1)+'" y="'+ty.toFixed(1)+'" font-family="'+FONT+'" font-size="'+f.size+'" font-weight="'+weight+'" fill="'+col+'">'+esc(t.t)+'</text>';})});
   return o;
@@ -359,10 +359,6 @@ function qr(x,y,s,col,seed){var n=9,c=s/n,r=rng(seed),o='';
   function fin(i,j){return (i<3&&j<3)||(i>5&&j<3)||(i<3&&j>5)}
   [[0,0],[6,0],[0,6]].forEach(function(p){o+='<rect x="'+(x+p[0]*c+c*.3)+'" y="'+(y+p[1]*c+c*.3)+'" width="'+(c*2.4)+'" height="'+(c*2.4)+'" fill="none" stroke="'+col+'" stroke-width="'+(c*.55)+'"/><rect x="'+(x+p[0]*c+c)+'" y="'+(y+p[1]*c+c)+'" width="'+c+'" height="'+c+'" fill="'+col+'"/>'});
   for(var i=0;i<n;i++)for(var j=0;j<n;j++){if(fin(i,j)||r()<.5)continue;o+='<rect x="'+(x+i*c).toFixed(1)+'" y="'+(y+j*c).toFixed(1)+'" width="'+(c*.9).toFixed(1)+'" height="'+(c*.9).toFixed(1)+'" fill="'+col+'"/>'}
-  return o}
-function stamp(x,y,w,h,col,bg){var o='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+(bg||'none')+'" stroke="'+col+'" stroke-width="1.5"/>';
-  o+='<rect x="'+(x+5)+'" y="'+(y+5)+'" width="'+(w-10)+'" height="'+(h*.45)+'" fill="'+col+'" fill-opacity=".2"/>';
-  for(var i=0;i<3;i++)o+='<path d="M'+(x+4)+' '+(y+h*.68+i*5)+'q'+((w-8)/8)+' -3 '+((w-8)/4)+' 0t'+((w-8)/4)+' 0t'+((w-8)/4)+' 0t'+((w-8)/4)+' 0" fill="none" stroke="'+col+'" stroke-width="1.2"/>';
   return o}
 function check(cx,cy,r,fill,ink){return '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+fill+'"/><path d="M'+(cx-r*.42)+' '+(cy+r*.03)+'l'+(r*.3)+' '+(r*.32)+'l'+(r*.58)+' '+(-r*.66)+'" fill="none" stroke="'+ink+'" stroke-width="'+(r*.26)+'" stroke-linecap="round" stroke-linejoin="round"/>'}
 function crop(w,h,col){var o='<g stroke="'+col+'" stroke-width="2.5" fill="none">';
@@ -402,7 +398,6 @@ function pcFront(K){
   o+=drawLines(f,18,66+f.size*.2,700,tc);
   var hb={x:14,y:66+f.size*.2-f.size-4,w:176,h:f.lines.length*f.lh+8};
   [84,64,76].forEach(function(w,i){var cy=196+i*18;o+=check(24,cy,5,ac,K.fill)+'<rect x="36" y="'+(cy-2.5)+'" width="'+w+'" height="5" rx="2.5" fill="'+tc+'" fill-opacity=".6"/>'});
-  if(hasDeco(K,'stamp'))o+=stamp(156,12,30,36,tc);
   return{svg:o,hb:hb};
 }
 function pcBack(K){
@@ -416,7 +411,6 @@ function pcBack(K){
   if(hasDeco(K,'qr'))o+=qr(26,200,30,K.prim,K.seed+3);
   [90,60].forEach(function(w,i){o+='<rect x="74" y="'+(204+i*14)+'" width="'+w+'" height="5" rx="2.5" fill="'+tc+'" fill-opacity=".6"/>'});
   o+='<path d="M200 18V249" stroke="'+tc+'" stroke-opacity=".7" stroke-width="1.5"/>';
-  o+=stamp(348,18,34,40,K.prim,'#fff');
   o+=imb(216,86,120,13,tc,K.seed+5);
   o+='<rect x="216" y="112" width="168" height="108" fill="'+tc+'" fill-opacity=".08" stroke="'+tc+'" stroke-width="1.5" stroke-dasharray="5 4"/>';
   var lines=[S.copy.addr1,S.copy.addr2,S.copy.addr3];
@@ -483,7 +477,6 @@ function postcard(K){var r=K.S.face==='front'?pcFront(K):pcBack(K);
 function letter(K){
   var S=K.S,tc=K.tc,o='<rect width="270" height="350" fill="'+K.fill+'"/>';
   o+=brandRow(K,22,32,tc);
-  o+=stamp(212,16,36,42,K.ac);
   o+='<rect x="22" y="72" width="150" height="46" fill="'+K.soft+'" stroke="'+K.ac+'" stroke-width="1.5" stroke-dasharray="4 3"/>';
   [S.copy.addr1,S.copy.addr2].forEach(function(t,i){var f=fit(t,[10,9,8],600,134,1,1.2);o+=drawLines(f,30,91+i*18,600,INK)});
   o+='<path d="M22 134H248" stroke="'+K.ac+'" stroke-width="1.5"/>';
