@@ -26,25 +26,28 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 <main><canvas id="c" aria-label="Clearco target zoom motif: the target frame zooms out through nested terrains of frames, slides to a new terrain, then zooms in on the target as it resizes around the next headline"></canvas></main>
 <script>
 /* Clearco target-zoom motif.
-   Same target frame as clearco-target-frame (grey guide lines + white corner crosshairs), but the camera moves through a
-   "terrain" of nested frames: zoom OUT several levels -> slide-pan to a different terrain -> zoom IN on the target while it
-   resizes (width, then height) around the next headline. Then the move repeats back to the first terrain.
-   Lines and crosshairs keep a constant screen size while the world scales under them. */
+   Same target frame as clearco-target-frame (grey guide lines + white corner crosshairs), but the camera travels over one
+   consistent multi-scale grid: big crosshairs form the grid when zoomed out, and each finer grid level only appears as you
+   zoom in. Zoom OUT several levels -> slide-pan to another spot on the grid -> zoom IN on the target while it resizes
+   (width, then height) around the next headline. Then the move repeats back. Lines and crosshairs keep a constant screen size. */
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const TL = {
-  loop: 24,
-  textAOut: [2.0, 2.7],  textAIn: [22.6, 23.6],
-  textB1: [10.5, 11.5],  textB2: [10.8, 11.8], textBOut: [14.2, 14.9],
-  out1: [2.5, 5.5],  pan1: [5.7, 7.6],  in1: [7.8, 10.8],     // terrain A -> terrain B
-  out2: [14.7, 17.7], pan2: [17.9, 19.8], in2: [20.0, 23.0],  // terrain B -> terrain A
+  loop: 21.2,
+  textAOut: [2.0, 2.7],  textAIn: [19.9, 20.9],
+  textB1: [9.3, 10.3],   textB2: [9.6, 10.6], textBOut: [13.0, 13.7],
+  out1: [2.5, 5.3],  pan1: [4.7, 6.5],  in1: [6.6, 9.6],       // spot A -> spot B (pan starts while the zoom-out lands)
+  out2: [13.5, 16.3], pan2: [15.7, 17.5], in2: [17.6, 20.6],   // spot B -> spot A
   // the target frame itself: each axis slides in its own window (mirrors the original frame moves)
-  moveA: [{ to: 'r0', h: [6.1, 7.0],   v: [6.1, 7.0]   }, { to: 'rf', h: [21.4, 22.2], v: [22.2, 23.0] }],
-  moveB: [{ to: 'rf', h: [9.2, 10.0],  v: [10.0, 10.9] }, { to: 'r0', h: [18.2, 19.1], v: [18.2, 19.1] }]
+  moveA: [{ to: 'r0', h: [5.2, 6.0],   v: [5.2, 6.0]   }, { to: 'rf', h: [19.0, 19.8], v: [19.8, 20.6] }],
+  moveB: [{ to: 'rf', h: [8.0, 8.8],   v: [8.8, 9.6]   }, { to: 'r0', h: [16.2, 17.0], v: [16.2, 17.0] }]
 };
-const LEVELS = 3;          // zoom-out depth: three nested frame levels
-const S_OUT = 0.04;        // camera scale at the top of the terrain (1 = target at full size)
+const LEVELS = 3;          // zoom-out depth used for the stepped easing
+const GRID_K = 5;          // grid levels 0..4, each 3x the pitch of the one before
+const GRID_R = 3;
+const S_OUT = 0.04;        // camera scale at the top of the zoom-out (1 = target at full size)
+const TOP_PITCH = .4;      // screen width fraction of the level-3 grid cell at S_OUT
 
 const clamp01 = v => Math.min(1, Math.max(0, v));
 const prog = (T, r) => clamp01((T - r[0]) / (r[1] - r[0]));
@@ -52,7 +55,7 @@ const easeOutCubic = p => 1 - Math.pow(1 - p, 3);
 const easeInOutCubic = p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2;
 const smooth = (a, b, v) => { const p = clamp01((v - a) / (b - a)); return p * p * (3 - 2 * p); };
 const slide = p => reduce ? (p >= 1 ? 1 : 0) : easeInOutCubic(p);
-// zoom easing: half continuous, half "stepped" so each nested level lands with a beat of its own
+// zoom easing: half continuous, half "stepped" so each grid level lands with a beat of its own
 const zslide = p => {
   if (reduce) return p >= 1 ? 1 : 0;
   const q = p * LEVELS, i = Math.min(LEVELS - 1, Math.floor(q));
@@ -66,60 +69,12 @@ const S2 = ['Plan your e-commerce migration', 'before your next peak season.'];
 
 let W = 0, H = 0, DPR = 1, arm = 20, pad = 30;
 let L1 = null, L2 = null;
-let terr = [], statics = [], camSet = [], camRoot = [];
+let terr = [], camSet = [], camRoot = [], P0 = 1, delta = { x: 0, y: 0 };
 let t0 = 0, ready = false;
 
 function setFont(c, size) {
   c.font = '400 ' + size + 'px ' + FONT;
   if ('letterSpacing' in c) c.letterSpacing = (-size * .03) + 'px';
-}
-function mulberry(seed) {
-  return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-}
-
-/* ---------- terrain: nested frames around a target, built outward level by level ---------- */
-const mk = (cx, cy, w, h) => ({ l: cx - w / 2, r: cx + w / 2, t: cy - h / 2, b: cy + h / 2 });
-const hit = (a, b, m) => a.l < b.r + m && a.r > b.l - m && a.t < b.b + m && a.b > b.t - m;
-
-// scatter rects inside `area`, avoiding `obstacles`; each may hold smaller frames of its own
-function scatter(rnd, area, obstacles, count, wr, hr, depth, out) {
-  const aw = area.r - area.l, ah = area.b - area.t, mg = Math.min(aw, ah) * .05;
-  for (let n = 0; n < count; n++) {
-    for (let tries = 0; tries < 40; tries++) {
-      const w = wr[0] + rnd() * (wr[1] - wr[0]), h = hr[0] + rnd() * (hr[1] - hr[0]);
-      if (w > aw - 2 * mg || h > ah - 2 * mg) continue;
-      const cx = area.l + mg + w / 2 + rnd() * (aw - 2 * mg - w), cy = area.t + mg + h / 2 + rnd() * (ah - 2 * mg - h);
-      const r = mk(cx, cy, w, h);
-      if (obstacles.some(o => hit(r, o, mg))) continue;
-      out.push(r); obstacles.push(r);
-      if (depth > 0) {
-        const kids = [];
-        scatter(rnd, r, [], 1 + Math.floor(rnd() * 3), [w * .18, w * .42], [h * .18, h * .42], depth - 1, kids);
-        for (const k of kids) out.push(k);
-      }
-      break;
-    }
-  }
-}
-
-function buildTerrain(seed, rf, r0) {
-  const rnd = mulberry(seed);
-  const U = { w: Math.max(rf.r - rf.l, r0.r - r0.l), h: Math.max(rf.b - rf.t, r0.b - r0.t) };
-  const rootW = (W - 2 * pad) / S_OUT, rootH = (H - 2 * pad) / S_OUT;
-  let cx = (rf.l + rf.r) / 2, cy = (rf.t + rf.b) / 2, cw = U.w, ch = U.h;
-  const rects = [], rc = { x: cx, y: cy };
-  for (let k = 1; k <= LEVELS; k++) {
-    const f = k / LEVELS, w = U.w * Math.pow(rootW / U.w, f), h = U.h * Math.pow(rootH / U.h, f);
-    const sx = Math.max(0, (w - cw) / 2 - cw * .12), sy = Math.max(0, (h - ch) / 2 - ch * .12);
-    const px = cx + (rnd() * 2 - 1) * sx * .8, py = cy + (rnd() * 2 - 1) * sy * .8;
-    const parent = mk(px, py, w, h);
-    const child = mk(cx, cy, cw, ch);
-    rects.push(parent);
-    scatter(rnd, parent, [child], 2 + Math.floor(rnd() * 2), [cw * .5, cw * 1.3], [ch * .5, ch * 1.3], 1, rects);
-    cx = px; cy = py; cw = w; ch = h;
-  }
-  return { rects, root: { x: cx, y: cy, w: cw, h: ch }, rc };
 }
 
 /* ---------- layout ---------- */
@@ -151,26 +106,24 @@ function layout() {
   const fA = box(-L1.w / 2, L1.y - s1 * .8, L1.w / 2, L1.y + s1 * .28);
   const fB = box(L2.x, L2.y1 - s2 * .8, L2.x + L2.w, L2.y1 + lh + s2 * .28);
   // r0 = the odd starting shape the target resizes from: narrow and tall, same centre
-  const r0Of = f => { const cx = (f.l + f.r) / 2, cy = (f.t + f.b) / 2, w = (f.r - f.l) * .35, h = (f.b - f.t) * 1.9; return mk(cx, cy, w, h); };
-  const tA = buildTerrain(7, fA, r0Of(fA)), tB = buildTerrain(31, fB, r0Of(fB));
-  terr = [{ rf: fA, r0: r0Of(fA), moves: TL.moveA, t: tA }, { rf: fB, r0: r0Of(fB), moves: TL.moveB, t: tB }];
+  const r0Of = f => { const cx = (f.l + f.r) / 2, cy = (f.t + f.b) / 2, w = (f.r - f.l) * .35, h = (f.b - f.t) * 1.9;
+    return { l: cx - w / 2, r: cx + w / 2, t: cy - h / 2, b: cy + h / 2 }; };
+  const cOf = f => ({ x: (f.l + f.r) / 2, y: (f.t + f.b) / 2 });
 
-  // world placement: root A is centred on the world origin, root B sits off to the lower right
-  const rw = tA.root.w, rh = tA.root.h;
-  const dx = rw * 1.3, dy = rh * .55;
-  terr[0].o = { x: -tA.root.x, y: -tA.root.y };
-  terr[1].o = { x: dx - tB.root.x, y: dy - tB.root.y };
-
-  statics = [];
-  terr.forEach(tr => { for (const r of tr.t.rects) statics.push({ l: r.l + tr.o.x, r: r.r + tr.o.x, t: r.t + tr.o.y, b: r.b + tr.o.y }); });
-  // ambient terrain in the gap and around both roots, so the slide passes through more frames
-  const rnd = mulberry(99), roots = [mk(0, 0, rw, rh), mk(dx, dy, rw, rh)];
-  const area = { l: -rw * .75, r: dx + rw * .75, t: -rh * .75, b: dy + rh * .75 };
-  scatter(rnd, area, roots.slice(), 9, [rw * .12, rw * .4], [rh * .15, rh * .5], 1, statics);
+  // one global grid. Level k pitch = P0 * 3^k; cells are centred on the origin so every level nests exactly.
+  P0 = TOP_PITCH * W / (Math.pow(GRID_R, 3) * S_OUT);
+  const P3 = P0 * Math.pow(GRID_R, 3);
+  delta = { x: 2 * P3, y: P3 };                       // spot B: two top-level cells right, one down
+  const spots = [{ x: 0, y: 0 }, { x: delta.x, y: delta.y }];
+  terr = [
+    { rf: fA, r0: r0Of(fA), moves: TL.moveA },
+    { rf: fB, r0: r0Of(fB), moves: TL.moveB }
+  ];
+  terr.forEach((tr, i) => { const c = cOf(tr.rf); tr.o = { x: spots[i].x - c.x, y: spots[i].y - c.y }; });
 
   const lsOut = Math.log(S_OUT);
   camSet = terr.map(tr => ({ ls: 0, cx: tr.o.x, cy: tr.o.y }));
-  camRoot = [{ ls: lsOut, cx: 0, cy: 0 }, { ls: lsOut, cx: dx, cy: dy }];
+  camRoot = spots.map(sp => ({ ls: lsOut, cx: sp.x, cy: sp.y }));
 }
 
 /* ---------- target frame: one axis at a time ---------- */
@@ -191,20 +144,18 @@ function zoomCam(p, a, b) {
   const u = Math.abs(i1 - i0) < 1e-9 ? p : (i - i0) / (i1 - i0);
   return { ls, cx: mixv(a.cx, b.cx, u), cy: mixv(a.cy, b.cy, u) };
 }
-const panCam = (p, a, b) => ({ ls: a.ls, cx: mixv(a.cx, b.cx, p), cy: mixv(a.cy, b.cy, p) });
+// zoom out from `from` and slide by `d` at the same time (the slide starts before the zoom has fully landed)
+function outAndPan(T, from, root, outR, panR, d) {
+  const z = T < outR[0] ? from : T < outR[1] ? zoomCam(zslide(prog(T, outR)), from, root) : root, pp = slide(prog(T, panR));
+  return { ls: z.ls, cx: z.cx + d.x * pp, cy: z.cy + d.y * pp };
+}
 
 function camAt(T) {
   if (T < TL.out1[0]) return camSet[0];
-  if (T < TL.out1[1]) return zoomCam(zslide(prog(T, TL.out1)), camSet[0], camRoot[0]);
-  if (T < TL.pan1[0]) return camRoot[0];
-  if (T < TL.pan1[1]) return panCam(slide(prog(T, TL.pan1)), camRoot[0], camRoot[1]);
-  if (T < TL.in1[0]) return camRoot[1];
+  if (T < TL.in1[0]) return outAndPan(T, camSet[0], camRoot[0], TL.out1, TL.pan1, delta);
   if (T < TL.in1[1]) return zoomCam(zslide(prog(T, TL.in1)), camRoot[1], camSet[1]);
   if (T < TL.out2[0]) return camSet[1];
-  if (T < TL.out2[1]) return zoomCam(zslide(prog(T, TL.out2)), camSet[1], camRoot[1]);
-  if (T < TL.pan2[0]) return camRoot[1];
-  if (T < TL.pan2[1]) return panCam(slide(prog(T, TL.pan2)), camRoot[1], camRoot[0]);
-  if (T < TL.in2[0]) return camRoot[0];
+  if (T < TL.in2[0]) return outAndPan(T, camSet[1], camRoot[1], TL.out2, TL.pan2, { x: -delta.x, y: -delta.y });
   if (T < TL.in2[1]) return zoomCam(zslide(prog(T, TL.in2)), camRoot[0], camSet[0]);
   return camSet[0];
 }
@@ -220,29 +171,43 @@ function draw(T) {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
   const cam = camAt(T), s = Math.exp(cam.ls), off = reduce ? 0 : 1;
-  const g = clamp01(cam.ls / Math.log(S_OUT));            // 0 = settled on a target, 1 = top of the terrain
-  const ctxA = 1 - smooth(.72, 1, 1 - g);                  // surrounding terrain melts away as the target settles
+  const g = clamp01(cam.ls / Math.log(S_OUT));            // 0 = settled on a target, 1 = top of the zoom-out
+  const ctxA = 1 - smooth(.72, 1, 1 - g);                  // the grid melts away as the target settles
   const sx = x => W / 2 + (x - cam.cx) * s, sy = y => H / 2 + (y - cam.cy) * s;
-  const sizeA = (w, h, tgt) => tgt ? smooth(arm * .6, arm * 1.7, Math.min(w, h)) : smooth(arm * 2.2, arm * 4.5, Math.min(w, h));
+  const wx = x => (x - W / 2) / s + cam.cx, wy = y => (y - H / 2) / s + cam.cy;
+  const gw = Math.max(2, Math.min(W, H) * .0035), cw = Math.max(2, Math.min(W, H) * .0045);
+  const minDim = Math.min(W, H);
 
-  // screen-space frames: static terrain + the two live (resizing) targets
-  const vis = [];
-  const push = (r, extra, tgt) => {
-    const l = sx(r.l), rr = sx(r.r), t = sy(r.t), b = sy(r.b);
-    const a = sizeA(rr - l, b - t, tgt) * extra;
-    if (a > .01) vis.push({ l, r: rr, t, b, a });
-  };
-  if (ctxA > .01) for (const r of statics) push(r, ctxA);
-  terr.forEach(tr => { const r = targetRect(tr, T); push({ l: r.l + tr.o.x, r: r.r + tr.o.x, t: r.t + tr.o.y, b: r.b + tr.o.y }, 1, true); });
+  // grid levels: a level shows only once its cells are big on screen, so fine levels appear only while zooming in
+  const levels = [];
+  if (ctxA > .01) for (let k = 0; k < GRID_K; k++) {
+    const pitch = P0 * Math.pow(GRID_R, k), a = smooth(.42, .72, pitch * s / minDim) * ctxA;
+    if (a < .01) continue;
+    const xs = [], ys = [];
+    const n0 = Math.floor(wx(-arm) / pitch - .5), n1 = Math.ceil(wx(W + arm) / pitch - .5);
+    const m0 = Math.floor(wy(-arm) / pitch - .5), m1 = Math.ceil(wy(H + arm) / pitch - .5);
+    for (let n = n0; n <= n1; n++) xs.push(sx(pitch * (n + .5)));
+    for (let n = m0; n <= m1; n++) ys.push(sy(pitch * (n + .5)));
+    levels.push({ a, xs, ys });
+  }
+  // live targets
+  const tgts = [];
+  terr.forEach(tr => {
+    const r = targetRect(tr, T), l = sx(r.l + tr.o.x), rr = sx(r.r + tr.o.x), t = sy(r.t + tr.o.y), b = sy(r.b + tr.o.y);
+    const a = smooth(arm * .6, arm * 1.7, Math.min(rr - l, b - t));
+    if (a > .01) tgts.push({ l, r: rr, t, b, a });
+  });
 
   // guide lines run the full width / height
-  ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0035);
-  for (const v of vis) {
-    ctx.globalAlpha = v.a; ctx.beginPath();
-    for (const x of [v.l, v.r]) if (x >= -2 && x <= W + 2) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
-    for (const y of [v.t, v.b]) if (y >= -2 && y <= H + 2) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+  ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = gw;
+  const lines = (xs, ys, a) => {
+    ctx.globalAlpha = a; ctx.beginPath();
+    for (const x of xs) if (x >= -2 && x <= W + 2) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    for (const y of ys) if (y >= -2 && y <= H + 2) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
     ctx.stroke();
-  }
+  };
+  for (const lv of levels) lines(lv.xs, lv.ys, lv.a);
+  for (const v of tgts) lines([v.l, v.r], [v.t, v.b], v.a);
   ctx.globalAlpha = 1;
 
   // text lives in the world: draw through the camera so it stays locked to its frame
@@ -265,17 +230,19 @@ function draw(T) {
     });
   }
 
-  // crosshairs on the four corners, on top
-  ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0045);
-  for (const v of vis) {
-    ctx.globalAlpha = v.a; ctx.beginPath();
-    for (const x of [v.l, v.r]) for (const y of [v.t, v.b]) {
+  // crosshairs on top: grid intersections + the target corners
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = cw;
+  const cross = (xs, ys, a) => {
+    ctx.globalAlpha = a; ctx.beginPath();
+    for (const x of xs) for (const y of ys) {
       if (x < -arm || x > W + arm || y < -arm || y > H + arm) continue;
       ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y);
       ctx.moveTo(x, y - arm); ctx.lineTo(x, y + arm);
     }
     ctx.stroke();
-  }
+  };
+  for (const lv of levels) cross(lv.xs, lv.ys, lv.a);
+  for (const v of tgts) cross([v.l, v.r], [v.t, v.b], v.a);
   ctx.globalAlpha = 1;
 }
 
