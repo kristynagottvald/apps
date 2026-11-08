@@ -106,6 +106,10 @@ function layout() {
       return { ...rc, t: rc.t - extra, b: rc.b + extra };
     })()
   ];
+
+  // Snap every frame rectangle outward onto the dot grid, so the crosshairs rest exactly on grid dots
+  const fl = (v, o) => o + Math.floor((v - o) / G + 1e-6) * G, ce = (v, o) => o + Math.ceil((v - o) / G - 1e-6) * G;
+  rects = rects.map(r => ({ l: fl(r.l, gx0), r: ce(r.r, gx0), t: fl(r.t, gy0), b: ce(r.b, gy0) }));
 }
 
 /* ---------- dot grid and logo ---------- */
