@@ -108,8 +108,9 @@ function layout() {
   L2 = { size: s2, lh, w: maxW, x: -maxW / 2, y1: -lh * (S2.length - 1) / 2 + s2 * .3 };
 
   const box = (l, t, r, b) => ({ l: l - pad, t: t - pad, r: r + pad, b: b + pad });
-  const fA = box(-L1.w / 2, L1.y - s1 * .8, L1.w / 2, L1.y + s1 * .28);
-  const sqB = L2.w + 2 * pad;                          // scene B shares the logo scene's square ratio
+  const sqA = L1.w + 2 * pad;                          // every scene frame is a square
+  const fA = { l: -sqA / 2, r: sqA / 2, t: -sqA / 2, b: sqA / 2 };
+  const sqB = L2.w + 2 * pad;                          // scene B shares the same square ratio
   const fB = { l: -sqB / 2, r: sqB / 2, t: -sqB / 2, b: sqB / 2 };
   // logo frame: a square, as tall as the canvas allows (crosshairs near the top and bottom), logo scaled to sit inside it
   const side = Math.min(H - 2 * pad, W - 2 * pad);
@@ -124,7 +125,7 @@ function layout() {
   // one global grid. Level k pitch = P0 * 3^k; cells are centred on the origin so every level nests exactly.
   P0 = TOP_PITCH * W / (Math.pow(GRID_R, GRID_K - 1) * S_OUT);
   const PT = P0 * Math.pow(GRID_R, GRID_K - 1);
-  delta = { x: PT, y: PT / GRID_R };                  // spot B: one top-level cell right, a third of a cell down (a short slide)
+  delta = { x: PT, y: PT };                           // spot B: the next top-level cell on the diagonal
   const spots = [{ x: 0, y: 0 }, { x: delta.x, y: delta.y }];
   terr = [
     { rf: fA, r0: r0Of(fA), moves: TL.moveA },
