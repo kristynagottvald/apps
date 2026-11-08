@@ -117,7 +117,7 @@ const LOGO_SPAN = 963.5, LOGO_DOT_R = 7.63;
 let G = 24, gridR = 1.2, gx0 = 0, gy0 = 0, gridCanvas = null;
 
 /* A very faint dot grid fills the whole canvas, behind the guide lines and crosshairs.
-   Each logo dot is one of those grid dots: it brightens, lifts off and slides to its slot. */
+   Each logo dot starts as a bright copy of a grid dot, lifts off and slides to its slot; the grid underneath stays whole. */
 function buildDots() {
   G = Math.max(16, Math.min(30, Math.min(W, H) * .045));
   gridR = Math.max(1, G * .055);
@@ -178,14 +178,8 @@ function draw(T) {
   ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
   const fr = frameAt(T);
 
-  // dot grid; a dot that has lifted off leaves a gap until the logo is wiped away
+  // dot grid: always complete. The logo dots are copies that lift off the grid, so it never shows gaps.
   ctx.drawImage(gridCanvas, 0, 0, W, H);
-  if (T >= TL.dotY[0]) {
-    ctx.save(); ctx.globalAlpha = 1 - slide(prog(T, [17.8, 18.4])); ctx.fillStyle = '#111';
-    ctx.beginPath();
-    for (const d of sources) if (T >= TL.dotY[0] + d.delay) { ctx.moveTo(d.sx + gridR + 1, d.sy); ctx.arc(d.sx, d.sy, gridR + 1, 0, Math.PI * 2); }
-    ctx.fill(); ctx.restore();
-  }
 
   // guide lines run the full width / height
   ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0035);
