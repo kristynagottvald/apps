@@ -28,7 +28,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 /* Clearco replatforming motif.
    A target frame (guide lines + corner crosshairs) wraps each scene. Between scenes it resizes ONE axis at a
    time (width, then height, or the reverse), sliding on an ease-in-out curve.
-   Scenes: "Stop losing revenue." -> two-line sub-headline -> the i / full-stop dots burst into the 93-dot logo. */
+   Scenes: "Stop losing revenue." -> two-line sub-headline -> the i / full-stop dots slide out into the 93-dot logo. */
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -36,8 +36,8 @@ const TL = {
   s1In: [2.0, 2.9], s1Fade: [5.2, 6.0],
   s2In1: [6.5, 7.3], s2In2: [6.7, 7.5],
   dotsIn: [10.8, 11.2], textDim: [10.8, 11.4], textOut: [11.4, 12.2],
-  travel: 11.2, travelDur: 1.8, travelSpread: 0.8,
-  fadeOut: [17.1, 18.0],
+  dotY: [10.9, 11.7], dotX: [11.7, 12.5], dotStagger: 0.12,   // dots slide vertically, then horizontally, like the frame
+  fadeOut: [17.1, 17.9],
   loop: 18.6,
   // frame moves: each axis slides in its own window
   moves: [
@@ -148,14 +148,10 @@ function buildDots() {
   const span = Math.min(W * (W < 560 ? .6 : .48), 1100), k = span / LOGO_SPAN;
   logoR = Math.max(2, LOGO_DOT_R * k);
   const targets = LOGO_DOTS.map(([x, y]) => ({ x: W / 2 + x * k, y: H / 2 + y * k })).sort((a, b) => a.x - b.x);
+  // Each dot leaves a seed and slides straight to its slot: one axis, then the other. A hair of left-to-right stagger.
   sources = targets.map((t, i) => {
     const sd = seeds[Math.min(seeds.length - 1, Math.floor(i * seeds.length / targets.length))];
-    return {
-      sx: sd.x, sy: sd.y, sr: sd.r, tx: t.x, ty: t.y,
-      baseA: Math.random() < .3 ? 1 : .45,
-      delay: Math.random() * TL.travelSpread,
-      swx: (Math.random() - .5) * 60, swy: (Math.random() - .5) * 60
-    };
+    return { sx: sd.x, sy: sd.y, sr: sd.r, tx: t.x, ty: t.y, delay: i / targets.length * TL.dotStagger };
   });
 }
 
@@ -222,21 +218,17 @@ function draw(T) {
       drawWhip([{ text: S2[i], x: L2.x, y: L2.y1 + i * L2.lh, size: L2.size, align: 'left' }], cx, cy, u, vel, dim * (1 - Math.abs(u)));
     }
   }
-  // Scene 3: dots of the i's and the full stop burst into the logo
+  // Scene 3: the dots of the i's and the full stop slide out to the logo, one axis at a time (same ease as the frame)
   if (T >= TL.dotsIn[0]) {
-    const fade = 1 - prog(T, TL.fadeOut);
+    const fade = 1 - easeInOutCubic(prog(T, TL.fadeOut));
     const ap = easeOutCubic(prog(T, [TL.dotsIn[0], TL.dotsIn[0] + .4]));
+    const ey = d => slide(prog(T - d.delay, TL.dotY)), ex = d => slide(prog(T - d.delay, TL.dotX));
     ctx.fillStyle = '#fff';
     for (const d of sources) {
-      let x, y, r, a;
-      if (T < TL.travel + d.delay) { x = d.sx; y = d.sy; r = d.sr; a = ap; }
-      else {
-        const p = clamp01((T - TL.travel - d.delay) / TL.travelDur), e = easeInOutCubic(p), s = Math.sin(Math.PI * e);
-        x = mixv(d.sx, d.tx, e) + s * d.swx; y = mixv(d.sy, d.ty, e) + s * d.swy;
-        r = mixv(d.sr, logoR, p * p * (3 - 2 * p));
-        a = mixv(1, d.baseA, s);
-      }
-      a *= fade;
+      const py = ey(d), px = ex(d);
+      const x = mixv(d.sx, d.tx, px), y = mixv(d.sy, d.ty, py);
+      const r = mixv(d.sr, logoR, (py + px) / 2);
+      const a = ap * fade;
       if (a <= .01 || r <= .05) continue;
       ctx.globalAlpha = a; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
     }
