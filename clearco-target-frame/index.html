@@ -33,8 +33,8 @@ const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const TL = {
-  s1In: [2.0, 3.3], s1Fade: [5.2, 6.2],
-  s2In1: [6.5, 7.5], s2In2: [7.7, 8.7],
+  s1In: [2.0, 2.9], s1Fade: [5.2, 6.0],
+  s2In1: [6.5, 7.3], s2In2: [6.7, 7.5],
   dotsIn: [10.8, 11.2], textDim: [10.8, 11.4], textOut: [11.4, 12.2],
   travel: 11.2, travelDur: 1.8, travelSpread: 0.8,
   fadeOut: [17.1, 18.0],
@@ -171,16 +171,31 @@ function frameAt(T) {
 }
 
 /* ---------- drawing ---------- */
-function drawText(text, x, y, size, align, alpha) {
+/* Whip zoom: u runs 1 -> 0 on the way in (from the right) and 0 -> -1 on the way out (to the left),
+   driven by the same easeInOutCubic as the frame's line slides. The zoom and a touch of blur peak at the
+   fastest point of the ease (its velocity), so the text snaps in like the frame edges do. */
+const HAS_FILTER = 'filter' in CanvasRenderingContext2D.prototype;
+const easeVel = p => Math.min(1, (easeInOutCubic(clamp01(p + .02)) - easeInOutCubic(clamp01(p - .02))) / .04 / 3);
+function drawWhip(lines, cx, cy, u, vel, alpha) {
   if (alpha <= .002) return;
-  ctx.save(); ctx.globalAlpha = alpha; ctx.textAlign = align; ctx.textBaseline = 'alphabetic';
-  setFont(ctx, size); ctx.fillStyle = '#fff'; ctx.fillText(text, x, y); ctx.restore();
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  if (!reduce) {
+    ctx.translate(cx + u * 56, cy);
+    const sc = 1 + .07 * Math.abs(u);                 // subtle zoom
+    ctx.scale(sc, sc);
+    ctx.translate(-cx, -cy);
+    if (HAS_FILTER && vel > .02) ctx.filter = 'blur(' + (vel * 5).toFixed(2) + 'px)';
+  }
+  ctx.fillStyle = '#fff'; ctx.textBaseline = 'alphabetic';
+  for (const l of lines) { setFont(ctx, l.size); ctx.textAlign = l.align; ctx.fillText(l.text, l.x, l.y); }
+  ctx.restore();
 }
 
 function draw(T) {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
-  const fr = frameAt(T), off = reduce ? 0 : 1;
+  const fr = frameAt(T);
 
   // guide lines run the full width / height
   ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0035);
@@ -189,18 +204,23 @@ function draw(T) {
   for (const y of [fr.t, fr.b]) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
   ctx.stroke();
 
-  // Scene 1
+  // Scene 1: whips in with the width slide, whips out as the frame moves on
   if (T < TL.s1Fade[1]) {
-    const pin = easeOutCubic(prog(T, TL.s1In)), pout = easeInOutCubic(prog(T, TL.s1Fade));
-    drawText(S1, W / 2 + off * (80 * (1 - pin) - 24 * pout), L1.y, L1.size, 'center', pin * (1 - pout));
+    const pi = prog(T, TL.s1In), po = prog(T, TL.s1Fade);
+    const u = (1 - easeInOutCubic(pi)) - easeInOutCubic(po);
+    const vel = po > 0 ? easeVel(po) : easeVel(pi);
+    drawWhip([{ text: S1, x: W / 2, y: L1.y, size: L1.size, align: 'center' }], W / 2, H / 2, u, vel, 1 - Math.abs(u));
   }
-  // Scene 2
+  // Scene 2: both lines whip in (staggered), then dim and whip out as the dots take over
   if (T >= TL.s2In1[0] && T < TL.textOut[1]) {
-    let factor = 1;
-    if (T >= TL.textDim[0]) factor = T < TL.textOut[0] ? mixv(1, .28, easeInOutCubic(prog(T, TL.textDim))) : .28 * (1 - prog(T, TL.textOut));
-    const p1 = easeOutCubic(prog(T, TL.s2In1)), p2 = easeOutCubic(prog(T, TL.s2In2));
-    drawText(S2[0], L2.x + off * 70 * (1 - p1), L2.y1, L2.size, 'left', p1 * factor);
-    drawText(S2[1], L2.x + off * 70 * (1 - p2), L2.y1 + L2.lh, L2.size, 'left', p2 * factor);
+    const dim = T >= TL.textDim[0] ? mixv(1, .28, easeInOutCubic(prog(T, TL.textDim))) : 1;
+    const po = prog(T, TL.textOut), cy = L2.y1 + L2.lh / 2 - L2.size * .25, cx = L2.x + L2.w / 2;
+    for (let i = 0; i < 2; i++) {
+      const pi = prog(T, i ? TL.s2In2 : TL.s2In1);
+      const u = (1 - easeInOutCubic(pi)) - easeInOutCubic(po);
+      const vel = po > 0 ? easeVel(po) : easeVel(pi);
+      drawWhip([{ text: S2[i], x: L2.x, y: L2.y1 + i * L2.lh, size: L2.size, align: 'left' }], cx, cy, u, vel, dim * (1 - Math.abs(u)));
+    }
   }
   // Scene 3: dots of the i's and the full stop burst into the logo
   if (T >= TL.dotsIn[0]) {
