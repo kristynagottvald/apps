@@ -110,12 +110,11 @@ function layout() {
   const box = (l, t, r, b) => ({ l: l - pad, t: t - pad, r: r + pad, b: b + pad });
   const fA = box(-L1.w / 2, L1.y - s1 * .8, L1.w / 2, L1.y + s1 * .28);
   const fB = box(L2.x, L2.y1 - s2 * .8, L2.x + L2.w, L2.y1 + lh * (S2.length - 1) + s2 * .28);
-  // dot-matrix logo, centred on the frame
-  const lspan = Math.min(W * (W < 560 ? .6 : .48), 1100); logoK = lspan / LOGO_SPAN; logoR = Math.max(2, LOGO_DOT_R * logoK);
-  let lx0 = 1e9, lx1 = -1e9, ly0 = 1e9, ly1 = -1e9;
-  for (const [x, y] of LOGO_DOTS) { lx0 = Math.min(lx0, x); lx1 = Math.max(lx1, x); ly0 = Math.min(ly0, y); ly1 = Math.max(ly1, y); }
-  const fL = box(lx0 * logoK - logoR, 0, lx1 * logoK + logoR, 0);
-  fL.t = -H / 2 + pad; fL.b = H / 2 - pad;      // crosshairs slide out to the top and bottom of the canvas
+  // logo frame: a square, as tall as the canvas allows (crosshairs near the top and bottom), logo scaled to sit inside it
+  const side = Math.min(H - 2 * pad, W - 2 * pad);
+  const lspan = Math.min(W * (W < 560 ? .6 : .48), 1100, side - 2 * pad);
+  logoK = lspan / (LOGO_SPAN + 2 * LOGO_DOT_R); logoR = Math.max(2, LOGO_DOT_R * logoK);
+  const fL = { l: -side / 2, r: side / 2, t: -side / 2, b: side / 2 };
   // r0 = the odd starting shape the target resizes from: narrow and tall, same centre
   const r0Of = f => { const cx = (f.l + f.r) / 2, cy = (f.t + f.b) / 2, w = (f.r - f.l) * .35, h = (f.b - f.t) * 1.9;
     return { l: cx - w / 2, r: cx + w / 2, t: cy - h / 2, b: cy + h / 2 }; };
