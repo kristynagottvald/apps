@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clearco Target Zoom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400&display=swap">
+<style>
+:root{--bg:#111;--fg:#fff}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#000;color:var(--fg);overflow:hidden;
+  font:600 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif}
+body{display:flex;flex-direction:column}
+nav.site{flex:none;display:flex;justify-content:space-between;align-items:center;gap:12px;height:52px;
+  background:#000;color:#fff;
+  padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
+nav.site a{color:#fff;text-decoration:none}
+nav.site a:hover{text-decoration:underline;text-underline-offset:4px}
+main{flex:1;min-height:0;position:relative}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+</style>
+</head>
+<body>
+<nav class="site"><a href="../">Apps</a><a href="../">&larr; Back to all projects</a></nav>
+<main><canvas id="c" aria-label="Clearco target zoom motif: the target frame zooms out through nested terrains of frames, slides to a new terrain, then zooms in on the target as it resizes around the next headline"></canvas></main>
+<script>
+/* Clearco target-zoom motif.
+   Same target frame as clearco-target-frame (grey guide lines + white corner crosshairs), but the camera moves through a
+   "terrain" of nested frames: zoom OUT several levels -> slide-pan to a different terrain -> zoom IN on the target while it
+   resizes (width, then height) around the next headline. Then the move repeats back to the first terrain.
+   Lines and crosshairs keep a constant screen size while the world scales under them. */
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const TL = {
+  loop: 24,
+  textAOut: [2.0, 2.7],  textAIn: [22.6, 23.6],
+  textB1: [10.5, 11.5],  textB2: [10.8, 11.8], textBOut: [14.2, 14.9],
+  out1: [2.5, 5.5],  pan1: [5.7, 7.6],  in1: [7.8, 10.8],     // terrain A -> terrain B
+  out2: [14.7, 17.7], pan2: [17.9, 19.8], in2: [20.0, 23.0],  // terrain B -> terrain A
+  // the target frame itself: each axis slides in its own window (mirrors the original frame moves)
+  moveA: [{ to: 'r0', h: [6.1, 7.0],   v: [6.1, 7.0]   }, { to: 'rf', h: [21.4, 22.2], v: [22.2, 23.0] }],
+  moveB: [{ to: 'rf', h: [9.2, 10.0],  v: [10.0, 10.9] }, { to: 'r0', h: [18.2, 19.1], v: [18.2, 19.1] }]
+};
+const LEVELS = 3;          // zoom-out depth: three nested frame levels
+const S_OUT = 0.04;        // camera scale at the top of the terrain (1 = target at full size)
+
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const prog = (T, r) => clamp01((T - r[0]) / (r[1] - r[0]));
+const easeOutCubic = p => 1 - Math.pow(1 - p, 3);
+const easeInOutCubic = p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2;
+const smooth = (a, b, v) => { const p = clamp01((v - a) / (b - a)); return p * p * (3 - 2 * p); };
+const slide = p => reduce ? (p >= 1 ? 1 : 0) : easeInOutCubic(p);
+// zoom easing: half continuous, half "stepped" so each nested level lands with a beat of its own
+const zslide = p => {
+  if (reduce) return p >= 1 ? 1 : 0;
+  const q = p * LEVELS, i = Math.min(LEVELS - 1, Math.floor(q));
+  return .5 * easeInOutCubic(p) + .5 * (i + easeInOutCubic(q - i)) / LEVELS;
+};
+const mixv = (a, b, t) => a + (b - a) * t;
+
+const FONT = '"Instrument Sans", "Helvetica Neue", Arial, sans-serif';
+const S1 = 'Stop losing revenue.';
+const S2 = ['Plan your e-commerce migration', 'before your next peak season.'];
+
+let W = 0, H = 0, DPR = 1, arm = 20, pad = 30;
+let L1 = null, L2 = null;
+let terr = [], statics = [], camSet = [], camRoot = [];
+let t0 = 0, ready = false;
+
+function setFont(c, size) {
+  c.font = '400 ' + size + 'px ' + FONT;
+  if ('letterSpacing' in c) c.letterSpacing = (-size * .03) + 'px';
+}
+function mulberry(seed) {
+  return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+
+/* ---------- terrain: nested frames around a target, built outward level by level ---------- */
+const mk = (cx, cy, w, h) => ({ l: cx - w / 2, r: cx + w / 2, t: cy - h / 2, b: cy + h / 2 });
+const hit = (a, b, m) => a.l < b.r + m && a.r > b.l - m && a.t < b.b + m && a.b > b.t - m;
+
+// scatter rects inside `area`, avoiding `obstacles`; each may hold smaller frames of its own
+function scatter(rnd, area, obstacles, count, wr, hr, depth, out) {
+  const aw = area.r - area.l, ah = area.b - area.t, mg = Math.min(aw, ah) * .05;
+  for (let n = 0; n < count; n++) {
+    for (let tries = 0; tries < 40; tries++) {
+      const w = wr[0] + rnd() * (wr[1] - wr[0]), h = hr[0] + rnd() * (hr[1] - hr[0]);
+      if (w > aw - 2 * mg || h > ah - 2 * mg) continue;
+      const cx = area.l + mg + w / 2 + rnd() * (aw - 2 * mg - w), cy = area.t + mg + h / 2 + rnd() * (ah - 2 * mg - h);
+      const r = mk(cx, cy, w, h);
+      if (obstacles.some(o => hit(r, o, mg))) continue;
+      out.push(r); obstacles.push(r);
+      if (depth > 0) {
+        const kids = [];
+        scatter(rnd, r, [], 1 + Math.floor(rnd() * 3), [w * .18, w * .42], [h * .18, h * .42], depth - 1, kids);
+        for (const k of kids) out.push(k);
+      }
+      break;
+    }
+  }
+}
+
+function buildTerrain(seed, rf, r0) {
+  const rnd = mulberry(seed);
+  const U = { w: Math.max(rf.r - rf.l, r0.r - r0.l), h: Math.max(rf.b - rf.t, r0.b - r0.t) };
+  const rootW = (W - 2 * pad) / S_OUT, rootH = (H - 2 * pad) / S_OUT;
+  let cx = (rf.l + rf.r) / 2, cy = (rf.t + rf.b) / 2, cw = U.w, ch = U.h;
+  const rects = [], rc = { x: cx, y: cy };
+  for (let k = 1; k <= LEVELS; k++) {
+    const f = k / LEVELS, w = U.w * Math.pow(rootW / U.w, f), h = U.h * Math.pow(rootH / U.h, f);
+    const sx = Math.max(0, (w - cw) / 2 - cw * .12), sy = Math.max(0, (h - ch) / 2 - ch * .12);
+    const px = cx + (rnd() * 2 - 1) * sx * .8, py = cy + (rnd() * 2 - 1) * sy * .8;
+    const parent = mk(px, py, w, h);
+    const child = mk(cx, cy, cw, ch);
+    rects.push(parent);
+    scatter(rnd, parent, [child], 2 + Math.floor(rnd() * 2), [cw * .5, cw * 1.3], [ch * .5, ch * 1.3], 1, rects);
+    cx = px; cy = py; cw = w; ch = h;
+  }
+  return { rects, root: { x: cx, y: cy, w: cw, h: ch }, rc };
+}
+
+/* ---------- layout ---------- */
+function layout() {
+  DPR = Math.min(2, devicePixelRatio || 1);
+  W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  arm = Math.max(14, Math.min(40, Math.min(W, H) * .055));
+  pad = arm * 1.5;
+  const maxText = W - 2 * (pad + arm + 8);
+  const m = document.createElement('canvas').getContext('2d');
+
+  // Scene A: one centred line (local coords: origin = screen centre when settled)
+  let s1 = Math.min(80, Math.max(20, W * .036));
+  setFont(m, s1);
+  let w1 = m.measureText(S1).width;
+  if (w1 > maxText) { s1 *= maxText / w1; setFont(m, s1); w1 = m.measureText(S1).width; }
+  L1 = { size: s1, w: w1, y: s1 * .33 };
+
+  // Scene B: two lines, block centred, lines left aligned
+  let s2 = Math.min(80, Math.max(20, W * .036));
+  setFont(m, s2);
+  let maxW = Math.max(...S2.map(t => m.measureText(t).width));
+  if (maxW > maxText) { s2 *= maxText / maxW; setFont(m, s2); maxW = Math.max(...S2.map(t => m.measureText(t).width)); }
+  const lh = s2 * 1.22;
+  L2 = { size: s2, lh, w: maxW, x: -maxW / 2, y1: -lh / 2 + s2 * .3 };
+
+  const box = (l, t, r, b) => ({ l: l - pad, t: t - pad, r: r + pad, b: b + pad });
+  const fA = box(-L1.w / 2, L1.y - s1 * .8, L1.w / 2, L1.y + s1 * .28);
+  const fB = box(L2.x, L2.y1 - s2 * .8, L2.x + L2.w, L2.y1 + lh + s2 * .28);
+  // r0 = the odd starting shape the target resizes from: narrow and tall, same centre
+  const r0Of = f => { const cx = (f.l + f.r) / 2, cy = (f.t + f.b) / 2, w = (f.r - f.l) * .35, h = (f.b - f.t) * 1.9; return mk(cx, cy, w, h); };
+  const tA = buildTerrain(7, fA, r0Of(fA)), tB = buildTerrain(31, fB, r0Of(fB));
+  terr = [{ rf: fA, r0: r0Of(fA), moves: TL.moveA, t: tA }, { rf: fB, r0: r0Of(fB), moves: TL.moveB, t: tB }];
+
+  // world placement: root A is centred on the world origin, root B sits off to the lower right
+  const rw = tA.root.w, rh = tA.root.h;
+  const dx = rw * 1.3, dy = rh * .55;
+  terr[0].o = { x: -tA.root.x, y: -tA.root.y };
+  terr[1].o = { x: dx - tB.root.x, y: dy - tB.root.y };
+
+  statics = [];
+  terr.forEach(tr => { for (const r of tr.t.rects) statics.push({ l: r.l + tr.o.x, r: r.r + tr.o.x, t: r.t + tr.o.y, b: r.b + tr.o.y }); });
+  // ambient terrain in the gap and around both roots, so the slide passes through more frames
+  const rnd = mulberry(99), roots = [mk(0, 0, rw, rh), mk(dx, dy, rw, rh)];
+  const area = { l: -rw * .75, r: dx + rw * .75, t: -rh * .75, b: dy + rh * .75 };
+  scatter(rnd, area, roots.slice(), 9, [rw * .12, rw * .4], [rh * .15, rh * .5], 1, statics);
+
+  const lsOut = Math.log(S_OUT);
+  camSet = terr.map(tr => ({ ls: 0, cx: tr.o.x, cy: tr.o.y }));
+  camRoot = [{ ls: lsOut, cx: 0, cy: 0 }, { ls: lsOut, cx: dx, cy: dy }];
+}
+
+/* ---------- target frame: one axis at a time ---------- */
+function targetRect(tr, T) {
+  let cur = tr === terr[0] ? tr.rf : tr.r0;
+  for (const mv of tr.moves) {
+    if (T < Math.min(mv.h[0], mv.v[0])) break;
+    const a = cur, b = mv.to === 'rf' ? tr.rf : tr.r0, eh = slide(prog(T, mv.h)), ev = slide(prog(T, mv.v));
+    cur = { l: mixv(a.l, b.l, eh), r: mixv(a.r, b.r, eh), t: mixv(a.t, b.t, ev), b: mixv(a.b, b.b, ev) };
+  }
+  return cur;
+}
+
+/* ---------- camera ---------- */
+// dolly between two cameras: the centre follows 1/scale so the target slides straight toward / away from screen centre
+function zoomCam(p, a, b) {
+  const ls = mixv(a.ls, b.ls, p), i0 = Math.exp(-a.ls), i1 = Math.exp(-b.ls), i = Math.exp(-ls);
+  const u = Math.abs(i1 - i0) < 1e-9 ? p : (i - i0) / (i1 - i0);
+  return { ls, cx: mixv(a.cx, b.cx, u), cy: mixv(a.cy, b.cy, u) };
+}
+const panCam = (p, a, b) => ({ ls: a.ls, cx: mixv(a.cx, b.cx, p), cy: mixv(a.cy, b.cy, p) });
+
+function camAt(T) {
+  if (T < TL.out1[0]) return camSet[0];
+  if (T < TL.out1[1]) return zoomCam(zslide(prog(T, TL.out1)), camSet[0], camRoot[0]);
+  if (T < TL.pan1[0]) return camRoot[0];
+  if (T < TL.pan1[1]) return panCam(slide(prog(T, TL.pan1)), camRoot[0], camRoot[1]);
+  if (T < TL.in1[0]) return camRoot[1];
+  if (T < TL.in1[1]) return zoomCam(zslide(prog(T, TL.in1)), camRoot[1], camSet[1]);
+  if (T < TL.out2[0]) return camSet[1];
+  if (T < TL.out2[1]) return zoomCam(zslide(prog(T, TL.out2)), camSet[1], camRoot[1]);
+  if (T < TL.pan2[0]) return camRoot[1];
+  if (T < TL.pan2[1]) return panCam(slide(prog(T, TL.pan2)), camRoot[1], camRoot[0]);
+  if (T < TL.in2[0]) return camRoot[0];
+  if (T < TL.in2[1]) return zoomCam(zslide(prog(T, TL.in2)), camRoot[0], camSet[0]);
+  return camSet[0];
+}
+
+/* ---------- drawing ---------- */
+function drawText(text, x, y, size, align, alpha) {
+  if (alpha <= .002) return;
+  ctx.save(); ctx.globalAlpha = alpha; ctx.textAlign = align; ctx.textBaseline = 'alphabetic';
+  setFont(ctx, size); ctx.fillStyle = '#fff'; ctx.fillText(text, x, y); ctx.restore();
+}
+
+function draw(T) {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+  const cam = camAt(T), s = Math.exp(cam.ls), off = reduce ? 0 : 1;
+  const g = clamp01(cam.ls / Math.log(S_OUT));            // 0 = settled on a target, 1 = top of the terrain
+  const ctxA = 1 - smooth(.72, 1, 1 - g);                  // surrounding terrain melts away as the target settles
+  const sx = x => W / 2 + (x - cam.cx) * s, sy = y => H / 2 + (y - cam.cy) * s;
+  const sizeA = (w, h, tgt) => tgt ? smooth(arm * .6, arm * 1.7, Math.min(w, h)) : smooth(arm * 2.2, arm * 4.5, Math.min(w, h));
+
+  // screen-space frames: static terrain + the two live (resizing) targets
+  const vis = [];
+  const push = (r, extra, tgt) => {
+    const l = sx(r.l), rr = sx(r.r), t = sy(r.t), b = sy(r.b);
+    const a = sizeA(rr - l, b - t, tgt) * extra;
+    if (a > .01) vis.push({ l, r: rr, t, b, a });
+  };
+  if (ctxA > .01) for (const r of statics) push(r, ctxA);
+  terr.forEach(tr => { const r = targetRect(tr, T); push({ l: r.l + tr.o.x, r: r.r + tr.o.x, t: r.t + tr.o.y, b: r.b + tr.o.y }, 1, true); });
+
+  // guide lines run the full width / height
+  ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0035);
+  for (const v of vis) {
+    ctx.globalAlpha = v.a; ctx.beginPath();
+    for (const x of [v.l, v.r]) if (x >= -2 && x <= W + 2) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    for (const y of [v.t, v.b]) if (y >= -2 && y <= H + 2) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  // text lives in the world: draw through the camera so it stays locked to its frame
+  const drawScene = (tr, fn) => {
+    ctx.save();
+    ctx.setTransform(DPR * s, 0, 0, DPR * s, DPR * (W / 2 + (tr.o.x - cam.cx) * s), DPR * (H / 2 + (tr.o.y - cam.cy) * s));
+    fn(); ctx.restore();
+  };
+  if (T < TL.textAOut[1] || T >= TL.textAIn[0]) {
+    let a, dx;
+    if (T >= TL.textAIn[0]) { const p = easeOutCubic(prog(T, TL.textAIn)); a = p; dx = 80 * (1 - p); }
+    else { const p = easeInOutCubic(prog(T, TL.textAOut)); a = 1 - p; dx = -24 * p; }
+    drawScene(terr[0], () => drawText(S1, off * dx, L1.y, L1.size, 'center', a));
+  }
+  if (T >= TL.textB1[0] && T < TL.textBOut[1]) {
+    const o = easeInOutCubic(prog(T, TL.textBOut)), p1 = easeOutCubic(prog(T, TL.textB1)), p2 = easeOutCubic(prog(T, TL.textB2));
+    drawScene(terr[1], () => {
+      drawText(S2[0], L2.x + off * 70 * (1 - p1), L2.y1, L2.size, 'left', p1 * (1 - o));
+      drawText(S2[1], L2.x + off * 70 * (1 - p2), L2.y1 + L2.lh, L2.size, 'left', p2 * (1 - o));
+    });
+  }
+
+  // crosshairs on the four corners, on top
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0045);
+  for (const v of vis) {
+    ctx.globalAlpha = v.a; ctx.beginPath();
+    for (const x of [v.l, v.r]) for (const y of [v.t, v.b]) {
+      if (x < -arm || x > W + arm || y < -arm || y > H + arm) continue;
+      ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y);
+      ctx.moveTo(x, y - arm); ctx.lineTo(x, y + arm);
+    }
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function frame(now) {
+  if (ready) draw(((now - t0) / 1000) % TL.loop);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- boot: wait for the font, then lay out and start the clock ---------- */
+const startAt = parseFloat(new URLSearchParams(location.search).get('t')) || 0;   // ?t=4 jumps into the sequence
+function boot() { layout(); t0 = performance.now() - startAt * 1000; ready = true; }
+Promise.all([document.fonts.load('400 40px "Instrument Sans"')]).then(boot, boot);
+new ResizeObserver(() => { if (ready) layout(); }).observe(cv);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
