@@ -34,14 +34,14 @@ const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const TL = {
-  loop: 21.2,
-  textAOut: [2.0, 2.7],  textAIn: [19.9, 20.9],
-  textB1: [9.3, 10.3],   textB2: [9.6, 10.6], textBOut: [13.0, 13.7],
-  out1: [2.5, 5.3],  pan1: [4.7, 6.5],  in1: [6.6, 9.6],       // spot A -> spot B (pan starts while the zoom-out lands)
-  out2: [13.5, 16.3], pan2: [15.7, 17.5], in2: [17.6, 20.6],   // spot B -> spot A
+  loop: 21.8,
+  textAOut: [2.0, 2.7],  textAIn: [20.5, 21.5],
+  textB1: [9.6, 10.6],   textB2: [9.9, 10.9], textBOut: [13.3, 14.0],
+  out1: [2.5, 5.7],  pan1: [5.1, 6.9],  in1: [7.0, 10.0],      // spot A -> spot B (pan starts while the zoom-out lands)
+  out2: [13.8, 17.0], pan2: [16.4, 18.2], in2: [18.3, 21.3],   // spot B -> spot A
   // the target frame itself: each axis slides in its own window (mirrors the original frame moves)
-  moveA: [{ to: 'r0', h: [5.2, 6.0],   v: [5.2, 6.0]   }, { to: 'rf', h: [19.0, 19.8], v: [19.8, 20.6] }],
-  moveB: [{ to: 'rf', h: [8.0, 8.8],   v: [8.8, 9.6]   }, { to: 'r0', h: [16.2, 17.0], v: [16.2, 17.0] }]
+  moveA: [{ to: 'r0', h: [5.5, 6.3],   v: [5.5, 6.3]   }, { to: 'rf', h: [19.7, 20.5], v: [20.5, 21.3] }],
+  moveB: [{ to: 'rf', h: [8.4, 9.2],   v: [9.2, 10.0]  }, { to: 'r0', h: [16.7, 17.5], v: [16.7, 17.5] }]
 };
 const LEVELS = 3;          // zoom-out depth used for the stepped easing
 const GRID_K = 5;          // grid levels 0..4, each 3x the pitch of the one before
@@ -59,7 +59,7 @@ const slide = p => reduce ? (p >= 1 ? 1 : 0) : easeInOutCubic(p);
 const zslide = p => {
   if (reduce) return p >= 1 ? 1 : 0;
   const q = p * LEVELS, i = Math.min(LEVELS - 1, Math.floor(q));
-  return .5 * easeInOutCubic(p) + .5 * (i + easeInOutCubic(q - i)) / LEVELS;
+  return .7 * easeInOutCubic(p) + .3 * (i + easeInOutCubic(q - i)) / LEVELS;
 };
 const mixv = (a, b, t) => a + (b - a) * t;
 
@@ -181,7 +181,7 @@ function draw(T) {
   // grid levels: a level shows only once its cells are big on screen, so fine levels appear only while zooming in
   const levels = [];
   if (ctxA > .01) for (let k = 0; k < GRID_K; k++) {
-    const pitch = P0 * Math.pow(GRID_R, k), a = smooth(.42, .72, pitch * s / minDim) * ctxA;
+    const pitch = P0 * Math.pow(GRID_R, k), a = smooth(.22, .42, pitch * s / minDim) * ctxA;
     if (a < .01) continue;
     const xs = [], ys = [];
     const n0 = Math.floor(wx(-arm) / pitch - .5), n1 = Math.ceil(wx(W + arm) / pitch - .5);
