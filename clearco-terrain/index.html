@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clearco Terrain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400&display=swap">
+<style>
+:root{--bg:#111;--fg:#fff}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#000;color:var(--fg);overflow:hidden;
+  font:600 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif}
+body{display:flex;flex-direction:column}
+nav.site{flex:none;display:flex;justify-content:space-between;align-items:center;gap:12px;height:52px;
+  background:#000;color:#fff;
+  padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
+nav.site a{color:#fff;text-decoration:none}
+nav.site a:hover{text-decoration:underline;text-underline-offset:4px}
+main{flex:1;min-height:0;position:relative}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+</style>
+</head>
+<body>
+<nav class="site"><a href="../">Apps</a><a href="../">&larr; Back to all projects</a></nav>
+<main><canvas id="c" aria-label="Clearco terrain motif: the target frame zooms out through nested terrains of frames, slides to a new terrain, then zooms in on the target as it resizes around the next headline"></canvas></main>
+<script>
+/* Clearco terrain motif.
+   Same target frame as clearco-target-frame (grey guide lines + white corner crosshairs), but the camera travels over one
+   consistent multi-scale grid: big crosshairs form the grid when zoomed out, and each finer grid level only appears as you
+   zoom in. Zoom OUT several levels -> slide-pan to another spot on the grid -> zoom IN on the target while it resizes
+   (width, then height) around the next headline. Then the move repeats back. Lines and crosshairs keep a constant screen size. */
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const TL = {
+  loop: 22.0,
+  textAOut: [2.0, 2.7],  textAIn: [20.7, 21.7],
+  textB: [[8.6, 9.6], [8.9, 9.9], [9.2, 10.2]], textBOut: [11.6, 12.2],
+  logoIn: [13.2, 13.9],  logoOut: [15.0, 15.5],
+  out1: [2.5, 5.1],  pan1: [4.6, 6.2],  in1: [6.3, 8.9],      // spot A -> spot B (pan starts while the zoom-out lands)
+  out2: [15.0, 17.6], pan2: [17.1, 18.7], in2: [18.8, 21.4],  // spot B -> spot A, after the logo has held for a beat
+  // the target frame itself: each axis slides in its own window (mirrors the original frame moves)
+  moveA: [{ to: 'r0', h: [4.9, 5.6],   v: [4.9, 5.6]   }, { to: 'rf', h: [20.0, 20.7], v: [20.7, 21.4] }],
+  moveB: [{ to: 'rf', h: [7.5, 8.2],   v: [8.2, 8.9]   },
+          { to: 'rl', h: [12.3, 13.2], v: [12.3, 13.2] },     // text square -> bigger logo square, both axes together so it stays square
+          { to: 'r0', h: [17.4, 18.1], v: [17.4, 18.1] }]
+};
+const LOGO_DOTS = [[-481.7,-13.1],[-481.7,14.1],[-468.7,-34.5],[-468.7,36.5],[-445.2,-47.1],[-445.2,47.6],[-419.1,-50.5],[-419.1,51.0],[-395.3,-45.6],[-395.3,46.7],[-374.7,-32.9],[-374.7,34.3],[-334.8,-47.6],[-334.8,-23.8],[-334.8,-0.4],[-334.8,23.7],[-334.8,46.7],[-310.3,47.6],[-286.6,47.6],[-263.5,47.6],[-239.7,47.6],[-206.0,-47.6],[-206.0,-23.8],[-206.0,-0.4],[-206.0,23.7],[-206.0,47.6],[-181.3,-47.6],[-181.3,-0.4],[-181.3,47.6],[-158.0,-47.6],[-158.0,-0.4],[-158.0,47.6],[-134.5,-47.6],[-134.5,-0.4],[-134.5,47.6],[-111.2,-47.6],[-111.2,47.6],[-76.2,49.9],[-63.7,28.1],[-52.1,7.7],[-40.1,-13.1],[-40.1,28.1],[-28.5,-32.9],[-17.0,-50.5],[-17.0,28.1],[-6.2,-32.9],[5.2,-13.1],[6.8,28.1],[16.9,7.7],[28.7,28.1],[40.6,47.6],[76.9,-47.1],[76.9,-23.8],[76.9,0.4],[76.9,23.7],[76.9,47.6],[101.3,-47.6],[101.3,-0.4],[124.8,-47.6],[124.8,-0.4],[148.2,-47.6],[148.2,-0.4],[163.6,23.7],[171.0,-45.6],[172.6,-2.5],[181.5,-23.8],[181.5,47.6],[218.0,-13.1],[218.0,14.1],[231.4,-34.5],[231.4,35.4],[254.8,-47.1],[254.8,47.6],[280.8,-50.5],[280.8,51.0],[304.4,-45.6],[304.4,46.7],[325.4,-32.9],[325.4,35.4],[362.0,-11.6],[362.0,14.1],[375.2,-32.9],[375.2,35.4],[398.8,-45.6],[398.8,46.7],[424.6,-47.6],[424.6,49.9],[448.3,-44.0],[448.3,46.7],[469.0,-31.9],[469.0,34.3],[481.8,-11.6],[481.8,14.1]];
+const LOGO_SPAN = 963.5, LOGO_DOT_R = 7.63;
+const LEVELS = 2;          // zoom steps (three grid sections: big, medium, fine)
+const GRID_K = 3;          // three grid sections 0..2, each 3x the pitch of the one before
+const GRID_R = 3;
+const S_OUT = 0.11;        // camera scale at the top of the zoom-out (1 = target at full size)
+const TOP_PITCH = .4;      // screen width fraction of the level-3 grid cell at S_OUT
+
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const prog = (T, r) => clamp01((T - r[0]) / (r[1] - r[0]));
+const easeOutCubic = p => 1 - Math.pow(1 - p, 3);
+const easeInOutCubic = p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2;
+const smooth = (a, b, v) => { const p = clamp01((v - a) / (b - a)); return p * p * (3 - 2 * p); };
+const slide = p => reduce ? (p >= 1 ? 1 : 0) : easeInOutCubic(p);
+// zoom easing: half continuous, half "stepped" so each grid level lands with a beat of its own
+const zslide = p => {
+  if (reduce) return p >= 1 ? 1 : 0;
+  const q = p * LEVELS, i = Math.min(LEVELS - 1, Math.floor(q));
+  return .7 * easeInOutCubic(p) + .3 * (i + easeInOutCubic(q - i)) / LEVELS;
+};
+const mixv = (a, b, t) => a + (b - a) * t;
+
+const FONT = '"Instrument Sans", "Helvetica Neue", Arial, sans-serif';
+const S1 = 'Stop losing revenue.';
+const S2 = ['Plan your e-commerce', 'migration before your', 'next peak season.'];
+
+let W = 0, H = 0, DPR = 1, arm = 20, pad = 30;
+let L1 = null, L2 = null, logoK = 1, logoR = 4;
+let terr = [], camSet = [], camRoot = [], P0 = 1, delta = { x: 0, y: 0 };
+let t0 = 0, ready = false;
+
+function setFont(c, size) {
+  c.font = '400 ' + size + 'px ' + FONT;
+  if ('letterSpacing' in c) c.letterSpacing = (-size * .03) + 'px';
+}
+
+/* ---------- layout ---------- */
+function layout() {
+  DPR = Math.min(2, devicePixelRatio || 1);
+  W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  arm = Math.max(14, Math.min(40, Math.min(W, H) * .055));
+  pad = arm * 1.5;
+  const maxText = W - 2 * (pad + arm + 8);
+  const m = document.createElement('canvas').getContext('2d');
+
+  // Scene A: one centred line (local coords: origin = screen centre when settled)
+  let s1 = Math.min(80, Math.max(20, W * .036));
+  setFont(m, s1);
+  let w1 = m.measureText(S1).width;
+  if (w1 > maxText) { s1 *= maxText / w1; setFont(m, s1); w1 = m.measureText(S1).width; }
+  L1 = { size: s1, w: w1, y: s1 * .33 };
+
+  // Scene B: two lines, block centred, lines left aligned
+  let s2 = Math.min(80, Math.max(20, W * .036));
+  setFont(m, s2);
+  let maxW = Math.max(...S2.map(t => m.measureText(t).width));
+  if (maxW > maxText) { s2 *= maxText / maxW; setFont(m, s2); maxW = Math.max(...S2.map(t => m.measureText(t).width)); }
+  const lh = s2 * 1.22;
+  L2 = { size: s2, lh, w: maxW, x: -maxW / 2, y1: -lh * (S2.length - 1) / 2 + s2 * .3 };
+
+  const box = (l, t, r, b) => ({ l: l - pad, t: t - pad, r: r + pad, b: b + pad });
+  const sqA = L1.w + 2 * pad;                          // every scene frame is a square
+  const fA = { l: -sqA / 2, r: sqA / 2, t: -sqA / 2, b: sqA / 2 };
+  const sqB = L2.w + 2 * pad;                          // scene B shares the same square ratio
+  const fB = { l: -sqB / 2, r: sqB / 2, t: -sqB / 2, b: sqB / 2 };
+  // logo frame: a square, as tall as the canvas allows (crosshairs near the top and bottom), logo scaled to sit inside it
+  const side = Math.min(H - 2 * pad, W - 2 * pad);
+  const lspan = Math.min(W * (W < 560 ? .6 : .48), 1100, side - 2 * pad);
+  logoK = lspan / (LOGO_SPAN + 2 * LOGO_DOT_R); logoR = Math.max(2, LOGO_DOT_R * logoK);
+  const fL = { l: -side / 2, r: side / 2, t: -side / 2, b: side / 2 };
+  // r0 = the odd starting shape the target resizes from: narrow and tall, same centre
+  const r0Of = f => { const cx = (f.l + f.r) / 2, cy = (f.t + f.b) / 2, w = (f.r - f.l) * .35, h = (f.b - f.t) * 1.9;
+    return { l: cx - w / 2, r: cx + w / 2, t: cy - h / 2, b: cy + h / 2 }; };
+  const cOf = f => ({ x: (f.l + f.r) / 2, y: (f.t + f.b) / 2 });
+
+  // one global grid. Level k pitch = P0 * 3^k; cells are centred on the origin so every level nests exactly.
+  P0 = TOP_PITCH * W / (Math.pow(GRID_R, GRID_K - 1) * S_OUT);
+  const PT = P0 * Math.pow(GRID_R, GRID_K - 1);
+  delta = { x: PT, y: PT };                           // spot B: the next top-level cell on the diagonal
+  const spots = [{ x: 0, y: 0 }, { x: delta.x, y: delta.y }];
+  terr = [
+    { rf: fA, r0: r0Of(fA), moves: TL.moveA },
+    { rf: fB, rl: fL, r0: r0Of(fB), moves: TL.moveB }
+  ];
+  terr.forEach((tr, i) => { const c = cOf(tr.rf); tr.o = { x: spots[i].x - c.x, y: spots[i].y - c.y }; });
+
+  const lsOut = Math.log(S_OUT);
+  camSet = terr.map(tr => ({ ls: 0, cx: tr.o.x, cy: tr.o.y }));
+  camRoot = spots.map(sp => ({ ls: lsOut, cx: sp.x, cy: sp.y }));
+}
+
+/* ---------- target frame: one axis at a time ---------- */
+function targetRect(tr, T) {
+  let cur = tr === terr[0] ? tr.rf : tr.r0;
+  for (const mv of tr.moves) {
+    if (T < Math.min(mv.h[0], mv.v[0])) break;
+    const a = cur, b = mv.to === 'rf' ? tr.rf : mv.to === 'rl' ? tr.rl : tr.r0, eh = slide(prog(T, mv.h)), ev = slide(prog(T, mv.v));
+    cur = { l: mixv(a.l, b.l, eh), r: mixv(a.r, b.r, eh), t: mixv(a.t, b.t, ev), b: mixv(a.b, b.b, ev) };
+  }
+  return cur;
+}
+
+/* ---------- camera ---------- */
+// dolly between two cameras: the centre follows 1/scale so the target slides straight toward / away from screen centre
+function zoomCam(p, a, b) {
+  const ls = mixv(a.ls, b.ls, p), i0 = Math.exp(-a.ls), i1 = Math.exp(-b.ls), i = Math.exp(-ls);
+  const u = Math.abs(i1 - i0) < 1e-9 ? p : (i - i0) / (i1 - i0);
+  return { ls, cx: mixv(a.cx, b.cx, u), cy: mixv(a.cy, b.cy, u) };
+}
+// zoom out from `from` and slide by `d` at the same time (the slide starts before the zoom has fully landed)
+function outAndPan(T, from, root, outR, panR, d) {
+  const z = T < outR[0] ? from : T < outR[1] ? zoomCam(zslide(prog(T, outR)), from, root) : root, pp = slide(prog(T, panR));
+  return { ls: z.ls, cx: z.cx + d.x * pp, cy: z.cy + d.y * pp };
+}
+
+function camAt(T) {
+  if (T < TL.out1[0]) return camSet[0];
+  if (T < TL.in1[0]) return outAndPan(T, camSet[0], camRoot[0], TL.out1, TL.pan1, delta);
+  if (T < TL.in1[1]) return zoomCam(zslide(prog(T, TL.in1)), camRoot[1], camSet[1]);
+  if (T < TL.out2[0]) return camSet[1];
+  if (T < TL.in2[0]) return outAndPan(T, camSet[1], camRoot[1], TL.out2, TL.pan2, { x: -delta.x, y: -delta.y });
+  if (T < TL.in2[1]) return zoomCam(zslide(prog(T, TL.in2)), camRoot[0], camSet[0]);
+  return camSet[0];
+}
+
+/* ---------- drawing ---------- */
+function drawText(text, x, y, size, align, alpha) {
+  if (alpha <= .002) return;
+  ctx.save(); ctx.globalAlpha = alpha; ctx.textAlign = align; ctx.textBaseline = 'alphabetic';
+  setFont(ctx, size); ctx.fillStyle = '#fff'; ctx.fillText(text, x, y); ctx.restore();
+}
+
+function draw(T) {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+  const cam = camAt(T), s = Math.exp(cam.ls);
+  const g = clamp01(cam.ls / Math.log(S_OUT));            // 0 = settled on a target, 1 = top of the zoom-out
+  const ctxA = 1 - smooth(.72, 1, 1 - g);                  // the grid melts away as the target settles
+  const sx = x => W / 2 + (x - cam.cx) * s, sy = y => H / 2 + (y - cam.cy) * s;
+  const wx = x => (x - W / 2) / s + cam.cx, wy = y => (y - H / 2) / s + cam.cy;
+  const gw = Math.max(1, Math.min(W, H) * .0018), cw = Math.max(1.5, Math.min(W, H) * .0028);
+  const minDim = Math.min(W, H);
+
+  // grid levels: a level shows only once its cells are big on screen, so fine levels appear only while zooming in
+  const levels = [];
+  if (ctxA > .01) for (let k = 0; k < GRID_K; k++) {
+    const pitch = P0 * Math.pow(GRID_R, k), a = smooth(.22, .42, pitch * s / minDim) * ctxA;
+    if (a < .01) continue;
+    const xs = [], ys = [];
+    const n0 = Math.floor(wx(-arm) / pitch - .5), n1 = Math.ceil(wx(W + arm) / pitch - .5);
+    const m0 = Math.floor(wy(-arm) / pitch - .5), m1 = Math.ceil(wy(H + arm) / pitch - .5);
+    for (let n = n0; n <= n1; n++) xs.push(sx(pitch * (n + .5)));
+    for (let n = m0; n <= m1; n++) ys.push(sy(pitch * (n + .5)));
+    levels.push({ a, xs, ys });
+  }
+  // live targets
+  const tgts = [];
+  terr.forEach(tr => {
+    const r = targetRect(tr, T), l = sx(r.l + tr.o.x), rr = sx(r.r + tr.o.x), t = sy(r.t + tr.o.y), b = sy(r.b + tr.o.y);
+    const a = smooth(arm * .6, arm * 1.7, Math.min(rr - l, b - t));
+    if (a > .01) tgts.push({ l, r: rr, t, b, a });
+  });
+
+  // guide lines run the full width / height
+  ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = gw;
+  const lines = (xs, ys, a) => {
+    ctx.globalAlpha = a; ctx.beginPath();
+    for (const x of xs) if (x >= -2 && x <= W + 2) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    for (const y of ys) if (y >= -2 && y <= H + 2) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    ctx.stroke();
+  };
+  for (const lv of levels) lines(lv.xs, lv.ys, lv.a);
+  for (const v of tgts) lines([v.l, v.r], [v.t, v.b], v.a);
+  ctx.globalAlpha = 1;
+
+  // text lives in the world: draw through the camera so it stays locked to its frame
+  const drawScene = (tr, fn) => {
+    ctx.save();
+    ctx.setTransform(DPR * s, 0, 0, DPR * s, DPR * (W / 2 + (tr.o.x - cam.cx) * s), DPR * (H / 2 + (tr.o.y - cam.cy) * s));
+    fn(); ctx.restore();
+  };
+  // text never slides: it fades and scales slightly inside the frame (in: 0.9 -> 1, out: 1 -> 0.94), like the frame resize
+  const sc = k => ctx.scale(k, k);   // scales about the frame centre (local origin)
+  if (T < TL.textAOut[1] || T >= TL.textAIn[0]) {
+    let a, k;
+    if (T >= TL.textAIn[0]) { const p = easeInOutCubic(prog(T, TL.textAIn)); a = p; k = mixv(.9, 1, p); }
+    else { const p = easeInOutCubic(prog(T, TL.textAOut)); a = 1 - p; k = mixv(1, .94, p); }
+    if (reduce) k = 1;
+    drawScene(terr[0], () => { sc(k); drawText(S1, 0, L1.y, L1.size, 'center', a); });
+  }
+  if (T >= TL.textB[0][0] && T < TL.textBOut[1]) {
+    const o = easeInOutCubic(prog(T, TL.textBOut));
+    const k = reduce ? 1 : (T >= TL.textBOut[0] ? mixv(1, .94, o) : mixv(.9, 1, easeInOutCubic(prog(T, TL.textB[0]))));
+    drawScene(terr[1], () => {
+      sc(k);
+      S2.forEach((t, i) => drawText(t, L2.x, L2.y1 + i * L2.lh, L2.size, 'left', easeInOutCubic(prog(T, TL.textB[i])) * (1 - o)));
+    });
+  }
+  if (T >= TL.logoIn[0] && T < TL.logoOut[1]) {
+    const pi = easeInOutCubic(prog(T, TL.logoIn)), po = easeInOutCubic(prog(T, TL.logoOut));
+    const a = pi * (1 - po), k = reduce ? 1 : (T >= TL.logoOut[0] ? mixv(1, .94, po) : mixv(.9, 1, pi));
+    if (a > .002) drawScene(terr[1], () => {
+      sc(k); ctx.globalAlpha = a; ctx.fillStyle = '#fff'; ctx.beginPath();
+      for (const [x, y] of LOGO_DOTS) { const px = x * logoK, py = y * logoK; ctx.moveTo(px + logoR, py); ctx.arc(px, py, logoR, 0, Math.PI * 2); }
+      ctx.fill(); ctx.globalAlpha = 1;
+    });
+  }
+
+  // crosshairs on top: grid intersections + the target corners
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = cw;
+  const cross = (xs, ys, a) => {
+    ctx.globalAlpha = a; ctx.beginPath();
+    for (const x of xs) for (const y of ys) {
+      if (x < -arm || x > W + arm || y < -arm || y > H + arm) continue;
+      ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y);
+      ctx.moveTo(x, y - arm); ctx.lineTo(x, y + arm);
+    }
+    ctx.stroke();
+  };
+  for (const lv of levels) cross(lv.xs, lv.ys, lv.a);
+  for (const v of tgts) cross([v.l, v.r], [v.t, v.b], v.a);
+  ctx.globalAlpha = 1;
+}
+
+function frame(now) {
+  if (ready) draw(((now - t0) / 1000) % TL.loop);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- boot: wait for the font, then lay out and start the clock ---------- */
+const startAt = parseFloat(new URLSearchParams(location.search).get('t')) || 0;   // ?t=4 jumps into the sequence
+function boot() { layout(); t0 = performance.now() - startAt * 1000; ready = true; }
+Promise.all([document.fonts.load('400 40px "Instrument Sans"')]).then(boot, boot);
+new ResizeObserver(() => { if (ready) layout(); }).observe(cv);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
