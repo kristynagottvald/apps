@@ -28,7 +28,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 /* Clearco replatforming motif.
    A target frame (guide lines + corner crosshairs) wraps each scene. Between scenes it resizes ONE axis at a
    time (width, then height, or the reverse), sliding on an ease-in-out curve.
-   Scenes: "Stop losing revenue." -> two-line sub-headline -> the i / full-stop dots slide out into the 93-dot logo. */
+   Scenes: "Bring your migration into focus." -> two-line sub-headline -> the i / full-stop dots slide out into the 93-dot logo. */
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -54,8 +54,8 @@ const slide = p => reduce ? (p >= 1 ? 1 : 0) : easeInOutCubic(p);
 const mixv = (a, b, t) => a + (b - a) * t;
 
 const FONT = '"Instrument Sans", "Helvetica Neue", Arial, sans-serif';
-const S1 = 'Stop losing revenue.';
-const S2 = ['Plan your e-commerce migration', 'before your next peak season.'];
+const S1 = 'Bring your migration into focus.';
+const S2 = ['Set your target before you migrate.', 'Waiting only makes it more complicated.'];
 
 let W = 0, H = 0, DPR = 1, arm = 20, pad = 30;
 let L1 = null, L2 = null, rects = [], sources = [], logoR = 4;
