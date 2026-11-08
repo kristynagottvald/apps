@@ -7,18 +7,21 @@
 <style>
 :root{--bg:#111;--fg:#fff}
 *{box-sizing:border-box;margin:0}
-html,body{height:100%;background:var(--bg);color:var(--fg);overflow:hidden;
+html,body{height:100%;background:#000;color:var(--fg);overflow:hidden;
   font:600 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif}
-canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
-nav.site{position:fixed;z-index:2;top:0;left:0;right:0;display:flex;justify-content:space-between;gap:12px;
-  padding:16px max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
-nav.site a{color:var(--fg);text-decoration:none}
+body{display:flex;flex-direction:column}
+nav.site{flex:none;display:flex;justify-content:space-between;align-items:center;gap:12px;height:52px;
+  background:#000;color:#fff;
+  padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
+nav.site a{color:#fff;text-decoration:none}
 nav.site a:hover{text-decoration:underline;text-underline-offset:4px}
+main{flex:1;min-height:0;position:relative}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
 <nav class="site"><a href="../">Apps</a><a href="../">&larr; Back to all projects</a></nav>
-<canvas id="c" aria-label="Target square whose crosshairs and guide lines slide to resize it one axis at a time"></canvas>
+<main><canvas id="c" aria-label="Target square whose crosshairs and guide lines slide to resize it one axis at a time"></canvas></main>
 <script>
 /* Target frame motif: four crosshairs sit on the corners of a square, faint guide lines run edge to edge.
    Each step slides ONE edge along ONE axis (horizontal, then vertical, ...) with a smooth ease. */
@@ -35,12 +38,12 @@ let step = null, axisH = true, wait = 0.6;
 
 function resize() {
   DPR = Math.min(2, devicePixelRatio || 1);
-  W = innerWidth; H = innerHeight;
+  W = cv.clientWidth; H = cv.clientHeight;
   cv.width = W * DPR; cv.height = H * DPR;
   f.l = W * .16; f.r = W * .68; f.t = H * .16; f.b = H * .81;
   step = null; wait = .4;
 }
-addEventListener('resize', resize);
+new ResizeObserver(resize).observe(cv);
 
 function nextStep() {
   const minW = Math.max(120, W * .22), minH = Math.max(120, H * .22);
@@ -93,7 +96,7 @@ function frame(now) {
   const dt = Math.min(.05, (now - last) / 1000); last = now;
   update(dt); draw(); requestAnimationFrame(frame);
 }
-resize(); requestAnimationFrame(frame);
+requestAnimationFrame(frame);
 </script>
 </body>
 </html>
