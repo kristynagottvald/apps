@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clearco Target Frame</title>
+<style>
+:root{--bg:#111;--fg:#fff}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);overflow:hidden;
+  font:600 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+nav.site{position:fixed;z-index:2;top:0;left:0;right:0;display:flex;justify-content:space-between;gap:12px;
+  padding:16px max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
+nav.site a{color:var(--fg);text-decoration:none}
+nav.site a:hover{text-decoration:underline;text-underline-offset:4px}
+</style>
+</head>
+<body>
+<nav class="site"><a href="../">Apps</a><a href="../">&larr; Back to all projects</a></nav>
+<canvas id="c" aria-label="Target square whose crosshairs and guide lines slide to resize it one axis at a time"></canvas>
+<script>
+/* Target frame motif: four crosshairs sit on the corners of a square, faint guide lines run edge to edge.
+   Each step slides ONE edge along ONE axis (horizontal, then vertical, ...) with a smooth ease. */
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let W = 0, H = 0, DPR = 1;
+
+const ease = p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3) / 2;   // easeInOutCubic
+const lerp = (a, b, t) => a + (b - a) * t;
+const rand = (a, b) => a + Math.random() * (b - a);
+
+const f = { l: 0, r: 0, t: 0, b: 0 };          // frame edges (px)
+let step = null, axisH = true, wait = 0.6;
+
+function resize() {
+  DPR = Math.min(2, devicePixelRatio || 1);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  f.l = W * .16; f.r = W * .68; f.t = H * .16; f.b = H * .81;
+  step = null; wait = .4;
+}
+addEventListener('resize', resize);
+
+function nextStep() {
+  const minW = Math.max(120, W * .22), minH = Math.max(120, H * .22);
+  const m = Math.min(W, H) * .1;
+  const horiz = axisH; axisH = !axisH;
+  // pick a left/right (or top/bottom) edge and send it to a new spot, keeping the minimum size
+  const lo = horiz ? 'l' : 't', hi = horiz ? 'r' : 'b', size = horiz ? W : H, min = horiz ? minW : minH;
+  const edge = Math.random() < .5 ? lo : hi;
+  let to;
+  for (let i = 0; i < 20; i++) {
+    to = edge === lo ? rand(m, f[hi] - min) : rand(f[lo] + min, size - m);
+    if (Math.abs(to - f[edge]) > size * .1) break;
+  }
+  step = { edge, from: f[edge], to, t: 0, dur: Math.max(.8, Math.abs(to - f[edge]) / size * 2.6), horiz };
+}
+
+function update(dt) {
+  if (reduce) { wait -= dt; if (wait <= 0) { nextStep(); f[step.edge] = step.to; step = null; wait = 2; } }
+  else if (step) {
+    step.t = Math.min(1, step.t + dt / step.dur);
+    f[step.edge] = lerp(step.from, step.to, ease(step.t));
+    if (step.t >= 1) { step = null; wait = rand(.35, .7); }
+  } else { wait -= dt; if (wait <= 0) nextStep(); }
+}
+
+function draw() {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+  const arm = Math.max(18, Math.min(W, H) * .08);
+
+  // guide lines run the full width / height
+  ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0035); ctx.lineCap = 'butt';
+  ctx.beginPath();
+  for (const x of [f.l, f.r]) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+  for (const y of [f.t, f.b]) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+  ctx.stroke();
+
+  // crosshairs on the four corners
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0045);
+  ctx.beginPath();
+  for (const x of [f.l, f.r]) for (const y of [f.t, f.b]) {
+    ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y);
+    ctx.moveTo(x, y - arm); ctx.lineTo(x, y + arm);
+  }
+  ctx.stroke();
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  update(dt); draw(); requestAnimationFrame(frame);
+}
+resize(); requestAnimationFrame(frame);
+</script>
+</body>
+</html>
