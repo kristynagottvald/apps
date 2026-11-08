@@ -174,11 +174,9 @@ button.fcol{display:block;width:100%;text-align:left;border-radius:6px;padding-b
     </ul>
     <hr>
     <h3>Funnels <button class="plus" aria-label="Add funnel"><svg width="12" height="12" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M6 1.5v9M1.5 6h9"/></svg></button></h3>
-    <ul>
-      <li><button><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"><path d="M3 3h10L3 13z"/></svg>Ads</button></li>
-      <li><button><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"><path d="M3 3h10L3 13z"/></svg>Home → Signup</button></li>
-      <li><button><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"><path d="M3 3h10L3 13z"/></svg>Enterprise → Demo</button></li>
-      <li><button><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"><path d="M3 3h10L3 13z"/></svg>Pricing → Signup</button></li>
+    <ul id="funnel-list">
+      <li><button type="button" data-cta="Join the Slack"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"><path d="M3 3h10L3 13z"/></svg>PSC → Join the Slack</button></li>
+      <li><button type="button" data-cta="Book my demo"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"><path d="M3 3h10L3 13z"/></svg>PSC → Book my demo</button></li>
     </ul>
     <hr>
     <h3>A/B Tests <button class="plus" aria-label="Add A/B test"><svg width="12" height="12" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M6 1.5v9M1.5 6h9"/></svg></button></h3>
@@ -320,8 +318,15 @@ button.fcol{display:block;width:100%;text-align:left;border-radius:6px;padding-b
     $('f-pct').textContent=(cr(v)*100).toFixed(1)+'%';
     $('chart').setAttribute('role','button');
     $('summary').textContent='There’s a '+v.best.toFixed(1)+'% chance '+(v===V[0]?'the control variant':v.name)+' performs best. At current traffic, expect a conclusion in 9 days.';
+    [].forEach.call(document.querySelectorAll('#funnel-list button'),function(b){b.setAttribute('aria-current',b.dataset.cta===v.cta)});
     renderBreakdown();
   }
+  [].forEach.call(document.querySelectorAll('#funnel-list button'),function(b){
+    b.addEventListener('click',function(){
+      if(sel.cta===b.dataset.cta)return;
+      pick(V.filter(function(v){return v.cta===b.dataset.cta})[0]);
+    });
+  });
 
   function toggleStep(s){step=(step===s)?null:s;
     [].forEach.call(document.querySelectorAll('.fcol.step'),function(b){b.setAttribute('aria-expanded',b.dataset.step===step)});
