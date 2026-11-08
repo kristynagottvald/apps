@@ -26,25 +26,29 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 <main><canvas id="c" aria-label="Clearco replatforming motif: a target frame with crosshairs slides to wrap each headline, then the dots form the Clearco logo"></canvas></main>
 <script>
 /* Clearco replatforming motif.
-   A target frame (guide lines + corner crosshairs) wraps each scene. Between scenes it resizes ONE axis at a
-   time (width, then height, or the reverse), sliding on an ease-in-out curve.
+   A target frame (guide lines + corner crosshairs) drives everything. It resizes ONE axis at a time on an
+   ease-in-out curve, and the text is only visible inside it: the frame opens to uncover a headline, closes
+   to a line to crop it away, slides sideways, and opens again. Nothing else moves the type.
    Scenes: "Bring your migration into focus." -> two-line sub-headline -> the i / full-stop dots slide out into the 93-dot logo. */
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const TL = {
-  s1In: [2.0, 2.9], s1Fade: [5.2, 6.0],
-  s2In1: [6.5, 7.3], s2In2: [6.7, 7.5],
+  // The frame is the clock. Every text reveal and wipe below is cut by its edges, one axis per step.
+  steps: [
+    { axis: 'v', win: [2.0, 2.8],   to: 'R1' },   // aperture opens: the headline is uncovered from the centre line out
+    { axis: 'v', win: [5.2, 5.9],   to: 'C'  },   // closes back to a line: the headline is cropped away
+    { axis: 'h', win: [5.9, 6.6],   to: 'R2' },   // the line slides to the sub-headline's width
+    { axis: 'v', win: [6.6, 7.4],   to: 'R2' },   // opens: the sub-headline is uncovered
+    { axis: 'v', win: [10.6, 11.4], to: 'R3' },   // tightens toward the logo: crops the sub-headline's height
+    { axis: 'h', win: [11.4, 12.3], to: 'R3' },   // then its width
+    { axis: 'v', win: [17.1, 17.8], to: 'C'  },   // logo closes to a line
+    { axis: 'h', win: [17.8, 18.4], to: 'R1' }    // and the line slides back to the headline's width
+  ],
   dotsIn: [10.8, 11.2], textDim: [10.8, 11.4], textOut: [11.4, 12.2],
   dotY: [10.9, 11.7], dotX: [11.7, 12.5], dotStagger: 0.12,   // dots slide vertically, then horizontally, like the frame
-  fadeOut: [17.1, 17.9],
-  loop: 18.6,
-  // frame moves: each axis slides in its own window
-  moves: [
-    { to: 1, h: [5.3, 6.1],   v: [6.1, 6.9]   },   // headline -> sub-headline: width, then height
-    { to: 2, v: [10.6, 11.4],   h: [11.4, 12.3]  },   // sub-headline -> logo: height, then width
-    { to: 0, h: [17.1, 17.8], v: [17.8, 18.5] }    // logo -> headline: width, then height
-  ]
+  clipDots: 17.0,                                            // from here the frame also crops the logo
+  loop: 18.6
 };
 const clamp01 = v => Math.min(1, Math.max(0, v));
 const prog = (T, r) => clamp01((T - r[0]) / (r[1] - r[0]));
@@ -157,35 +161,22 @@ function buildDots() {
 
 /* ---------- frame: one axis at a time ---------- */
 function frameAt(T) {
-  let cur = rects[0];
-  for (const mv of TL.moves) {
-    if (T < Math.min(mv.h[0], mv.v[0])) break;
-    const a = cur, b = rects[mv.to], eh = slide(prog(T, mv.h)), ev = slide(prog(T, mv.v));
-    cur = { l: mixv(a.l, b.l, eh), r: mixv(a.r, b.r, eh), t: mixv(a.t, b.t, ev), b: mixv(a.b, b.b, ev) };
+  const mid = H / 2, R = { R1: rects[0], R2: rects[1], R3: rects[2], C: { t: mid, b: mid } };
+  let cur = { l: rects[0].l, r: rects[0].r, t: mid, b: mid };         // starts as a line the width of the headline
+  for (const st of TL.steps) {
+    if (T < st.win[0]) break;
+    const e = slide(prog(T, st.win)), to = R[st.to];
+    if (st.axis === 'h') cur = { ...cur, l: mixv(cur.l, to.l, e), r: mixv(cur.r, to.r, e) };
+    else cur = { ...cur, t: mixv(cur.t, to.t, e), b: mixv(cur.b, to.b, e) };
   }
   return cur;
 }
 
 /* ---------- drawing ---------- */
-/* Whip zoom: u runs 1 -> 0 on the way in (from the right) and 0 -> -1 on the way out (to the left),
-   driven by the same easeInOutCubic as the frame's line slides. The zoom and a touch of blur peak at the
-   fastest point of the ease (its velocity), so the text snaps in like the frame edges do. */
-const HAS_FILTER = 'filter' in CanvasRenderingContext2D.prototype;
-const easeVel = p => Math.min(1, (easeInOutCubic(clamp01(p + .02)) - easeInOutCubic(clamp01(p - .02))) / .04 / 3);
-function drawWhip(lines, cx, cy, u, vel, alpha) {
+function drawText(text, x, y, size, align, alpha) {
   if (alpha <= .002) return;
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  if (!reduce) {
-    ctx.translate(cx + u * 56, cy);
-    const sc = 1 + .07 * Math.abs(u);                 // subtle zoom
-    ctx.scale(sc, sc);
-    ctx.translate(-cx, -cy);
-    if (HAS_FILTER && vel > .02) ctx.filter = 'blur(' + (vel * 5).toFixed(2) + 'px)';
-  }
-  ctx.fillStyle = '#fff'; ctx.textBaseline = 'alphabetic';
-  for (const l of lines) { setFont(ctx, l.size); ctx.textAlign = l.align; ctx.fillText(l.text, l.x, l.y); }
-  ctx.restore();
+  ctx.save(); ctx.globalAlpha = alpha; ctx.textAlign = align; ctx.textBaseline = 'alphabetic';
+  setFont(ctx, size); ctx.fillStyle = '#fff'; ctx.fillText(text, x, y); ctx.restore();
 }
 
 function draw(T) {
@@ -200,39 +191,33 @@ function draw(T) {
   for (const y of [fr.t, fr.b]) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
   ctx.stroke();
 
-  // Scene 1: whips in with the width slide, whips out as the frame moves on
-  if (T < TL.s1Fade[1]) {
-    const pi = prog(T, TL.s1In), po = prog(T, TL.s1Fade);
-    const u = (1 - easeInOutCubic(pi)) - easeInOutCubic(po);
-    const vel = po > 0 ? easeVel(po) : easeVel(pi);
-    drawWhip([{ text: S1, x: W / 2, y: L1.y, size: L1.size, align: 'center' }], W / 2, H / 2, u, vel, 1 - Math.abs(u));
-  }
-  // Scene 2: both lines whip in (staggered), then dim and whip out as the dots take over
-  if (T >= TL.s2In1[0] && T < TL.textOut[1]) {
+  // Text sits still. It is only ever shown inside the frame, so the lines decide when and how it appears.
+  ctx.save();
+  ctx.beginPath(); ctx.rect(fr.l, fr.t, fr.r - fr.l, fr.b - fr.t); ctx.clip();
+  if (T < 6.0) drawText(S1, W / 2, L1.y, L1.size, 'center', 1);
+  if (T >= 6.0) {
     const dim = T >= TL.textDim[0] ? mixv(1, .28, easeInOutCubic(prog(T, TL.textDim))) : 1;
-    const po = prog(T, TL.textOut), cy = L2.y1 + L2.lh / 2 - L2.size * .25, cx = L2.x + L2.w / 2;
-    for (let i = 0; i < 2; i++) {
-      const pi = prog(T, i ? TL.s2In2 : TL.s2In1);
-      const u = (1 - easeInOutCubic(pi)) - easeInOutCubic(po);
-      const vel = po > 0 ? easeVel(po) : easeVel(pi);
-      drawWhip([{ text: S2[i], x: L2.x, y: L2.y1 + i * L2.lh, size: L2.size, align: 'left' }], cx, cy, u, vel, dim * (1 - Math.abs(u)));
-    }
+    const a = dim * (1 - easeInOutCubic(prog(T, TL.textOut)));
+    for (let i = 0; i < 2; i++) drawText(S2[i], L2.x, L2.y1 + i * L2.lh, L2.size, 'left', a);
   }
+  ctx.restore();
+
   // Scene 3: the dots of the i's and the full stop slide out to the logo, one axis at a time (same ease as the frame)
   if (T >= TL.dotsIn[0]) {
-    const fade = 1 - easeInOutCubic(prog(T, TL.fadeOut));
     const ap = easeOutCubic(prog(T, [TL.dotsIn[0], TL.dotsIn[0] + .4]));
     const ey = d => slide(prog(T - d.delay, TL.dotY)), ex = d => slide(prog(T - d.delay, TL.dotX));
+    ctx.save();
+    if (T >= TL.clipDots) { ctx.beginPath(); ctx.rect(fr.l, fr.t, fr.r - fr.l, fr.b - fr.t); ctx.clip(); }   // the closing frame crops the logo
     ctx.fillStyle = '#fff';
     for (const d of sources) {
       const py = ey(d), px = ex(d);
       const x = mixv(d.sx, d.tx, px), y = mixv(d.sy, d.ty, py);
       const r = mixv(d.sr, logoR, (py + px) / 2);
-      const a = ap * fade;
+      const a = ap;
       if (a <= .01 || r <= .05) continue;
       ctx.globalAlpha = a; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
     }
-    ctx.globalAlpha = 1;
+    ctx.restore();
   }
 
   // crosshairs on the four corners, on top
