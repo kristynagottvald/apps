@@ -170,7 +170,7 @@ function drawText(text, x, y, size, align, alpha) {
 function draw(T) {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
-  const cam = camAt(T), s = Math.exp(cam.ls), off = reduce ? 0 : 1;
+  const cam = camAt(T), s = Math.exp(cam.ls);
   const g = clamp01(cam.ls / Math.log(S_OUT));            // 0 = settled on a target, 1 = top of the zoom-out
   const ctxA = 1 - smooth(.72, 1, 1 - g);                  // the grid melts away as the target settles
   const sx = x => W / 2 + (x - cam.cx) * s, sy = y => H / 2 + (y - cam.cy) * s;
@@ -216,17 +216,22 @@ function draw(T) {
     ctx.setTransform(DPR * s, 0, 0, DPR * s, DPR * (W / 2 + (tr.o.x - cam.cx) * s), DPR * (H / 2 + (tr.o.y - cam.cy) * s));
     fn(); ctx.restore();
   };
+  // text never slides: it fades and scales slightly inside the frame (in: 0.9 -> 1, out: 1 -> 0.94), like the frame resize
+  const sc = k => ctx.scale(k, k);   // scales about the frame centre (local origin)
   if (T < TL.textAOut[1] || T >= TL.textAIn[0]) {
-    let a, dx;
-    if (T >= TL.textAIn[0]) { const p = easeOutCubic(prog(T, TL.textAIn)); a = p; dx = 80 * (1 - p); }
-    else { const p = easeInOutCubic(prog(T, TL.textAOut)); a = 1 - p; dx = -24 * p; }
-    drawScene(terr[0], () => drawText(S1, off * dx, L1.y, L1.size, 'center', a));
+    let a, k;
+    if (T >= TL.textAIn[0]) { const p = easeInOutCubic(prog(T, TL.textAIn)); a = p; k = mixv(.9, 1, p); }
+    else { const p = easeInOutCubic(prog(T, TL.textAOut)); a = 1 - p; k = mixv(1, .94, p); }
+    if (reduce) k = 1;
+    drawScene(terr[0], () => { sc(k); drawText(S1, 0, L1.y, L1.size, 'center', a); });
   }
   if (T >= TL.textB1[0] && T < TL.textBOut[1]) {
-    const o = easeInOutCubic(prog(T, TL.textBOut)), p1 = easeOutCubic(prog(T, TL.textB1)), p2 = easeOutCubic(prog(T, TL.textB2));
+    const o = easeInOutCubic(prog(T, TL.textBOut)), p1 = easeInOutCubic(prog(T, TL.textB1)), p2 = easeInOutCubic(prog(T, TL.textB2));
+    const k = reduce ? 1 : (T >= TL.textBOut[0] ? mixv(1, .94, o) : mixv(.9, 1, p1));
     drawScene(terr[1], () => {
-      drawText(S2[0], L2.x + off * 70 * (1 - p1), L2.y1, L2.size, 'left', p1 * (1 - o));
-      drawText(S2[1], L2.x + off * 70 * (1 - p2), L2.y1 + L2.lh, L2.size, 'left', p2 * (1 - o));
+      sc(k);
+      drawText(S2[0], L2.x, L2.y1, L2.size, 'left', p1 * (1 - o));
+      drawText(S2[1], L2.x, L2.y1 + L2.lh, L2.size, 'left', p2 * (1 - o));
     });
   }
 
