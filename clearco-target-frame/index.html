@@ -105,7 +105,9 @@ function layout() {
     (() => {
       let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
       for (const p of sources) { l = Math.min(l, p.tx); r = Math.max(r, p.tx); t = Math.min(t, p.ty); b = Math.max(b, p.ty); }
-      return box(l - logoR, t - logoR, r + logoR, b + logoR);
+      const rc = box(l - logoR, t - logoR, r + logoR, b + logoR);
+      const extra = Math.max(pad * 1.5, H * .13);       // the logo's frame opens up much taller than the logo itself
+      return { ...rc, t: rc.t - extra, b: rc.b + extra };
     })()
   ];
 }
