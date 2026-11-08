@@ -46,7 +46,7 @@ const TL = {
     { axis: 'h', win: [17.8, 18.4], to: 'R1' }    // and the line slides back to the headline's width
   ],
   dotsIn: [10.8, 11.2], textDim: [10.8, 11.4], textOut: [11.4, 12.2],
-  dotY: [10.9, 11.7], dotX: [11.7, 12.5], dotStagger: 0.12,   // dots slide vertically, then horizontally, like the frame
+  dotY: [10.9, 11.9], dotStagger: 0.12,                      // dots only ever slide vertically, down or up their own column
   clipDots: 17.0,                                            // from here the frame also crops the logo
   loop: 18.6
 };
@@ -58,8 +58,8 @@ const slide = p => reduce ? (p >= 1 ? 1 : 0) : easeInOutCubic(p);
 const mixv = (a, b, t) => a + (b - a) * t;
 
 const FONT = '"Instrument Sans", "Helvetica Neue", Arial, sans-serif';
-const S1 = 'Replatforming shouldn’t cost you sales.';
-const S2 = ['Plan your e-commerce migration', 'before your next peak season.'];
+const S1 = ['Replatforming shouldn’t', 'cost you sales.'];
+const S2 = ['Plan your e-commerce migration', 'before your next peak season,', 'while it’s still simple.'];
 
 let W = 0, H = 0, DPR = 1, arm = 20, pad = 30;
 let L1 = null, L2 = null, rects = [], sources = [], logoR = 4;
@@ -80,28 +80,24 @@ function layout() {
   const maxText = W - 2 * (pad + arm + 8);
   const m = document.createElement('canvas').getContext('2d');
 
-  // Scene 1: one centred line
-  let s1 = Math.min(80, Math.max(20, W * .036));
-  setFont(m, s1);
-  let w1 = m.measureText(S1).width;
-  if (w1 > maxText) { s1 *= maxText / w1; setFont(m, s1); w1 = m.measureText(S1).width; }
-  L1 = { size: s1, w: w1, y: H / 2 + s1 * .33 };
-
-  // Scene 2: two lines, block centred, lines left aligned
-  let s2 = Math.min(80, Math.max(20, W * .036));
-  setFont(m, s2);
-  let maxW = Math.max(...S2.map(t => m.measureText(t).width));
-  if (maxW > maxText) { s2 *= maxText / maxW; setFont(m, s2); maxW = Math.max(...S2.map(t => m.measureText(t).width)); }
-  const lh = s2 * 1.22;
-  L2 = { size: s2, lh, w: maxW, x: (W - maxW) / 2, y1: H / 2 - lh / 2 + s2 * .3 };
+  // Both scenes are left-aligned blocks, centred on the canvas (scene 1: two lines, scene 2: three lines)
+  const block = lines => {
+    let size = Math.min(80, Math.max(20, W * .036));
+    setFont(m, size);
+    let w = Math.max(...lines.map(t => m.measureText(t).width));
+    if (w > maxText) { size *= maxText / w; setFont(m, size); w = Math.max(...lines.map(t => m.measureText(t).width)); }
+    const lh = size * 1.22, y1 = H / 2 - (lines.length - 1) * lh / 2 + size * .3;
+    return { size, lh, w, x: (W - w) / 2, y1, top: y1 - size * .8, bot: y1 + (lines.length - 1) * lh + size * .28 };
+  };
+  L1 = block(S1); L2 = block(S2);
 
   buildDots();
 
   // Frame rectangle for each scene
   const box = (l, t, r, b) => ({ l: l - pad, t: t - pad, r: r + pad, b: b + pad });
   rects = [
-    box(W / 2 - L1.w / 2, L1.y - s1 * .8, W / 2 + L1.w / 2, L1.y + s1 * .28),
-    box(L2.x, L2.y1 - s2 * .8, L2.x + L2.w, L2.y1 + lh + s2 * .28),
+    box(L1.x, L1.top, L1.x + L1.w, L1.bot),
+    box(L2.x, L2.top, L2.x + L2.w, L2.bot),
     (() => {
       let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
       for (const p of sources) { l = Math.min(l, p.tx); r = Math.max(r, p.tx); t = Math.min(t, p.ty); b = Math.max(b, p.ty); }
@@ -119,17 +115,31 @@ const LOGO_SPAN = 963.5, LOGO_DOT_R = 7.63;
 let G = 24, gridR = 1.2, gx0 = 0, gy0 = 0, gridCanvas = null;
 
 /* A very faint dot grid fills the whole canvas, behind the guide lines and crosshairs.
-   Each logo dot starts as a bright copy of a grid dot, lifts off and slides to its slot; the grid underneath stays whole. */
+   Its columns are fitted to the logo's columns, so every logo dot starts as a bright copy of a grid dot
+   in its own column and slides straight up or down into its slot. The grid itself never changes. */
 function buildDots() {
-  G = Math.max(16, Math.min(30, Math.min(W, H) * .045));
-  gridR = Math.max(1, G * .055);
-  gx0 = (W / 2) % G; gy0 = (H / 2) % G;
+  const span = Math.min(W * (W < 560 ? .6 : .48), 1100), k = span / LOGO_SPAN;
+  logoR = Math.max(2, LOGO_DOT_R * k);
+  const targets = LOGO_DOTS.map(([x, y]) => ({ x: W / 2 + x * k, y: H / 2 + y * k })).sort((a, b) => a.x - b.x);
+
+  // Grid pitch: half the logo's dot pitch (about 11.85 artwork units), doubled on small screens to stay faint.
+  const u = 11.85 * k, mult = Math.max(1, Math.ceil(5.5 / u));
+  G = u * mult;
+  gridR = Math.max(.7, G * .11);
+  const xs = [...new Set(targets.map(t => t.x.toFixed(2)))].map(Number);
+  let best = 1e9;
+  for (let off = 0; off < G; off += .25) {                           // choose the column offset that fits the logo best
+    let err = 0;
+    for (const x of xs) { const d = ((x - off) % G + G) % G; err += Math.min(d, G - d); }
+    if (err < best) { best = err; gx0 = off; }
+  }
+  gy0 = (H / 2) % G;
   const cols = Math.floor((W - gx0) / G) + 1, rows = Math.floor((H - gy0) / G) + 1;
 
   gridCanvas = document.createElement('canvas');
   gridCanvas.width = W * DPR; gridCanvas.height = H * DPR;
   const g = gridCanvas.getContext('2d');
-  g.scale(DPR, DPR); g.fillStyle = 'rgba(255,255,255,.11)';
+  g.scale(DPR, DPR); g.fillStyle = 'rgba(255,255,255,.1)';
   g.beginPath();
   for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
     const x = gx0 + i * G, y = gy0 + j * G;
@@ -137,21 +147,19 @@ function buildDots() {
   }
   g.fill();
 
-  const span = Math.min(W * (W < 560 ? .6 : .48), 1100), k = span / LOGO_SPAN;
-  logoR = Math.max(2, LOGO_DOT_R * k);
-  const targets = LOGO_DOTS.map(([x, y]) => ({ x: W / 2 + x * k, y: H / 2 + y * k })).sort((a, b) => a.x - b.x);
-
-  // Every logo dot starts on its own grid dot a few cells away from its slot
+  // Each logo dot starts on its own grid dot, some distance above or below its slot, in the same column
   const used = new Set();
   sources = targets.map((t, i) => {
+    const ci = Math.min(cols - 1, Math.max(0, Math.round((t.x - gx0) / G)));
     const h = Math.imul(i + 1, 2654435761) >>> 0;
-    let dx = ((h >>> 8) % 13) - 6, dy = ((h >>> 16) % 9) - 4;
-    if (Math.abs(dx) + Math.abs(dy) < 3) dx += dx < 0 ? -4 : 4;
-    let ci = Math.round((t.x - gx0) / G) + dx, cj = Math.round((t.y - gy0) / G) + dy;
-    ci = Math.min(cols - 1, Math.max(0, ci)); cj = Math.min(rows - 1, Math.max(0, cj));
-    while (used.has(ci + ',' + cj)) ci = ci + 1 < cols ? ci + 1 : 0;
+    const dir = (h >>> 20) & 1 ? 1 : -1;
+    const cells = Math.max(3, Math.round(H * (.1 + ((h >>> 8) % 1000) / 1000 * .25) / G));
+    let cj = Math.round((t.y - gy0) / G) + dir * cells;
+    cj = Math.min(rows - 1, Math.max(0, cj));
+    while (used.has(ci + ',' + cj)) cj = Math.min(rows - 1, Math.max(0, cj + dir)) === cj ? cj - dir : cj + dir;
     used.add(ci + ',' + cj);
-    return { sx: gx0 + ci * G, sy: gy0 + cj * G, sr: gridR, tx: t.x, ty: t.y, delay: i / targets.length * TL.dotStagger };
+    const col = gx0 + ci * G;
+    return { sx: col, sy: gy0 + cj * G, sr: gridR, tx: col, ty: t.y, delay: i / targets.length * TL.dotStagger };
   });
 }
 
@@ -193,25 +201,25 @@ function draw(T) {
   // Text sits still. It is only ever shown inside the frame, so the lines decide when and how it appears.
   ctx.save();
   ctx.beginPath(); ctx.rect(fr.l, fr.t, fr.r - fr.l, fr.b - fr.t); ctx.clip();
-  if (T < 6.0) drawText(S1, W / 2, L1.y, L1.size, 'center', 1);
+  if (T < 6.0) for (let i = 0; i < S1.length; i++) drawText(S1[i], L1.x, L1.y1 + i * L1.lh, L1.size, 'left', 1);
   if (T >= 6.0) {
     const dim = T >= TL.textDim[0] ? mixv(1, .28, easeInOutCubic(prog(T, TL.textDim))) : 1;
     const a = dim * (1 - easeInOutCubic(prog(T, TL.textOut)));
-    for (let i = 0; i < 2; i++) drawText(S2[i], L2.x, L2.y1 + i * L2.lh, L2.size, 'left', a);
+    for (let i = 0; i < S2.length; i++) drawText(S2[i], L2.x, L2.y1 + i * L2.lh, L2.size, 'left', a);
   }
   ctx.restore();
 
   // Scene 3: grid dots brighten, lift off and slide to the logo, one axis at a time (same ease as the frame)
   if (T >= TL.dotsIn[0]) {
     const ap = easeOutCubic(prog(T, [TL.dotsIn[0], TL.dotsIn[0] + .4]));
-    const ey = d => slide(prog(T - d.delay, TL.dotY)), ex = d => slide(prog(T - d.delay, TL.dotX));
+    const ey = d => slide(prog(T - d.delay, TL.dotY));
     ctx.save();
     if (T >= TL.clipDots) { ctx.beginPath(); ctx.rect(fr.l, fr.t, fr.r - fr.l, fr.b - fr.t); ctx.clip(); }   // the closing frame crops the logo
     ctx.fillStyle = '#fff';
     for (const d of sources) {
-      const py = ey(d), px = ex(d);
-      const x = mixv(d.sx, d.tx, px), y = mixv(d.sy, d.ty, py);
-      const r = mixv(d.sr, logoR, (py + px) / 2);
+      const py = ey(d);
+      const x = d.tx, y = mixv(d.sy, d.ty, py);        // straight up or down the column
+      const r = mixv(d.sr, logoR, py);
       const a = ap;
       if (a <= .01 || r <= .05) continue;
       ctx.globalAlpha = a; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
