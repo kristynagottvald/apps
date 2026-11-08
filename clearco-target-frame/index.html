@@ -29,7 +29,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
    A target frame (guide lines + corner crosshairs) drives everything. It resizes ONE axis at a time on an
    ease-in-out curve, and the text is only visible inside it: the frame opens to uncover a headline, closes
    to a line to crop it away, slides sideways, and opens again. Nothing else moves the type.
-   Scenes: "Set your target." -> two-line sub-headline -> grid dots slide into the 93-dot logo. */
+   Scenes: "Replatforming shouldn't cost you sales." -> two-line sub-headline -> grid dots slide into the 93-dot logo. */
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -58,7 +58,7 @@ const slide = p => reduce ? (p >= 1 ? 1 : 0) : easeInOutCubic(p);
 const mixv = (a, b, t) => a + (b - a) * t;
 
 const FONT = '"Instrument Sans", "Helvetica Neue", Arial, sans-serif';
-const S1 = 'Set your target.';
+const S1 = 'Replatforming shouldn’t cost you sales.';
 const S2 = ['Plan your e-commerce migration', 'before your next peak season.'];
 
 let W = 0, H = 0, DPR = 1, arm = 20, pad = 30;
@@ -182,7 +182,7 @@ function draw(T) {
   ctx.drawImage(gridCanvas, 0, 0, W, H);
 
   // guide lines run the full width / height
-  ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0035);
+  ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = 1;
   ctx.beginPath();
   for (const x of [fr.l, fr.r]) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
   for (const y of [fr.t, fr.b]) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
@@ -218,7 +218,7 @@ function draw(T) {
   }
 
   // crosshairs on the four corners, on top
-  ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0045);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
   ctx.beginPath();
   for (const x of [fr.l, fr.r]) for (const y of [fr.t, fr.b]) {
     ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y);
