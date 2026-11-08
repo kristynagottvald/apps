@@ -33,17 +33,17 @@ const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const TL = {
-  s1In: [0.4, 1.7], s1Fade: [3.6, 4.6],
-  s2In1: [4.9, 5.9], s2In2: [6.1, 7.1],
-  dotsIn: [9.2, 9.6], textDim: [9.2, 9.8], textOut: [9.8, 10.6],
-  travel: 9.6, travelDur: 1.8, travelSpread: 0.8,
-  fadeOut: [15.5, 16.4],
-  loop: 17.0,
+  s1In: [2.0, 3.3], s1Fade: [5.2, 6.2],
+  s2In1: [6.5, 7.5], s2In2: [7.7, 8.7],
+  dotsIn: [10.8, 11.2], textDim: [10.8, 11.4], textOut: [11.4, 12.2],
+  travel: 11.2, travelDur: 1.8, travelSpread: 0.8,
+  fadeOut: [17.1, 18.0],
+  loop: 18.6,
   // frame moves: each axis slides in its own window
   moves: [
-    { to: 1, h: [3.7, 4.5],   v: [4.5, 5.3]   },   // headline -> sub-headline: width, then height
-    { to: 2, v: [9.0, 9.8],   h: [9.8, 10.7]  },   // sub-headline -> logo: height, then width
-    { to: 0, h: [15.5, 16.2], v: [16.2, 16.9] }    // logo -> headline: width, then height
+    { to: 1, h: [5.3, 6.1],   v: [6.1, 6.9]   },   // headline -> sub-headline: width, then height
+    { to: 2, v: [10.6, 11.4],   h: [11.4, 12.3]  },   // sub-headline -> logo: height, then width
+    { to: 0, h: [17.1, 17.8], v: [17.8, 18.5] }    // logo -> headline: width, then height
   ]
 };
 const clamp01 = v => Math.min(1, Math.max(0, v));
