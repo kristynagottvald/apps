@@ -29,7 +29,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
    A target frame (guide lines + corner crosshairs) drives everything. It resizes ONE axis at a time on an
    ease-in-out curve, and the text is only visible inside it: the frame opens to uncover a headline, closes
    to a line to crop it away, slides sideways, and opens again. Nothing else moves the type.
-   Scenes: "Bring your migration into focus." -> two-line sub-headline -> the i / full-stop dots slide out into the 93-dot logo. */
+   Scenes: "Set your target." -> two-line sub-headline -> grid dots slide into the 93-dot logo. */
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -58,8 +58,8 @@ const slide = p => reduce ? (p >= 1 ? 1 : 0) : easeInOutCubic(p);
 const mixv = (a, b, t) => a + (b - a) * t;
 
 const FONT = '"Instrument Sans", "Helvetica Neue", Arial, sans-serif';
-const S1 = 'Bring your migration into focus.';
-const S2 = ['Set your target before you migrate.', 'Waiting only makes it more complicated.'];
+const S1 = 'Set your target.';
+const S2 = ['Plan your e-commerce migration', 'before your next peak season.'];
 
 let W = 0, H = 0, DPR = 1, arm = 20, pad = 30;
 let L1 = null, L2 = null, rects = [], sources = [], logoR = 4;
@@ -110,52 +110,46 @@ function layout() {
   ];
 }
 
-/* ---------- dots: the i / full-stop dots are the seeds that burst into the logo ---------- */
+/* ---------- dot grid and logo ---------- */
 const LOGO_DOTS = [[-481.7,-13.1],[-481.7,14.1],[-468.7,-34.5],[-468.7,36.5],[-445.2,-47.1],[-445.2,47.6],[-419.1,-50.5],[-419.1,51.0],[-395.3,-45.6],[-395.3,46.7],[-374.7,-32.9],[-374.7,34.3],[-334.8,-47.6],[-334.8,-23.8],[-334.8,-0.4],[-334.8,23.7],[-334.8,46.7],[-310.3,47.6],[-286.6,47.6],[-263.5,47.6],[-239.7,47.6],[-206.0,-47.6],[-206.0,-23.8],[-206.0,-0.4],[-206.0,23.7],[-206.0,47.6],[-181.3,-47.6],[-181.3,-0.4],[-181.3,47.6],[-158.0,-47.6],[-158.0,-0.4],[-158.0,47.6],[-134.5,-47.6],[-134.5,-0.4],[-134.5,47.6],[-111.2,-47.6],[-111.2,47.6],[-76.2,49.9],[-63.7,28.1],[-52.1,7.7],[-40.1,-13.1],[-40.1,28.1],[-28.5,-32.9],[-17.0,-50.5],[-17.0,28.1],[-6.2,-32.9],[5.2,-13.1],[6.8,28.1],[16.9,7.7],[28.7,28.1],[40.6,47.6],[76.9,-47.1],[76.9,-23.8],[76.9,0.4],[76.9,23.7],[76.9,47.6],[101.3,-47.6],[101.3,-0.4],[124.8,-47.6],[124.8,-0.4],[148.2,-47.6],[148.2,-0.4],[163.6,23.7],[171.0,-45.6],[172.6,-2.5],[181.5,-23.8],[181.5,47.6],[218.0,-13.1],[218.0,14.1],[231.4,-34.5],[231.4,35.4],[254.8,-47.1],[254.8,47.6],[280.8,-50.5],[280.8,51.0],[304.4,-45.6],[304.4,46.7],[325.4,-32.9],[325.4,35.4],[362.0,-11.6],[362.0,14.1],[375.2,-32.9],[375.2,35.4],[398.8,-45.6],[398.8,46.7],[424.6,-47.6],[424.6,49.9],[448.3,-44.0],[448.3,46.7],[469.0,-31.9],[469.0,34.3],[481.8,-11.6],[481.8,14.1]];
 const LOGO_SPAN = 963.5, LOGO_DOT_R = 7.63;
 
-function buildDots() {
-  const off = document.createElement('canvas');
-  off.width = W; off.height = H;
-  const o = off.getContext('2d', { willReadFrequently: true });
-  o.fillStyle = '#fff'; o.textBaseline = 'alphabetic';
-  setFont(o, L2.size);
-  S2.forEach((t, i) => o.fillText(t, L2.x, L2.y1 + i * L2.lh));
-  const data = o.getImageData(0, 0, W, H).data;
-  const on = (x, y) => x >= 0 && y >= 0 && x < W && y < H && data[(y * W + x) * 4 + 3] > 128;
+let G = 24, gridR = 1.2, gx0 = 0, gy0 = 0, gridCanvas = null;
 
-  const seeds = [];
-  const bandTop = Math.max(0, Math.floor(L2.y1 - L2.size * 1.1));
-  const bandBot = Math.min(H - 1, Math.ceil(L2.y1 + L2.lh + L2.size * .4));
-  const seen = new Uint8Array(W * H);
-  for (let y = bandTop; y <= bandBot; y++) for (let x = 0; x < W; x++) {
-    if (seen[y * W + x] || !on(x, y)) continue;
-    const stack = [x, y]; seen[y * W + x] = 1;
-    let n = 0, sx = 0, sy = 0, x0 = x, x1 = x, y0 = y, y1 = y;
-    while (stack.length) {
-      const py = stack.pop(), px = stack.pop();
-      n++; sx += px; sy += py;
-      if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py;
-      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-        const nx = px + dx, ny = py + dy;
-        if (nx < 0 || ny < bandTop || nx >= W || ny > bandBot || seen[ny * W + nx] || !on(nx, ny)) continue;
-        seen[ny * W + nx] = 1; stack.push(nx, ny);
-      }
-    }
-    const bw = x1 - x0 + 1, bh = y1 - y0 + 1, aspect = bw / bh;
-    if (n < L2.size * L2.size * .03 && bh < L2.size * .2 && aspect > .65 && aspect < 1.5)
-      seeds.push({ x: sx / n, y: sy / n, r: Math.sqrt(n / Math.PI) });
+/* A very faint dot grid fills the whole canvas, behind the guide lines and crosshairs.
+   Each logo dot is one of those grid dots: it brightens, lifts off and slides to its slot. */
+function buildDots() {
+  G = Math.max(16, Math.min(30, Math.min(W, H) * .045));
+  gridR = Math.max(1, G * .055);
+  gx0 = (W / 2) % G; gy0 = (H / 2) % G;
+  const cols = Math.floor((W - gx0) / G) + 1, rows = Math.floor((H - gy0) / G) + 1;
+
+  gridCanvas = document.createElement('canvas');
+  gridCanvas.width = W * DPR; gridCanvas.height = H * DPR;
+  const g = gridCanvas.getContext('2d');
+  g.scale(DPR, DPR); g.fillStyle = 'rgba(255,255,255,.11)';
+  g.beginPath();
+  for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+    const x = gx0 + i * G, y = gy0 + j * G;
+    g.moveTo(x + gridR, y); g.arc(x, y, gridR, 0, Math.PI * 2);
   }
-  if (!seeds.length) seeds.push({ x: W / 2, y: H / 2, r: Math.max(2, L2.size * .05) });
-  seeds.sort((a, b) => a.x - b.x);
+  g.fill();
 
   const span = Math.min(W * (W < 560 ? .6 : .48), 1100), k = span / LOGO_SPAN;
   logoR = Math.max(2, LOGO_DOT_R * k);
   const targets = LOGO_DOTS.map(([x, y]) => ({ x: W / 2 + x * k, y: H / 2 + y * k })).sort((a, b) => a.x - b.x);
-  // Each dot leaves a seed and slides straight to its slot: one axis, then the other. A hair of left-to-right stagger.
+
+  // Every logo dot starts on its own grid dot a few cells away from its slot
+  const used = new Set();
   sources = targets.map((t, i) => {
-    const sd = seeds[Math.min(seeds.length - 1, Math.floor(i * seeds.length / targets.length))];
-    return { sx: sd.x, sy: sd.y, sr: sd.r, tx: t.x, ty: t.y, delay: i / targets.length * TL.dotStagger };
+    const h = Math.imul(i + 1, 2654435761) >>> 0;
+    let dx = ((h >>> 8) % 13) - 6, dy = ((h >>> 16) % 9) - 4;
+    if (Math.abs(dx) + Math.abs(dy) < 3) dx += dx < 0 ? -4 : 4;
+    let ci = Math.round((t.x - gx0) / G) + dx, cj = Math.round((t.y - gy0) / G) + dy;
+    ci = Math.min(cols - 1, Math.max(0, ci)); cj = Math.min(rows - 1, Math.max(0, cj));
+    while (used.has(ci + ',' + cj)) ci = ci + 1 < cols ? ci + 1 : 0;
+    used.add(ci + ',' + cj);
+    return { sx: gx0 + ci * G, sy: gy0 + cj * G, sr: gridR, tx: t.x, ty: t.y, delay: i / targets.length * TL.dotStagger };
   });
 }
 
@@ -184,6 +178,15 @@ function draw(T) {
   ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
   const fr = frameAt(T);
 
+  // dot grid; a dot that has lifted off leaves a gap until the logo is wiped away
+  ctx.drawImage(gridCanvas, 0, 0, W, H);
+  if (T >= TL.dotY[0]) {
+    ctx.save(); ctx.globalAlpha = 1 - slide(prog(T, [17.8, 18.4])); ctx.fillStyle = '#111';
+    ctx.beginPath();
+    for (const d of sources) if (T >= TL.dotY[0] + d.delay) { ctx.moveTo(d.sx + gridR + 1, d.sy); ctx.arc(d.sx, d.sy, gridR + 1, 0, Math.PI * 2); }
+    ctx.fill(); ctx.restore();
+  }
+
   // guide lines run the full width / height
   ctx.strokeStyle = '#2b2b2b'; ctx.lineWidth = Math.max(2, Math.min(W, H) * .0035);
   ctx.beginPath();
@@ -202,7 +205,7 @@ function draw(T) {
   }
   ctx.restore();
 
-  // Scene 3: the dots of the i's and the full stop slide out to the logo, one axis at a time (same ease as the frame)
+  // Scene 3: grid dots brighten, lift off and slide to the logo, one axis at a time (same ease as the frame)
   if (T >= TL.dotsIn[0]) {
     const ap = easeOutCubic(prog(T, [TL.dotsIn[0], TL.dotsIn[0] + .4]));
     const ey = d => slide(prog(T - d.delay, TL.dotY)), ex = d => slide(prog(T - d.delay, TL.dotX));
