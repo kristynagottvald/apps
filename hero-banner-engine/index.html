@@ -208,7 +208,7 @@ canvas{display:block;image-rendering:auto;background:#000}
    Grid:   1 UNIT = 60px @ 1080 base. Every format is a whole number of units
            (1:1 = 18×18, 16:9 = 32×18, 9:16 = 18×32). Margin = 2 units.
    Type:   sizes are defined in units, so copy is identical in every format.
-   Safe zone: 16:9 keeps copy below safeTop (4 units) so social UI doesn't cover it.
+   Safe zone: 16:9 (4 units) and 9:16 (6 units) keep copy below safeTop so social UI doesn't cover it.
    Visual: tiles are placed on a module grid (40 / 60 / 120 px) that
            subdivides the unit grid. build() is pure (state -> model) and
            draw() is pure (model -> pixels), so porting to p5.js is a
@@ -219,7 +219,7 @@ const MARGIN = 2 * UNIT;
 const ASPECTS = {
   '1x1':  {w:1080, h:1080, textW:11*UNIT, wx:.5, bias:.36},
   '16x9': {w:1920, h:1080, textW:16*UNIT, wx:.7, safeTop:4*UNIT, bias:.38},
-  '9x16': {w:1080, h:1920, textW:13*UNIT, wx:.3, safeTop:4*UNIT, bias:.5}
+  '9x16': {w:1080, h:1920, textW:13*UNIT, wx:.3, safeTop:6*UNIT, bias:.5}
 };
 const C = {navy:'#15153A', indigo:'#3F30F2', ink:'#1B1670', magenta:'#E85DF4', lime:'#E6EA9C', lav:'#A18BFF', coral:'#FF6F5B', white:'#FFFFFF'};
 const THEMES = {
