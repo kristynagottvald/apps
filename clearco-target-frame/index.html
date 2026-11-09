@@ -43,13 +43,13 @@ const TL = {
     { axis: 'v', win: [5.2, 5.9],   to: 'C'  },   // closes back to a line: the headline is cropped away
     { axis: 'h', win: [5.9, 6.6],   to: 'R2' },   // the line slides to the sub-headline's width
     { axis: 'v', win: [6.6, 7.4],   to: 'R2' },   // opens: the sub-headline is uncovered
-    { axis: 'v', win: [10.6, 11.4], to: 'R3' },   // tightens toward the logo: crops the sub-headline's height
-    { axis: 'h', win: [11.4, 12.3], to: 'R3' },   // then its width
+    { axis: 'h', win: [9.9, 10.9],  to: 'R3' },   // once the text has faded, the frame only slides sideways to the logo's width
     { axis: 'v', win: [17.1, 17.8], to: 'C'  },   // logo closes to a line
     { axis: 'h', win: [17.8, 18.4], to: 'R1' }    // and the line slides back to the headline's width
   ],
-  dotsIn: [10.8, 11.2], textDim: [10.8, 11.4], textOut: [11.4, 12.2],
-  dotY: [10.9, 11.8], dotX: [11.8, 12.5], dotStagger: 0.12,   // dots slide vertically down/up their grid column, then settle sideways into place
+  textOut: [9.0, 9.8],                                        // the sub-headline fades fully out first
+  dotsIn: [9.9, 10.3],                                        // then the grid dots brighten
+  dotY: [10.1, 11.0], dotX: [11.0, 11.7], dotStagger: 0.12,   // dots slide vertically down/up their grid column, then settle sideways into place
   clipDots: 17.0,                                            // from here the frame also crops the logo
   loop: 18.6
 };
@@ -104,15 +104,14 @@ function layout() {
     (() => {
       let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
       for (const p of sources) { l = Math.min(l, p.tx); r = Math.max(r, p.tx); t = Math.min(t, p.ty); b = Math.max(b, p.ty); }
-      const rc = box(l - logoR, t - logoR, r + logoR, b + logoR);
-      const extra = Math.max(pad * 1.5, H * .13);       // the logo's frame opens up much taller than the logo itself
-      return { ...rc, t: rc.t - extra, b: rc.b + extra };
+      return box(l - logoR, t - logoR, r + logoR, b + logoR);   // height is overridden below to match scene 2
     })()
   ];
 
   // Snap every frame rectangle outward onto the dot grid, so the crosshairs rest exactly on grid dots
   const fl = (v, o) => o + Math.floor((v - o) / G + 1e-6) * G, ce = (v, o) => o + Math.ceil((v - o) / G - 1e-6) * G;
   rects = rects.map(r => ({ l: fl(r.l, gx0), r: ce(r.r, gx0), t: fl(r.t, gy0), b: ce(r.b, gy0) }));
+  rects[2].t = rects[1].t; rects[2].b = rects[1].b;      // the logo scene keeps the sub-headline's height: width is the only thing that changes
 }
 
 /* ---------- dot grid and logo ---------- */
@@ -181,6 +180,26 @@ function drawText(text, x, y, size, align, alpha) {
   setFont(ctx, size); ctx.fillStyle = '#fff'; ctx.fillText(text, x, y); ctx.restore();
 }
 
+/* Focus pull: as a block is uncovered it pops toward the viewer (slightly larger and soft), then eases back to
+   its size and snaps sharp, like a lens hunting for focus. t is seconds since the reveal began. */
+const POP = { dur: 1.1, peak: .32, scale: .06, blur: 2.6 };
+function popAmount(t) {
+  if (reduce || t <= 0 || t >= POP.dur) return 0;
+  const p = t / POP.dur;
+  return p < POP.peak ? easeOutCubic(p / POP.peak) : 1 - easeInOutCubic((p - POP.peak) / (1 - POP.peak));
+}
+function drawBlock(lines, L, alpha, t) {
+  const pop = popAmount(t);
+  ctx.save();
+  if (pop > 0) {
+    const cx = L.x + L.w / 2, cy = (L.top + L.bot) / 2, sc = 1 + POP.scale * pop;
+    ctx.translate(cx, cy); ctx.scale(sc, sc); ctx.translate(-cx, -cy);
+    if ('filter' in ctx) ctx.filter = 'blur(' + (POP.blur * pop).toFixed(2) + 'px)';
+  }
+  for (let i = 0; i < lines.length; i++) drawText(lines[i], L.x, L.y1 + i * L.lh, L.size, 'left', alpha);
+  ctx.restore();
+}
+
 function draw(T) {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
@@ -196,15 +215,12 @@ function draw(T) {
   for (const y of [fr.t, fr.b]) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
   ctx.stroke();
 
-  // Text sits still. It is only ever shown inside the frame, so the lines decide when and how it appears.
+  // Text sits still, except for a lens-like focus pull. It is only ever shown inside the frame, so the lines
+  // decide when and how it appears.
   ctx.save();
   ctx.beginPath(); ctx.rect(fr.l, fr.t, fr.r - fr.l, fr.b - fr.t); ctx.clip();
-  if (T < 6.0) for (let i = 0; i < S1.length; i++) drawText(S1[i], L1.x, L1.y1 + i * L1.lh, L1.size, 'left', 1);
-  if (T >= 6.0) {
-    const dim = T >= TL.textDim[0] ? mixv(1, .28, easeInOutCubic(prog(T, TL.textDim))) : 1;
-    const a = dim * (1 - easeInOutCubic(prog(T, TL.textOut)));
-    for (let i = 0; i < S2.length; i++) drawText(S2[i], L2.x, L2.y1 + i * L2.lh, L2.size, 'left', a);
-  }
+  if (T < 6.0) drawBlock(S1, L1, 1, T - 2.1);
+  if (T >= 6.0 && T < TL.textOut[1]) drawBlock(S2, L2, 1 - easeInOutCubic(prog(T, TL.textOut)), T - 6.7);
   ctx.restore();
 
   // Scene 3: grid dots brighten, lift off and slide to the logo, one axis at a time (same ease as the frame)
