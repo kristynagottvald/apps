@@ -20,11 +20,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 button:focus-visible,input:focus-visible,label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
 svg{display:block}
 
-nav.back{display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--line);font-size:13px}
-nav.back a{color:var(--muted);text-decoration:none}
+/* ---------- Back nav (shared across all apps) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
+nav.back a{color:#8d8d8d;text-decoration:none}
 nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
-nav.back span{color:var(--dim)}
-nav.back b{font-weight:500;color:#fff}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}}
 
 .app{max-width:1440px;margin:0 auto;padding:0 20px 40px}
 
@@ -81,6 +83,9 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .pane{position:relative;background:#000;border:1px solid var(--line-2);border-radius:8px;overflow:hidden}
 .pane canvas{display:block;width:100%;aspect-ratio:16/9;background:#111}
 #cvSyn{cursor:crosshair}
+.pane video{display:none;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000}
+.pane.vid video{display:block}.pane.vid canvas{display:none}
+.tog.off{opacity:.4;cursor:default}
 .pane .lab{position:absolute;left:10px;top:10px;padding:3px 9px;border-radius:5px;background:rgba(0,0,0,.65);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff}
 .pane .lab em{font-style:normal;color:var(--box)}
 .pane .stamp{position:absolute;left:10px;top:40px;padding:3px 9px;border-radius:5px;background:rgba(0,0,0,.65);font-size:12px;font-variant-numeric:tabular-nums;color:#fff}
@@ -141,7 +146,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .stage.split{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:640px){
-  nav.back{padding:12px 16px}
   .app{padding:0 16px 32px}
   .clock .dt .time{font-size:24px}.clock .dt .date{font-size:15px}
   .tlw{grid-template-columns:96px minmax(0,1fr);column-gap:8px}
@@ -160,7 +164,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       <h1>Video Synopsis</h1><span class="tag">Mockup</span>
     </div>
     <div class="clock" role="timer" aria-label="Source time stamp">
-      <div class="dt"><span class="date" id="clkDate">09/16/25</span><span class="time" id="clkTime">07:00:00 AM</span></div>
+      <div class="dt"><span class="date" id="clkDate">SEP 16, 2025</span><span class="time" id="clkTime">07:00:00 AM</span></div>
       
     </div>
     <div></div>
@@ -176,25 +180,24 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
     <main>
       <div class="filters">
         <div class="fg"><span>Days</span><div class="chips" id="days"></div></div>
-        <div class="fg"><span>From</span><input type="range" id="rFrom" min="0" max="720" step="15" value="0" aria-label="Range start"><span class="val" id="vFrom"></span></div>
-        <div class="fg"><span>To</span><input type="range" id="rTo" min="0" max="720" step="15" value="720" aria-label="Range end"><span class="val" id="vTo"></span></div>
-        <div class="fg"><span>Objects</span><input type="range" id="rDen" min="3" max="60" step="1" value="28" aria-label="Maximum objects overlaid"><span class="val" id="vDen"></span></div>
       </div>
 
       <section class="stage" id="stage" aria-label="Video preview">
         <figure class="pane" id="pSyn">
+          <video id="vSyn" muted loop playsinline preload="auto" aria-label="Synopsis overlay footage"></video>
           <canvas id="cvSyn" width="960" height="540" aria-label="Synopsis overlay of all movement"></canvas>
-          <div class="lab">Synopsis <em id="synN">0</em></div>
+          <div class="lab">Synopsis</div>
           <div class="stamp" id="synStamp"></div>
           <div class="idle">No movement in this range</div>
-          <div class="prog"><span id="synT">00:00</span><div class="bar"><i id="synBar"></i></div><span id="synLoop">Loop · 00:24</span></div>
+          <div class="prog"><span id="synT">00:00</span><div class="bar"><i id="synBar"></i></div></div>
         </figure>
         <figure class="pane" id="pOrig" hidden>
+          <video id="vOrig" muted loop playsinline preload="auto" aria-label="Original footage"></video>
           <canvas id="cvOrig" width="960" height="540" aria-label="Original footage at source time"></canvas>
-          <div class="lab">Original <em>source time</em></div>
+          <div class="lab">Original</div>
           <div class="stamp" id="origStamp"></div>
           <div class="idle">No movement in this range</div>
-          <div class="prog"><span id="origT">0 / 0</span><div class="bar"><i id="origBar"></i></div><span id="origSkip">Idle skipped</span></div>
+          <div class="prog"><div class="bar"><i id="origBar"></i></div></div>
         </figure>
       </section>
 
@@ -225,7 +228,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 "use strict";
 const W=960,H=540,L=24; // canvas size, synopsis loop (s)
 const T0=7*3600,SPAN=12*3600; // 7AM–7PM
-const DAYS=['09/15/25','09/16/25','09/17/25'], DCOL=['var(--d0)','var(--d1)','var(--d2)'];
+const DAYS=['SEP 15, 2025','SEP 16, 2025','SEP 17, 2025'], DCOL=['var(--d0)','var(--d1)','var(--d2)'];
 const $=s=>document.querySelector(s);
 
 /* ---------- time helpers ---------- */
@@ -307,7 +310,7 @@ function bgHall(c){
 }
 
 const SCENES=[
- {name:'Partner Activation',cam:'Cam 04 · AXIS P-series',draw:bgLobby,n:30,warn:1,h:[0,.42],
+ {name:'Partner Activation',cam:'Cam 04 · AXIS P-series',draw:bgLobby,n:30,warn:1,video:{syn:'clips/synopsis.mp4',orig:'clips/original.mp4',poster:'clips/poster.jpg'},h:[0,.42],
   routes:[[[.37,.38],[.42,.55],[.5,.78],[.48,1.06]],[[.38,.4],[.3,.6],[.25,.85],[.28,1.06]],[[.46,.36],[.56,.42],[.7,.5],[.93,.62]],[[.98,.84],[.8,.94],[.55,.93],[.3,.85]],[[.4,.38],[.46,.6],[.52,.82],[.6,1.06]]]},
  {name:'Breakroom',cam:'Cam 01 · Hanwha XND',draw:bgBreakroom,n:36,h:[-.03,.42],
   routes:[[[.15,.5],[.3,.65],[.5,.86],[.7,1.06]],[[.95,.55],[.7,.62],[.5,.72],[.3,.9]],[[.2,.92],[.4,.72],[.6,.62],[.85,.52]],[[.08,.48],[.3,.47],[.55,.5],[.75,.46]]]},
@@ -317,6 +320,9 @@ const SCENES=[
   routes:[[[.5,.34],[.5,.52],[.52,.76],[.5,1.08]],[[.47,.34],[.42,.58],[.34,.9],[.28,1.08]],[[.54,.34],[.6,.58],[.7,.9],[.76,1.08]]]}
 ];
 SCENES.forEach(s=>{const cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');s.draw(c);vignette(c);s.bg=cv});
+// real footage poster frames for the library thumbnails
+function paintCover(c,img,w,h){const k=Math.max(w/img.width,h/img.height),iw=img.width*k,ih=img.height*k;c.drawImage(img,(w-iw)/2,(h-ih)/2,iw,ih)}
+SCENES.forEach((s,i)=>{if(!s.video)return;const img=new Image();img.onload=()=>{s.poster=img;const cv=document.querySelector('#lib')?.children[i]?.querySelector('canvas');if(cv)paintCover(cv.getContext('2d'),img,320,180)};img.src=s.video.poster});
 
 /* ---------- synthetic event generation (seeded) ---------- */
 function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -352,9 +358,20 @@ function recompute(resetClock=true){
   syn.forEach((e,k)=>{e.off=(k*L/syn.length+e.jit)%L});
   if(S.sel&&!queue.includes(S.sel))S.sel=null;
   if(resetClock){A=(queue[0]?queue[0].abs:[...S.days][0]*86400+T0)-1.5;tSyn=0}
-  buildLib();buildTimeline();updateStatic();
+  buildLib();buildTimeline();updateStatic();applyScene();
 }
 
+/* ---------- real footage (Partner Activation) ---------- */
+const vSyn=$('#vSyn'),vOrig=$('#vOrig');let hasVid=false;
+function applyScene(){
+  const v=SCENES[S.scene].video;hasVid=!!v;
+  ['#pSyn','#pOrig'].forEach(id=>$(id).classList.toggle('vid',hasVid));
+  ['#tBox','#tIco','#tStamp','#tSkip'].forEach(id=>{const i=$(id);i.disabled=hasVid;i.closest('.tog').classList.toggle('off',hasVid);i.closest('.tog').title=hasVid?'Frames, icons and time stamps are part of the recorded footage':''});
+  if(hasVid){
+    [[vSyn,v.syn],[vOrig,v.orig]].forEach(([el,src])=>{if(!el.getAttribute('src')||!el.src.endsWith(src))el.src=src;el.playbackRate=S.speed;if(S.playing)el.play().catch(()=>{});else el.pause()});
+    $('#pSyn').classList.remove('empty');$('#pOrig').classList.remove('empty');
+  }else{vSyn.pause();vOrig.pause()}
+}
 /* ---------- drawing ---------- */
 function posAt(e,p){
   const d=p*e.len;let k=1;while(k<e.seg.length-1&&e.seg[k]<d)k++;
@@ -418,9 +435,7 @@ function drawOrig(){
   const items=[];
   queue.forEach(e=>{if(A>=e.abs&&A<e.abs+e.dur){const p=(A-e.abs)/e.dur;items.push({e,p,label:hmsShort(e.start+(A-e.abs))})}});
   render(co,S.scene,items,false);
-  const i=queue.findIndex(e=>e.abs+e.dur>A);const idx=i<0?queue.length:i+1;
-  $('#origT').textContent=queue.length?('Event '+Math.min(idx,queue.length)+' / '+queue.length):'0 / 0';
-  $('#origBar').style.width=queue.length?(Math.min(idx,queue.length)/queue.length*100)+'%':'0';
+  $('#origBar').style.width=Math.max(0,Math.min(1,(((A%86400)+86400)%86400-T0)/SPAN))*100+'%';
 }
 function stepOriginal(dt){
   if(!queue.length)return;
@@ -438,7 +453,7 @@ function buildLib(){
     SCENES.forEach((sc,i)=>{
       const li=document.createElement('li');
       li.innerHTML='<button><div class="thumb"><canvas width="320" height="180"></canvas><span class="count"></span>'+(sc.warn?'<span class="warn" title="Review recommended"><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1 11.5 11h-11z"/><path d="M6 4.6v3M6 9v.1" stroke="#000" stroke-width="1.1" stroke-linecap="round"/></svg></span>':'')+'</div><span class="name"></span><span class="sub"></span></button>';
-      li.querySelector('canvas').getContext('2d').drawImage(sc.bg,0,0,320,180);
+      {const lc=li.querySelector('canvas').getContext('2d');if(sc.poster)paintCover(lc,sc.poster,320,180);else lc.drawImage(sc.bg,0,0,320,180)}
       li.querySelector('.name').textContent=sc.name;li.querySelector('.sub').textContent=sc.cam;
       li.querySelector('button').onclick=()=>{S.scene=i;S.sel=null;recompute()};
       lib.appendChild(li);
@@ -487,10 +502,8 @@ function updateInfo(){
 function updateStatic(){
   const sc=SCENES[S.scene],ds=[...S.days].sort(),first=DAYS[ds[0]],last=DAYS[ds[ds.length-1]];
   const a=hms(T0+S.from*60),b=hms(T0+S.to*60);
-  $('#synStamp').textContent=(ds.length>1?first+' – '+last:first)+'  '+a+' – '+b;
-  $('#vFrom').textContent=hms(T0+S.from*60).replace(/:00 /,' ');$('#vTo').textContent=hms(T0+S.to*60).replace(/:00 /,' ');$('#vDen').textContent=S.limit;
-  $('#synN').textContent=syn.length+' objects · '+sc.name;
-  $('#pSyn').classList.toggle('empty',!syn.length);$('#pOrig').classList.toggle('empty',!queue.length);
+  $('#synStamp').textContent=(ds.length>1?first.slice(0,6)+' – '+last:first)+'  '+a+' – '+b;
+  $('#pSyn').classList.toggle('empty',!sc.video&&!syn.length);$('#pOrig').classList.toggle('empty',!sc.video&&!queue.length);
   updateInfo();
 }
 function setSplit(on){
@@ -500,22 +513,17 @@ function setSplit(on){
 
 /* controls */
 DAYS.forEach((d,i)=>{const b=document.createElement('button');b.className='chip';b.setAttribute('aria-pressed',S.days.has(i));
-  b.innerHTML='<i style="background:'+DCOL[i]+'"></i>'+d.slice(0,5);
+  b.innerHTML='<i style="background:'+DCOL[i]+'"></i>'+d.slice(0,6);
   b.onclick=()=>{if(S.days.has(i)){if(S.days.size>1)S.days.delete(i)}else S.days.add(i);
     [...$('#days').children].forEach((x,k)=>x.setAttribute('aria-pressed',S.days.has(k)));S.sel=null;recompute()};
   $('#days').appendChild(b)});
-$('#rFrom').oninput=e=>{S.from=Math.min(+e.target.value,S.to-15);e.target.value=S.from;recompute()};
-$('#rTo').oninput=e=>{S.to=Math.max(+e.target.value,S.from+15);e.target.value=S.to;recompute()};
-$('#rDen').oninput=e=>{S.limit=+e.target.value;recompute(false)};
 $('#play').onclick=togglePlay;
-function togglePlay(){S.playing=!S.playing;const b=$('#play');b.setAttribute('aria-label',S.playing?'Pause':'Play');
+function togglePlay(){S.playing=!S.playing;if(hasVid)[vSyn,vOrig].forEach(el=>S.playing?el.play().catch(()=>{}):el.pause());const b=$('#play');b.setAttribute('aria-label',S.playing?'Pause':'Play');
   b.innerHTML=(S.playing?'<svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><rect x="2" y="1" width="3.6" height="12" rx="1"/><rect x="8.4" y="1" width="3.6" height="12" rx="1"/></svg>':'<svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><path d="M3 1.5v11l9-5.5z"/></svg>')+'<span>'+(S.playing?'Pause':'Play')+'</span>'}
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|BUTTON/.test(e.target.tagName)){e.preventDefault();togglePlay()}});
-$('#speed').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.speed=+b.dataset.v;[...$('#speed').children].forEach(x=>x.setAttribute('aria-pressed',x===b))};
+$('#speed').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.speed=+b.dataset.v;vSyn.playbackRate=vOrig.playbackRate=S.speed;[...$('#speed').children].forEach(x=>x.setAttribute('aria-pressed',x===b))};
 [['#tBox','box'],['#tIco','ico'],['#tStamp','stamp'],['#tSkip','skip']].forEach(([id,k])=>$(id).onchange=e=>S[k]=e.target.checked);
 $('#split').onclick=()=>setSplit(!S.split);
-$('#origSkip').textContent='Idle skipped';
-$('#tSkip').addEventListener('change',e=>$('#origSkip').textContent=e.target.checked?'Idle skipped':'Idle fast-forward');
 
 /* synopsis hit-testing */
 const cvSyn=$('#cvSyn');
@@ -529,9 +537,19 @@ cvSyn.onclick=ev=>{const e=hitAt(ev);if(e)pick(e);else{S.sel=null;document.query
 let last=performance.now(),lastClk='';
 function frame(now){
   const dt=Math.min(.1,(now-last)/1000);last=now;
-  if(S.playing){tSyn+=dt*S.speed;stepOriginal(dt*S.speed)}
-  drawSyn();if(S.split)drawOrig();
-  const day=Math.max(0,Math.min(2,Math.floor(A/86400))),sod=((A%86400)+86400)%86400,k=DAYS[day]+'|'+hms(sod);
+  let day,sod;
+  if(hasVid){
+    // both clips share one clock so the source time stamp matches the footage on screen
+    const d=vSyn.duration||3.4,t=vSyn.currentTime;
+    if(Math.abs(vOrig.currentTime-t)>.12)vOrig.currentTime=t;
+    $('#synT').textContent=clk(t)+' / '+clk(d);$('#synBar').style.width=(t/d*100)+'%';$('#origBar').style.width=(t/d*100)+'%';
+    day=1;sod=7*3600+38*60+35+t;
+  }else{
+    if(S.playing){tSyn+=dt*S.speed;stepOriginal(dt*S.speed)}
+    drawSyn();if(S.split)drawOrig();
+    day=Math.max(0,Math.min(2,Math.floor(A/86400)));sod=((A%86400)+86400)%86400;
+  }
+  const k=DAYS[day]+'|'+hms(sod);
   if(k!==lastClk){lastClk=k;$('#clkDate').textContent=DAYS[day];$('#clkTime').textContent=hms(sod);$('#origStamp').textContent=DAYS[day]+'  '+hms(sod)}
   const ph=$('#ph');if(ph){const f=Math.max(0,Math.min(1,(sod-T0)/SPAN));ph.style.left=(f*100)+'%';ph.dataset.t=hms(sod)}
   requestAnimationFrame(frame);
