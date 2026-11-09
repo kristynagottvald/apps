@@ -483,6 +483,9 @@ document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|BUTTON/.tes
 $('#speed').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.speed=+b.dataset.v;vSyn.playbackRate=vOrig.playbackRate=S.speed;[...$('#speed').children].forEach(x=>x.setAttribute('aria-pressed',x===b))};
 [['#tBox','box'],['#tStamp','stamp']].forEach(([id,k])=>$(id).onchange=e=>S[k]=e.target.checked);
 $('#split').onclick=()=>setSplit(!S.split);
+// clicking the synopsis preview opens the original side by side
+vSyn.onclick=()=>{if(!S.split)setSplit(true)};
+vSyn.style.cursor='pointer';vSyn.title='Open original side by side';
 
 /* synopsis hit-testing */
 const cvSyn=$('#cvSyn');
