@@ -40,8 +40,7 @@ const TL = {
     { axis: 'v', win: [5.2, 5.9],   to: 'C'  },   // closes back to a line: the headline is cropped away
     { axis: 'h', win: [5.9, 6.6],   to: 'R2' },   // the line slides to the sub-headline's width
     { axis: 'v', win: [6.6, 7.4],   to: 'R2' },   // opens: the sub-headline is uncovered
-    { axis: 'v', win: [9.8, 10.6],  to: 'R3' },   // once the text has faded, the frame tightens toward the logo
-    { axis: 'h', win: [10.6, 11.5], to: 'R3' },   // then its width
+    { axis: 'h', win: [9.9, 10.9],  to: 'R3' },   // once the text has faded, the frame only slides sideways to the logo's width
     { axis: 'v', win: [17.1, 17.8], to: 'C'  },   // logo closes to a line
     { axis: 'h', win: [17.8, 18.4], to: 'R1' }    // and the line slides back to the headline's width
   ],
@@ -102,15 +101,14 @@ function layout() {
     (() => {
       let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
       for (const p of sources) { l = Math.min(l, p.tx); r = Math.max(r, p.tx); t = Math.min(t, p.ty); b = Math.max(b, p.ty); }
-      const rc = box(l - logoR, t - logoR, r + logoR, b + logoR);
-      const extra = Math.max(pad * 1.5, H * .13);       // the logo's frame opens up much taller than the logo itself
-      return { ...rc, t: rc.t - extra, b: rc.b + extra };
+      return box(l - logoR, t - logoR, r + logoR, b + logoR);   // height is overridden below to match scene 2
     })()
   ];
 
   // Snap every frame rectangle outward onto the dot grid, so the crosshairs rest exactly on grid dots
   const fl = (v, o) => o + Math.floor((v - o) / G + 1e-6) * G, ce = (v, o) => o + Math.ceil((v - o) / G - 1e-6) * G;
   rects = rects.map(r => ({ l: fl(r.l, gx0), r: ce(r.r, gx0), t: fl(r.t, gy0), b: ce(r.b, gy0) }));
+  rects[2].t = rects[1].t; rects[2].b = rects[1].b;      // the logo scene keeps the sub-headline's height: width is the only thing that changes
 }
 
 /* ---------- dot grid and logo ---------- */
