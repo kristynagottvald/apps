@@ -140,11 +140,6 @@ canvas{display:block;image-rendering:auto;background:#000}
           <span class="lbl">Text position</span>
           <div class="seg" data-key="anchor"><button data-v="top">Top</button><button data-v="middle">Middle</button><button data-v="bottom">Bottom</button></div>
         </div>
-        <div>
-          <span class="lbl">Logo</span>
-          <div class="seg" data-key="logo"><button data-v="word">Wordmark</button><button data-v="tile">Tile</button><button data-v="none">None</button></div>
-        </div>
-        <div><label for="logoText">Logo text</label><input type="text" id="logoText" data-text="logoText" autocomplete="off"></div>
       </div>
     </details>
 
@@ -222,9 +217,9 @@ canvas{display:block;image-rendering:auto;background:#000}
 const UNIT = 60;
 const MARGIN = 2 * UNIT;
 const ASPECTS = {
-  '1x1':  {w:1080, h:1080, textW:11*UNIT, wx:.5},
-  '16x9': {w:1920, h:1080, textW:16*UNIT, wx:.7, safeTop:4*UNIT},
-  '9x16': {w:1080, h:1920, textW:13*UNIT, wx:.3}
+  '1x1':  {w:1080, h:1080, textW:11*UNIT, wx:.5, bias:.36},
+  '16x9': {w:1920, h:1080, textW:16*UNIT, wx:.7, safeTop:4*UNIT, bias:.38},
+  '9x16': {w:1080, h:1920, textW:13*UNIT, wx:.3, safeTop:4*UNIT, bias:.5}
 };
 const C = {navy:'#15153A', indigo:'#3F30F2', ink:'#1B1670', magenta:'#E85DF4', lime:'#E6EA9C', lav:'#A18BFF', coral:'#FF6F5B', white:'#FFFFFF'};
 const THEMES = {
@@ -239,9 +234,9 @@ const BAYER = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
 
 const DEFAULTS = {
   aspect:'16x9', eyebrow:'Introducing', heading:"Lob's No-Code\nDesign Suite",
-  sub:'Personalize every piece of direct mail without writing a line of code.',
+  sub:'Personalize every piece of direct mail\nwithout writing a line of code.',
   showSub:false, eyebrowPos:'above', marker:false, typeScale:1,
-  layout:'stair', anchor:'middle', logo:'word', logoText:'Lob',
+  layout:'stair', anchor:'middle', logo:'none', logoText:'Lob',
   theme:'indigo', module:60, density:.85, spread:.5, variety:.5, dither:.3, glyphs:true,
   seed:2417, grid:false, fmt:'png', size:'social'
 };
@@ -286,9 +281,9 @@ function build(S){
   mctx.font=`300 ${hs}px ${FONT}`;
   const hLines=wrapText(mctx,S.heading.trim()||' ',maxW);
   let sLines=[];
-  if(S.showSub && S.sub.trim()){mctx.font=`400 ${ss}px ${FONT}`;sLines=wrapText(mctx,S.sub.trim(),maxW*.92)}
+  if(S.showSub && S.sub.trim()){mctx.font=`400 ${ss}px ${FONT}`;sLines=wrapText(mctx,S.sub.trim(),maxW)}
   const eyebrow=(S.eyebrow||'').trim().toUpperCase();
-  const eTr=es*.14, markW=S.marker?.34*UNIT*ts:0, markGap=S.marker?.22*UNIT*ts:0;
+  const eTr=es*.14, markW=S.marker?.26*UNIT*ts:0, markGap=S.marker?.22*UNIT*ts:0;
   mctx.font=`600 ${es}px ${FONT}`;
   const eW=eyebrow?trackedW(mctx,eyebrow,eTr)+markW+markGap:0;
 
@@ -307,7 +302,7 @@ function build(S){
   let y0;
   if(S.anchor==='top') y0=topLimit;
   else if(S.anchor==='bottom') y0=bottomLimit-totalH;
-  else y0=Math.round((((topLimit+(H-MARGIN))-totalH)/2)/(UNIT/2))*(UNIT/2);
+  else y0=Math.round(((topLimit+(H-MARGIN-topLimit)*A.bias)-totalH/2)/(UNIT/2))*(UNIT/2);
   y0=Math.max(topLimit,y0);
 
   const texts=[]; let y=y0, textR=MARGIN;
@@ -437,7 +432,7 @@ function fillR(ctx,x,y,w,h,sc){
   const x0=Math.round(x*sc),y0=Math.round(y*sc),x1=Math.round((x+w)*sc),y1=Math.round((y+h)*sc);
   ctx.fillRect(x0,y0,Math.max(1,x1-x0),Math.max(1,y1-y0));
 }
-const DITHER_RES=11.25; // 1/16 of a 180px cell, like the reference
+const DITHER_RES=6; // fine dither dots
 function drawDither(ctx,b,x,y,w,h,sc){
   const res=DITHER_RES, cols=Math.ceil(w/res), rows=Math.ceil(h/res);
   ctx.fillStyle=b.fg;
@@ -492,8 +487,8 @@ function draw(ctx,m,sc,opts={}){
   ctx.save(); ctx.scale(sc,sc); ctx.textBaseline='alphabetic'; ctx.textAlign='left';
   for(const t of m.texts){
     if(t.k==='marker'){
-      const u=t.s/3; ctx.fillStyle=C.magenta;
-      for(let j=0;j<3;j++)for(let i=0;i<3;i++)if((i+j)%2===0)ctx.fillRect(t.x+i*u,t.y+j*u,u,u);
+      const u=t.s/4; ctx.fillStyle=C.magenta;
+      for(let j=0;j<4;j++)for(let i=0;i<4;i++)if((i+j)%2===0)ctx.fillRect(t.x+i*u,t.y+j*u,u,u);
       continue;
     }
     ctx.font=t.font; ctx.fillStyle=t.color; ctx.globalAlpha=t.alpha||1;
@@ -513,7 +508,7 @@ function draw(ctx,m,sc,opts={}){
     for(let r=0;r<=m.rows;r++){ctx.strokeStyle=(r*M)%UNIT===0?'rgba(255,255,255,.35)':'rgba(255,255,255,.12)';ctx.beginPath();ctx.moveTo(0,r*M);ctx.lineTo(W,r*M);ctx.stroke()}
     ctx.setLineDash([10,8]);ctx.strokeStyle='#FF3B6B';ctx.lineWidth=2/sc*Math.max(1,sc);
     ctx.strokeRect(MARGIN,MARGIN,W-2*MARGIN,H-2*MARGIN);
-    if(m.S.aspect==='16x9'){ctx.fillStyle='rgba(255,59,107,.16)';ctx.fillRect(0,0,W,ASPECTS['16x9'].safeTop);ctx.setLineDash([]);ctx.strokeStyle='#FF3B6B';ctx.beginPath();ctx.moveTo(0,ASPECTS['16x9'].safeTop);ctx.lineTo(W,ASPECTS['16x9'].safeTop);ctx.stroke();ctx.setLineDash([10,8])}
+    if(ASPECTS[m.S.aspect].safeTop){const SZ=ASPECTS[m.S.aspect].safeTop;ctx.fillStyle='rgba(255,59,107,.16)';ctx.fillRect(0,0,W,SZ);ctx.setLineDash([]);ctx.strokeStyle='#FF3B6B';ctx.beginPath();ctx.moveTo(0,SZ);ctx.lineTo(W,SZ);ctx.stroke();ctx.setLineDash([10,8])}
     ctx.strokeStyle='#00E5FF';const R=m.textRect;ctx.strokeRect(R.x0,R.y0,R.x1-R.x0,R.y1-R.y0);
     ctx.restore();
   }
