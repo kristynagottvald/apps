@@ -68,7 +68,8 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 .chips{display:flex;gap:6px}
 .chip{height:28px;padding:0 12px;border-radius:7px;background:#1b2027;color:var(--fg-2);font-size:12px;font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;gap:7px}
 .chip:hover{background:#242b34}
-.chip[aria-pressed="true"]{background:var(--accent-bg);color:var(--accent)}
+.chip[aria-pressed="true"]{background:#e8ebf0;color:#0b0f14;font-weight:500}
+.chip[aria-pressed="true"]:hover{background:#fff}
 .chip i{width:8px;height:8px;border-radius:50%;display:block}
 input[type=range]{-webkit-appearance:none;appearance:none;height:20px;background:transparent;width:130px}
 input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:#303846}
@@ -205,7 +206,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
           <button data-v=".5" aria-pressed="false">0.5×</button><button data-v="1" aria-pressed="true">1×</button><button data-v="2" aria-pressed="false">2×</button><button data-v="4" aria-pressed="false">4×</button>
         </div>
         <label class="tog"><input type="checkbox" id="tBox" checked> Frames</label>
-        <label class="tog"><input type="checkbox" id="tIco" checked> Movement icon</label>
         <label class="tog"><input type="checkbox" id="tStamp" checked> Time stamps</label>
         <span class="sp"></span>
         <button class="btn primary" id="split" aria-pressed="false"><svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="14" height="12" rx="2"/><path d="M8 1v12"/></svg>Side by side</button>
@@ -326,7 +326,7 @@ const vSyn=$('#vSyn'),vOrig=$('#vOrig');let hasVid=false;
 function applyScene(){
   const v=SCENES[S.scene].video;hasVid=!!v;
   ['#pSyn','#pOrig'].forEach(id=>$(id).classList.toggle('vid',hasVid));
-  ['#tBox','#tIco','#tStamp'].forEach(id=>{const i=$(id);i.disabled=hasVid;i.closest('.tog').classList.toggle('off',hasVid);i.closest('.tog').title=hasVid?'Frames, icons and time stamps are part of the recorded footage':''});
+  ['#tBox','#tStamp'].forEach(id=>{const i=$(id);i.disabled=hasVid;i.closest('.tog').classList.toggle('off',hasVid);i.closest('.tog').title=hasVid?'Frames, icons and time stamps are part of the recorded footage':''});
   if(hasVid){
     [[vSyn,v.syn],[vOrig,v.orig]].forEach(([el,src])=>{if(!el.getAttribute('src')||!el.src.endsWith(src))el.src=src;el.playbackRate=S.speed;if(S.playing)el.play().catch(()=>{});else el.pause()});
     $('#pSyn').classList.remove('empty');$('#pOrig').classList.remove('empty');
@@ -481,7 +481,7 @@ function togglePlay(){S.playing=!S.playing;if(hasVid)[vSyn,vOrig].forEach(el=>S.
   b.innerHTML=(S.playing?'<svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><rect x="2" y="1" width="3.6" height="12" rx="1"/><rect x="8.4" y="1" width="3.6" height="12" rx="1"/></svg>':'<svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><path d="M3 1.5v11l9-5.5z"/></svg>')+'<span>'+(S.playing?'Pause':'Play')+'</span>'}
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|BUTTON/.test(e.target.tagName)){e.preventDefault();togglePlay()}});
 $('#speed').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.speed=+b.dataset.v;vSyn.playbackRate=vOrig.playbackRate=S.speed;[...$('#speed').children].forEach(x=>x.setAttribute('aria-pressed',x===b))};
-[['#tBox','box'],['#tIco','ico'],['#tStamp','stamp']].forEach(([id,k])=>$(id).onchange=e=>S[k]=e.target.checked);
+[['#tBox','box'],['#tStamp','stamp']].forEach(([id,k])=>$(id).onchange=e=>S[k]=e.target.checked);
 $('#split').onclick=()=>setSplit(!S.split);
 
 /* synopsis hit-testing */
