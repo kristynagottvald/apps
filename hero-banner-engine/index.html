@@ -219,7 +219,7 @@ const MARGIN = 2 * UNIT;
 const ASPECTS = {
   '1x1':  {w:1080, h:1080, textW:11*UNIT, wx:.5, bias:.36},
   '16x9': {w:1920, h:1080, textW:16*UNIT, wx:.7, safeTop:4*UNIT, bias:.38},
-  '9x16': {w:1080, h:1920, textW:13*UNIT, wx:.3, safeTop:6*UNIT, bias:.5}
+  '9x16': {w:1080, h:1920, textW:13*UNIT, wx:.3, safeTop:6*UNIT, bias:.5, eyebrowK:1.4}
 };
 const C = {navy:'#15153A', indigo:'#3F30F2', ink:'#1B1670', magenta:'#E85DF4', lime:'#E6EA9C', lav:'#A18BFF', coral:'#FF6F5B', white:'#FFFFFF'};
 const THEMES = {
@@ -275,7 +275,7 @@ function build(S){
   const rng=mulberry32((+S.seed||1)*7919+13);
 
   /* ---- type (all sizes in grid units => identical in every format) ---- */
-  const hs=1.6*UNIT*ts, es=.38*UNIT*ts, ss=.58*UNIT*ts, wmS=.8*UNIT;
+  const hs=1.6*UNIT*ts, es=.38*UNIT*ts*(A.eyebrowK||1), ss=.58*UNIT*ts, wmS=.8*UNIT;
   const hLH=hs*1.08, sLH=ss*1.35, gapE=.6*UNIT*ts, gapS=.5*UNIT*ts;
   const maxW=A.textW;
   mctx.font=`300 ${hs}px ${FONT}`;
@@ -283,7 +283,7 @@ function build(S){
   let sLines=[];
   if(S.showSub && S.sub.trim()){mctx.font=`400 ${ss}px ${FONT}`;sLines=wrapText(mctx,S.sub.trim(),maxW)}
   const eyebrow=(S.eyebrow||'').trim().toUpperCase();
-  const eTr=es*.14, markW=S.marker?.26*UNIT*ts:0, markGap=S.marker?.22*UNIT*ts:0;
+  const eTr=es*.14, markW=S.marker?.26*UNIT*ts*(A.eyebrowK||1):0, markGap=S.marker?.22*UNIT*ts*(A.eyebrowK||1):0;
   mctx.font=`600 ${es}px ${FONT}`;
   const eW=eyebrow?trackedW(mctx,eyebrow,eTr)+markW+markGap:0;
 
