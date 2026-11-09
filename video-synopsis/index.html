@@ -41,7 +41,7 @@ nav.back b{font-weight:500;color:#fff}
 .rangebox{justify-self:end;text-align:right;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
 .rangebox b{display:block;color:var(--fg-2);font-weight:500;font-size:13px;margin-top:2px}
 
-.shell{display:grid;grid-template-columns:268px minmax(0,1fr);gap:20px;padding-top:18px;align-items:start}
+.shell{display:grid;grid-template-columns:216px minmax(0,1fr);gap:20px;padding-top:18px;align-items:start}
 
 /* library */
 .lib h2{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-2)}
@@ -161,9 +161,9 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
     </div>
     <div class="clock" role="timer" aria-label="Source time stamp">
       <div class="dt"><span class="date" id="clkDate">09/16/25</span><span class="time" id="clkTime">07:00:00 AM</span></div>
-      <small id="clkSub">Source time</small>
+      
     </div>
-    <div class="rangebox">Review range<b id="rangeLbl"></b></div>
+    <div></div>
   </header>
 
   <div class="shell">
@@ -453,8 +453,8 @@ function buildTimeline(){
   const ax=document.createElement('div');ax.className='axis';ax.style.gridColumn='2';
   for(let h=7;h<=19;h++){const s=document.createElement('span');s.style.left=((h-7)/12*100)+'%';s.textContent=hourLbl(h);ax.appendChild(s)}
   tlw.appendChild(document.createElement('div'));tlw.appendChild(ax);
-  SCENES.forEach((sc,si)=>{
-    const v=visible(si),rl=document.createElement('div');rl.className='rl'+(si===S.scene?' on':'');
+  [S.scene].forEach(si=>{
+    const sc=SCENES[si],v=visible(si),rl=document.createElement('div');rl.className='rl'+(si===S.scene?' on':'');
     rl.innerHTML='<b></b><small></small>';rl.querySelector('b').textContent=sc.name;rl.querySelector('small').textContent=v.length+' movements';
     rl.onclick=()=>{S.scene=si;S.sel=null;recompute()};
     const bar=document.createElement('div');bar.className='bar'+(si===S.scene?' on':'');
@@ -469,9 +469,9 @@ function buildTimeline(){
     };
     tlw.appendChild(rl);tlw.appendChild(bar);
   });
-  const rails=document.createElement('div');rails.className='rails';rails.style.cssText='grid-column:2;grid-row:1 / span 6;position:absolute;left:162px;right:0;top:20px;bottom:0';
+  const rails=document.createElement('div');rails.className='rails';rails.style.cssText='position:absolute;left:162px;right:0;top:20px;bottom:0';
   rails.innerHTML='<div class="ph" id="ph" data-t=""></div>';tlw.appendChild(rails);
-  $('#tlSum').textContent=S.days.size+' day'+(S.days.size>1?'s':'')+' · '+SCENES.reduce((n,_,i)=>n+visible(i).length,0)+' movements across '+SCENES.length+' cameras';
+  $('#tlSum').textContent=SCENES[S.scene].name+' · '+S.days.size+' day'+(S.days.size>1?'s':'')+' · '+vis.length+' movements';
 }
 function pick(e){
   S.sel=e;A=e.abs-.8;S.hover=null;
@@ -487,12 +487,10 @@ function updateInfo(){
 function updateStatic(){
   const sc=SCENES[S.scene],ds=[...S.days].sort(),first=DAYS[ds[0]],last=DAYS[ds[ds.length-1]];
   const a=hms(T0+S.from*60),b=hms(T0+S.to*60);
-  $('#rangeLbl').textContent=(ds.length>1?first+' – '+last+'  ':first+'  ')+a+' – '+b;
   $('#synStamp').textContent=(ds.length>1?first+' – '+last:first)+'  '+a+' – '+b;
   $('#vFrom').textContent=hms(T0+S.from*60).replace(/:00 /,' ');$('#vTo').textContent=hms(T0+S.to*60).replace(/:00 /,' ');$('#vDen').textContent=S.limit;
   $('#synN').textContent=syn.length+' objects · '+sc.name;
   $('#pSyn').classList.toggle('empty',!syn.length);$('#pOrig').classList.toggle('empty',!queue.length);
-  $('#clkSub').textContent='Source time · '+sc.name+' · '+vis.length+' movements in range ('+(S.to-S.from)/60+' h × '+S.days.size+' d)';
   updateInfo();
 }
 function setSplit(on){
