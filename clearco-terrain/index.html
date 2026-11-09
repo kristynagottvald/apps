@@ -117,8 +117,8 @@ function layout() {
   const lspan = Math.min(W * (W < 560 ? .6 : .48), 1100, side - 2 * pad);
   logoK = lspan / (LOGO_SPAN + 2 * LOGO_DOT_R); logoR = Math.max(2, LOGO_DOT_R * logoK);
   const fB = { l: -side / 2, r: side / 2, t: -side / 2, b: side / 2 };   // scene 2 text and the logo share this one square
-  // r0 = the odd starting shape the target resizes from: narrow and tall, same centre
-  const r0Of = f => { const cx = (f.l + f.r) / 2, cy = (f.t + f.b) / 2, w = (f.r - f.l) * .38, h = (f.b - f.t) * 1.12;
+  // r0 = the shape the target resizes from: same width (it never resizes horizontally), shorter, same centre
+  const r0Of = f => { const cx = (f.l + f.r) / 2, cy = (f.t + f.b) / 2, w = f.r - f.l, h = (f.b - f.t) * .55;
     return { l: cx - w / 2, r: cx + w / 2, t: cy - h / 2, b: cy + h / 2 }; };
   const cOf = f => ({ x: (f.l + f.r) / 2, y: (f.t + f.b) / 2 });
 
@@ -195,7 +195,7 @@ function draw(T) {
   // grid levels: a level shows only once its cells are big on screen, so fine levels appear only while zooming in
   const levels = [];
   if (ctxA > .01) for (let k = 0; k < GRID_K; k++) {
-    const pitch = P0 * Math.pow(GRID_R, k), a = smooth(.1, .2, pitch * s / minDim) * ctxA;
+    const pitch = P0 * Math.pow(GRID_R, k), a = smooth(.05, .3, pitch * s / minDim) * ctxA;   // inset levels fade in on zoom-in and out on zoom-out
     if (a < .01) continue;
     const xs = [], ys = [];
     const ar = armFor(pitch * s);
