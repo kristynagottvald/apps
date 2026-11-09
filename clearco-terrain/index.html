@@ -192,10 +192,12 @@ function draw(T) {
   // crosshairs scale with the cell they mark: full size at ~45% of the screen, shrinking for smaller inset cells
   const armFor = px => arm * Math.min(1, Math.max(.22, px / (minDim * .45)));
 
+  // each inset level has its own tight fade window (finer = earlier), so levels drop out one after another; the biggest stays
+  const fadeLo = k => k === GRID_K - 1 ? .1 : .2 + .1 * k;
   // grid levels: a level shows only once its cells are big on screen, so fine levels appear only while zooming in
   const levels = [];
   if (ctxA > .01) for (let k = 0; k < GRID_K; k++) {
-    const pitch = P0 * Math.pow(GRID_R, k), a = smooth(.05, .3, pitch * s / minDim) * ctxA;   // inset levels fade in on zoom-in and out on zoom-out
+    const pitch = P0 * Math.pow(GRID_R, k), a = smooth(fadeLo(k), fadeLo(k) + .2, pitch * s / minDim) * ctxA;   // finest level fades first on zoom-out, then the middle one
     if (a < .01) continue;
     const xs = [], ys = [];
     const ar = armFor(pitch * s);
@@ -209,7 +211,7 @@ function draw(T) {
   const tgts = [];
   terr.forEach(tr => {
     const r = targetRect(tr, T), l = sx(r.l + tr.o.x), rr = sx(r.r + tr.o.x), t = sy(r.t + tr.o.y), b = sy(r.b + tr.o.y);
-    const sz = Math.min(rr - l, b - t), a = smooth(arm * .25, arm * .7, sz);
+    const sz = Math.min(rr - l, b - t), a = smooth(arm * 1.1, arm * 2.6, sz);   // the centre frame fades out as soon as it gets small
     if (a > .01) tgts.push({ l, r: rr, t, b, a, ar: armFor(sz) });
   });
 
