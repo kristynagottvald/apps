@@ -55,8 +55,8 @@ const WIN_R = 1150;                  // iris radius that fully covers the window
 const T_SPIN = 1.0, SPIN_D = 1.7;    // scene 1: logo spins, rays draw out
 const T_BOX = 2.0, TYPE0 = T_BOX + .9;   // prompt box appears, then types
 const LENS_D = 1.3;
-let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_WORDS, T_BACK, LOOP, tHop1, NAVY_R = 0;
-const H0 = 1.7, H1 = 1.9, DW = .7, PAUSE = 1.0, BACK_D = 1.9, OPEN_D = .8;   // logo hops: prompt > Assets > graph, pause, then spin to the middle while the navy closes
+let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_WORDS, T_BACK, T_END, LOOP, tHop1, NAVY_R = 0;
+const H0 = 1.7, H1 = 1.9, DW = .7, PAUSE = 1.0, BACK_D = 1.9, OPEN_D = .8, CTA_HOLD = 3.2, END_D = 1.2;   // logo hops: prompt > Assets > graph, pause, then spin to the middle while the CTA arrives; the pale blue then opens from the logo
 const OFF = .9;                      // later loops skip the headline intro
 
 let ti = 0, START = 0.5, PS = 1, ready = false;
@@ -111,8 +111,9 @@ function setup() {
   T_DATA = T_UP + 1.5;              // data fades in all at once, once the navy has opened
   T_LEAVE = T_DATA + 1.0;           // logo leaves the prompt once the data is in, floats over the screen
   tHop1 = T_LEAVE + H0 + DW;        // Assets > graph
-  T_BACK = tHop1 + H1 + PAUSE;      // pause on the graph, then spin to the middle while the navy closes onto the logo
-  LOOP = T_BACK + BACK_D + .6;
+  T_BACK = tHop1 + H1 + PAUSE;      // pause on the graph, then the logo spins to the middle; screen, prompt and headline fade; the CTA arrives
+  T_END = T_BACK + BACK_D + CTA_HOLD; // CTA holds, then the pale blue opens from the logo and the loop restarts
+  LOOP = T_END + END_D + .6;
   document.fonts.load("400 112px 'Inter Tight'").then(() => document.fonts.load("600 112px 'Inter Tight'")).catch(() => {}).finally(() => { ready = true; });
 }
 function windowResized() { const h = document.getElementById("stage"); resizeCanvas(h.clientWidth, h.clientHeight); }
@@ -138,18 +139,18 @@ function draw() {
   translate(width / 2, height / 2); scale(PS); translate(-SW_ / 2, -SH_ / 2);
   drawingContext.beginPath(); drawingContext.rect(0, 0, SW_, SH_); drawingContext.clip();
 
-  const back = ti >= T_BACK, done = ti >= T_BACK + BACK_D;
+  const back = ti >= T_BACK, end = ti >= T_END, done = ti >= T_END + END_D;
   if (!back) {
     const R = ti < T_UP ? 0 : 2300 * EIO(pr(ti, T_UP, OPEN_D));
     NAVY_R = R;
     drawLight(false, false);
-    if (R > .5) { push(); drawingContext.save(); circClip(R); drawNavy(false); drawingContext.restore(); pop(); }
+    if (R > .5) { push(); drawingContext.save(); circClip(R); drawNavy(); drawingContext.restore(); pop(); }
   } else {
-    // closing: the pale blue opens outward from the logo (where it rests on the graph), so the navy logo never sits on navy
-    const G = uiG(520, 300), RL = 2700 * EIO(pr(ti, T_BACK, 1.1));
-    drawNavy(true);
-    push(); drawingContext.save(); drawingContext.beginPath(); drawingContext.arc(G[0], G[1], Math.max(RL, .01), 0, TWO_PI); drawingContext.clip();
-    drawLight(true, done); drawingContext.restore(); pop();
+    NAVY_R = 3000;
+    drawNavy();                                                  // navy scene: headline fades, the CTA arrives
+    if (end) {                                                   // loop back: the pale blue opens outward from the logo, which turns navy
+      push(); drawingContext.save(); circClip(2700 * EIO(pr(ti, T_END, END_D))); drawLight(true, done); drawingContext.restore(); pop();
+    }
   }
   if (!done) drawFG();
   pop();
@@ -204,7 +205,8 @@ function logoState(t) {                                  // position / scale of 
 }
 /* cream on the navy, navy on the white screen / prompt / light blue */
 function logoColor(p) {
-  if (ti < T_UP || ti >= T_BACK || dist(p[0], p[1], CX, CY) > NAVY_R) return color(NAVY);
+  if (ti >= T_END) return lerpColor(color("#fcfcf9"), color(NAVY), EASE(pr(ti, T_END, .3)));   // navy once the pale blue opens from it
+  if (ti < T_UP || dist(p[0], p[1], CX, CY) > NAVY_R) return color(NAVY);
   const bl = CX - boxW() * BS / 2, bt = boxTop(), br = bl + boxW() * BS, bb = bt + boxH() * BS;
   const wx = WIN.x, wy = WIN.y, wx1 = WIN.x + 900 * WIN.s, wy1 = WIN.y + 565 * WIN.s;
   const d = Math.max(Math.min(p[0] - bl, br - p[0], p[1] - bt, bb - p[1]), Math.min(p[0] - wx, wx1 - p[0], p[1] - wy, wy1 - p[1]));
@@ -257,22 +259,32 @@ function drawWindow(iris, rv) {
 }
 
 /* ============== navy layer: headline + "and start prompting them.", rays ============== */
-function drawNavy(back) {
+function drawNavy() {
   noStroke(); fill(DEEP); rect(0, 0, SW_, SH_);
   drawingContext.drawImage(grain, 0, 0);
   drawRays(1, [52, 100, 188], .9 * rayIn());
 
-  push();
-  ht("Stop building", HX, BASE[0], 400, "#fff", 1);
-  ht("demos", HX, BASE[1], 400, "#fff", 1);
-  const x1 = HX + hw("demos ", 400), x2 = x1 + hw("and ", 400), x3 = HX + hw("prompting ", 600);
-  const words = [["and", 400, x1, BASE[1]], ["start", 600, x2, BASE[1]], ["prompting", 600, HX, BASE[2]], ["them.", 600, x3, BASE[2]]];
-  for (let i = 0; i < 4; i++) {
-    const w = words[i], p = pr(ti, T_WORDS + i * .3, .8);
-    if (back) { ht(w[0], w[2], w[3], w[1], "#fff", 1); continue; }
-    ht(w[0], w[2], w[3] + 30 * (1 - EOUT(p)), w[1], "#fff", EASE(p));
+  const out = ti >= T_BACK, ha = out ? 1 - EASE(pr(ti, T_BACK, .6)) : 1;      // the headline fades once the logo heads to the middle
+  if (ha > .01) {
+    push();
+    ht("Stop building", HX, BASE[0], 400, "#fff", ha);
+    ht("demos", HX, BASE[1], 400, "#fff", ha);
+    const x1 = HX + hw("demos ", 400), x2 = x1 + hw("and ", 400), x3 = HX + hw("prompting ", 600);
+    const words = [["and", 400, x1, BASE[1]], ["start", 600, x2, BASE[1]], ["prompting", 600, HX, BASE[2]], ["them.", 600, x3, BASE[2]]];
+    for (let i = 0; i < 4; i++) {
+      const w = words[i], p = pr(ti, T_WORDS + i * .3, .8);
+      if (out) { ht(w[0], w[2], w[3], w[1], "#fff", ha); continue; }
+      ht(w[0], w[2], w[3] + 30 * (1 - EOUT(p)), w[1], "#fff", EASE(p));
+    }
+    pop();
   }
-  pop();
+  if (ti >= T_BACK + .6) {                                                     // CTA, line by line
+    const lines = [["Tell the right story", 400, BASE[0]], ["in your demos with", 400, BASE[1]], ["Reprise.", 600, BASE[2]]];
+    lines.forEach((l, i) => {
+      const p = pr(ti, T_BACK + .7 + i * .3, .8);
+      ht(l[0], HX, l[2] + 30 * (1 - EOUT(p)), l[1], "#fff", EASE(p));
+    });
+  }
 }
 
 const rayIn = () => EASE(pr(millis() / 1000, .2, 1.0));      // soft fade on the very first load only
