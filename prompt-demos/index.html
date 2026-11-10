@@ -307,7 +307,7 @@ function typedCount() {
 function lastRender() { return ti < TYPE0 ? T_BOX : TYPE0 + RT[max(1, typedCount())]; }
 function overlayAlpha() { return ti < T_BOX ? 0 : EASE(pr(ti, T_BOX, .8)) * (1 - EASE(pr(ti, T_BACK, .7))); }
 function sentAmt() { return 0; }
-function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36 + 110); }   // +110: a longer box
+function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36 + 70); }   // text + room for the logo at the right
 
 function drawPrompt() {
   const ea = overlayAlpha(); if (ea <= 0.002) return;
