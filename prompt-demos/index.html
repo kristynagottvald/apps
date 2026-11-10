@@ -5,17 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stop Building Demos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 html,body{margin:0;height:100%;background:#000;overflow:hidden}
-nav{position:fixed;top:0;left:0;right:0;z-index:5;padding:12px 16px;font:400 13px/1 "Inter Tight",Arial,sans-serif;display:flex;gap:8px;pointer-events:none}
-nav a{pointer-events:auto;color:#fff;text-decoration:none;opacity:.9;mix-blend-mode:difference}
-nav a:hover{opacity:1}
+body{display:flex;flex-direction:column}
+main{flex:1;min-height:0;position:relative}
 canvas{display:block}
+/* ---------- Back nav (shared across all apps) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}}
 </style>
 </head>
 <body>
-<nav><a href="../">Apps</a><span style="color:#fff;opacity:.4;mix-blend-mode:difference">/</span><a href="../">Back to all projects</a></nav>
+<nav class="back" aria-label="Apps"><a href="../">Apps</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Stop Building Demos</b></nav>
+<main id="stage"></main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
 <script>
 /* ---- palette (demo UI + prompt box from the supplied code) ---- */
@@ -36,15 +43,15 @@ const SPARK_SVG = "M23.5422 0L25.0998 14.1444C25.1837 14.9055 26.0747 15.2744 26
 
 /* ---- stage: 1920x1112, same as the reference image ---- */
 const SW_ = 1920, SH_ = 1112;
-const CX = 960, CY = 556;            // centre: logo, rays, lens
+const CX = 1440, CY = 556;           // centre: logo, rays, lens
 const BANDS = [[156, 246], [284, 448], [488, 770]];   // ray bands (radius), measured
 const NRAYS = 48;
-const WIN = { x: 800, y: 222, s: 1.45 };              // sales demo window (613x461 at scale s)
+const WIN = { x: 990, y: 222, s: 1.45 };              // sales demo window (613x461 at scale s)
 const WIN_R = 1150;                  // iris radius that fully covers the window
 
 /* ---- timeline (seconds; scene 1 is the loop start) ---- */
 const T_SPIN = 1.0, SPIN_D = 1.7;    // logo spins, UI iris opens
-const T_A = 5.4, CLOSE_D = 1.4;      // logo spins back, UI iris closes
+const T_A = 5.4, CLOSE_D = 1.6;      // logo spins back, UI iris closes
 const T_B = T_A + CLOSE_D, LENS_D = 1.3;   // light lens closes onto the logo, navy opens
 const T_C = T_B + LENS_D;
 const T_WORDS = T_B + .9;
@@ -90,7 +97,7 @@ function spark(x, y, sc, rot, col, a) {
 function circClip(r) { const c = drawingContext; c.beginPath(); c.arc(CX, CY, max(r, 0.01), 0, TWO_PI); c.clip(); }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  const host = document.getElementById("stage"); createCanvas(host.clientWidth, host.clientHeight).parent(host);
   frameRate(60);
   SPARK_P = new Path2D(SPARK_SVG); LINK_P = new Path2D(LINK_SVG);
   makeGrain();
@@ -99,13 +106,13 @@ function setup() {
     if (n < TOT) RT[n + 1] = RT[n] + d; else TYPE_DUR = RT[n] + d;
   }
   T_M = TYPE0 + TYPE_DUR + .5;      // pointer reaches send
-  T_S = T_M + 1.0;                  // click -> sent
+  T_S = T_M + .5;                   // send -> sent
   T_OUT = T_S + 2.6;                // prompt fades
   T_BACK = T_OUT + .9;              // lens opens back to light
   LOOP = T_BACK + LENS_D + .5;
-  document.fonts.load("300 112px 'Inter Tight'").then(() => document.fonts.load("600 112px 'Inter Tight'")).catch(() => {}).finally(() => { ready = true; });
+  document.fonts.load("400 112px 'Inter Tight'").then(() => document.fonts.load("600 112px 'Inter Tight'")).catch(() => {}).finally(() => { ready = true; });
 }
-function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+function windowResized() { const h = document.getElementById("stage"); resizeCanvas(h.clientWidth, h.clientHeight); }
 
 function makeGrain() {
   grain = document.createElement("canvas"); grain.width = SW_; grain.height = SH_;
@@ -146,25 +153,27 @@ function drawScene1(base) {
   noStroke(); fill(LIGHT); rect(0, 0, SW_, SH_);
   const a = base ? 1 : EASE(pr(ti, .1, .8)), up = base ? 0 : 26 * (1 - EOUT(pr(ti, .1, 1)));
   push(); drawingContext.globalAlpha = a;
-  ht("Stop building", HX, BASE[0] + up, 300, NAVY, 1);
-  ht("demos", HX, BASE[1] + up, 300, NAVY, 1);
+  ht("Stop building", HX, BASE[0] + up, 400, NAVY, 1);
+  ht("demos", HX, BASE[1] + up, 400, NAVY, 1);
   pop();
 
-  // spin -> UI iris. open: T_SPIN..; close: T_A..
-  let iris = 0, rot = 0, la = base ? 1 : EASE(pr(ti, .1, .8)), ls_ = 1;
+  // spin -> UI iris, then the logo settles in the window's top-right corner
+  const corner = [WIN.x + 579 * WIN.s, WIN.y + 26.5 * WIN.s], CSC = .75;
+  let iris = 0, rot = 0, la = base ? 1 : EASE(pr(ti, .1, .8)), pos = [CX, CY], sc = 2.6;
   if (!base) {
-    if (ti >= T_A) {                                   // closing: spin back, iris shrinks into the logo
-      const p = pr(ti, T_A, CLOSE_D);
-      iris = WIN_R * (1 - EIO(p)); rot = -TWO_PI * 2 * EIO(p); la = 1; ls_ = 1;
-    } else if (ti >= T_SPIN) {                         // opening: spin, iris grows
-      const p = pr(ti, T_SPIN, SPIN_D), q = pr(ti, T_SPIN + SPIN_D - .2, .6);
-      iris = WIN_R * EIO(p); rot = TWO_PI * 2 * EIO(p); la = 1 - EASE(q); ls_ = 1 - .4 * EASE(q);
+    const settle = EIO(pr(ti, T_SPIN + SPIN_D, .9));
+    if (ti >= T_A) {                                   // back to centre, then spin back as the iris closes
+      const m = EIO(pr(ti, T_A, .6)), pc = EIO(pr(ti, T_A + .5, CLOSE_D - .5));
+      pos = [lerp(corner[0], CX, m), lerp(corner[1], CY, m)]; sc = lerp(CSC, 2.6, m);
+      iris = WIN_R * (1 - pc); rot = -TWO_PI * 2 * pc; la = 1;
+    } else if (ti >= T_SPIN) {                         // spin opens the iris
+      const p = pr(ti, T_SPIN, SPIN_D);
+      iris = WIN_R * EIO(p); rot = TWO_PI * 2 * EIO(p); la = 1;
+      pos = [lerp(CX, corner[0], settle), lerp(CY, corner[1], settle)]; sc = lerp(2.6, CSC, settle); 
     }
-    if (ti >= T_SPIN + SPIN_D + .4 && ti < T_A) { la = 0; }
-    if (ti >= T_A) la = EASE(pr(ti, T_A, .35));
   }
   if (iris > 0.5) drawWindow(iris);
-  spark(CX, CY, 2.6 * ls_, rot, NAVY, la);
+  spark(pos[0], pos[1], sc, rot, NAVY, la);
 }
 
 function drawWindow(iris) {
@@ -192,13 +201,12 @@ function drawScene2() {
   noStroke(); fill(DEEP); rect(0, 0, SW_, SH_);
   drawingContext.drawImage(grain, 0, 0);
   drawRays(pr(ti, T_B + .3, 1.7));
-  spark(CX, CY, 2.6, 0, "#fcfcf9", 1);
 
   push();
-  ht("Stop building", HX, BASE[0], 300, "#fff", 1);
-  ht("demos", HX, BASE[1], 300, "#fff", 1);
-  const x1 = HX + hw("demos ", 300), x2 = x1 + hw("and ", 300), x3 = HX + hw("prompting ", 600);
-  const words = [["and", 300, x1, BASE[1]], ["start", 600, x2, BASE[1]], ["prompting", 600, HX, BASE[2]], ["them.", 600, x3, BASE[2]]];
+  ht("Stop building", HX, BASE[0], 400, "#fff", 1);
+  ht("demos", HX, BASE[1], 400, "#fff", 1);
+  const x1 = HX + hw("demos ", 400), x2 = x1 + hw("and ", 400), x3 = HX + hw("prompting ", 600);
+  const words = [["and", 400, x1, BASE[1]], ["start", 600, x2, BASE[1]], ["prompting", 600, HX, BASE[2]], ["them.", 600, x3, BASE[2]]];
   for (let i = 0; i < 4; i++) {
     const w = words[i], p = pr(ti, T_WORDS + i * .3, .8);
     if (ti >= T_BACK) { ht(w[0], w[2], w[3], w[1], "#fff", 1); continue; }
@@ -206,6 +214,7 @@ function drawScene2() {
   }
   pop();
   drawPrompt();
+  drawLogo2();
 }
 
 function drawRays(p) {
@@ -213,9 +222,10 @@ function drawRays(p) {
   const k = EOUT(p);
   push(); translate(CX, CY);
   drawingContext.lineCap = "butt"; strokeWeight(1.35);
+  const now = millis() / 1000;
   for (let i = 0; i < NRAYS; i++) {
-    const a = i * TWO_PI / NRAYS;
     for (let b = 0; b < BANDS.length; b++) {
+      const a = i * TWO_PI / NRAYS + (b % 2 ? -1 : 1) * .022 * now;   // neighbouring bands drift opposite ways
       const r0 = BANDS[b][0], r1 = BANDS[b][1];
       const f = constrain(k * 1.5 - b * .22, 0, 1);
       if (f <= 0) continue;
@@ -228,7 +238,7 @@ function drawRays(p) {
 }
 
 /* ---- prompt box (style from the supplied code), right of the logo ---- */
-const BS = 1.15, BX = 1215, BY = 556 - 97 * BS;
+const BS = 1.15, BX = CX - 240, BY = 660;
 function typedCount() {
   const u = ti - TYPE0; if (u < 0) return 0; let n = 0;
   for (let k = 1; k <= TOT; k++) if (RT[k] <= u) n = k; return n;
@@ -272,35 +282,16 @@ function drawPrompt() {
     line(-5, 0, 5, 0); line(1, -4, 5, 0); line(1, 4, 5, 0); pop();
   }
   pop();
-  drawPointer(ea);
 }
 
-/* ---- pointer: rests, then goes to send and clicks ---- */
-function pointerPos() {
-  const full = round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 22 + 48 + 20);
-  const send = [BX + (full - 69.5 + 24) * BS + 6, BY + (89.5 + 24) * BS + 12], rest = [BX + 200, BY + 230];
-  const ms = [{ t: T_BOX + .2, d: .9, to: rest }, { t: T_M, d: .9, to: send }];
-  let pos = [rest[0] + 120, rest[1] + 120];
-  for (let i = 0; i < ms.length; i++) {
-    const m = ms[i]; if (ti < m.t) break;
-    const nextT = i + 1 < ms.length ? ms[i + 1].t : 1e9;
-    const k = EMOVE(pr(min(ti, nextT), m.t, m.d));
-    pos = [lerp(pos[0], m.to[0], k), lerp(pos[1], m.to[1], k)];
-  }
-  return pos;
-}
-function drawRipple(px, py, t0) {
-  if (ti < t0 || ti >= t0 + .7) return;
-  const k = bez(0, 0, .58, 1)((ti - t0) / .7), s = lerp(.4, 3.6, k);
-  noFill(); stroke(185, 179, 163, 255 * lerp(.9, 0, k)); strokeWeight(2 * s); circle(px, py, 10 * s);
-}
-function drawPointer(ea) {
-  const p = pointerPos();
-  push(); drawingContext.globalAlpha = ea;
-  drawRipple(p[0], p[1], T_S - .02);
-  translate(p[0], p[1]); fill(255); stroke(NAVY); strokeWeight(2); strokeJoin(ROUND);
-  beginShape(); vertex(2, 2); vertex(21, 11.5); vertex(12.8, 14.1); vertex(10, 23.5); endShape(CLOSE);
-  pop();
+/* ---- the spark travels into the prompt's top-left corner and back ---- */
+function drawLogo2() {
+  const e = ti < T_OUT ? EIO(pr(ti, T_BOX + .4, 1.0)) : 1 - EIO(pr(ti, T_OUT, .9));
+  const ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
+  const tgt = [BX + 36 * BS, BY + ey + 36 * BS];
+  const dst = lerpColor(color(NAVY), color(CREAM), sentAmt());
+  const col = lerpColor(color("#fcfcf9"), dst, EASE(e));
+  spark(lerp(CX, tgt[0], e), lerp(CY, tgt[1], e), lerp(2.6, .6 * BS, e), TWO_PI * e, col.toString(), 1);
 }
 
 /* ---- demo UI (from the supplied code) ---- */
