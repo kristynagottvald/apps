@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stop Building Demos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:5;padding:12px 16px;font:400 13px/1 "Inter Tight",Arial,sans-serif;display:flex;gap:8px;pointer-events:none}
+nav a{pointer-events:auto;color:#fff;text-decoration:none;opacity:.9;mix-blend-mode:difference}
+nav a:hover{opacity:1}
+canvas{display:block}
+</style>
+</head>
+<body>
+<nav><a href="../">Apps</a><span style="color:#fff;opacity:.4;mix-blend-mode:difference">/</span><a href="../">Back to all projects</a></nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+<script>
+/* ---- palette (demo UI + prompt box from the supplied code) ---- */
+const NAVY = "#0f0f42", CREAM = "#fcfcf9", PALE = "#e9e5d8", FRAME = "#ece9df";
+const HL = "#0f0f42", GREEN = "#5f9f66", UI_LINE = "#e6e4dc", SKY = "#b9b3a3";
+const LIGHT = "#efece5";            // scene 1 background (from the swatch)
+const DEEP = "#0e0e43";             // scene 2 background (from the image)
+const SANS = "Arial", MONO = "Courier New", SERIF = "Georgia";
+const HEAD = "'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif";
+
+const L1 = "Use my premade Pharma dataset", L2 = "and give me the link to share";
+const N1 = L1.length, TOT = N1 + 1 + L2.length;
+const NAMES_A = ["Northwind", "Globex", "Initech"], NAMES_B = ["AbbVie", "AstraZeneca", "Bristol Myers"];
+const NAV_W = [70, 44, 62, 52, 38], ROW_Y = [274, 332, 390];
+const ROW_U = [[[228,150,0],[408,104,1],[588,70,1]],[[228,112,0],[408,126,1],[588,60,1]],[[228,168,0],[408,88,1],[588,76,1]]];
+const LINK_SVG = "M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1";
+const SPARK_SVG = "M23.5422 0L25.0998 14.1444C25.1837 14.9055 26.0747 15.2744 26.6721 14.7954L37.7748 5.89529L39.1892 7.30951L30.2889 18.4124C29.81 19.0098 30.1789 19.9007 30.9401 19.9845L30.9395 19.9849L45.0838 21.5421V23.5422L25.6785 25.6788L23.5419 45.084H21.5418L19.9845 30.9398C19.9007 30.1786 19.0098 29.8097 18.4124 30.2887L7.30951 39.1889L5.89529 37.7745L14.7954 26.6718C15.2744 26.0744 14.9055 25.1834 14.1444 25.0995L0 23.5422V21.5421L19.4055 19.4053L21.5421 0H23.5422ZM24.9703 19.5719C23.3515 19.4237 21.7324 19.4237 20.1136 19.5719C19.8427 19.5975 19.5975 19.8427 19.5719 20.1136C19.4237 21.7324 19.4237 23.3515 19.5719 24.9703C19.5974 25.2412 19.8427 25.4866 20.1136 25.5122C21.7324 25.6601 23.3515 25.6601 24.9703 25.5122C25.2412 25.4866 25.4866 25.2412 25.5122 24.9703C25.6604 23.3515 25.6604 21.7324 25.5122 20.1136C25.4866 19.8427 25.2412 19.5974 24.9703 19.5719Z";
+
+/* ---- stage: 1920x1112, same as the reference image ---- */
+const SW_ = 1920, SH_ = 1112;
+const SPARK = [1808.5, 528];         // spark centre
+const BANDS = [[156, 246], [284, 448], [488, 770]];   // ray bands (radius), measured
+const NRAYS = 48;
+
+/* ---- timeline (seconds) ---- */
+const T_WIPE = 4.2, WIPE_D = 1.1, T2 = T_WIPE + WIPE_D;      // scene 2 starts
+const T_WORDS = T2 + 0.5;                                    // "and start prompting them." words at +0.0/.3/.6/.9
+const T_BOX = T_WORDS + 3.9, TYPE0 = T_BOX + 0.9;
+let RT = [0, 0], TYPE_DUR = 0, T_M, T_S, T_ON, T_C, T_P, T_U, T_OUT, T_BACK, LOOP;
+
+let iterN = 0, ti = 0, nowS = 0, START = 0.5, PS = 1, ready = false;
+let SPARK_P, LINK_P, grain;
+const EASE = bez(.25, .1, .25, 1), EMOVE = bez(.45, 0, .2, 1), EOUT = bez(.2, .8, .2, 1);
+
+function bez(x1, y1, x2, y2) {
+  const f = (a, b, t) => 3*a*t*(1-t)*(1-t) + 3*b*t*t*(1-t) + t*t*t;
+  return x => { if (x <= 0) return 0; if (x >= 1) return 1; let lo = 0, hi = 1;
+    for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (f(x1, x2, m) < x) lo = m; else hi = m; }
+    return f(y1, y2, (lo + hi) / 2); };
+}
+const pr = (t, t0, d) => constrain((t - t0) / d, 0, 1);
+function ls(px) { try { drawingContext.letterSpacing = px + "px"; } catch (e) {} }
+function ca(hex, a) { const c = color(hex); c.setAlpha(255 * a); return c; }
+function tx(s, x, y, size, col, fam, spc, h) {
+  noStroke(); fill(col); textFont(fam || SANS); textSize(size); textStyle(NORMAL);
+  textAlign(h || LEFT, CENTER); ls(spc || 0); text(s, x, y); ls(0);
+}
+function tw(s, size, fam, spc) { textFont(fam || SANS); textSize(size); textStyle(NORMAL); ls(spc || 0); const w = textWidth(s); ls(0); return w; }
+
+/* headline text drawn straight on the 2d context (needs weights 300 / 600) */
+const HS = 106, HSP = -3.0;
+function hw(s, wt) { const c = drawingContext; c.save(); c.font = wt + " " + HS + "px " + HEAD; c.letterSpacing = HSP + "px"; const w = c.measureText(s).width; c.restore(); return w; }
+function ht(s, x, y, wt, col, a) {
+  const c = drawingContext; c.save(); c.globalAlpha *= a; c.fillStyle = col;
+  c.font = wt + " " + HS + "px " + HEAD; c.letterSpacing = HSP + "px"; c.textBaseline = "alphabetic"; c.fillText(s, x, y); c.restore();
+}
+const BASE = [485, 597, 710];       // baselines from the reference
+const HX = 107;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  frameRate(60);
+  SPARK_P = new Path2D(SPARK_SVG); LINK_P = new Path2D(LINK_SVG);
+  makeGrain();
+  const w = max(tw(L1, 23), tw(L2, 23)) + 6;
+  for (let n = 1; n <= TOT; n++) {
+    const d = n === N1 + 1 ? .26 : .046 + .03 * (abs(sin(n * 12.9898) * 43758.5453) % 1);
+    if (n < TOT) RT[n + 1] = RT[n] + d; else TYPE_DUR = RT[n] + d;
+  }
+  T_M = TYPE0 + TYPE_DUR + .5;      // pointer reaches send
+  T_S = T_M + 1.0;                  // click -> sent
+  T_ON = T_S + .9;                  // share panel
+  T_C = T_ON + 2.0;                 // pointer on copy
+  T_P = T_C + .9; T_U = T_P + .16;  // press / release
+  T_OUT = T_U + 2.4;                // fade out overlay
+  T_BACK = T_OUT + 1.0;             // wipe back to light
+  LOOP = T_BACK + WIPE_D + .6;
+  document.fonts.load("300 112px 'Inter Tight'").then(() => document.fonts.load("600 112px 'Inter Tight'")).catch(() => {}).finally(() => { ready = true; });
+}
+function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
+function makeGrain() {
+  grain = document.createElement("canvas"); grain.width = SW_; grain.height = SH_;
+  const g = grain.getContext("2d"); let s = 7;
+  const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 5200; i++) {
+    const a = .08 + r() * .3;
+    g.fillStyle = `rgba(${150 + r() * 60 | 0},${160 + r() * 60 | 0},255,${a})`;
+    g.fillRect(r() * SW_, r() * SH_, r() > .85 ? 2 : 1, r() > .85 ? 2 : 1);
+  }
+}
+
+function draw() {
+  if (!ready) { background(LIGHT); return; }
+  nowS = millis() / 1000;
+  const tt = nowS - START; ti = tt < 0 ? 0 : tt % LOOP; iterN = tt < 0 ? 0 : floor(tt / LOOP);
+  PS = min(width / SW_, height / SH_);
+  background(0);
+  push();
+  translate(width / 2, height / 2); scale(PS); translate(-SW_ / 2, -SH_ / 2);
+  drawingContext.beginPath(); drawingContext.rect(0, 0, SW_, SH_); drawingContext.clip();
+
+  // wipe radius: grows from the spark in, shrinks back out
+  let R = 0;
+  if (ti >= T_WIPE && ti < T_BACK) R = 2400 * EOUT(pr(ti, T_WIPE, WIPE_D));
+  else if (ti >= T_BACK) R = 2400 * (1 - EASE(pr(ti, T_BACK, WIPE_D)));
+  const wipeDone = R >= 2399;
+
+  if (!wipeDone) drawScene1();
+  if (R > 0.5) {
+    push();
+    drawingContext.save();
+    drawingContext.beginPath(); drawingContext.arc(SPARK[0], SPARK[1], R, 0, TWO_PI); drawingContext.clip();
+    drawScene2();
+    drawingContext.restore();
+    pop();
+  }
+  pop();
+}
+
+/* ============== SCENE 1 ============== */
+function drawScene1() {
+  noStroke(); fill(LIGHT); rect(0, 0, SW_, SH_);
+  const a = EASE(pr(ti, 0.1, .8)), up = 26 * (1 - EOUT(pr(ti, .1, 1)));
+  push(); drawingContext.globalAlpha = a;
+  ht("Stop building", HX, BASE[0] + up, 300, NAVY, 1);
+  ht("demos", HX, BASE[1] + up, 300, NAVY, 1);
+  pop();
+
+  // the hand-built demo window (Sales demo UI from the supplied code)
+  const wa = EASE(pr(ti, .5, .9)), wy = 30 * (1 - EOUT(pr(ti, .5, 1.1)));
+  push(); drawingContext.globalAlpha = wa;
+  translate(1000, 300 + wy); scale(1.28);
+  noStroke(); fill(FRAME); rect(0, 0, 613, 461, 14);
+  tx("Sales demo", 16, 26.5, 22, NAVY, SANS, -.22);
+  push();
+  drawingContext.beginPath(); drawingContext.roundRect(8, 53, 605, 394, [8, 0, 0, 8]); drawingContext.clip();
+  translate(8, 53); scale(.6728);
+  drawUI({ pharma: false, a: 1 });
+  pop(); pop();
+}
+
+/* ============== SCENE 2 ============== */
+function drawScene2() {
+  const t2 = ti - T2;                      // time since scene 2 appeared (can be <0 while wiping)
+  const tt = ti >= T_BACK ? 0 : t2;
+  noStroke(); fill(DEEP); rect(0, 0, SW_, SH_);
+  image2(grain);
+  drawRays(pr(ti, T2 - .5, 1.6));
+  // spark
+  const sk = EOUT(pr(ti, T2 - .4, .9));
+  push(); translate(SPARK[0], SPARK[1]); scale(2.6 * (.4 + .6 * sk)); rotate((1 - sk) * -.6);
+  drawingContext.globalAlpha = sk; drawingContext.fillStyle = "#fcfcf9";
+  drawingContext.translate(-22.54, -22.54); drawingContext.fill(SPARK_P, "evenodd"); pop();
+
+  // headline: first part carries over from scene 1, rest arrives word by word
+  push();
+  ht("Stop building", HX, BASE[0], 300, "#fff", 1);
+  ht("demos", HX, BASE[1], 300, "#fff", 1);
+  const wDem = hw("demos ", 300);
+  const words = [["and", 300, HX + wDem, BASE[1]], ["start", 600, 0, BASE[1]], ["prompting", 600, HX, BASE[2]], ["them.", 600, 0, BASE[2]]];
+  let x1 = HX + wDem + hw("and ", 300), x2 = HX + hw("prompting ", 600);
+  words[1][2] = x1; words[3][2] = x2;
+  for (let i = 0; i < 4; i++) {
+    const w = words[i], p = pr(ti, T_WORDS + i * .3, .8);
+    if (ti >= T_BACK) { ht(w[0], w[2], w[3], w[1], "#fff", 1); continue; }
+    ht(w[0], w[2], w[3] + 30 * (1 - EOUT(p)), w[1], "#fff", EASE(p));
+  }
+  pop();
+
+  drawPromptAndPanel();
+}
+
+function image2(img) { drawingContext.drawImage(img, 0, 0); }
+
+function drawRays(p) {
+  if (p <= 0) return;
+  const k = EOUT(p);
+  push(); translate(SPARK[0], SPARK[1]);
+  drawingContext.lineCap = "butt"; strokeWeight(1.35);
+  for (let i = 0; i < NRAYS; i++) {
+    const a = i * TWO_PI / NRAYS;
+    for (let b = 0; b < BANDS.length; b++) {
+      const r0 = BANDS[b][0], r1 = BANDS[b][1];
+      const f = constrain(k * 1.5 - b * .22, 0, 1);       // bands draw outward in sequence
+      if (f <= 0) continue;
+      stroke(52, 100, 188, 255 * .9 * f);
+      const e = lerp(r0, r1, EOUT(f));
+      line(cos(a) * r0, sin(a) * r0, cos(a) * e, sin(a) * e);
+    }
+  }
+  pop();
+}
+
+/* ---- prompt box + share panel (styles from the supplied code), placed under the headline ---- */
+const BX = 107, BY = 800, BS = 1.0;
+function typedCount() {
+  const u = ti - TYPE0; if (u < 0) return 0; let n = 0;
+  for (let k = 1; k <= TOT; k++) if (RT[k] <= u) n = k; return n;
+}
+function lastRender() { return ti < TYPE0 ? T_BOX : TYPE0 + RT[max(1, typedCount())]; }
+function overlayAlpha() {
+  if (ti < T_BOX) return 0;
+  const a = EASE(pr(ti, T_BOX, .8));
+  return ti >= T_OUT ? a * (1 - EASE(pr(ti, T_OUT, .8))) : a;
+}
+function sentAmt() { return ti < T_S ? 0 : EASE(pr(ti, T_S, .35)); }
+
+function drawPromptAndPanel() {
+  const ea = overlayAlpha(); if (ea <= 0.002) return;
+  const ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
+  const wFull = round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 22 + 48 + 20);
+  const wSent = round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36);
+  const cs = sentAmt();
+  const w = ti < T_S ? wFull : lerp(wFull, wSent, EOUT(pr(ti, T_S, .4)));
+
+  push(); drawingContext.globalAlpha = ea;
+  translate(BX, BY + ey); scale(BS);
+  fill(lerpColor(color(CREAM), color(15, 15, 66, 235), cs));
+  stroke(150, 144, 128, 204); strokeWeight(1.5);
+  rect(.75, .75, w - 1.5, 168.5, 9.25, 9.25, 0, 9.25);
+  const n = typedCount();
+  const a = L1.slice(0, min(n, N1)), b = n > N1 ? L2.slice(0, n - N1 - 1) : "";
+  const col = lerpColor(color(NAVY), color(CREAM), cs);
+  const x0 = 29.5, c1 = 97, c2 = 128;
+  tx(a, x0, c1, 23, col, SANS, -.23); tx(b, x0, c2, 23, col, SANS, -.23);
+  const hidden = ti >= T_S;
+  if (!hidden && ti >= TYPE0 - .3 && ((ti - lastRender()) % 1) < .5) {
+    const onFirst = n <= N1, lw = tw(onFirst ? a : b, 23, SANS, -.23);
+    noStroke(); fill(HL); rect(x0 + lw + 2, (onFirst ? c1 : c2) - 15.6, 2, 30);
+  }
+  if (ti < T_S + .12) {
+    const bx = w - 69.5, by = 89.5;
+    noStroke(); fill("#e8e5da"); rect(bx, by, 48, 48, 7);
+    push(); translate(bx + 24, by + 24); scale(19 / 16);
+    stroke(NAVY); strokeWeight(2); strokeCap(ROUND); strokeJoin(ROUND); noFill();
+    line(-5, 0, 5, 0); line(1, -4, 5, 0); line(1, 4, 5, 0); pop();
+  }
+  pop();
+
+  drawPanel(ea);
+  drawPointer(ea);
+}
+
+function panelState() {
+  if (ti < T_ON) return { a: 0, ty: 26 };
+  if (ti < T_OUT) { const u = ti - T_ON; return { a: EASE(u / .7), ty: 26 * (1 - EOUT(u / .8)) }; }
+  return { a: 0, ty: 26 };
+}
+function copyState() {
+  let scl = 1, done = 0;
+  if (ti >= T_P && ti < T_U) scl = 1 - .06 * EASE(pr(ti, T_P, .2));
+  else if (ti >= T_U) { const v0 = 1 - .06 * EASE(.16 / .2); scl = lerp(v0, 1, EASE(pr(ti, T_U, .2))); done = EASE(pr(ti, T_U, .25)); }
+  return { scl, done, isDone: ti >= T_U };
+}
+function drawPanel(ea) {
+  const p = panelState(); if (p.a <= .002) return;
+  const fade = ti >= T_OUT ? 1 : 1;
+  const x = 700, y = 790 + p.ty;
+  push(); drawingContext.globalAlpha = p.a * ea;
+  noStroke(); fill(PALE); rect(x, y, 360, 236, 8);
+  tx("READY TO SHARE", x + 26, y + 34.5, 14, NAVY, SANS, 1.96);
+  tx("Pharma demo", x + 26, y + 74.5, 31, NAVY, SERIF, -.62);
+  const ly = y + 139;
+  fill(255, 255, 255, 178); rect(x + 26, y + 112, 308, 54, 8);
+  push(); translate(x + 40, ly - 8.5); scale(17 / 24);
+  drawingContext.strokeStyle = NAVY; drawingContext.lineWidth = 1.8; drawingContext.lineCap = "round"; drawingContext.lineJoin = "round";
+  drawingContext.stroke(LINK_P); pop();
+  tx("reprise.com/pharma", x + 66, ly, 12.5, NAVY, MONO);
+  const cs = copyState(), bcx = x + 277;
+  push(); translate(bcx, ly); scale(cs.scl);
+  noStroke(); fill(lerpColor(color(HL), color(GREEN), cs.done)); rect(-49, -19, 98, 38, 6);
+  const label = cs.isDone ? "Copied" : "Copy", lw = tw(label, 15, SANS);
+  if (cs.isDone) {
+    const total = 14 + 6 + lw, ix = -total / 2;
+    push(); translate(ix, -7); scale(14 / 16); stroke(255); strokeWeight(2.4); strokeCap(ROUND); strokeJoin(ROUND); noFill();
+    line(3.5, 8.5, 6.5, 11.5); line(6.5, 11.5, 12.5, 5); pop();
+    tx(label, ix + 20, .5, 15, color(255), SANS);
+  } else tx(label, 0, .5, 15, color(255), SANS, 0, CENTER);
+  pop();
+  tx("Anyone with the link can view", x + 26, y + 191.5, 16, color(15, 15, 66, 184), SANS);
+  pop();
+}
+
+/* ---- pointer: rests, goes to send, then to Copy ---- */
+function pointerPos() {
+  const rest = [560, 842], send = [BX + 460 - 69.5 + 30, BY + 89.5 + 38], cp = [700 + 277, 790 + 139 + 6];
+  const ms = [{ t: T_BOX + .3, d: .9, to: rest }, { t: T_M, d: .9, to: send }, { t: T_ON + .3, d: .9, to: cp }];
+  let pos = [rest[0] + 140, rest[1] + 90];
+  for (let i = 0; i < ms.length; i++) {
+    const m = ms[i]; if (ti < m.t) break;
+    const nextT = i + 1 < ms.length ? ms[i + 1].t : 1e9;
+    const k = EMOVE(pr(min(ti, nextT), m.t, m.d));
+    pos = [lerp(pos[0], m.to[0], k), lerp(pos[1], m.to[1], k)];
+  }
+  return pos;
+}
+function drawRipple(px, py, t0) {
+  if (ti < t0 || ti >= t0 + .7) return;
+  const k = bez(0, 0, .58, 1)((ti - t0) / .7), s = lerp(.4, 3.6, k);
+  noFill(); stroke(185, 179, 163, 255 * lerp(.9, 0, k)); strokeWeight(2 * s); circle(px, py, 10 * s);
+}
+function drawPointer(ea) {
+  const p = pointerPos();
+  push(); drawingContext.globalAlpha = ea;
+  drawRipple(p[0], p[1], T_S - .02); drawRipple(p[0], p[1], T_P);
+  translate(p[0], p[1]); fill(255); stroke(NAVY); strokeWeight(2); strokeJoin(ROUND);
+  beginShape(); vertex(2, 2); vertex(21, 11.5); vertex(12.8, 14.1); vertex(10, 23.5); endShape(CLOSE);
+  pop();
+}
+
+/* ---- demo UI (from the supplied code) ---- */
+function uiCard(x, y, w, h) { fill(255); stroke(UI_LINE); strokeWeight(2); rect(x + 1, y + 1, w - 2, h - 2, 9); noStroke(); }
+function drawUI(sw) {
+  noStroke(); fill(255); rect(0, 0, 900, 585);
+  fill("#f6f5f0"); rect(0, 0, 150, 585); fill(UI_LINE); rect(149, 0, 1, 585);
+  fill(HL); rect(16, 18, 26, 26, 7); fill("#dcd9ce"); rect(52, 26.5, 62, 9, 4.5);
+  for (let i = 0; i < 5; i++) {
+    const y = 68 + i * 38;
+    if (i === 0) { fill("#e8e5da"); rect(14, y, 121, 32, 8); fill(15, 15, 66, 110); } else fill("#d6d3c8");
+    rect(26, y + 11.5, NAV_W[i], 9, 4.5);
+  }
+  fill(UI_LINE); rect(150, 44, 750, 2); fill("#dcd9ce"); rect(166, 17.5, 130, 9, 4.5); fill("#e3e0d6"); circle(869, 22, 26);
+  const sx = [166, 410], su = [68, 56], sn = ["128", "46"];
+  for (let i = 0; i < 2; i++) { uiCard(sx[i], 62, 228, 98); fill("#e3e0d6"); rect(sx[i] + 24, 84, su[i], 7, 3.5); tx(sn[i], sx[i] + 24, 124, 34, NAVY, SERIF, -.68); }
+  uiCard(166, 180, 718, 282);
+  fill("#ece9df"); rect(190, 202, 118, 22, 11); fill("#e3e0d6");
+  const cx = [0, 250, 430, 610], cw = [90, 70, 60, 50];
+  for (let i = 0; i < 4; i++) rect(190 + cx[i], 246, cw[i], 8, 4);
+  for (let r = 0; r < 3; r++) {
+    const y = ROW_Y[r];
+    if (r < 2) { fill("#eeece5"); rect(190, y + 56, 670, 2); }
+    const uy = y + (r < 2 ? 23.5 : 24.5);
+    for (let k = 0; k < 3; k++) { const u = ROW_U[r][k]; fill(u[2] ? "#e8e6de" : "#d6d3c8"); rect(190 + u[0], uy, u[1], 9, 4.5); }
+    tx(sw.pharma ? NAMES_B[r] : NAMES_A[r], 190, y + (r < 2 ? 28 : 29), 21, ca("#4a4a58", sw.a), SANS, -.1);
+  }
+}
+</script>
+</body>
+</html>
