@@ -56,7 +56,7 @@ const T_SPIN = 1.0, SPIN_D = 1.7;    // scene 1: logo spins, rays draw out
 const T_BOX = 2.0, TYPE0 = T_BOX + .9;   // prompt box appears, then types
 const LENS_D = 1.3;
 let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_OUTRO, T_WORDS, T_BACK, LOOP;
-const PATH_D = 6.5;                  // the logo glides over the screen for this long
+const PATH_D = 10;                  // the logo glides over the screen for this long
 const OFF = .9;                      // later loops skip the headline intro
 
 let ti = 0, START = 0.5, PS = 1, ready = false;
@@ -107,8 +107,8 @@ function setup() {
   }
   T_UP = TYPE0 + TYPE_DUR + .7;     // sent: the prompt rises and the navy opens from the centre
   T_WORDS = T_UP + .8;              // "and start prompting them." arrives
-  T_WIN = T_UP + 1.3;               // demo screen pops into view (empty)
-  T_DATA = T_WIN + 1.0;             // data fades in all at once
+  T_WIN = T_UP + .25;               // demo screen pops into view with the background transition (empty)
+  T_DATA = T_UP + 1.5;              // data fades in all at once, once the navy has opened
   T_LEAVE = T_DATA + 1.0;           // logo leaves the prompt once the data is in, floats over the screen
   T_OUTRO = T_LEAVE + PATH_D + .15; // screen and prompt fade out
   T_BACK = T_OUTRO + .9;            // navy closes onto the logo, light blue returns
@@ -189,7 +189,7 @@ function logoState(t) {                                  // position / scale / t
   const P = [corner, uiG(200, 150), uiG(450, 150), uiG(730, 150), uiG(450, 235), uiG(240, 300), uiG(520, 310), uiG(810, 285),
              uiG(560, 400), uiG(300, 470), uiG(520, 495), uiG(740, 495), [CX, CY]];
   const u = EPATH(pr(t, T_LEAVE, PATH_D));
-  const sc = u < .12 ? lerp(.5 * BS, .9, EIO(u / .12)) : u > .88 ? lerp(.9, 2.6, EIO((u - .88) / .12)) : .9;
+  const sc = u < .12 ? lerp(.8 * BS, .9, EIO(u / .12)) : u > .88 ? lerp(.9, 2.6, EIO((u - .88) / .12)) : .9;
   return { pos: catmull(P, u), sc: sc, turns: 2 + 3 * u };
 }
 function drawLogo1(la) {
@@ -202,7 +202,7 @@ function drawLogo1(la) {
     const g = EIO(pr(ti, TYPE0 + TYPE_DUR + .05, .6)), e = EIO(pr(ti, T_BOX + .3, .9));
     const lx = lerp(29.5 + lw + 28, w - 46, g);
     const tgt = [CX - w * BS / 2 + lx * BS, boxTop() + ey + 36 * BS];
-    pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6, .5 * BS, e); turns = e + g;
+    pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6, .8 * BS, e); turns = e + g;
   } else { const L = logoState(ti); pos = L.pos; sc = L.sc; turns = L.turns; }
   const col = lerpColor(color(NAVY), color("#fcfcf9"), EASE(pr(ti, T_OUTRO, .6)));      // cream once it is alone on the navy
   spark(pos[0], pos[1], sc, spin + TWO_PI * turns, col.toString(), la);
