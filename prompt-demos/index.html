@@ -189,7 +189,7 @@ function logoState(t) {                                  // position / scale / t
   const P = [corner, uiG(200, 150), uiG(450, 150), uiG(730, 150), uiG(450, 235), uiG(240, 300), uiG(520, 310), uiG(810, 285),
              uiG(560, 400), uiG(300, 470), uiG(520, 495), uiG(740, 495), [CX, CY]];
   const u = EPATH(pr(t, T_LEAVE, PATH_D));
-  const sc = u < .12 ? lerp(.5 * BS, .9, EIO(u / .12)) : u > .88 ? lerp(.9, 2.6, EIO((u - .88) / .12)) : .9;
+  const sc = u < .12 ? lerp(.8 * BS, .9, EIO(u / .12)) : u > .88 ? lerp(.9, 2.6, EIO((u - .88) / .12)) : .9;
   return { pos: catmull(P, u), sc: sc, turns: 2 + 3 * u };
 }
 function drawLogo1(la) {
@@ -202,7 +202,7 @@ function drawLogo1(la) {
     const g = EIO(pr(ti, TYPE0 + TYPE_DUR + .05, .6)), e = EIO(pr(ti, T_BOX + .3, .9));
     const lx = lerp(29.5 + lw + 28, w - 46, g);
     const tgt = [CX - w * BS / 2 + lx * BS, boxTop() + ey + 36 * BS];
-    pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6, .5 * BS, e); turns = e + g;
+    pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6, .8 * BS, e); turns = e + g;
   } else { const L = logoState(ti); pos = L.pos; sc = L.sc; turns = L.turns; }
   const col = lerpColor(color(NAVY), color("#fcfcf9"), EASE(pr(ti, T_OUTRO, .6)));      // cream once it is alone on the navy
   spark(pos[0], pos[1], sc, spin + TWO_PI * turns, col.toString(), la);
