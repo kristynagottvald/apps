@@ -46,18 +46,16 @@ const SW_ = 1920, SH_ = 1112;
 const CX = 1440, CY = 556;           // centre: logo, rays, lens
 const BANDS = [[156, 246], [284, 448], [488, 770]];   // ray bands (radius), measured
 const NRAYS = 48;
-const WIN = { x: 940, y: 251, s: 1.08 };              // sales demo window (613x461 at scale s)
+const WINS = .95;                    // UI window scale, centred on the rays
+const WIN = { x: CX - 450 * WINS, y: CY - 282.5 * WINS, s: WINS };              // sales demo window (613x461 at scale s)
 const WIN_R = 1150;                  // iris radius that fully covers the window
 
-/* ---- timeline (seconds; scene 1 is the loop start) ---- */
-const T_SPIN = 1.0, SPIN_D = 1.7;    // logo spins, UI iris opens
-const T_TOUR = 2.9, HOP = .85;      // logo visits 5 blocks, filling each with data
-const T_A = 8.3, CLOSE_D = 1.6;      // logo spins back, UI iris closes
-const T_B = T_A + CLOSE_D, LENS_D = 1.3;   // light lens closes onto the logo, navy opens
-const T_C = T_B + LENS_D;
-const T_WORDS = T_B + .9;
-const T_BOX = T_WORDS + 3.0, TYPE0 = T_BOX + .9;
-let RT = [0, 0], TYPE_DUR = 0, T_M, T_S, T_OUT, T_BACK, LOOP;
+/* ---- timeline (seconds). Scene 1 (light) = prompt, scene 2 (navy) = UI being filled ---- */
+const T_SPIN = 1.0, SPIN_D = 1.7;    // scene 1: logo spins, rays draw out
+const T_BOX = 2.0, TYPE0 = T_BOX + .9;   // prompt box appears, then types
+const LENS_D = 1.3, CLOSE_D = 1.6, HOP = .85;
+let RT = [0, 0], TYPE_DUR = 0, T_S, T_OUT, T_B, T_C, T_WORDS, T_S2, T_TOUR, T_A, T_BACK, LOOP;
+let tA0, tA1, tB0, tB1, tC0, tC1;       // logo sweeps: KPI tiles, chart, table
 const OFF = .9;                      // later loops skip the headline intro
 
 let ti = 0, START = 0.5, PS = 1, ready = false;
@@ -106,10 +104,18 @@ function setup() {
     const d = n === N1 + 1 ? .26 : .046 + .03 * (abs(sin(n * 12.9898) * 43758.5453) % 1);
     if (n < TOT) RT[n + 1] = RT[n] + d; else TYPE_DUR = RT[n] + d;
   }
-  T_M = TYPE0 + TYPE_DUR + .5;      // pointer reaches send
-  T_S = T_M + .5;                   // send -> sent
-  T_OUT = T_S + 2.6;                // prompt fades
-  T_BACK = T_OUT + .9;              // lens opens back to light
+  T_S = TYPE0 + TYPE_DUR + .7;      // send -> box turns navy
+  T_OUT = T_S + 1.7;                // prompt fades, logo returns to centre
+  T_B = T_OUT + 1.0;                // light lens closes onto the logo, navy opens
+  T_C = T_B + LENS_D;
+  T_WORDS = T_B + .9;               // "and start prompting them." arrives
+  T_S2 = T_C + .1;                  // scene 2: logo spins, UI iris opens
+  T_TOUR = T_S2 + 1.9;              // logo visits 5 blocks, filling each with data
+  tA0 = T_TOUR; tA1 = tA0 + 1.1;     // sweep across the KPI tiles
+  tB0 = tA1 + .5; tB1 = tB0 + 1.5;   // follow the chart line
+  tC0 = tB1 + .5; tC1 = tC0 + 1.2;   // sweep down the table
+  T_A = tC1 + 1.3;                  // logo back to centre, iris closes
+  T_BACK = T_A + CLOSE_D;           // lens opens back to light
   LOOP = T_BACK + LENS_D + .5;
   document.fonts.load("400 112px 'Inter Tight'").then(() => document.fonts.load("600 112px 'Inter Tight'")).catch(() => {}).finally(() => { ready = true; });
 }
@@ -148,52 +154,29 @@ function draw() {
   pop();
 }
 
-/* ============== SCENE 1 ============== */
+/* ============== SCENE 1 (light): prompt ============== */
 function drawScene1(base) {
-  const t = base ? 0 : ti;                    // base = idle state (headline + logo, no UI)
   noStroke(); fill(LIGHT); rect(0, 0, SW_, SH_);
   const a = base ? 1 : EASE(pr(ti, .1, .8)), up = base ? 0 : 26 * (1 - EOUT(pr(ti, .1, 1)));
   push(); drawingContext.globalAlpha = a;
   ht("Stop building", HX, BASE[0] + up, 400, NAVY, 1);
   ht("demos", HX, BASE[1] + up, 400, NAVY, 1);
   pop();
+  if (base) { spark(CX, CY, 2.6, 0, NAVY, 1); return; }
+  drawRays(pr(ti, T_SPIN, SPIN_D + .4), [52, 100, 188], .5);
+  drawPrompt();
+  drawLogo1(a);
+}
 
-  // spin -> iris + rays; logo then visits 5 blocks of the UI (each fills with data) and settles top-right
-  const corner = [WIN.x + 857 * WIN.s, WIN.y + 34 * WIN.s], CSC = .75, TSC = .9;
-  const ug = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
-  const stops = [ug(255, 156), ug(487, 156), ug(722, 156), ug(520, 300), ug(470, 487)];
-  const P = [[CX, CY], ...stops, corner];
-  const starts = [T_TOUR - .5, ...[0, 1, 2, 3].map(i => T_TOUR + i * HOP + .3), T_TOUR + 4 * HOP + .3 + .25];
-  const ends = [...[0, 1, 2, 3, 4].map(i => T_TOUR + i * HOP), T_TOUR + 4 * HOP + .3 + .25 + .8];
-  let iris = 0, rot = 0, la = base ? 1 : EASE(pr(ti, .1, .8)), pos = [CX, CY], sc = 2.6, rp = 0;
-  const rv = [0, 0, 0, 0, 0];
-  if (!base) {
-    if (ti >= T_A) {                                   // back to centre, then spin back as the iris closes
-      const m = EIO(pr(ti, T_A, .6)), pc = EIO(pr(ti, T_A + .5, CLOSE_D - .5));
-      pos = [lerp(corner[0], CX, m), lerp(corner[1], CY, m)]; sc = lerp(CSC, 2.6, m);
-      iris = WIN_R * (1 - pc); rot = -TWO_PI * 2 * pc; rp = 1 - pc; rv.fill(1);
-    } else if (ti >= T_SPIN) {
-      const p = pr(ti, T_SPIN, SPIN_D);
-      iris = WIN_R * EIO(p); rot = TWO_PI * 2 * EIO(p); rp = pr(ti, T_SPIN, SPIN_D + .4);
-      let turns = 0;
-      for (let k = 0; k < P.length - 1; k++) {
-        if (ti < starts[k]) break;
-        const e = EIO(pr(ti, starts[k], ends[k] - starts[k]));
-        pos = [lerp(P[k][0], P[k + 1][0], e), lerp(P[k][1], P[k + 1][1], e)]; turns += e;
-        sc = k === 0 ? lerp(2.6, TSC, e) : k === P.length - 2 ? lerp(TSC, CSC, e) : TSC;
-      }
-      rot += TWO_PI * turns;
-      for (let i = 0; i < 5; i++) rv[i] = EASE(pr(ti, T_TOUR + i * HOP + .1, .5));
-    }
-  }
-  if (rp > 0) drawRays(rp, [52, 100, 188], .5);
-  if (iris > 0.5) drawWindow(iris, rv);
-  // data-point pulse where the logo lands
-  for (let i = 0; i < 5 && !base; i++) {
-    const k = pr(ti, T_TOUR + i * HOP, .7);
-    if (k > 0 && k < 1 && ti < T_A) { noFill(); stroke(15, 15, 66, 140 * (1 - k)); strokeWeight(2); circle(stops[i][0], stops[i][1], 24 + 120 * EOUT(k)); }
-  }
-  spark(pos[0], pos[1], sc, rot, NAVY, la);
+/* the spark spins at centre, then travels into the prompt's top-left corner and back */
+function drawLogo1(la) {
+  const spin = TWO_PI * 2 * EIO(pr(ti, T_SPIN, SPIN_D));
+  const e = ti < T_OUT ? EIO(pr(ti, T_BOX + .4, 1.0)) : 1 - EIO(pr(ti, T_OUT, .9));
+  const ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
+  const tgt = [CX - boxW() * BS / 2 + 36 * BS, BY + ey + 36 * BS];
+  const dst = lerpColor(color(NAVY), color(CREAM), sentAmt());
+  const col = lerpColor(color(NAVY), dst, EASE(pr(e, 0, .3)));
+  spark(lerp(CX, tgt[0], e), lerp(CY, tgt[1], e), lerp(2.6, .6 * BS, e), spin + TWO_PI * e, col.toString(), la);
 }
 
 function drawWindow(iris, rv) {
@@ -202,7 +185,7 @@ function drawWindow(iris, rv) {
   c.save();
   c.beginPath(); c.arc(CX, CY, iris, 0, TWO_PI); c.clip();    // iris from the logo
   translate(WIN.x, WIN.y); scale(WIN.s);
-  c.save(); c.shadowColor = "rgba(15,15,66,.18)"; c.shadowBlur = 44 * PS; c.shadowOffsetY = 14 * PS;
+  c.save(); c.shadowColor = "rgba(2,3,30,.45)"; c.shadowBlur = 44 * PS; c.shadowOffsetY = 14 * PS;
   noStroke(); fill(255); rect(0, 0, 900, 565, 14); c.restore();
   c.save(); c.beginPath(); c.roundRect(0, 0, 900, 565, 14); c.clip();
   drawSecUI(rv);
@@ -212,7 +195,7 @@ function drawWindow(iris, rv) {
   pop();
 }
 
-/* ============== SCENE 2 ============== */
+/* ============== SCENE 2 (navy): headline + UI filled by the logo ============== */
 function drawScene2() {
   noStroke(); fill(DEEP); rect(0, 0, SW_, SH_);
   drawingContext.drawImage(grain, 0, 0);
@@ -229,8 +212,45 @@ function drawScene2() {
     ht(w[0], w[2], w[3] + 30 * (1 - EOUT(p)), w[1], "#fff", EASE(p));
   }
   pop();
-  drawPrompt();
-  drawLogo2();
+
+  // spin -> iris opens the UI; the logo then sweeps over 3 sections and the data reacts to it
+  const TSC = .9, ug = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
+  const lineY = x => { const q = constrain((x - 207) / 645 * 13, 0, 13), i = min(floor(q), 12); return 362 - lerp(VOL[i], VOL[i + 1], q - i) * 98; };
+  const A0 = [180, 145], A1 = [790, 145], B0 = [207, lineY(207)], B1 = [852, lineY(852)], C0 = [310, 436], C1 = [430, 522];
+  const uA = pr(ti, tA0, tA1 - tA0), uB = pr(ti, tB0, tB1 - tB0), uC = pr(ti, tC0, tC1 - tC0);
+  const hop = (t0, d) => EIO(pr(ti, t0, d));
+  let iris = 0, rot = 0, pos = [CX, CY], sc = 2.6;
+  const rv = new Array(7).fill(0);
+  if (ti >= T_A) {                                     // back to centre, spin back as the iris closes
+    const m = EIO(pr(ti, T_A, .6)), pc = EIO(pr(ti, T_A + .5, CLOSE_D - .5)), L = ug(C1[0], C1[1]);
+    pos = [lerp(L[0], CX, m), lerp(L[1], CY, m)]; sc = lerp(TSC, 2.6, m);
+    iris = WIN_R * (1 - pc); rot = -TWO_PI * 2 * pc; rv.fill(1);
+  } else if (ti >= T_S2) {
+    const p = pr(ti, T_S2, SPIN_D);
+    iris = WIN_R * EIO(p); rot = TWO_PI * 2 * EIO(p);
+    let uiPos = null;                                  // logo position in UI coordinates once it is on the screen
+    const h0 = hop(T_TOUR - .5, .5), h1 = hop(tA1, .5), h2 = hop(tB1, .5);
+    if (ti < tA0) { const g = ug(A0[0], A0[1]); pos = [lerp(CX, g[0], h0), lerp(CY, g[1], h0)]; sc = lerp(2.6, TSC, h0); }
+    else {
+      sc = TSC;
+      if (ti < tA1) uiPos = [lerp(A0[0], A1[0], uA), A0[1]];
+      else if (ti < tB0) uiPos = [lerp(A1[0], B0[0], h1), lerp(A1[1], B0[1], h1)];
+      else if (ti < tB1) { const x = lerp(B0[0], B1[0], uB); uiPos = [x, lineY(x)]; }
+      else if (ti < tC0) uiPos = [lerp(B1[0], C0[0], h2), lerp(B1[1], C0[1], h2)];
+      else uiPos = [lerp(C0[0], C1[0], uC), lerp(C0[1], C1[1], uC)];
+      pos = ug(uiPos[0], uiPos[1]);
+    }
+    rot += TWO_PI * (h0 + h1 + h2);
+    // data reacts to the logo: tiles fill as it passes, the line is drawn up to it, rows fill as it descends
+    const lx = ti < tA0 ? -999 : ti >= tA1 ? 9999 : lerp(A0[0], A1[0], uA);
+    [188, 420, 654].forEach((x, i) => { rv[i] = EASE(constrain((lx - (x + 40)) / 90, 0, 1)); });
+    rv[3] = ti < tB0 ? 0 : uB;
+    const ly = ti < tC0 ? -999 : lerp(C0[1], C1[1], uC);
+    [453, 487, 521].forEach((y, i) => { rv[4 + i] = EASE(constrain((ly - (y - 30)) / 34, 0, 1)); });
+  }
+  if (iris > 0.5) drawWindow(iris, rv);
+  const col = lerpColor(color("#fcfcf9"), color(NAVY), constrain(iris / 110, 0, 1));   // cream on navy, navy on the white UI
+  spark(pos[0], pos[1], sc, rot, col.toString(), 1);
 }
 
 function drawRays(p, rgb, al) {
@@ -253,7 +273,7 @@ function drawRays(p, rgb, al) {
   pop();
 }
 
-/* ---- prompt box (style from the supplied code), right of the logo ---- */
+/* ---- prompt box (style from the supplied code), centred in the rays ---- */
 const BS = 1.15, BY = CY - 84.25 * BS;       // box centred on the rays
 function typedCount() {
   const u = ti - TYPE0; if (u < 0) return 0; let n = 0;
@@ -266,7 +286,7 @@ function overlayAlpha() {
   return ti >= T_OUT ? a * (1 - EASE(pr(ti, T_OUT, .8))) : a;
 }
 function sentAmt() { return ti < T_S ? 0 : EASE(pr(ti, T_S, .35)); }
-function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36); }
+function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36 + 110); }   // +110: a longer box
 
 function drawPrompt() {
   const ea = overlayAlpha(); if (ea <= 0.002) return;
@@ -275,9 +295,11 @@ function drawPrompt() {
 
   push(); drawingContext.globalAlpha = ea;
   translate(CX - w * BS / 2, BY + ey); scale(BS);
-  fill(lerpColor(color(CREAM), color(15, 15, 66, 235), cs));
+  drawingContext.shadowColor = "rgba(15,15,66,.14)"; drawingContext.shadowBlur = 30 * PS; drawingContext.shadowOffsetY = 10 * PS;
+  fill(lerpColor(color(255), color(15, 15, 66, 235), cs));
   stroke(150, 144, 128, 204); strokeWeight(1.5);
   rect(.75, .75, w - 1.5, 168.5, 9.25, 9.25, 0, 9.25);
+  drawingContext.shadowColor = "transparent";
   const n = typedCount();
   const a = L1.slice(0, min(n, N1)), b = n > N1 ? L2.slice(0, n - N1 - 1) : "";
   const col = lerpColor(color(NAVY), color(CREAM), cs);
@@ -288,16 +310,6 @@ function drawPrompt() {
     noStroke(); fill(HL); rect(x0 + lw + 2, (onFirst ? c1 : c2) - 15.6, 2, 30);
   }
   pop();
-}
-
-/* ---- the spark travels into the prompt's top-left corner and back ---- */
-function drawLogo2() {
-  const e = ti < T_OUT ? EIO(pr(ti, T_BOX + .4, 1.0)) : 1 - EIO(pr(ti, T_OUT, .9));
-  const ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
-  const tgt = [CX - boxW() * BS / 2 + 36 * BS, BY + ey + 36 * BS];
-  const dst = lerpColor(color(NAVY), color(CREAM), sentAmt());
-  const col = lerpColor(color("#fcfcf9"), dst, EASE(pr(e, 0, .3)));
-  spark(lerp(CX, tgt[0], e), lerp(CY, tgt[1], e), lerp(2.6, .6 * BS, e), TWO_PI * e, col.toString(), 1);
 }
 
 /* ---- Security overview UI. rv[0..4] = tile 1, tile 2, tile 3, chart, table (0 = empty skeleton, 1 = filled) ---- */
@@ -368,7 +380,7 @@ function drawSecUI(rv) {
   [["SEVERITY", 207], ["ALERT", 315], ["ASSET", 590], ["STATUS", 757]].forEach(h => ut(h[0], h[1], 416, 12.5, 400, GRAY, 1.1));
   fill("#ecebe5"); rect(207, 433, 645, 1); rect(207, 470, 645, 1); rect(207, 504, 645, 1);
   [453, 487, 521].forEach((y, r) => {
-    const rr = constrain(rv[4] * 1.6 - r * .3, 0, 1), d = ROWS[r];
+    const rr = rv[4 + r], d = ROWS[r];
     fill(ca("#eeece5", 1 - rr));
     rect(207, y - 4.5, 34, 9, 4.5); rect(315, y - 4.5, 190, 9, 4.5); rect(590, y - 4.5, 90, 9, 4.5); rect(757, y - 4.5, 40, 9, 4.5);
     ut(d[0], 207, y, 12, 600, r < 2 ? NAVY : "#5a5f78", 1, "left", rr);
