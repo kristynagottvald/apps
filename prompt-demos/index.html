@@ -55,8 +55,8 @@ const WIN_R = 1150;                  // iris radius that fully covers the window
 const T_SPIN = 1.0, SPIN_D = 1.7;    // scene 1: logo spins, rays draw out
 const T_BOX = 2.0, TYPE0 = T_BOX + .9;   // prompt box appears, then types
 const LENS_D = 1.3;
-let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_WORDS, T_BACK, LOOP, tHop1, tHop2, NAVY_R = 0;
-const H0 = 1.7, H1 = 1.9, H2 = 1.9, DW = .7, BACK_D = 1.9;   // logo hops: prompt > Assets > graph > STATUS, then to the middle while the navy closes
+let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_WORDS, T_BACK, LOOP, tHop1, NAVY_R = 0;
+const H0 = 1.7, H1 = 1.9, DW = .7, PAUSE = 1.0, BACK_D = 1.9, OPEN_D = .8;   // logo hops: prompt > Assets > graph, pause, then spin to the middle while the navy closes
 const OFF = .9;                      // later loops skip the headline intro
 
 let ti = 0, START = 0.5, PS = 1, ready = false;
@@ -106,13 +106,12 @@ function setup() {
     if (n < TOT) RT[n + 1] = RT[n] + d; else TYPE_DUR = RT[n] + d;
   }
   T_UP = TYPE0 + TYPE_DUR + .7;     // sent: the prompt rises and the navy opens from the centre
-  T_WORDS = T_UP + .8;              // "and start prompting them." arrives
-  T_WIN = T_UP + .25;               // demo screen pops into view with the background transition (empty)
+  T_WORDS = T_UP + .6;              // "and start prompting them." arrives
+  T_WIN = T_UP + .35;               // demo screen pops with the background transition, once the navy is mostly open
   T_DATA = T_UP + 1.5;              // data fades in all at once, once the navy has opened
   T_LEAVE = T_DATA + 1.0;           // logo leaves the prompt once the data is in, floats over the screen
   tHop1 = T_LEAVE + H0 + DW;        // Assets > graph
-  tHop2 = tHop1 + H1 + DW;          // graph > STATUS
-  T_BACK = tHop2 + H2 + .6;         // STATUS > middle: the navy closes onto the logo as it arrives
+  T_BACK = tHop1 + H1 + PAUSE;      // pause on the graph, then spin to the middle while the navy closes onto the logo
   LOOP = T_BACK + BACK_D + .6;
   document.fonts.load("400 112px 'Inter Tight'").then(() => document.fonts.load("600 112px 'Inter Tight'")).catch(() => {}).finally(() => { ready = true; });
 }
@@ -140,7 +139,7 @@ function draw() {
   drawingContext.beginPath(); drawingContext.rect(0, 0, SW_, SH_); drawingContext.clip();
 
   const back = ti >= T_BACK, done = ti >= T_BACK + BACK_D;
-  const R = ti < T_UP ? 0 : !back ? 2300 * EIO(pr(ti, T_UP, LENS_D)) : 2300 * (1 - EIO(pr(ti, T_BACK, BACK_D)));
+  const R = ti < T_UP ? 0 : !back ? 2300 * EIO(pr(ti, T_UP, OPEN_D)) : 2300 * (1 - EIO(pr(ti, T_BACK, BACK_D)));
   NAVY_R = R;
   drawLight(back, done);
   if (R > .5) { push(); drawingContext.save(); circClip(R); drawNavy(back); drawingContext.restore(); pop(); }
@@ -188,8 +187,8 @@ function catmull(P, u) {
 const uiG = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
 function logoState(t) {                                  // position / scale of the logo while it floats over the screen (no spin over the screen, two turns on the way back)
   const corner = [CX - boxW() * BS / 2 + (boxW() - 46) * BS, BOX_BOT - boxH() * BS + 36 * BS];
-  const S = [corner, uiG(300, 125), uiG(520, 300), uiG(800, 416), [CX, CY]];      // Assets tile, the graph, the STATUS header, the middle
-  const hops = [[T_LEAVE, H0], [tHop1, H1], [tHop2, H2], [T_BACK, BACK_D]];
+  const S = [corner, uiG(300, 125), uiG(520, 300), [CX, CY]];      // Assets tile, the graph, the middle
+  const hops = [[T_LEAVE, H0], [tHop1, H1], [T_BACK, BACK_D]];
   let pos = S[0];
   hops.forEach((h, i) => { if (t >= h[0]) { const e = EIO(pr(t, h[0], h[1])); pos = [lerp(S[i][0], S[i + 1][0], e), lerp(S[i][1], S[i + 1][1], e)]; } });
   const sc = t < T_BACK ? lerp(.8 * BS, .9, EIO(pr(t, T_LEAVE, H0))) : lerp(.9, 2.6, EIO(pr(t, T_BACK, BACK_D)));
