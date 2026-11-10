@@ -194,7 +194,7 @@ function catmull(P, u) {
 }
 const uiG = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
 function logoState(t) {                                  // position / scale of the logo while it floats over the screen (no spin over the screen, two turns on the way back)
-  const corner = [CX - boxW() * BS / 2 + (boxW() - 46) * BS, BOX_BOT - boxH() * BS + 36 * BS];
+  const corner = [CX - boxW() * BS / 2 + (boxW() - 36) * BS, BOX_BOT - boxH() * BS + 36 * BS];
   const S = [corner, uiG(300, 125), uiG(520, 300), [CX, CY]];      // Assets tile, the graph, the middle
   const hops = [[T_LEAVE, H0], [tHop1, H1], [T_BACK, BACK_D]];
   let pos = S[0];
@@ -219,7 +219,7 @@ function drawLogo1(la) {
     const w = boxW(), ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
     const lw = tw(L1.slice(0, min(typedCount(), N1)), 23, SANS, -.23);
     const g = EIO(pr(ti, TYPE0 + TYPE_DUR + .05, .6)), e = EIO(pr(ti, T_BOX + .3, .9));
-    const lx = lerp(29.5 + lw + 28, w - 46, g);
+    const lx = lerp(29.5 + lw + 28, w - 36, g);
     const tgt = [CX - w * BS / 2 + lx * BS, boxTop() + ey + 36 * BS];
     pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6 * pop, .8 * BS, e); turns = e + g;
   } else { const L = logoState(ti); pos = L.pos; sc = L.sc; turns = L.turns; }
@@ -307,7 +307,7 @@ function typedCount() {
 function lastRender() { return ti < TYPE0 ? T_BOX : TYPE0 + RT[max(1, typedCount())]; }
 function overlayAlpha() { return ti < T_BOX ? 0 : EASE(pr(ti, T_BOX, .8)) * (1 - EASE(pr(ti, T_BACK, .7))); }
 function sentAmt() { return 0; }
-function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36 + 70); }   // text + room for the logo at the right
+function boxW() { return round(100 + max(tw(L1, 23), tw(L2, 23))); }   // left pad 30 + text + gap 16 + logo 36 + right pad 18
 
 function drawPrompt() {
   const ea = overlayAlpha(); if (ea <= 0.002) return;
