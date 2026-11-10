@@ -56,7 +56,7 @@ const T_SPIN = 1.0, SPIN_D = 1.7;    // scene 1: logo spins, rays draw out
 const T_BOX = 2.0, TYPE0 = T_BOX + .9;   // prompt box appears, then types
 const LENS_D = 1.3;
 let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_OUTRO, T_WORDS, T_BACK, LOOP;
-const PATH_D = 6.5;                  // the logo glides over the screen for this long
+const PATH_D = 10;                  // the logo glides over the screen for this long
 const OFF = .9;                      // later loops skip the headline intro
 
 let ti = 0, START = 0.5, PS = 1, ready = false;
@@ -107,8 +107,8 @@ function setup() {
   }
   T_UP = TYPE0 + TYPE_DUR + .7;     // sent: the prompt rises and the navy opens from the centre
   T_WORDS = T_UP + .8;              // "and start prompting them." arrives
-  T_WIN = T_UP + 1.3;               // demo screen pops into view (empty)
-  T_DATA = T_WIN + 1.0;             // data fades in all at once
+  T_WIN = T_UP + .25;               // demo screen pops into view with the background transition (empty)
+  T_DATA = T_UP + 1.5;              // data fades in all at once, once the navy has opened
   T_LEAVE = T_DATA + 1.0;           // logo leaves the prompt once the data is in, floats over the screen
   T_OUTRO = T_LEAVE + PATH_D + .15; // screen and prompt fade out
   T_BACK = T_OUTRO + .9;            // navy closes onto the logo, light blue returns
