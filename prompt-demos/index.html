@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stop Building Demos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 html,body{margin:0;height:100%;background:#000;overflow:hidden}
 body{display:flex;flex-direction:column}
@@ -33,7 +33,7 @@ const DEEP = "#0e0e43";             // scene 2 background (from the image)
 const SANS = "Arial", MONO = "Courier New", SERIF = "Georgia";
 const HEAD = "'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif";
 
-const L1 = "Use my premade Pharma dataset", L2 = "and give me the link to share";
+const L1 = "Fill these charts", L2 = "with demo data.";
 const N1 = L1.length, TOT = N1 + 1 + L2.length;
 const NAMES_A = ["Northwind", "Globex", "Initech"], NAMES_B = ["AbbVie", "AstraZeneca", "Bristol Myers"];
 const NAV_W = [70, 44, 62, 52, 38], ROW_Y = [274, 332, 390];
@@ -46,7 +46,7 @@ const SW_ = 1920, SH_ = 1112;
 const CX = 1440, CY = 556;           // centre: logo, rays, lens
 const BANDS = [[156, 246], [284, 448], [488, 770]];   // ray bands (radius), measured
 const NRAYS = 48;
-const WIN = { x: 940, y: 187, s: 1.6 };              // sales demo window (613x461 at scale s)
+const WIN = { x: 940, y: 251, s: 1.08 };              // sales demo window (613x461 at scale s)
 const WIN_R = 1150;                  // iris radius that fully covers the window
 
 /* ---- timeline (seconds; scene 1 is the loop start) ---- */
@@ -159,9 +159,9 @@ function drawScene1(base) {
   pop();
 
   // spin -> iris + rays; logo then visits 5 blocks of the UI (each fills with data) and settles top-right
-  const corner = [WIN.x + 579 * WIN.s, WIN.y + 26.5 * WIN.s], CSC = .75, TSC = .9;
-  const ug = (ux, uy) => [WIN.x + (8 + ux * .6728) * WIN.s, WIN.y + (53 + uy * .6728) * WIN.s];
-  const stops = [ug(280, 112), ug(524, 112), ug(250, 302), ug(250, 360), ug(250, 418)];
+  const corner = [WIN.x + 857 * WIN.s, WIN.y + 34 * WIN.s], CSC = .75, TSC = .9;
+  const ug = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
+  const stops = [ug(255, 156), ug(487, 156), ug(722, 156), ug(520, 300), ug(470, 487)];
   const P = [[CX, CY], ...stops, corner];
   const starts = [T_TOUR - .5, ...[0, 1, 2, 3].map(i => T_TOUR + i * HOP + .3), T_TOUR + 4 * HOP + .3 + .25];
   const ends = [...[0, 1, 2, 3, 4].map(i => T_TOUR + i * HOP), T_TOUR + 4 * HOP + .3 + .25 + .8];
@@ -198,21 +198,17 @@ function drawScene1(base) {
 
 function drawWindow(iris, rv) {
   push();
-  drawingContext.save();
-  // iris (from the logo) ∩ window shape
-  drawingContext.beginPath(); drawingContext.arc(CX, CY, iris, 0, TWO_PI); drawingContext.clip();
-  translate(WIN.x, WIN.y); scale(WIN.s);
   const c = drawingContext;
-  c.save(); c.shadowColor = "rgba(15,15,66,.16)"; c.shadowBlur = 40 * PS; c.shadowOffsetY = 12 * PS;
-  noStroke(); fill(255); rect(0, 0, 613, 461, 14); c.restore();
-  noFill(); stroke("#dedbd0"); strokeWeight(1.5); rect(.75, .75, 611.5, 459.5, 13.5);
-  tx("Sales demo", 16, 26.5, 22, NAVY, SANS, -.22);
-  push();
-  c.beginPath(); c.roundRect(8, 53, 597, 394, [8, 8, 8, 8]); c.clip();
-  translate(8, 53); scale(.6728);
-  drawUI({ pharma: false, a: 1, rv: rv });
-  pop();
-  drawingContext.restore();
+  c.save();
+  c.beginPath(); c.arc(CX, CY, iris, 0, TWO_PI); c.clip();    // iris from the logo
+  translate(WIN.x, WIN.y); scale(WIN.s);
+  c.save(); c.shadowColor = "rgba(15,15,66,.18)"; c.shadowBlur = 44 * PS; c.shadowOffsetY = 14 * PS;
+  noStroke(); fill(255); rect(0, 0, 900, 565, 14); c.restore();
+  c.save(); c.beginPath(); c.roundRect(0, 0, 900, 565, 14); c.clip();
+  drawSecUI(rv);
+  c.restore();
+  noFill(); stroke("#dedbd0"); strokeWeight(1.5); rect(.75, .75, 898.5, 563.5, 13.5);
+  c.restore();
   pop();
 }
 
@@ -270,10 +266,7 @@ function overlayAlpha() {
   return ti >= T_OUT ? a * (1 - EASE(pr(ti, T_OUT, .8))) : a;
 }
 function sentAmt() { return ti < T_S ? 0 : EASE(pr(ti, T_S, .35)); }
-function boxW() {
-  const full = round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 22 + 48 + 20), sent = round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36);
-  return ti < T_S ? full : lerp(full, sent, EOUT(pr(ti, T_S, .4)));
-}
+function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36); }
 
 function drawPrompt() {
   const ea = overlayAlpha(); if (ea <= 0.002) return;
@@ -294,13 +287,6 @@ function drawPrompt() {
     const onFirst = n <= N1, lw = tw(onFirst ? a : b, 23, SANS, -.23);
     noStroke(); fill(HL); rect(x0 + lw + 2, (onFirst ? c1 : c2) - 15.6, 2, 30);
   }
-  if (ti < T_S + .12) {
-    const bx = w - 69.5, by = 89.5;
-    noStroke(); fill("#e8e5da"); rect(bx, by, 48, 48, 7);
-    push(); translate(bx + 24, by + 24); scale(19 / 16);
-    stroke(NAVY); strokeWeight(2); strokeCap(ROUND); strokeJoin(ROUND); noFill();
-    line(-5, 0, 5, 0); line(1, -4, 5, 0); line(1, 4, 5, 0); pop();
-  }
   pop();
 }
 
@@ -314,34 +300,82 @@ function drawLogo2() {
   spark(lerp(CX, tgt[0], e), lerp(CY, tgt[1], e), lerp(2.6, .6 * BS, e), TWO_PI * e, col.toString(), 1);
 }
 
-/* ---- demo UI (from the supplied code) ---- */
-function uiCard(x, y, w, h) { fill(255); stroke(UI_LINE); strokeWeight(2); rect(x + 1, y + 1, w - 2, h - 2, 9); noStroke(); }
-function drawUI(sw) {
-  const rv = sw.rv || [1, 1, 1, 1, 1];
-  noStroke(); fill(255); rect(0, 0, 900, 585);
-  fill("#f6f5f0"); rect(0, 0, 150, 585); fill(UI_LINE); rect(149, 0, 1, 585);
-  fill(HL); rect(16, 18, 26, 26, 7); fill("#dcd9ce"); rect(52, 26.5, 62, 9, 4.5);
-  for (let i = 0; i < 5; i++) {
-    const y = 68 + i * 38;
-    if (i === 0) { fill("#e8e5da"); rect(14, y, 121, 32, 8); fill(15, 15, 66, 110); } else fill("#d6d3c8");
-    rect(26, y + 11.5, NAV_W[i], 9, 4.5);
+/* ---- Security overview UI. rv[0..4] = tile 1, tile 2, tile 3, chart, table (0 = empty skeleton, 1 = filled) ---- */
+const GRAY = "#8a8c99", KPI = [["ASSETS MONITORED", "8,920"], ["OPEN ALERTS", "27"], ["POLICY COVERAGE", "82%"]];
+const VOL = [.12, .13, .12, .15, .15, .17, .2, .26, .34, .45, .58, .72, .86, .98];
+const ROWS = [["HIGH", "Public storage bucket in card-\u2026", "pay-store-01", "Open"], ["HIGH", "Excess IAM privileges on treas\u2026", "treasury-prod", "Open"], ["MED", "Cardholder data outside appro\u2026", "eu-payments-02", "Open"]];
+function ut(str, x, y, size, wt, col, sp, al, a) {
+  const c = drawingContext; c.save(); if (a !== undefined) c.globalAlpha *= a;
+  c.font = wt + " " + size + "px " + HEAD; c.letterSpacing = (sp || 0) + "px"; c.textAlign = al || "left"; c.textBaseline = "middle";
+  c.fillStyle = col; c.fillText(str, x, y); c.restore();
+}
+function dbox(x, y, w, h, a) {
+  if (a <= 0.01) return; const c = drawingContext; c.save(); c.setLineDash([5, 4]);
+  c.strokeStyle = "rgba(47,95,160," + (.75 * a) + ")"; c.lineWidth = 1.3; c.beginPath(); c.roundRect(x, y, w, h, 10); c.stroke(); c.restore();
+}
+function drawSecUI(rv) {
+  const c = drawingContext;
+  noStroke(); fill(255); rect(0, 0, 900, 565);
+  fill("#f7f6f1"); rect(0, 0, 157, 565); fill("#e7e4dc"); rect(157, 0, 1, 565);
+  noFill(); stroke("#c9c6bc"); strokeWeight(1.5); rect(27, 25, 28, 28, 7);
+  noStroke(); fill("#8b90a8"); rect(37, 35, 8, 8, 1.5);
+  fill(255); stroke("#dfdcd2"); strokeWeight(1.2); rect(17, 70, 125, 38, 8); noStroke();
+  ut("Overview", 30, 89.5, 15.5, 400, NAVY, -.1);
+  [["Alerts", 129], ["Assets", 169], ["Policies", 208]].forEach(n => ut(n[0], 30, n[1], 15.5, 400, GRAY, -.1));
+  ut("Security overview", 186, 35, 22, 500, NAVY, -.3);
+  ut("Last 30 days", 800, 35, 15, 400, GRAY, 0, "right");
+  fill("#e7e4dc"); rect(158, 68, 742, 1);
+
+  // KPI tiles
+  dbox(179, 86, 701, 111, rv[0]);
+  [188, 420, 654].forEach((x, i) => {
+    fill(255); stroke("#e4e1d8"); strokeWeight(1.2); rect(x, 95, 217, 95, 8); noStroke();
+    ut(KPI[i][0], x + 20, 118, 13, 400, GRAY, 1.2);
+    fill(ca("#eeece5", 1 - rv[i])); rect(x + 20, 138, 90, 36, 7);
+    ut(KPI[i][1], x + 20, 156 + 8 * (1 - rv[i]), 36, 500, NAVY, -.6, "left", rv[i]);
+  });
+
+  // chart
+  dbox(181, 203, 698, 179, rv[3]);
+  fill(255); stroke("#e4e1d8"); strokeWeight(1.2); rect(189, 211, 682, 163, 8); noStroke();
+  ut("ALERT VOLUME", 207, 232, 13, 400, GRAY, 1.2);
+  fill("#ecebe5"); rect(207, 254, 645, 1); rect(207, 308, 645, 1);
+  fill("#dedbd2"); rect(207, 362, 645, 1);
+  const px = i => 207 + i * 645 / 13, py = i => 362 - VOL[i] * 98;
+  const n = rv[3] * 13, k = floor(n);
+  if (n > 0) {
+    c.save(); c.beginPath(); c.moveTo(px(0), 362); c.lineTo(px(0), py(0));
+    for (let i = 1; i <= k && i <= 13; i++) c.lineTo(px(i), py(i));
+    let ex = px(k), ey = py(k);
+    if (k < 13) { const f = n - k; ex = lerp(px(k), px(k + 1), f); ey = lerp(py(k), py(k + 1), f); c.lineTo(ex, ey); }
+    c.lineTo(ex, 362); c.closePath(); c.fillStyle = "rgba(42,98,173,.09)"; c.fill();
+    c.beginPath(); c.moveTo(px(0), py(0));
+    for (let i = 1; i <= k && i <= 13; i++) c.lineTo(px(i), py(i));
+    if (k < 13) c.lineTo(ex, ey);
+    c.strokeStyle = "#2a62ad"; c.lineWidth = 2.2; c.lineJoin = "round"; c.stroke();
+    for (let i = 0; i <= min(k, 13); i++) {                  // data points appear, then settle
+      const fade = i === 13 ? 1 : 1 - EASE(pr(rv[3], .85, .15));
+      if (fade <= 0.01) continue;
+      c.beginPath(); c.arc(px(i), py(i), i === 13 ? 5.5 : 3, 0, TWO_PI); c.fillStyle = "#fff"; c.fill();
+      c.strokeStyle = "#2a62ad"; c.lineWidth = 2; c.globalAlpha = fade; c.stroke(); c.globalAlpha = 1;
+    }
+    c.restore();
   }
-  fill(UI_LINE); rect(150, 44, 750, 2); fill("#dcd9ce"); rect(166, 17.5, 130, 9, 4.5); fill("#e3e0d6"); circle(869, 22, 26);
-  const sx = [166, 410], su = [68, 56], sn = ["128", "46"];
-  for (let i = 0; i < 2; i++) { uiCard(sx[i], 62, 228, 98); fill("#e3e0d6"); rect(sx[i] + 24, 84, su[i], 7, 3.5); fill(ca("#eeece5", 1 - rv[i])); rect(sx[i] + 24, 114, 56, 20, 6); tx(sn[i], sx[i] + 24, 124, 34, ca(NAVY, rv[i]), SERIF, -.68); }
-  uiCard(166, 180, 718, 282);
-  fill("#ece9df"); rect(190, 202, 118, 22, 11); fill("#e3e0d6");
-  const cx = [0, 250, 430, 610], cw = [90, 70, 60, 50];
-  for (let i = 0; i < 4; i++) rect(190 + cx[i], 246, cw[i], 8, 4);
-  for (let r = 0; r < 3; r++) {
-    const y = ROW_Y[r];
-    if (r < 2) { fill("#eeece5"); rect(190, y + 56, 670, 2); }
-    const uy = y + (r < 2 ? 23.5 : 24.5);
-    const rr = rv[2 + r];
-    fill(ca("#eeece5", 1 - rr)); rect(190, uy, 92, 9, 4.5);
-    for (let k = 0; k < 3; k++) { const u = ROW_U[r][k]; fill(ca(u[2] ? "#e8e6de" : "#d6d3c8", rr)); rect(190 + u[0], uy, u[1], 9, 4.5); }
-    tx(sw.pharma ? NAMES_B[r] : NAMES_A[r], 190, y + (r < 2 ? 28 : 29), 21, ca("#4a4a58", sw.a * rr), SANS, -.1);
-  }
+
+  // findings table
+  dbox(181, 393, 698, 150, rv[4]);
+  fill(255); stroke("#e4e1d8"); strokeWeight(1.2); rect(189, 401, 682, 134, 8); noStroke();
+  [["SEVERITY", 207], ["ALERT", 315], ["ASSET", 590], ["STATUS", 757]].forEach(h => ut(h[0], h[1], 416, 12.5, 400, GRAY, 1.1));
+  fill("#ecebe5"); rect(207, 433, 645, 1); rect(207, 470, 645, 1); rect(207, 504, 645, 1);
+  [453, 487, 521].forEach((y, r) => {
+    const rr = constrain(rv[4] * 1.6 - r * .3, 0, 1), d = ROWS[r];
+    fill(ca("#eeece5", 1 - rr));
+    rect(207, y - 4.5, 34, 9, 4.5); rect(315, y - 4.5, 190, 9, 4.5); rect(590, y - 4.5, 90, 9, 4.5); rect(757, y - 4.5, 40, 9, 4.5);
+    ut(d[0], 207, y, 12, 600, r < 2 ? NAVY : "#5a5f78", 1, "left", rr);
+    ut(d[1], 315, y, 15.5, 400, NAVY, -.1, "left", rr);
+    ut(d[2], 590, y, 14.5, 400, GRAY, -.1, "left", rr);
+    ut(d[3], 757, y, 14.5, 400, GRAY, -.1, "left", rr);
+  });
 }
 </script>
 </body>
