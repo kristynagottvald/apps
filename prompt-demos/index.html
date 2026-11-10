@@ -34,7 +34,7 @@ const SANS = "Arial", MONO = "Courier New", SERIF = "Georgia";
 const HEAD = "'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif";
 
 const L1 = "Fill these charts with demo data.", L2 = "";
-const N1 = L1.length, TOT = N1 + 1 + L2.length;
+const N1 = L1.length, TOT = L2.length ? N1 + 1 + L2.length : N1;   // single line: no second-line step
 const NAMES_A = ["Northwind", "Globex", "Initech"], NAMES_B = ["AbbVie", "AstraZeneca", "Bristol Myers"];
 const NAV_W = [70, 44, 62, 52, 38], ROW_Y = [274, 332, 390];
 const ROW_U = [[[228,150,0],[408,104,1],[588,70,1]],[[228,112,0],[408,126,1],[588,60,1]],[[228,168,0],[408,88,1],[588,76,1]]];
@@ -44,18 +44,19 @@ const SPARK_SVG = "M23.5422 0L25.0998 14.1444C25.1837 14.9055 26.0747 15.2744 26
 /* ---- stage: 1920x1112, same as the reference image ---- */
 const SW_ = 1920, SH_ = 1112;
 const CX = 1440, CY = 556;           // centre: logo, rays, lens
-const BANDS = [[156, 246], [284, 448], [488, 770], [812, 1420]];   // ray bands (radius): first three measured, the outer one runs under the headline
+const BANDS = [[156, 246], [284, 448], [488, 770], [812, 1180]];   // ray bands (radius): first three measured, the outer one runs under the headline
 const NRAYS = 48;
-const WINS = .95;                    // UI window scale, centred on the rays
-const WIN = { x: CX - 450 * WINS, y: CY - 282.5 * WINS, s: WINS };              // sales demo window (613x461 at scale s)
+const WINS = .86;                    // UI window scale, centred on the rays
+const WIN_DY = 44;                   // the screen (and the prompt above it) sit slightly below the rays' centre
+const WIN = { x: CX - 450 * WINS, y: CY + WIN_DY - 282.5 * WINS, s: WINS };              // sales demo window (613x461 at scale s)
 const WIN_R = 1150;                  // iris radius that fully covers the window
 
-/* ---- timeline (seconds). Scene 1 (light blue) = prompt + demo screen, scene 2 (navy) = headline ---- */
+/* ---- timeline (seconds). Light blue opens with the prompt; when the prompt rises the navy scene opens from the centre ---- */
 const T_SPIN = 1.0, SPIN_D = 1.7;    // scene 1: logo spins, rays draw out
 const T_BOX = 2.0, TYPE0 = T_BOX + .9;   // prompt box appears, then types
 const LENS_D = 1.3;
-let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_B, T_C, T_WORDS, T_BACK, LOOP;
-let tH2, tH3, tBk;                   // logo hops over 3 points of the screen, then back to centre
+let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_OUTRO, T_WORDS, T_BACK, LOOP;
+const PATH_D = 4.2;                  // the logo glides over the screen for this long
 const OFF = .9;                      // later loops skip the headline intro
 
 let ti = 0, START = 0.5, PS = 1, ready = false;
@@ -104,15 +105,13 @@ function setup() {
     const d = n === N1 + 1 ? .26 : .046 + .03 * (abs(sin(n * 12.9898) * 43758.5453) % 1);
     if (n < TOT) RT[n + 1] = RT[n] + d; else TYPE_DUR = RT[n] + d;
   }
-  T_UP = TYPE0 + TYPE_DUR + .7;     // sent: the prompt box moves up
-  T_WIN = T_UP + .5;                // demo screen pops into view (empty)
+  T_UP = TYPE0 + TYPE_DUR + .7;     // sent: the prompt rises and the navy opens from the centre
+  T_WORDS = T_UP + .8;              // "and start prompting them." arrives
+  T_WIN = T_UP + 1.3;               // demo screen pops into view (empty)
   T_DATA = T_WIN + 1.0;             // data fades in all at once
-  T_LEAVE = T_DATA + 1.0;           // logo leaves the prompt once the data is in
-  tH2 = T_LEAVE + 1.0; tH3 = T_LEAVE + 1.9; tBk = T_LEAVE + 2.9;
-  T_B = T_LEAVE + 4.5;              // light lens closes onto the logo, navy opens
-  T_C = T_B + LENS_D;
-  T_WORDS = T_B + .9;               // "and start prompting them." arrives
-  T_BACK = T_WORDS + 4.2;           // lens opens back to light
+  T_LEAVE = T_DATA + 1.0;           // logo leaves the prompt once the data is in, floats over the screen
+  T_OUTRO = T_LEAVE + PATH_D + .15; // screen and prompt fade out
+  T_BACK = T_OUTRO + .9;            // navy closes onto the logo, light blue returns
   LOOP = T_BACK + LENS_D + .5;
   document.fonts.load("400 112px 'Inter Tight'").then(() => document.fonts.load("600 112px 'Inter Tight'")).catch(() => {}).finally(() => { ready = true; });
 }
@@ -139,20 +138,16 @@ function draw() {
   translate(width / 2, height / 2); scale(PS); translate(-SW_ / 2, -SH_ / 2);
   drawingContext.beginPath(); drawingContext.rect(0, 0, SW_, SH_); drawingContext.clip();
 
-  if (ti < T_B) drawScene1(false);
-  else if (ti < T_C) {
-    drawScene2();
-    push(); drawingContext.save(); circClip(2300 * (1 - EIO(pr(ti, T_B, LENS_D)))); drawScene1(false); drawingContext.restore(); pop();
-  } else if (ti < T_BACK) drawScene2();
-  else {
-    drawScene1(true);
-    push(); drawingContext.save(); circClip(2300 * (1 - EIO(pr(ti, T_BACK, LENS_D)))); drawScene2(); drawingContext.restore(); pop();
-  }
+  const back = ti >= T_BACK;
+  const R = ti < T_UP ? 0 : !back ? 2300 * EIO(pr(ti, T_UP, LENS_D)) : 2300 * (1 - EIO(pr(ti, T_BACK, LENS_D)));
+  drawLight(back);
+  if (R > .5) { push(); drawingContext.save(); circClip(R); drawNavy(back); drawingContext.restore(); pop(); }
+  if (!back) drawFG();
   pop();
 }
 
-/* ============== SCENE 1 (light blue): prompt, then the demo screen ============== */
-function drawScene1(base) {
+/* ============== light blue layer: headline, rays ============== */
+function drawLight(base) {
   noStroke(); fill(LIGHT); rect(0, 0, SW_, SH_);
   drawRays(1, [255, 255, 255], .85 * rayIn());              // the lines are always there
   const a = base ? 1 : EASE(pr(ti, .1, .8)), up = base ? 0 : 26 * (1 - EOUT(pr(ti, .1, 1)));
@@ -160,46 +155,71 @@ function drawScene1(base) {
   ht("Stop building", HX, BASE[0] + up, 400, NAVY, 1);
   ht("demos", HX, BASE[1] + up, 400, NAVY, 1);
   pop();
-  if (base) { spark(CX, CY, 2.6, 0, NAVY, 1); return; }
+  if (base) spark(CX, CY, 2.6, 0, NAVY, 1);
+}
 
-  // demo screen pops into view, centred on the rays; the data then fades in all at once
-  if (ti >= T_WIN) {
+/* ============== foreground shared by both backgrounds: demo screen, prompt, logo ============== */
+function drawFG() {
+  const fo = 1 - EASE(pr(ti, T_OUTRO, .6));
+  if (ti >= T_WIN && fo > .01) {                           // demo screen pops into view; the data then fades in all at once
     const p = pr(ti, T_WIN, .7), d = EASE(pr(ti, T_DATA, .8));
-    push(); drawingContext.globalAlpha = EASE(pr(ti, T_WIN, .3));
+    push(); drawingContext.globalAlpha = EASE(pr(ti, T_WIN, .3)) * fo;
     translate(CX, CY); scale(lerp(.86, 1, EBACK(p))); translate(-CX, -CY);
-    drawWindow(WIN_R, new Array(7).fill(d));
+    const rvs = new Array(7).fill(d); rvs.hl = logoLight();
+    drawWindow(WIN_R, rvs);
     pop();
   }
   drawPrompt();
-  drawLogo1(a);
+  drawLogo1(EASE(pr(ti, .1, .8)));
 }
 
 /* the spark spins at centre and flies into the prompt's corner. Once the data is in it leaves the prompt (which shortens),
-   hops over 3 points of the demo screen, then returns to the centre */
+   floats over the demo screen in one smooth path (the content reacts under it), then returns to the centre */
 const shrink = () => EIO(pr(ti, T_LEAVE, 1.0));
+const EPATH = bez(.3, 0, .7, 1);
+function catmull(P, u) {
+  const n = P.length - 1, f = u * n, i = Math.min(Math.floor(f), n - 1), t = f - i;
+  const p0 = P[Math.max(i - 1, 0)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(i + 2, n)];
+  const q = k => .5 * (2 * p1[k] + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t * t + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t * t * t);
+  return [q(0), q(1)];
+}
+const uiG = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
+function logoState(t) {                                  // position / scale / turns of the logo while it floats over the screen
+  const corner = [CX - boxW() * BS / 2 + 36 * BS, BOX_BOT - 124 * BS + 36 * BS];
+  const P = [corner, uiG(200, 150), uiG(450, 150), uiG(730, 150), uiG(450, 235), uiG(240, 300), uiG(520, 310), uiG(810, 285),
+             uiG(560, 400), uiG(300, 470), uiG(520, 495), uiG(740, 495), [CX, CY]];
+  const u = EPATH(pr(t, T_LEAVE, PATH_D));
+  const sc = u < .15 ? lerp(.6 * BS, .9, EIO(u / .15)) : u > .85 ? lerp(.9, 2.6, EIO((u - .85) / .15)) : .9;
+  return { pos: catmull(P, u), sc: sc, turns: 1 + 3 * u };
+}
 function drawLogo1(la) {
   const spin = TWO_PI * 2 * EIO(pr(ti, T_SPIN, SPIN_D));
-  const ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
-  const tgt = [CX - boxW() * BS / 2 + 36 * BS, boxTop() + ey + 36 * BS];
-  const ug = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
-  const Q = [ug(255, 150), ug(520, 300), ug(400, 487)];
   let pos, sc, turns;
   if (ti < T_LEAVE) {
+    const ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
+    const tgt = [CX - boxW() * BS / 2 + 36 * BS, boxTop() + ey + 36 * BS];
     const e = EIO(pr(ti, T_BOX + .4, 1.0));
     pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6, .6 * BS, e); turns = e;
-  } else {
-    const h1 = EIO(pr(ti, T_LEAVE, .8)), h2 = EIO(pr(ti, tH2, .7)), h3 = EIO(pr(ti, tH3, .7)), h4 = EIO(pr(ti, tBk, .8));
-    const lerp2 = (A, B, e) => [lerp(A[0], B[0], e), lerp(A[1], B[1], e)];
-    const C = [CX, CY];
-    pos = ti < tH2 ? lerp2(tgt, Q[0], h1) : ti < tH3 ? lerp2(Q[0], Q[1], h2) : ti < tBk ? lerp2(Q[1], Q[2], h3) : lerp2(Q[2], C, h4);
-    sc = ti < tBk ? lerp(.6 * BS, .9, h1) : lerp(.9, 2.6, h4);
-    turns = 1 + h1 + h2 + h3 + h4;
-    [T_LEAVE + .8, tH2 + .7, tH3 + .7].forEach((t0, i) => {          // small ring where the logo touches the data
-      const k = pr(ti, t0, .7), P = Q[i];
-      if (k > 0 && k < 1) { noFill(); stroke(15, 15, 66, 120 * (1 - k)); strokeWeight(2); circle(P[0], P[1], 24 + 110 * EOUT(k)); }
+  } else { const L = logoState(ti); pos = L.pos; sc = L.sc; turns = L.turns; }
+  const col = lerpColor(color(NAVY), color("#fcfcf9"), EASE(pr(ti, T_OUTRO, .6)));      // cream once it is alone on the navy
+  spark(pos[0], pos[1], sc, spin + TWO_PI * turns, col.toString(), la);
+}
+
+/* how strongly each block is lit by the logo floating over it (with a short trail), in UI coordinates */
+function logoLight() {
+  const hl = new Array(7).fill(0);
+  if (ti < T_LEAVE + .6) return hl;
+  const R = [[188, 95, 217, 95], [420, 95, 217, 95], [654, 95, 217, 95], [189, 211, 682, 163], [197, 437, 664, 32], [197, 471, 664, 32], [197, 505, 664, 32]];
+  [[0, 1], [.2, .7], [.4, .45], [.6, .25]].forEach(sw => {
+    const t = ti - sw[0]; if (t < T_LEAVE + .6) return;
+    const L = logoState(t), x = (L.pos[0] - WIN.x) / WIN.s, y = (L.pos[1] - WIN.y) / WIN.s;
+    R.forEach((r, i) => {
+      const dx = Math.max(r[0] - x, 0, x - (r[0] + r[2])), dy = Math.max(r[1] - y, 0, y - (r[1] + r[3]));
+      const p = EASE(constrain(1 - Math.hypot(dx, dy) / 70, 0, 1)) * sw[1];
+      hl[i] = Math.max(hl[i], p);
     });
-  }
-  spark(pos[0], pos[1], sc, spin + TWO_PI * turns, NAVY, la);
+  });
+  return hl;
 }
 
 function drawWindow(iris, rv) {
@@ -208,7 +228,7 @@ function drawWindow(iris, rv) {
   c.save();
   c.beginPath(); c.arc(CX, CY, iris, 0, TWO_PI); c.clip();
   translate(WIN.x, WIN.y); scale(WIN.s);
-  c.save(); c.shadowColor = "rgba(15,15,66,.2)"; c.shadowBlur = 44 * PS; c.shadowOffsetY = 14 * PS;
+  c.save(); c.shadowColor = "rgba(2,3,30,.32)"; c.shadowBlur = 44 * PS; c.shadowOffsetY = 14 * PS;
   noStroke(); fill(255); rect(0, 0, 900, 565, 14); c.restore();
   c.save(); c.beginPath(); c.roundRect(0, 0, 900, 565, 14); c.clip();
   drawSecUI(rv);
@@ -218,8 +238,8 @@ function drawWindow(iris, rv) {
   pop();
 }
 
-/* ============== SCENE 2 (navy): the headline frame ============== */
-function drawScene2() {
+/* ============== navy layer: headline + "and start prompting them.", rays ============== */
+function drawNavy(back) {
   noStroke(); fill(DEEP); rect(0, 0, SW_, SH_);
   drawingContext.drawImage(grain, 0, 0);
   drawRays(1, [52, 100, 188], .9 * rayIn());
@@ -231,12 +251,11 @@ function drawScene2() {
   const words = [["and", 400, x1, BASE[1]], ["start", 600, x2, BASE[1]], ["prompting", 600, HX, BASE[2]], ["them.", 600, x3, BASE[2]]];
   for (let i = 0; i < 4; i++) {
     const w = words[i], p = pr(ti, T_WORDS + i * .3, .8);
-    if (ti >= T_BACK) { ht(w[0], w[2], w[3], w[1], "#fff", 1); continue; }
+    if (back) { ht(w[0], w[2], w[3], w[1], "#fff", 1); continue; }
     ht(w[0], w[2], w[3] + 30 * (1 - EOUT(p)), w[1], "#fff", EASE(p));
   }
   pop();
-  const sp = TWO_PI * EIO(pr(ti, T_C + .2, 1.6));       // one slow turn of the spark once the navy has opened
-  spark(CX, CY, 2.6, ti >= T_BACK ? 0 : sp, "#fcfcf9", 1);
+  if (back) spark(CX, CY, 2.6, 0, "#fcfcf9", 1);
 }
 
 const rayIn = () => EASE(pr(millis() / 1000, .2, 1.0));      // soft fade on the very first load only
@@ -269,7 +288,7 @@ function typedCount() {
   for (let k = 1; k <= TOT; k++) if (RT[k] <= u) n = k; return n;
 }
 function lastRender() { return ti < TYPE0 ? T_BOX : TYPE0 + RT[max(1, typedCount())]; }
-function overlayAlpha() { return ti < T_BOX ? 0 : EASE(pr(ti, T_BOX, .8)); }
+function overlayAlpha() { return ti < T_BOX ? 0 : EASE(pr(ti, T_BOX, .8)) * (1 - EASE(pr(ti, T_OUTRO, .6))); }
 function sentAmt() { return 0; }
 function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36 + 110); }   // +110: a longer box
 
@@ -292,8 +311,8 @@ function drawPrompt() {
   const x0 = 29.5, c1 = lerp(88, 36, sh), c2 = 0;          // one line of text; the logo sits above it
   tx(a, x0, c1, 23, col, SANS, -.23); tx(b, x0, c2, 23, col, SANS, -.23);
   if (ti < T_UP && ti >= TYPE0 - .3 && ((ti - lastRender()) % 1) < .5) {
-    const onFirst = n <= N1, lw = tw(onFirst ? a : b, 23, SANS, -.23);
-    noStroke(); fill(HL); rect(x0 + lw + 2, (onFirst ? c1 : c2) - 15.6, 2, 30);
+    const lw = tw(a, 23, SANS, -.23);
+    noStroke(); fill(HL); rect(x0 + lw + 2, c1 - 15.6, 2, 30);
   }
   pop();
 }
@@ -311,8 +330,9 @@ function dbox(x, y, w, h, a) {
   if (a <= 0.01) return; const c = drawingContext; c.save(); c.setLineDash([5, 4]);
   c.strokeStyle = "rgba(47,95,160," + (.75 * a) + ")"; c.lineWidth = 1.3; c.beginPath(); c.roundRect(x, y, w, h, 10); c.stroke(); c.restore();
 }
+const HLC = "#d4e4f7";                                    // fill colour the content takes under the logo
 function drawSecUI(rv) {
-  const c = drawingContext;
+  const c = drawingContext, HL = rv.hl || [0, 0, 0, 0, 0, 0, 0];
   noStroke(); fill("#f7f3e8"); rect(0, 0, 900, 565);
   fill(255); rect(0, 0, 157, 565); fill("#e9e4d6"); rect(157, 0, 1, 565);
   noFill(); stroke("#c9c6bc"); strokeWeight(1.5); rect(27, 25, 28, 28, 7);
@@ -327,7 +347,7 @@ function drawSecUI(rv) {
   // KPI tiles
   dbox(179, 86, 701, 111, rv[0]);
   [188, 420, 654].forEach((x, i) => {
-    fill(255); stroke("#e6e0cf"); strokeWeight(1.2); rect(x, 95, 217, 95, 8); noStroke();
+    fill(lerpColor(color(255), color(HLC), HL[i])); stroke("#e6e0cf"); strokeWeight(1.2); rect(x, 95, 217, 95, 8); noStroke();
     ut(KPI[i][0], x + 20, 118, 13, 400, GRAY, 1.2);
     fill(ca("#ece6d6", 1 - rv[i])); rect(x + 20, 138, 90, 36, 7);
     ut(KPI[i][1], x + 20, 156 + 8 * (1 - rv[i]), 36, 500, NAVY, -.6, "left", rv[i]);
@@ -335,7 +355,7 @@ function drawSecUI(rv) {
 
   // chart
   dbox(181, 203, 698, 179, rv[3]);
-  fill(255); stroke("#e6e0cf"); strokeWeight(1.2); rect(189, 211, 682, 163, 8); noStroke();
+  fill(lerpColor(color(255), color(HLC), HL[3])); stroke("#e6e0cf"); strokeWeight(1.2); rect(189, 211, 682, 163, 8); noStroke();
   ut("ALERT VOLUME", 207, 232, 13, 400, GRAY, 1.2);
   fill("#efe9db"); rect(207, 254, 645, 1); rect(207, 308, 645, 1);
   fill("#dedbd2"); rect(207, 362, 645, 1);
@@ -367,6 +387,7 @@ function drawSecUI(rv) {
   fill("#efe9db"); rect(207, 433, 645, 1); rect(207, 470, 645, 1); rect(207, 504, 645, 1);
   [453, 487, 521].forEach((y, r) => {
     const rr = rv[4 + r], d = ROWS[r];
+    fill(ca(HLC, HL[4 + r])); rect(197, y - 16, 664, 32, 6);
     fill(ca("#ece6d6", 1 - rr));
     rect(207, y - 4.5, 34, 9, 4.5); rect(315, y - 4.5, 190, 9, 4.5); rect(590, y - 4.5, 90, 9, 4.5); rect(757, y - 4.5, 40, 9, 4.5);
     ut(d[0], 207, y, 12, 600, r < 2 ? NAVY : "#5a5f78", 1, "left", rr);
