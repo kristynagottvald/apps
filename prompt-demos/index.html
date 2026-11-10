@@ -55,8 +55,8 @@ const WIN_R = 1150;                  // iris radius that fully covers the window
 const T_SPIN = 1.0, SPIN_D = 1.7;    // scene 1: logo spins, rays draw out
 const T_BOX = 2.0, TYPE0 = T_BOX + .9;   // prompt box appears, then types
 const LENS_D = 1.3;
-let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_OUTRO, T_WORDS, T_BACK, LOOP;
-const PATH_D = 10;                  // the logo glides over the screen for this long
+let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_WORDS, T_BACK, LOOP, tHop1, tHop2, NAVY_R = 0;
+const H0 = 1.7, H1 = 1.9, H2 = 1.9, DW = .7, BACK_D = 1.9;   // logo hops: prompt > Assets > graph > STATUS, then to the middle while the navy closes
 const OFF = .9;                      // later loops skip the headline intro
 
 let ti = 0, START = 0.5, PS = 1, ready = false;
@@ -110,9 +110,10 @@ function setup() {
   T_WIN = T_UP + .25;               // demo screen pops into view with the background transition (empty)
   T_DATA = T_UP + 1.5;              // data fades in all at once, once the navy has opened
   T_LEAVE = T_DATA + 1.0;           // logo leaves the prompt once the data is in, floats over the screen
-  T_OUTRO = T_LEAVE + PATH_D + .15; // screen and prompt fade out
-  T_BACK = T_OUTRO + .9;            // navy closes onto the logo, light blue returns
-  LOOP = T_BACK + LENS_D + .5;
+  tHop1 = T_LEAVE + H0 + DW;        // Assets > graph
+  tHop2 = tHop1 + H1 + DW;          // graph > STATUS
+  T_BACK = tHop2 + H2 + .6;         // STATUS > middle: the navy closes onto the logo as it arrives
+  LOOP = T_BACK + BACK_D + .6;
   document.fonts.load("400 112px 'Inter Tight'").then(() => document.fonts.load("600 112px 'Inter Tight'")).catch(() => {}).finally(() => { ready = true; });
 }
 function windowResized() { const h = document.getElementById("stage"); resizeCanvas(h.clientWidth, h.clientHeight); }
@@ -138,16 +139,17 @@ function draw() {
   translate(width / 2, height / 2); scale(PS); translate(-SW_ / 2, -SH_ / 2);
   drawingContext.beginPath(); drawingContext.rect(0, 0, SW_, SH_); drawingContext.clip();
 
-  const back = ti >= T_BACK;
-  const R = ti < T_UP ? 0 : !back ? 2300 * EIO(pr(ti, T_UP, LENS_D)) : 2300 * (1 - EIO(pr(ti, T_BACK, LENS_D)));
-  drawLight(back);
+  const back = ti >= T_BACK, done = ti >= T_BACK + BACK_D;
+  const R = ti < T_UP ? 0 : !back ? 2300 * EIO(pr(ti, T_UP, LENS_D)) : 2300 * (1 - EIO(pr(ti, T_BACK, BACK_D)));
+  NAVY_R = R;
+  drawLight(back, done);
   if (R > .5) { push(); drawingContext.save(); circClip(R); drawNavy(back); drawingContext.restore(); pop(); }
-  if (!back) drawFG();
+  if (!done) drawFG();
   pop();
 }
 
 /* ============== light blue layer: headline, rays ============== */
-function drawLight(base) {
+function drawLight(base, done) {
   noStroke(); fill(LIGHT); rect(0, 0, SW_, SH_);
   drawRays(1, [255, 255, 255], .85 * rayIn());              // the lines are always there
   const a = base ? 1 : EASE(pr(ti, .1, .8)), up = base ? 0 : 26 * (1 - EOUT(pr(ti, .1, 1)));
@@ -155,12 +157,12 @@ function drawLight(base) {
   ht("Stop building", HX, BASE[0] + up, 400, NAVY, 1);
   ht("demos", HX, BASE[1] + up, 400, NAVY, 1);
   pop();
-  if (base) spark(CX, CY, 2.6, 0, NAVY, 1);
+  if (done) spark(CX, CY, 2.6, 0, NAVY, 1);
 }
 
 /* ============== foreground shared by both backgrounds: demo screen, prompt, logo ============== */
 function drawFG() {
-  const fo = 1 - EASE(pr(ti, T_OUTRO, .6));
+  const fo = 1 - EASE(pr(ti, T_BACK, .7));
   if (ti >= T_WIN && fo > .01) {                           // demo screen pops into view; the data then fades in all at once
     const p = pr(ti, T_WIN, .7), d = EASE(pr(ti, T_DATA, .8));
     push(); drawingContext.globalAlpha = EASE(pr(ti, T_WIN, .3)) * fo;
@@ -184,13 +186,23 @@ function catmull(P, u) {
   return [q(0), q(1)];
 }
 const uiG = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
-function logoState(t) {                                  // position / scale / turns of the logo while it floats over the screen
+function logoState(t) {                                  // position / scale of the logo while it floats over the screen (no spin over the screen, two turns on the way back)
   const corner = [CX - boxW() * BS / 2 + (boxW() - 46) * BS, BOX_BOT - boxH() * BS + 36 * BS];
-  const P = [corner, uiG(200, 150), uiG(450, 150), uiG(730, 150), uiG(450, 235), uiG(240, 300), uiG(520, 310), uiG(810, 285),
-             uiG(560, 400), uiG(300, 470), uiG(520, 495), uiG(740, 495), [CX, CY]];
-  const u = EPATH(pr(t, T_LEAVE, PATH_D));
-  const sc = u < .12 ? lerp(.8 * BS, .9, EIO(u / .12)) : u > .88 ? lerp(.9, 2.6, EIO((u - .88) / .12)) : .9;
-  return { pos: catmull(P, u), sc: sc, turns: 2 + 3 * u };
+  const S = [corner, uiG(300, 125), uiG(520, 300), uiG(800, 416), [CX, CY]];      // Assets tile, the graph, the STATUS header, the middle
+  const hops = [[T_LEAVE, H0], [tHop1, H1], [tHop2, H2], [T_BACK, BACK_D]];
+  let pos = S[0];
+  hops.forEach((h, i) => { if (t >= h[0]) { const e = EIO(pr(t, h[0], h[1])); pos = [lerp(S[i][0], S[i + 1][0], e), lerp(S[i][1], S[i + 1][1], e)]; } });
+  const sc = t < T_BACK ? lerp(.8 * BS, .9, EIO(pr(t, T_LEAVE, H0))) : lerp(.9, 2.6, EIO(pr(t, T_BACK, BACK_D)));
+  return { pos: pos, sc: sc, turns: 2 + 2 * EIO(pr(t, T_BACK, BACK_D)) };   // still over the screen; spins on the way back to the middle
+}
+/* cream on the navy, navy on the white screen / prompt / light blue */
+function logoColor(p) {
+  if (ti < T_UP || dist(p[0], p[1], CX, CY) > NAVY_R) return color(NAVY);
+  const bl = CX - boxW() * BS / 2, bt = boxTop(), br = bl + boxW() * BS, bb = bt + boxH() * BS;
+  const wx = WIN.x, wy = WIN.y, wx1 = WIN.x + 900 * WIN.s, wy1 = WIN.y + 565 * WIN.s;
+  const d = Math.max(Math.min(p[0] - bl, br - p[0], p[1] - bt, bb - p[1]), Math.min(p[0] - wx, wx1 - p[0], p[1] - wy, wy1 - p[1]));
+  const fo = 1 - EASE(pr(ti, T_BACK, .7));                  // the screen and prompt fade out as the logo heads to the middle
+  return lerpColor(color("#fcfcf9"), color(NAVY), constrain(d / 24, 0, 1) * fo);
 }
 function drawLogo1(la) {
   const spin = TWO_PI * 2 * EIO(pr(ti, T_SPIN, SPIN_D));
@@ -204,8 +216,7 @@ function drawLogo1(la) {
     const tgt = [CX - w * BS / 2 + lx * BS, boxTop() + ey + 36 * BS];
     pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6, .8 * BS, e); turns = e + g;
   } else { const L = logoState(ti); pos = L.pos; sc = L.sc; turns = L.turns; }
-  const col = lerpColor(color(NAVY), color("#fcfcf9"), EASE(pr(ti, T_OUTRO, .6)));      // cream once it is alone on the navy
-  spark(pos[0], pos[1], sc, spin + TWO_PI * turns, col.toString(), la);
+  spark(pos[0], pos[1], sc, spin + TWO_PI * turns, logoColor(pos).toString(), la);
 }
 
 /* only the one section under the logo is lit: KPI tiles, chart, or table (UI coordinates) */
@@ -255,7 +266,6 @@ function drawNavy(back) {
     ht(w[0], w[2], w[3] + 30 * (1 - EOUT(p)), w[1], "#fff", EASE(p));
   }
   pop();
-  if (back) spark(CX, CY, 2.6, 0, "#fcfcf9", 1);
 }
 
 const rayIn = () => EASE(pr(millis() / 1000, .2, 1.0));      // soft fade on the very first load only
@@ -288,7 +298,7 @@ function typedCount() {
   for (let k = 1; k <= TOT; k++) if (RT[k] <= u) n = k; return n;
 }
 function lastRender() { return ti < TYPE0 ? T_BOX : TYPE0 + RT[max(1, typedCount())]; }
-function overlayAlpha() { return ti < T_BOX ? 0 : EASE(pr(ti, T_BOX, .8)) * (1 - EASE(pr(ti, T_OUTRO, .6))); }
+function overlayAlpha() { return ti < T_BOX ? 0 : EASE(pr(ti, T_BOX, .8)) * (1 - EASE(pr(ti, T_BACK, .7))); }
 function sentAmt() { return 0; }
 function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36 + 110); }   // +110: a longer box
 
