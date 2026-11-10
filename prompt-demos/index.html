@@ -214,7 +214,7 @@ function logoColor(p) {
   return lerpColor(color("#fcfcf9"), color(NAVY), constrain(d / 24, 0, 1) * fo);
 }
 function drawLogo1(la) {
-  const spin = 0, pop = 1 + .3 * Math.sin(Math.PI * EASE(pr(ti, T_SPIN, .9)));      // intro: a slight pop towards the viewer
+  const spin = 0, popK = 1 + .3 * Math.sin(Math.PI * EASE(pr(ti, T_SPIN, .9)));      // intro: a slight pop towards the viewer
   let pos, sc, turns;
   if (ti < T_LEAVE) {
     // rides along with the typing cursor, then glides to the right end of the box and stays there
@@ -223,7 +223,7 @@ function drawLogo1(la) {
     const g = EIO(pr(ti, TYPE0 + TYPE_DUR + .05, .6)), e = EIO(pr(ti, T_BOX + .3, .9));
     const lx = lerp(29.5 + lw + 28, w - 36, g);
     const tgt = [CX - w * BS / 2 + lx * BS, boxTop() + ey + 36 * BS];
-    pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6 * pop, .8 * BS, e); turns = e + g;
+    pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6 * popK, .8 * BS, e); turns = e + g;
   } else { const L = logoState(ti); pos = L.pos; sc = L.sc; turns = L.turns; }
   spark(pos[0], pos[1], sc, spin + TWO_PI * turns, logoColor(pos).toString(), la);
 }
