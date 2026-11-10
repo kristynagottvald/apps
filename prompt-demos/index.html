@@ -307,7 +307,7 @@ function typedCount() {
 function lastRender() { return ti < TYPE0 ? T_BOX : TYPE0 + RT[max(1, typedCount())]; }
 function overlayAlpha() { return ti < T_BOX ? 0 : EASE(pr(ti, T_BOX, .8)) * (1 - EASE(pr(ti, T_BACK, .7))); }
 function sentAmt() { return 0; }
-function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36 + 110); }   // +110: a longer box
+function boxW() { return round(28 + max(tw(L1, 23), tw(L2, 23)) + 6 + 36 + 70); }   // text + room for the logo at the right
 
 function drawPrompt() {
   const ea = overlayAlpha(); if (ea <= 0.002) return;
@@ -335,7 +335,7 @@ function drawPrompt() {
 }
 
 /* ---- Security overview UI. rv[0..4] = tile 1, tile 2, tile 3, chart, table (0 = empty skeleton, 1 = filled) ---- */
-const GRAY = "#8a8c99", KPI = [["ASSETS MONITORED", "8,920"], ["OPEN ALERTS", "27"], ["POLICY COVERAGE", "82%"]];
+const UIGRAY = "#8a8c99", KPI = [["ASSETS MONITORED", "8,920"], ["OPEN ALERTS", "27"], ["POLICY COVERAGE", "82%"]];
 const VOL = [.12, .13, .12, .15, .15, .17, .2, .26, .34, .45, .58, .72, .86, .98];
 const ROWS = [["HIGH", "Public storage bucket in card-\u2026", "pay-store-01", "Open"], ["HIGH", "Excess IAM privileges on treas\u2026", "treasury-prod", "Open"], ["MED", "Cardholder data outside appro\u2026", "eu-payments-02", "Open"]];
 function ut(str, x, y, size, wt, col, sp, al, a) {
@@ -356,16 +356,16 @@ function drawSecUI(rv) {
   noStroke(); fill("#8b90a8"); rect(37, 35, 8, 8, 1.5);
   fill("#f7f3e8"); stroke("#e6e0cf"); strokeWeight(1.2); rect(17, 70, 125, 38, 8); noStroke();
   ut("Overview", 30, 89.5, 15.5, 400, NAVY, -.1);
-  [["Alerts", 129], ["Assets", 169], ["Policies", 208]].forEach(n => ut(n[0], 30, n[1], 15.5, 400, GRAY, -.1));
+  [["Alerts", 129], ["Assets", 169], ["Policies", 208]].forEach(n => ut(n[0], 30, n[1], 15.5, 400, UIGRAY, -.1));
   ut("Security overview", 186, 35, 22, 500, NAVY, -.3);
-  ut("Last 30 days", 871, 35, 15, 400, GRAY, 0, "right");   // right edge of the cards
+  ut("Last 30 days", 871, 35, 15, 400, UIGRAY, 0, "right");   // right edge of the cards
   fill("#e9e4d6"); rect(158, 68, 742, 1);
 
   // KPI tiles
   dbox(179, 86, 701, 111, rv[0]);
   [188, 420, 654].forEach((x, i) => {
     fill(lerpColor(color(255), color(HLC), HL[i])); stroke("#e6e0cf"); strokeWeight(1.2); rect(x, 95, 217, 95, 8); noStroke();
-    ut(KPI[i][0], x + 20, 118, 13, 400, GRAY, 1.2);
+    ut(KPI[i][0], x + 20, 118, 13, 400, UIGRAY, 1.2);
     fill(ca("#ece6d6", 1 - rv[i])); rect(x + 20, 138, 90, 36, 7);
     ut(KPI[i][1], x + 20, 156 + 8 * (1 - rv[i]), 36, 500, NAVY, -.6, "left", rv[i]);
   });
@@ -373,7 +373,7 @@ function drawSecUI(rv) {
   // chart
   dbox(181, 203, 698, 179, rv[3]);
   fill(lerpColor(color(255), color(HLC), HL[3])); stroke("#e6e0cf"); strokeWeight(1.2); rect(189, 211, 682, 163, 8); noStroke();
-  ut("ALERT VOLUME", 207, 232, 13, 400, GRAY, 1.2);
+  ut("ALERT VOLUME", 207, 232, 13, 400, UIGRAY, 1.2);
   fill("#efe9db"); rect(207, 254, 645, 1); rect(207, 308, 645, 1);
   fill("#dedbd2"); rect(207, 362, 645, 1);
   const px = i => 207 + i * 645 / 13, py = i => 362 - VOL[i] * 98;
@@ -400,7 +400,7 @@ function drawSecUI(rv) {
   // findings table
   dbox(181, 393, 698, 150, rv[4]);
   fill(lerpColor(color(255), color(HLC), HL[4])); stroke("#e6e0cf"); strokeWeight(1.2); rect(189, 401, 682, 134, 8); noStroke();
-  [["SEVERITY", 207], ["ALERT", 315], ["ASSET", 590], ["STATUS", 757]].forEach(h => ut(h[0], h[1], 416, 12.5, 400, GRAY, 1.1));
+  [["SEVERITY", 207], ["ALERT", 315], ["ASSET", 590], ["STATUS", 757]].forEach(h => ut(h[0], h[1], 416, 12.5, 400, UIGRAY, 1.1));
   fill("#efe9db"); rect(207, 433, 645, 1); rect(207, 470, 645, 1); rect(207, 504, 645, 1);
   [453, 487, 521].forEach((y, r) => {
     const rr = rv[4 + r], d = ROWS[r];
@@ -408,8 +408,8 @@ function drawSecUI(rv) {
     rect(207, y - 4.5, 34, 9, 4.5); rect(315, y - 4.5, 190, 9, 4.5); rect(590, y - 4.5, 90, 9, 4.5); rect(757, y - 4.5, 40, 9, 4.5);
     ut(d[0], 207, y, 12, 600, r < 2 ? NAVY : "#5a5f78", 1, "left", rr);
     ut(d[1], 315, y, 15.5, 400, NAVY, -.1, "left", rr);
-    ut(d[2], 590, y, 14.5, 400, GRAY, -.1, "left", rr);
-    ut(d[3], 757, y, 14.5, 400, GRAY, -.1, "left", rr);
+    ut(d[2], 590, y, 14.5, 400, UIGRAY, -.1, "left", rr);
+    ut(d[3], 757, y, 14.5, 400, UIGRAY, -.1, "left", rr);
   });
 }
 </script>
