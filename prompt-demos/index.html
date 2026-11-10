@@ -56,7 +56,7 @@ const T_SPIN = 1.0, SPIN_D = 1.7;    // scene 1: logo spins, rays draw out
 const T_BOX = 2.0, TYPE0 = T_BOX + .9;   // prompt box appears, then types
 const LENS_D = 1.3;
 let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_OUTRO, T_WORDS, T_BACK, LOOP;
-const PATH_D = 4.2;                  // the logo glides over the screen for this long
+const PATH_D = 6.5;                  // the logo glides over the screen for this long
 const OFF = .9;                      // later loops skip the headline intro
 
 let ti = 0, START = 0.5, PS = 1, ready = false;
@@ -185,40 +185,40 @@ function catmull(P, u) {
 }
 const uiG = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
 function logoState(t) {                                  // position / scale / turns of the logo while it floats over the screen
-  const corner = [CX - boxW() * BS / 2 + 36 * BS, BOX_BOT - 124 * BS + 36 * BS];
+  const corner = [CX - boxW() * BS / 2 + (boxW() - 46) * BS, BOX_BOT - boxH() * BS + 36 * BS];
   const P = [corner, uiG(200, 150), uiG(450, 150), uiG(730, 150), uiG(450, 235), uiG(240, 300), uiG(520, 310), uiG(810, 285),
              uiG(560, 400), uiG(300, 470), uiG(520, 495), uiG(740, 495), [CX, CY]];
   const u = EPATH(pr(t, T_LEAVE, PATH_D));
-  const sc = u < .15 ? lerp(.6 * BS, .9, EIO(u / .15)) : u > .85 ? lerp(.9, 2.6, EIO((u - .85) / .15)) : .9;
-  return { pos: catmull(P, u), sc: sc, turns: 1 + 3 * u };
+  const sc = u < .12 ? lerp(.5 * BS, .9, EIO(u / .12)) : u > .88 ? lerp(.9, 2.6, EIO((u - .88) / .12)) : .9;
+  return { pos: catmull(P, u), sc: sc, turns: 2 + 3 * u };
 }
 function drawLogo1(la) {
   const spin = TWO_PI * 2 * EIO(pr(ti, T_SPIN, SPIN_D));
   let pos, sc, turns;
   if (ti < T_LEAVE) {
-    const ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
-    const tgt = [CX - boxW() * BS / 2 + 36 * BS, boxTop() + ey + 36 * BS];
-    const e = EIO(pr(ti, T_BOX + .4, 1.0));
-    pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6, .6 * BS, e); turns = e;
+    // rides along with the typing cursor, then glides to the right end of the box and stays there
+    const w = boxW(), ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
+    const lw = tw(L1.slice(0, min(typedCount(), N1)), 23, SANS, -.23);
+    const g = EIO(pr(ti, TYPE0 + TYPE_DUR + .05, .6)), e = EIO(pr(ti, T_BOX + .3, .9));
+    const lx = lerp(29.5 + lw + 28, w - 46, g);
+    const tgt = [CX - w * BS / 2 + lx * BS, boxTop() + ey + 36 * BS];
+    pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6, .5 * BS, e); turns = e + g;
   } else { const L = logoState(ti); pos = L.pos; sc = L.sc; turns = L.turns; }
   const col = lerpColor(color(NAVY), color("#fcfcf9"), EASE(pr(ti, T_OUTRO, .6)));      // cream once it is alone on the navy
   spark(pos[0], pos[1], sc, spin + TWO_PI * turns, col.toString(), la);
 }
 
-/* how strongly each block is lit by the logo floating over it (with a short trail), in UI coordinates */
+/* only the one section under the logo is lit: KPI tiles, chart, or table (UI coordinates) */
 function logoLight() {
   const hl = new Array(7).fill(0);
-  if (ti < T_LEAVE + .6) return hl;
-  const R = [[188, 95, 217, 95], [420, 95, 217, 95], [654, 95, 217, 95], [189, 211, 682, 163], [197, 437, 664, 32], [197, 471, 664, 32], [197, 505, 664, 32]];
-  [[0, 1], [.2, .7], [.4, .45], [.6, .25]].forEach(sw => {
-    const t = ti - sw[0]; if (t < T_LEAVE + .6) return;
-    const L = logoState(t), x = (L.pos[0] - WIN.x) / WIN.s, y = (L.pos[1] - WIN.y) / WIN.s;
-    R.forEach((r, i) => {
-      const dx = Math.max(r[0] - x, 0, x - (r[0] + r[2])), dy = Math.max(r[1] - y, 0, y - (r[1] + r[3]));
-      const p = EASE(constrain(1 - Math.hypot(dx, dy) / 70, 0, 1)) * sw[1];
-      hl[i] = Math.max(hl[i], p);
-    });
+  if (ti < T_LEAVE + .8) return hl;
+  const R = [[179, 86, 701, 111], [181, 203, 698, 179], [181, 393, 698, 150]];
+  const L = logoState(ti), x = (L.pos[0] - WIN.x) / WIN.s, y = (L.pos[1] - WIN.y) / WIN.s;
+  const v = R.map(r => {
+    const dx = Math.max(r[0] - x, 0, x - (r[0] + r[2])), dy = Math.max(r[1] - y, 0, y - (r[1] + r[3]));
+    return .85 * EASE(constrain(1 - Math.hypot(dx, dy) / 16, 0, 1));
   });
+  hl[0] = hl[1] = hl[2] = v[0]; hl[3] = v[1]; hl[4] = v[2];
   return hl;
 }
 
@@ -281,8 +281,8 @@ function drawRays(p, rgb, al) {
 
 /* ---- prompt box (style from the supplied code), centred in the rays ---- */
 const BS = 1.35, BOX_BOT = WIN.y - 26;      // box starts centred on the rays, then rises to sit just above the demo screen
-const boxH = () => lerp(124, 72, ti >= T_LEAVE ? shrink() : 0);
-const boxTop = () => lerp(CY - 62 * BS, BOX_BOT - boxH() * BS, EIO(pr(ti, T_UP, .9)));   // bottom edge stays put as the box shortens
+const boxH = () => 72;                                    // one line of text; the logo rides along with the typing cursor
+const boxTop = () => lerp(CY - 36 * BS, BOX_BOT - boxH() * BS, EIO(pr(ti, T_UP, .9)));
 function typedCount() {
   const u = ti - TYPE0; if (u < 0) return 0; let n = 0;
   for (let k = 1; k <= TOT; k++) if (RT[k] <= u) n = k; return n;
@@ -302,13 +302,13 @@ function drawPrompt() {
   drawingContext.shadowColor = "rgba(15,15,66,.14)"; drawingContext.shadowBlur = 30 * PS; drawingContext.shadowOffsetY = 10 * PS;
   fill("#fffdf8");
   stroke("#a0a4ab"); strokeWeight(1.5);
-  const sh = ti >= T_LEAVE ? shrink() : 0, H = boxH();
+  const H = boxH();
   rect(.75, .75, w - 1.5, H - 1.5, 9.25, 9.25, 0, 9.25);
   drawingContext.shadowColor = "transparent";
   const n = typedCount();
   const a = L1.slice(0, min(n, N1)), b = n > N1 ? L2.slice(0, n - N1 - 1) : "";
   const col = lerpColor(color(NAVY), color(CREAM), cs);
-  const x0 = 29.5, c1 = lerp(88, 36, sh), c2 = 0;          // one line of text; the logo sits above it
+  const x0 = 29.5, c1 = 36, c2 = 0;
   tx(a, x0, c1, 23, col, SANS, -.23); tx(b, x0, c2, 23, col, SANS, -.23);
   if (ti < T_UP && ti >= TYPE0 - .3 && ((ti - lastRender()) % 1) < .5) {
     const lw = tw(a, 23, SANS, -.23);
@@ -382,12 +382,11 @@ function drawSecUI(rv) {
 
   // findings table
   dbox(181, 393, 698, 150, rv[4]);
-  fill(255); stroke("#e6e0cf"); strokeWeight(1.2); rect(189, 401, 682, 134, 8); noStroke();
+  fill(lerpColor(color(255), color(HLC), HL[4])); stroke("#e6e0cf"); strokeWeight(1.2); rect(189, 401, 682, 134, 8); noStroke();
   [["SEVERITY", 207], ["ALERT", 315], ["ASSET", 590], ["STATUS", 757]].forEach(h => ut(h[0], h[1], 416, 12.5, 400, GRAY, 1.1));
   fill("#efe9db"); rect(207, 433, 645, 1); rect(207, 470, 645, 1); rect(207, 504, 645, 1);
   [453, 487, 521].forEach((y, r) => {
     const rr = rv[4 + r], d = ROWS[r];
-    fill(ca(HLC, HL[4 + r])); rect(197, y - 16, 664, 32, 6);
     fill(ca("#ece6d6", 1 - rr));
     rect(207, y - 4.5, 34, 9, 4.5); rect(315, y - 4.5, 190, 9, 4.5); rect(590, y - 4.5, 90, 9, 4.5); rect(757, y - 4.5, 40, 9, 4.5);
     ut(d[0], 207, y, 12, 600, r < 2 ? NAVY : "#5a5f78", 1, "left", rr);
