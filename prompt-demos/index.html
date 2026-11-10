@@ -44,7 +44,7 @@ const SPARK_SVG = "M23.5422 0L25.0998 14.1444C25.1837 14.9055 26.0747 15.2744 26
 /* ---- stage: 1920x1112, same as the reference image ---- */
 const SW_ = 1920, SH_ = 1112;
 const CX = 1440, CY = 556;           // centre: logo, rays, lens
-const BANDS = [[156, 246], [284, 448], [488, 770]];   // ray bands (radius), measured
+const BANDS = [[156, 246], [284, 448], [488, 770], [812, 1420]];   // ray bands (radius): first three measured, the outer one runs under the headline
 const NRAYS = 48;
 const WINS = .95;                    // UI window scale, centred on the rays
 const WIN = { x: CX - 450 * WINS, y: CY - 282.5 * WINS, s: WINS };              // sales demo window (613x461 at scale s)
@@ -55,6 +55,7 @@ const T_SPIN = 1.0, SPIN_D = 1.7;    // scene 1: logo spins, rays draw out
 const T_BOX = 2.0, TYPE0 = T_BOX + .9;   // prompt box appears, then types
 const LENS_D = 1.3;
 let RT = [0, 0], TYPE_DUR = 0, T_UP, T_WIN, T_DATA, T_LEAVE, T_B, T_C, T_WORDS, T_BACK, LOOP;
+let tH2, tH3, tBk;                   // logo hops over 3 points of the screen, then back to centre
 const OFF = .9;                      // later loops skip the headline intro
 
 let ti = 0, START = 0.5, PS = 1, ready = false;
@@ -107,7 +108,8 @@ function setup() {
   T_WIN = T_UP + .5;                // demo screen pops into view (empty)
   T_DATA = T_WIN + 1.0;             // data fades in all at once
   T_LEAVE = T_DATA + 1.0;           // logo leaves the prompt once the data is in
-  T_B = T_LEAVE + 1.5;              // light lens closes onto the logo, navy opens
+  tH2 = T_LEAVE + 1.0; tH3 = T_LEAVE + 1.9; tBk = T_LEAVE + 2.9;
+  T_B = T_LEAVE + 4.5;              // light lens closes onto the logo, navy opens
   T_C = T_B + LENS_D;
   T_WORDS = T_B + .9;               // "and start prompting them." arrives
   T_BACK = T_WORDS + 4.2;           // lens opens back to light
@@ -152,13 +154,13 @@ function draw() {
 /* ============== SCENE 1 (light blue): prompt, then the demo screen ============== */
 function drawScene1(base) {
   noStroke(); fill(LIGHT); rect(0, 0, SW_, SH_);
+  drawRays(1, [255, 255, 255], .85 * rayIn());              // the lines are always there
   const a = base ? 1 : EASE(pr(ti, .1, .8)), up = base ? 0 : 26 * (1 - EOUT(pr(ti, .1, 1)));
   push(); drawingContext.globalAlpha = a;
   ht("Stop building", HX, BASE[0] + up, 400, NAVY, 1);
   ht("demos", HX, BASE[1] + up, 400, NAVY, 1);
   pop();
   if (base) { spark(CX, CY, 2.6, 0, NAVY, 1); return; }
-  drawRays(pr(ti, T_SPIN, SPIN_D + .4), [255, 255, 255], .85);
 
   // demo screen pops into view, centred on the rays; the data then fades in all at once
   if (ti >= T_WIN) {
@@ -172,13 +174,32 @@ function drawScene1(base) {
   drawLogo1(a);
 }
 
-/* the spark spins at centre, flies into the prompt's top-left corner, stays there until the data is in, then returns */
+/* the spark spins at centre and flies into the prompt's corner. Once the data is in it leaves the prompt (which shortens),
+   hops over 3 points of the demo screen, then returns to the centre */
+const shrink = () => EIO(pr(ti, T_LEAVE, 1.0));
 function drawLogo1(la) {
   const spin = TWO_PI * 2 * EIO(pr(ti, T_SPIN, SPIN_D));
-  const e = ti < T_LEAVE ? EIO(pr(ti, T_BOX + .4, 1.0)) : 1 - EIO(pr(ti, T_LEAVE, .9));
   const ey = 20 * (1 - EOUT(pr(ti, T_BOX, .9)));
   const tgt = [CX - boxW() * BS / 2 + 36 * BS, boxTop() + ey + 36 * BS];
-  spark(lerp(CX, tgt[0], e), lerp(CY, tgt[1], e), lerp(2.6, .6 * BS, e), spin + TWO_PI * e, NAVY, la);
+  const ug = (ux, uy) => [WIN.x + ux * WIN.s, WIN.y + uy * WIN.s];
+  const Q = [ug(255, 150), ug(520, 300), ug(400, 487)];
+  let pos, sc, turns;
+  if (ti < T_LEAVE) {
+    const e = EIO(pr(ti, T_BOX + .4, 1.0));
+    pos = [lerp(CX, tgt[0], e), lerp(CY, tgt[1], e)]; sc = lerp(2.6, .6 * BS, e); turns = e;
+  } else {
+    const h1 = EIO(pr(ti, T_LEAVE, .8)), h2 = EIO(pr(ti, tH2, .7)), h3 = EIO(pr(ti, tH3, .7)), h4 = EIO(pr(ti, tBk, .8));
+    const lerp2 = (A, B, e) => [lerp(A[0], B[0], e), lerp(A[1], B[1], e)];
+    const C = [CX, CY];
+    pos = ti < tH2 ? lerp2(tgt, Q[0], h1) : ti < tH3 ? lerp2(Q[0], Q[1], h2) : ti < tBk ? lerp2(Q[1], Q[2], h3) : lerp2(Q[2], C, h4);
+    sc = ti < tBk ? lerp(.6 * BS, .9, h1) : lerp(.9, 2.6, h4);
+    turns = 1 + h1 + h2 + h3 + h4;
+    [T_LEAVE + .8, tH2 + .7, tH3 + .7].forEach((t0, i) => {          // small ring where the logo touches the data
+      const k = pr(ti, t0, .7), P = Q[i];
+      if (k > 0 && k < 1) { noFill(); stroke(15, 15, 66, 120 * (1 - k)); strokeWeight(2); circle(P[0], P[1], 24 + 110 * EOUT(k)); }
+    });
+  }
+  spark(pos[0], pos[1], sc, spin + TWO_PI * turns, NAVY, la);
 }
 
 function drawWindow(iris, rv) {
@@ -192,7 +213,7 @@ function drawWindow(iris, rv) {
   c.save(); c.beginPath(); c.roundRect(0, 0, 900, 565, 14); c.clip();
   drawSecUI(rv);
   c.restore();
-  noFill(); stroke("#e6e0cf"); strokeWeight(1.5); rect(.75, .75, 898.5, 563.5, 13.5);
+  noFill(); stroke("#a0a4ab"); strokeWeight(1.5); rect(.75, .75, 898.5, 563.5, 13.5);
   c.restore();
   pop();
 }
@@ -201,7 +222,7 @@ function drawWindow(iris, rv) {
 function drawScene2() {
   noStroke(); fill(DEEP); rect(0, 0, SW_, SH_);
   drawingContext.drawImage(grain, 0, 0);
-  drawRays(pr(ti, T_B + .3, 1.7), [52, 100, 188], .9);
+  drawRays(1, [52, 100, 188], .9 * rayIn());
 
   push();
   ht("Stop building", HX, BASE[0], 400, "#fff", 1);
@@ -218,6 +239,7 @@ function drawScene2() {
   spark(CX, CY, 2.6, ti >= T_BACK ? 0 : sp, "#fcfcf9", 1);
 }
 
+const rayIn = () => EASE(pr(millis() / 1000, .2, 1.0));      // soft fade on the very first load only
 function drawRays(p, rgb, al) {
   if (p <= 0) return;
   const k = EOUT(p);
@@ -228,7 +250,7 @@ function drawRays(p, rgb, al) {
     for (let b = 0; b < BANDS.length; b++) {
       const a = i * TWO_PI / NRAYS + (b % 2 ? -1 : 1) * .022 * now;   // neighbouring bands drift opposite ways
       const r0 = BANDS[b][0], r1 = BANDS[b][1];
-      const f = constrain(k * 1.5 - b * .22, 0, 1);
+      const f = constrain(k * 1.8 - b * .22, 0, 1);
       if (f <= 0) continue;
       stroke(rgb[0], rgb[1], rgb[2], 255 * al * f);
       const e = lerp(r0, r1, EOUT(f));
@@ -239,7 +261,7 @@ function drawRays(p, rgb, al) {
 }
 
 /* ---- prompt box (style from the supplied code), centred in the rays ---- */
-const BS = 1.15, BOX_TOP_Y = 52;               // box starts centred on the rays, then rises to here
+const BS = 1.35, BOX_TOP_Y = 52;               // box starts centred on the rays, then rises to here
 const boxTop = () => lerp(CY - 84.25 * BS, BOX_TOP_Y, EIO(pr(ti, T_UP, .9)));
 function typedCount() {
   const u = ti - TYPE0; if (u < 0) return 0; let n = 0;
@@ -259,13 +281,14 @@ function drawPrompt() {
   translate(CX - w * BS / 2, boxTop() + ey); scale(BS);
   drawingContext.shadowColor = "rgba(15,15,66,.14)"; drawingContext.shadowBlur = 30 * PS; drawingContext.shadowOffsetY = 10 * PS;
   fill("#fffdf8");
-  stroke(170, 182, 200, 230); strokeWeight(1.5);
-  rect(.75, .75, w - 1.5, 168.5, 9.25, 9.25, 0, 9.25);
+  stroke("#a0a4ab"); strokeWeight(1.5);
+  const sh = ti >= T_LEAVE ? shrink() : 0, H = lerp(168.5, 112, sh);
+  rect(.75, .75, w - 1.5, H - 1.5, 9.25, 9.25, 0, 9.25);
   drawingContext.shadowColor = "transparent";
   const n = typedCount();
   const a = L1.slice(0, min(n, N1)), b = n > N1 ? L2.slice(0, n - N1 - 1) : "";
   const col = lerpColor(color(NAVY), color(CREAM), cs);
-  const x0 = 29.5, c1 = 97, c2 = 128;
+  const x0 = 29.5, c1 = lerp(97, 40, sh), c2 = lerp(128, 71, sh);
   tx(a, x0, c1, 23, col, SANS, -.23); tx(b, x0, c2, 23, col, SANS, -.23);
   if (ti < T_UP && ti >= TYPE0 - .3 && ((ti - lastRender()) % 1) < .5) {
     const onFirst = n <= N1, lw = tw(onFirst ? a : b, 23, SANS, -.23);
@@ -297,7 +320,7 @@ function drawSecUI(rv) {
   ut("Overview", 30, 89.5, 15.5, 400, NAVY, -.1);
   [["Alerts", 129], ["Assets", 169], ["Policies", 208]].forEach(n => ut(n[0], 30, n[1], 15.5, 400, GRAY, -.1));
   ut("Security overview", 186, 35, 22, 500, NAVY, -.3);
-  ut("Last 30 days", 800, 35, 15, 400, GRAY, 0, "right");
+  ut("Last 30 days", 871, 35, 15, 400, GRAY, 0, "right");   // right edge of the cards
   fill("#e9e4d6"); rect(158, 68, 742, 1);
 
   // KPI tiles
