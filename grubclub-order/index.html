@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grubclub Order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0E3251;--bean:#0F5A5C;--kale:#1C8859;--avo:#9EC878;--matcha:#8CE39B;--kiwi:#EEFB71;--egg:#D7F5FA;--blue:#3FA0BE;--mint:#A3DAC5;--paper:#F7F6FA;--k:1}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+body{display:flex;flex-direction:column;font-family:Poppins,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+nav.back .ctl{margin-left:auto;display:flex;align-items:center;gap:4px}
+nav.back .ctl button{font:inherit;color:#8d8d8d;background:none;border:1px solid transparent;border-radius:999px;padding:4px 11px;cursor:pointer}
+nav.back .ctl button:hover{color:#fff}
+nav.back .ctl button.on{color:#000;background:#fff}
+nav.back .ctl .pp{width:30px;height:28px;padding:0;display:grid;place-items:center;border-color:#333;margin-left:6px}
+nav.back .ctl .pp svg{width:12px;height:12px;fill:currentColor}
+@media (max-width:640px){nav.back{padding:0 16px}nav.back .ctl button:not(.pp){padding:4px 8px}nav.back span,nav.back a{display:none}}
+
+main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:50% 50%;overflow:hidden;background:var(--navy)}
+.scene{position:absolute;inset:0;visibility:hidden;overflow:hidden}
+.scene.on{visibility:visible}
+.abs{position:absolute}
+.logo{font-weight:700;letter-spacing:-.035em;line-height:1;white-space:nowrap;display:inline-flex;align-items:flex-end}
+.logo i{font-style:normal}
+.logo svg{width:.68em;height:.6em;margin-left:.03em;margin-bottom:.02em}
+
+/* ===== 1 hero ===== */
+#s0{background:var(--navy)}
+#s0 svg.bg{position:absolute;inset:0;width:100%;height:100%}
+#hLogo{left:56px;top:38px;font-size:40px;color:#fff}
+#hLogo i{color:var(--kiwi)}
+#hTag{right:56px;top:50px;font-size:13px;font-weight:500;letter-spacing:.22em;color:var(--egg)}
+#hLogo,#hTag,#cta{opacity:0;transform:translateY(14px);transition:opacity calc(.7s*var(--k)),transform calc(.7s*var(--k)) cubic-bezier(.2,.8,.2,1)}
+#hLogo.in,#hTag.in,#cta.in{opacity:1;transform:none}
+#cta{left:50%;bottom:50px;margin-left:-135px;width:270px;height:64px;border-radius:999px;background:var(--kiwi);color:var(--bean);font:600 21px/64px Poppins,sans-serif;text-align:center;box-shadow:0 14px 30px -10px rgba(0,0,0,.45);cursor:pointer;border:0;transition:opacity calc(.7s*var(--k)),transform calc(.7s*var(--k)) cubic-bezier(.2,.8,.2,1),background .2s}
+#cta.in.press{transform:scale(.96)}
+#cta svg{width:20px;height:20px;vertical-align:-3px;margin-left:8px}
+
+/* ===== 2 pick ===== */
+#s1{background:var(--paper);color:var(--navy)}
+#pLogo{left:56px;top:30px;font-size:30px;color:var(--navy)}
+#pLogo i{color:var(--kale)}
+#pStep{right:56px;top:40px;font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--bean);display:flex;gap:18px}
+#pStep em{font-style:normal;opacity:.4}#pStep em.a{opacity:1}
+#pHead{left:56px;top:92px}
+#pHead h1{margin:0;font-size:42px;line-height:1.1;font-weight:700;letter-spacing:-.01em}
+#pHead p{margin:8px 0 0;font-size:17px;color:#3d6f74}
+#grid{left:56px;top:222px;width:744px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:#fff;border-radius:22px;padding:14px;height:220px;box-shadow:0 10px 24px -14px rgba(14,50,81,.35);opacity:0;transform:translateY(26px);transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),box-shadow .3s,outline-color .3s;outline:3px solid transparent;outline-offset:-1px}
+#s1.in .card{opacity:1;transform:none;transition-delay:calc(var(--i)*70ms*var(--k))}
+#s1.in .card.sel{transition-delay:0s;transform:translateY(-4px);outline-color:var(--matcha)}
+.card .il{height:104px;border-radius:14px;overflow:hidden;background:var(--navy)}
+.card h4{margin:10px 0 0;height:39px;font-size:15px;line-height:1.3;font-weight:600;letter-spacing:-.005em}
+.card .rw{display:flex;justify-content:space-between;align-items:center;margin-top:7px}
+.card .rw small{font-size:12px;color:#4d8184;font-weight:500}
+.add{height:32px;padding:0 14px;border-radius:999px;background:#E2F5F3;color:var(--bean);font:600 13px/32px Poppins,sans-serif;transition:background .25s,color .25s,transform .25s}
+.card.sel .add{background:var(--navy);color:var(--kiwi)}
+.bx{left:836px;top:92px;width:388px;height:598px;border-radius:28px;background:var(--navy);color:#fff;opacity:0;transform:translateX(30px);transition:opacity calc(.6s*var(--k)),transform calc(.7s*var(--k)) cubic-bezier(.2,.8,.2,1)}
+#s1.in .bx{opacity:1;transform:none}
+.bx h3{position:absolute;left:28px;top:24px;margin:0;font-size:22px;font-weight:600}
+.bx .cn{position:absolute;right:28px;top:16px;font-size:30px;font-weight:700;color:var(--kiwi);line-height:1.2}
+.bx .cn small{font-size:16px;color:var(--egg);font-weight:500}
+#pbox{position:absolute;left:84px;top:62px;width:220px}
+#slots{position:absolute;left:28px;right:28px;top:284px;display:grid;gap:8px}
+.slot{height:46px;border-radius:14px;border:1.5px dashed rgba(215,245,250,.28);display:flex;align-items:center;gap:12px;padding:0 14px;font-size:13.5px;font-weight:500;color:rgba(215,245,250,.45);transition:background .3s,border-color .3s,color .3s}
+.slot i{width:22px;height:22px;border-radius:50%;background:rgba(215,245,250,.12);flex:none;transition:background .3s}
+.slot span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot.on{border:1.5px solid transparent;background:rgba(215,245,250,.1);color:#fff}
+#cont{position:absolute;left:28px;right:28px;bottom:26px;height:52px;border-radius:999px;background:rgba(215,245,250,.12);color:rgba(215,245,250,.4);font:600 17px/52px Poppins,sans-serif;text-align:center;transition:background .3s,color .3s}
+#cont.ready{background:var(--kiwi);color:var(--bean);animation:glow calc(1.2s*var(--k)) ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 8px rgba(238,251,113,.25)}}
+.flyer{position:absolute;border-radius:50%;z-index:40;pointer-events:none}
+
+/* ===== 3 pack ===== */
+#s2{background:var(--navy)}
+#s2 svg.bg{position:absolute;inset:0;width:100%;height:100%}
+#pkT{left:0;right:0;top:58px;text-align:center;color:#fff;font-size:42px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+#pkS{left:0;right:0;top:118px;text-align:center;color:var(--egg);font-size:14px;font-weight:500;letter-spacing:.22em;text-transform:uppercase}
+#pkT,#pkS{transition:opacity .3s}
+#pkBox{left:440px;top:190px;width:400px;opacity:0;transform:scale(.6);transition:opacity calc(.5s*var(--k)),transform calc(.8s*var(--k)) cubic-bezier(.3,1.4,.5,1)}
+#pkBox.in{opacity:1;transform:none}
+#pkBtn{left:50%;bottom:42px;margin-left:-135px;width:270px;height:62px;border-radius:999px;background:var(--kiwi);color:var(--bean);font:600 20px/62px Poppins,sans-serif;text-align:center;opacity:0;transform:translateY(16px);transition:opacity calc(.6s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1)}
+#pkBtn.in{opacity:1;transform:none}
+#pkBtn.press{transform:scale(.96)}
+
+/* box parts */
+.bsvg{display:block;width:100%;height:auto;overflow:visible}
+.bsvg .it{transform-box:fill-box;transform-origin:center;opacity:0;transition:transform calc(.7s*var(--k)) cubic-bezier(.3,1.45,.5,1),opacity calc(.25s*var(--k))}
+.bsvg.dropm .it{transform:translateY(-190px)}
+.bsvg.popm .it{transform:scale(.2)}
+.bsvg .it.on{opacity:1;transform:none}
+.bsvg .lid{opacity:0;transform:translateY(-230px);transition:transform calc(.7s*var(--k)) cubic-bezier(.4,1.35,.55,1),opacity calc(.3s*var(--k))}
+.bsvg .lid.on{opacity:1;transform:none}
+.bsvg .tape{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);transition:transform calc(.5s*var(--k)) cubic-bezier(.5,0,.2,1)}
+.bsvg .tape.on{transform:none}
+
+/* ===== 4 email ===== */
+#s3{background:var(--mint)}
+#esc{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none}
+#esc::-webkit-scrollbar{display:none}
+#esz{position:relative;width:1280px;height:1071px;overflow:hidden}
+#eim{position:absolute;left:0;top:0;width:2000px;height:1673px;transform:scale(.64);transform-origin:0 0}
+#email{position:absolute;left:330px;top:115px;width:1340px;height:1443px;background:var(--paper);color:#0F5F5E;font-size:23.4px}
+#email>*{position:absolute}
+#email .hero{left:0;top:0;width:1340px;height:840px;background:#0E3C65}
+#email .band{left:0;top:0;width:1340px;height:163px;background:#0B375C}
+#email .rv{opacity:0;transform:translateY(34px);transition:opacity calc(.7s*var(--k)),transform calc(.8s*var(--k)) cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--d)*1ms*var(--k))}
+#email.in .rv{opacity:1;transform:none}
+#eLogo{left:167px;top:52px;font-size:39px;color:#fff;line-height:56px}
+#eLogo i{color:var(--kiwi)}
+#eOrd{right:167px;top:62px;font-size:19.5px;font-weight:400;letter-spacing:.12em;color:#fff;line-height:36px;white-space:nowrap}
+#eTitle{left:262px;top:249px;margin:0;font-size:50px;font-weight:700;letter-spacing:-.005em;line-height:78px;color:#fff;white-space:nowrap}
+#eHi{left:262px;top:371px;margin:0;font-size:23.4px;line-height:29px;color:#fff;white-space:nowrap}
+#eAdr{left:262px;top:455px;margin:0;font-size:22px;line-height:34px;letter-spacing:.14em;color:#fff;white-space:nowrap}
+#eBtn{left:262px;top:544px;width:291px;height:66px;border-radius:7px;background:#EFFB7A;color:var(--bean);font-weight:600;font-size:18.6px;line-height:66px;text-align:center}
+#eCard{left:168px;top:713px;width:1005px;height:600px;background:#fff;border-radius:26px}
+#eCard>*{position:absolute}
+#eSum{left:94px;top:60px;margin:0;font-size:26.6px;font-weight:600;line-height:42px;color:#0B5456;white-space:nowrap}
+#eItem{left:94px;top:148px;width:819px;height:76px;background:#E2F5F3}
+#eThumb{position:absolute;left:0;top:0;width:80px;height:76px;background:#EEF17A;border-radius:8px 0 0 8px;overflow:hidden}
+#eThumb svg{position:absolute;left:8px;top:6px;width:64px}
+#eName{position:absolute;left:104px;top:0;line-height:76px;font-weight:600;color:#0C6663;white-space:nowrap}
+#eName s{display:inline-block;width:2px;height:20px;background:#0C6663;margin:0 14px 0 14px;vertical-align:-3px;text-decoration:none}
+#eName span{font-weight:400}
+#ePrice{position:absolute;right:29px;top:0;line-height:76px;color:#0F6561}
+.trow{left:550px;width:363px;height:76px;display:flex;justify-content:space-between;padding:3px 29px 0 0;align-items:center;line-height:1;color:#0F6561}
+.trow.ln{border-bottom:2px solid #8DD3C6;height:78px}
+.trow.tot{font-weight:600;color:#0B5456}
+#eFoot{left:0;top:1380px;width:1340px;text-align:center;font-size:19px;color:#4a8a88}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Grubclub Order</b>
+  <div class="ctl" role="group" aria-label="Scenes"><button data-s="0">hero</button><button data-s="1">pick</button><button data-s="2">pack</button><button data-s="3">email</button><button class="pp" id="pp" aria-label="Pause"></button></div>
+</nav>
+<main id="wrap"><div id="stage">
+
+<!-- 1 hero -->
+<section class="scene" id="s0" aria-label="Hero">
+  <svg class="bg" id="hSvg" viewBox="0 0 1280 720"><g id="hBlobs"></g><g id="hBack"></g><g id="hRings"></g>
+    <g id="hc"><circle r="212" fill="#D6ECE8"/><circle r="198" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2"/>
+      <g id="hTxt" transform="rotate(-9)" font-family="Poppins,sans-serif" text-anchor="middle" fill="#14396B" font-weight="700">
+        <text class="hl" y="-52" font-size="37" letter-spacing="-.6">lightly salted</text>
+        <text class="hl" y="-10" font-size="37" letter-spacing="-.6">dehydrated</text>
+        <text class="hl" y="32" font-size="37" letter-spacing="-.6">grasshoppers</text>
+        <text class="hl" y="86" font-size="13.5" font-weight="600" letter-spacing="3">NET WT 20g</text></g></g>
+    <g id="hFront"></g><g id="hOrb"></g></svg>
+  <div class="abs logo" id="hLogo">grub<i>club</i><svg viewBox="0 0 28 24" fill="var(--kiwi)"><path d="M2 18c3-10 8-10 9-3.5s6 4 11-6.500" fill="none" stroke="var(--kiwi)" stroke-width="3.4" stroke-linecap="round"/><circle cx="24.500" cy="4.500" r="2.400"/></svg></div>
+  <div class="abs" id="hTag">THE ENTOMO BOX</div>
+  <div class="abs" id="cta" role="button">build your box<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></div>
+</section>
+
+<!-- 2 pick -->
+<section class="scene" id="s1" aria-label="Pick your meals">
+  <div class="abs logo" id="pLogo">grub<i>club</i><svg viewBox="0 0 28 24" fill="var(--kale)"><path d="M2 18c3-10 8-10 9-3.5s6 4 11-6.500" fill="none" stroke="var(--kale)" stroke-width="3.4" stroke-linecap="round"/><circle cx="24.500" cy="4.500" r="2.400"/></svg></div>
+  <div class="abs" id="pStep"><em class="a">1 PICK</em><em>2 PACK</em><em>3 DELIVER</em></div>
+  <div class="abs" id="pHead"><h1>pick your meals</h1><p>choose 4 you like for your entomo box</p></div>
+  <div class="abs" id="grid"></div>
+  <div class="abs bx"><h3>your box</h3><div class="cn"><b id="cnt">0</b><small> / 4</small></div><div id="pbox"></div><div id="slots"></div><div id="cont">continue</div></div>
+</section>
+
+<!-- 3 pack -->
+<section class="scene" id="s2" aria-label="Packing the box">
+  <svg class="bg" viewBox="0 0 1280 720"><g id="pkRings"></g><g id="pkOrb"></g></svg>
+  <div class="abs" id="pkT">packing your box</div><div class="abs" id="pkS">4 meals · 1 entomo box</div>
+  <div class="abs" id="pkBox"></div>
+  <div class="abs" id="pkBtn" role="button">place order</div>
+</section>
+
+<!-- 4 email -->
+<section class="scene" id="s3" aria-label="Order email">
+ <div id="esc"><div id="esz"><div id="eim"><div id="email">
+  <div class="hero"></div><div class="band"></div>
+  <div class="logo rv" id="eLogo" style="--d:0">grub<i>club</i><svg viewBox="0 0 28 24" fill="var(--kiwi)"><path d="M2 18c3-10 8-10 9-3.5s6 4 11-6.500" fill="none" stroke="var(--kiwi)" stroke-width="3.4" stroke-linecap="round"/><circle cx="24.500" cy="4.500" r="2.400"/></svg></div>
+  <div class="rv" id="eOrd" style="--d:80">ORDER #347467</div>
+  <h2 class="rv" id="eTitle" style="--d:200">your order has arrived!</h2>
+  <p class="rv" id="eHi" style="--d:320">hi kristyna,<br>thanks for shopping with grubclub. your package was delivered to:</p>
+  <p class="rv" id="eAdr" style="--d:420">330 UNIVERSITY AVE, TORONTO, ON M5G 1R8</p>
+  <div class="rv" id="eBtn" style="--d:520">view your order</div>
+  <div class="rv" id="eCard" style="--d:620">
+    <h3 id="eSum">order summary</h3>
+    <div id="eItem"><div id="eThumb"></div><div id="eName">entomo box<s></s><span>x1</span></div><div id="ePrice">$100.00</div></div>
+    <div class="trow ln" style="top:241px"><span>subtotal</span><span>$90.00</span></div>
+    <div class="trow ln" style="top:317px"><span>shipping</span><span>$27.55</span></div>
+    <div class="trow" style="top:393px"><span>HST</span><span>$27.55</span></div>
+    <div class="trow tot" style="top:469px"><span>total</span><span>$145.10</span></div>
+  </div>
+  <div class="rv" id="eFoot" style="--d:760">questions about your order? just reply to this email.</div>
+ </div></div></div></div>
+</section>
+
+<div id="w1" class="abs" style="inset:0;display:none;z-index:60"></div>
+<div id="w2" class="abs" style="inset:0;display:none;z-index:61"></div>
+<div class="abs" id="cur" style="left:0;top:0;z-index:70;opacity:0;pointer-events:none"><svg width="30" height="34" viewBox="0 0 30 34"><path d="M4 3v22l5.600-5.200 4 8.800 4-1.800-4-8.600H21z" fill="#fff" stroke="#0E3251" stroke-width="1.800" stroke-linejoin="round"/></svg><b></b></div>
+</div></main>
+<style>
+#cur svg{position:absolute;left:-4px;top:-3px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+#cur b{position:absolute;left:-22px;top:-22px;width:44px;height:44px;border-radius:50%;border:3px solid var(--kiwi);opacity:0;transform:scale(.3)}
+#cur.down b{animation:rip calc(.5s*var(--k)) ease-out}
+@keyframes rip{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+@media (prefers-reduced-motion:reduce){.card,.bx{transition:none}}
+</style>
+
+<script>
+/* ============ helpers ============ */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'), wrap=$('#wrap'), cursor=$('#cur');
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const eob=x=>{x=clamp(x);const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const eio=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const CANCEL={};
+let K=1, gen=0, paused=false, uid=0, SCALE=1;
+function fit(){const w=wrap.clientWidth,h=wrap.clientHeight;SCALE=Math.min(w/1280,h/720);stage.style.transform=`translate(-50%,-50%) scale(${SCALE})`}
+addEventListener('resize',fit);fit();
+const rc=el=>{const r=el.getBoundingClientRect(),s=stage.getBoundingClientRect();return{x:(r.left-s.left)/SCALE,y:(r.top-s.top)/SCALE,w:r.width/SCALE,h:r.height/SCALE}};
+function W(ms,g){return new Promise((res,rej)=>{let left=ms*K,last=performance.now();const tick=now=>{if(g!==gen)return rej(CANCEL);if(!paused)left-=now-last;last=now;left<=0?res():requestAnimationFrame(tick)};requestAnimationFrame(tick)})}
+function tween(ms,g,fn){return new Promise((res,rej)=>{let el=0,last=performance.now();const tick=now=>{if(g!==gen)return rej(CANCEL);if(!paused)el+=now-last;last=now;const p=clamp(el/(ms*K));fn(p);p>=1?res():requestAnimationFrame(tick)};requestAnimationFrame(tick)})}
+
+/* ============ leaves (the lush collage) ============ */
+const LS=[{f:'#CFE9E4',g:'#E7F6F2',v:'#5FB0A4'},{f:'#8FCFA0',g:'#BDE8B4',v:'#2E8F7A'},{f:'#2B7F86',g:'#1F6C78',v:'#6DC3B5'},{f:'#1C8859',g:'#167249',v:'#8CE39B'},
+ {f:'#EEF6A8',g:'#F8FCCB',v:'#9EC878'},{f:'#A8C7DA',g:'#C9DEEA',v:'#4F8FB5'},{f:'#0F5A5C',g:'#0B4A4F',v:'#3FA0BE'},{f:'#9EC878',g:'#B8DB92',v:'#1C8859'}];
+function leafG(o){const L=o.L,W_=o.W,b=o.b||0,S=LS[o.s],id='c'+(uid++);
+  const d=`M0 0C${W_} ${-L*.2} ${W_+b*.5} ${-L*.65} ${b} ${-L}C${-W_+b*.5} ${-L*.65} ${-W_} ${-L*.2} 0 0Z`;
+  let v='';const n=Math.max(4,Math.round(L/31));
+  for(let i=1;i<=n;i++){const f=i/(n+1),y=-L*f*.93,mx=b*f*f,ew=W_*(.35+.85*Math.sin(Math.PI*Math.min(1,f+.04)));v+=`M${mx} ${y}L${mx+ew} ${y-W_*.8}M${mx} ${y}L${mx-ew} ${y-W_*.8}`}
+  v+=`M0 0Q${b*.2} ${-L*.5} ${b} ${-L*.97}`;
+  return `<g class="lf" transform="translate(${o.x} ${o.y}) rotate(${o.r})"><clipPath id="${id}"><path d="${d}"/></clipPath><path d="${d}" fill="${S.f}"/><g clip-path="url(#${id})"><rect x="0" y="${-L}" width="${W_*2.5}" height="${L}" fill="${S.g}"/><path d="${v}" fill="none" stroke="${S.v}" stroke-width="${Math.max(1.5,L/95).toFixed(1)}" stroke-linecap="round"/></g></g>`}
+const LF=a=>a.map(x=>leafG({x:x[0],y:x[1],r:x[2],L:x[3],W:x[4],b:x[5],s:x[6]})).join('');
+
+/* ============ box (open / lid / tape) ============ */
+function boxSVG(cls,items){const a=uid++,top='200,40 340,110 200,180 60,110',fl='60,110 200,180 200,330 60,260',fr='200,180 340,110 340,260 200,330',P=[[150,108],[250,108],[200,80],[200,138]];
+  return `<svg class="bsvg ${cls}" viewBox="0 0 400 380"><defs><clipPath id="bl${a}"><polygon points="${fl}"/></clipPath><clipPath id="br${a}"><polygon points="${fr}"/></clipPath><clipPath id="bt${a}"><polygon points="${top}"/></clipPath></defs>
+  <polygon points="${top}" fill="#082338"/><polygon points="200,60 318,112 200,166 82,112" fill="#0B2E47"/>
+  ${items.map((c,i)=>`<g class="it"><circle cx="${P[i][0]}" cy="${P[i][1]}" r="23" fill="${c}"/><circle cx="${P[i][0]-7}" cy="${P[i][1]-8}" r="7" fill="#fff" opacity=".35"/></g>`).join('')}
+  <g clip-path="url(#bl${a})"><polygon points="${fl}" fill="#1B5C63"/><g transform="matrix(1 .5 0 1 60 110)">${LF([[28,165,-8,140,28,8,0],[72,165,14,155,30,-8,1],[112,165,34,120,24,10,4]])}</g></g>
+  <g clip-path="url(#br${a})"><polygon points="${fr}" fill="#2A7A7C"/><g transform="matrix(1 -.5 0 1 200 180)"><text x="70" y="88" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="29" letter-spacing="-1" fill="#fff">grub<tspan fill="#EEFB71">club</tspan></text><rect x="0" y="116" width="140" height="10" fill="#EEFB71" opacity=".9"/></g></g>
+  <g class="lid"><polygon points="60,110 200,180 200,196 60,126" fill="#245F66"/><polygon points="200,180 340,110 340,126 200,196" fill="#1B4E57"/><polygon points="${top}" fill="#3F9490"/><g clip-path="url(#bt${a})">${LF([[130,150,-60,70,16,6,0],[270,150,60,70,16,-6,4],[200,120,0,60,15,0,1]])}</g></g>
+  <g class="tape" clip-path="url(#bt${a})"><rect x="186" y="30" width="28" height="170" fill="#EEFB71"/></g></svg>`}
+
+/* ============ meals ============ */
+const MEALS=[
+ {n:'lightly salted dehydrated grasshoppers',s:'salted grasshoppers',g:'20g',c:'#D6ECE8'},
+ {n:'chili lime mealworm crisps',s:'chili lime crisps',g:'35g',c:'#EEFB71'},
+ {n:'roasted cricket trail mix',s:'cricket trail mix',g:'50g',c:'#8CE39B'},
+ {n:'wasabi grasshopper bites',s:'wasabi bites',g:'25g',c:'#9EC878'},
+ {n:'cricket flour brownie mix',s:'cricket brownie mix',g:'200g',c:'#3FA0BE'},
+ {n:'matcha cricket protein bar',s:'matcha protein bar',g:'40g',c:'#D7F5FA'}];
+const PICKS=[0,1,4,5];
+
+function mini(m,i){const j=(i%3-1)*6;
+  return `<svg viewBox="0 0 210 104" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">${LF([[24,114,28+j,84,18,8,2],[46,114,54-j,60,15,-6,0],[188,114,-30-j,86,19,-8,1],[166,114,-56+j,62,15,6,3],[110,112,-2,0.1,0.1,0,0]].slice(0,4))}<circle class="cc" cx="105" cy="50" r="33" fill="${m.c}"/><text x="105" y="56" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="15" fill="#14396B">${m.g}</text>${LF([[92,114,-8,40,12,4,0],[124,114,12,34,10,-4,4]])}</svg>`}
+
+/* ============ build static DOM ============ */
+$('#grid').innerHTML=MEALS.map((m,i)=>`<div class="card" style="--i:${i}" data-i="${i}"><div class="il">${mini(m,i)}</div><h4>${m.n}</h4><div class="rw"><small>${m.g}</small><div class="add">+ add</div></div></div>`).join('');
+$('#slots').innerHTML=[0,1,2,3].map(()=>`<div class="slot"><i></i><span>choose a meal</span></div>`).join('');
+$('#pbox').innerHTML=boxSVG('popm',PICKS.map(i=>MEALS[i].c));
+$('#pkBox').innerHTML=boxSVG('dropm',PICKS.map(i=>MEALS[i].c));
+$('#eThumb').innerHTML=boxSVG('',[]);$('#eThumb .lid').classList.add('on');$('#eThumb .tape').classList.add('on');
+
+/* hero collage */
+const HB=[[300,610,62,'#EEF6A8'],[196,470,92,'#A8C7DA'],[1000,590,84,'#BFE3DF'],[1090,440,50,'#EEF6A8']];
+$('#hBlobs').innerHTML=HB.map(b=>`<circle cx="${b[0]}" cy="${b[1]}" r="${b[2]}" fill="${b[3]}" opacity=".9"/>`).join('');
+const BACK=[[130,762,-26,420,88,-34,2],[130,762,4,370,76,24,1],[130,762,32,290,62,-14,6],[130,762,-52,300,60,20,3],[-14,430,80,330,70,16,0],[-14,570,64,250,56,-10,7],
+ [1150,762,26,420,88,34,3],[1150,762,-4,370,76,-24,1],[1150,762,-32,290,62,14,2],[1150,762,52,300,60,-20,6],[1294,430,-80,330,70,-16,1],[1294,570,-64,250,56,10,0]];
+const FRONT=[[470,764,-18,330,88,-30,0],[700,764,14,320,84,26,4],[855,764,42,280,70,22,5],[385,764,-46,260,64,12,1]];
+const hero={t:0,L:[]};
+function buildLeaves(sel,arr,from){const g=$(sel);g.innerHTML=LF(arr);[...g.querySelectorAll('.lf')].forEach((el,i)=>{const a=arr[i];hero.L.push({el,x:a[0],y:a[1],r:a[2],d:.15+(from+i)*.05,ph:i*1.7,amp:1.6+(i%3)*.7,sp:.8+(i%4)*.18})})}
+buildLeaves('#hBack',BACK,0);buildLeaves('#hFront',FRONT,BACK.length);
+$('#hRings').innerHTML=[0,1,2].map(i=>`<circle cx="640" cy="340" r="212" fill="none" stroke="${['#EEFB71','#8CE39B','#3FA0BE'][i]}" stroke-width="3"/>`).join('');
+$('#hOrb').innerHTML=['#EEFB71','#8CE39B','#3FA0BE'].map((c,i)=>`<circle r="${[13,17,10][i]}" fill="${c}"/>`).join('');
+$('#pkRings').innerHTML=`<circle cx="640" cy="410" r="225" fill="#0F5A5C"/><circle cx="640" cy="410" r="188" fill="#1C8859" opacity=".5"/><circle cx="640" cy="410" r="150" fill="none" stroke="#EEFB71" stroke-opacity=".5" stroke-width="2"/>`;
+$('#pkOrb').innerHTML=PICKS.map(i=>`<circle r="15" fill="${MEALS[i].c}"/>`).join('');
+
+/* ============ per-frame drawing ============ */
+const pack={t:0,col:-1};
+function drawHero(){const t=hero.t;
+  for(const l of hero.L){const p=eob((t-l.d)/.95),sw=Math.sin(t*l.sp+l.ph)*l.amp;l.el.setAttribute('transform',`translate(${l.x} ${l.y}) rotate(${l.r+sw+(1-p)*-22*Math.sign(l.r||1)}) scale(${Math.max(p,.0001)})`)}
+  const s=eob((t-.15)/.95)*(1+.022*Math.sin(t*1.7));$('#hc').setAttribute('transform',`translate(640 340) scale(${Math.max(s,.0001)})`);
+  $('#hTxt').setAttribute('transform',`rotate(${-9+Math.sin(t*.9)*1.3})`);
+  $$('.hl').forEach((e,i)=>{const p=clamp((t-(.9+i*.14))/.5);e.setAttribute('opacity',p);e.setAttribute('dy',(1-p)*14)});
+  $$('#hRings circle').forEach((c,i)=>{const p=(t*.4+i/3)%1,on=clamp((t-1.1)/.6);c.setAttribute('r',212+p*190);c.setAttribute('opacity',(1-p)*.32*on)});
+  $$('#hOrb circle').forEach((c,i)=>{const a=t*.7+i*2.0944,on=clamp((t-1.4)/.6);c.setAttribute('cx',640+Math.cos(a)*(300+Math.sin(t*1.1+i)*8));c.setAttribute('cy',340+Math.sin(a)*(300+Math.sin(t*1.1+i)*8));c.setAttribute('opacity',on)})}
+function drawPack(){const t=pack.t;
+  $$('#pkOrb circle').forEach((c,i)=>{const a=t*.9+i*1.5708,cp=pack.col<0?0:eio((t-pack.col)/.9),R=262*(1-cp),on=clamp((t-.2)/.6)*(1-clamp((t-pack.col-.7)/.3)*(pack.col<0?0:1));
+    c.setAttribute('cx',640+Math.cos(a)*R);c.setAttribute('cy',410+Math.sin(a)*R*.86);c.setAttribute('opacity',on)});
+  const r=$('#pkRings').children;r[0].setAttribute('r',225+Math.sin(t*1.5)*6);r[1].setAttribute('r',188+Math.sin(t*1.5+.6)*8)}
+let lastT=performance.now();
+function frame(now){const dt=Math.min(.05,(now-lastT)/1000);lastT=now;if(!paused){hero.t+=dt;pack.t+=dt}
+  if($('#s0').classList.contains('on'))drawHero();if($('#s2').classList.contains('on'))drawPack();requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+/* ============ cursor, wipe, scene switching ============ */
+function curSet(x,y){cursor.style.transition='none';cursor.style.transform=`translate(${x}px,${y}px)`;void cursor.offsetWidth}
+function curGo(x,y,ms){cursor.style.transition=`transform ${ms*K}ms cubic-bezier(.45,0,.2,1)`;cursor.style.transform=`translate(${x}px,${y}px)`}
+async function curClick(g){cursor.classList.remove('down');void cursor.offsetWidth;cursor.classList.add('down');await W(160,g)}
+const cen=el=>{const r=rc(el);return{x:r.x+r.w/2,y:r.y+r.h/2}};
+const BG=['#0E3251','#F7F6FA','#0E3251','#A3DAC5'];
+function clearWipe(){['#w1','#w2'].forEach(s=>{const e=$(s);e.getAnimations().forEach(a=>a.cancel());e.style.display='none'})}
+async function wipe(g,x,y,col){const a=$('#w1'),b=$('#w2');a.style.background='#EEFB71';b.style.background=col;
+  const R=Math.hypot(Math.max(x,1280-x),Math.max(y,720-y))+30,run=(e,d)=>{e.style.display='block';return e.animate([{clipPath:`circle(0px at ${x}px ${y}px)`},{clipPath:`circle(${R}px at ${x}px ${y}px)`}],{duration:800*K,delay:d*K,easing:'cubic-bezier(.65,0,.3,1)',fill:'both'}).finished};
+  await Promise.all([run(a,0),run(b,130)]);if(g!==gen)throw CANCEL}
+function show(i){$$('.scene').forEach((s,j)=>s.classList.toggle('on',j===i));$$('.ctl [data-s]').forEach(b=>b.classList.toggle('on',+b.dataset.s===i));clearWipe();cursor.style.opacity=0}
+function showCursor(){cursor.style.opacity=1}
+
+/* ============ scenes ============ */
+const scenes=[
+async function hero_(g,o){
+  hero.t=o.clip?3.4:0;show(0);$$('#hLogo,#hTag,#cta').forEach(e=>e.classList.remove('in','press'));
+  const tm=o.clip?0:1;
+  if(o.clip)$$('#hLogo,#hTag,#cta').forEach(e=>e.classList.add('in'));
+  else{await W(500,g);$('#hLogo').classList.add('in');await W(400,g);$('#hTag').classList.add('in');await W(1000,g);$('#cta').classList.add('in');await W(2300,g)}
+  if(o.clip)await W(700,g);
+  const c=cen($('#cta'));curSet(c.x+420,c.y+200);showCursor();await W(50,g);curGo(c.x,c.y+4,900);await W(1000,g);
+  $('#cta').classList.add('press');await curClick(g);await W(120,g);return{x:c.x,y:c.y}},
+
+async function pick_(g,o){
+  show(1);const s=$('#s1');s.classList.remove('in');
+  $$('.card').forEach(c=>c.classList.remove('sel'));$$('.slot').forEach(e=>{e.classList.remove('on');$('span',e).textContent='choose a meal';$('i',e).style.background=''});
+  $('#cnt').textContent=0;$('#cont').classList.remove('ready');$$('#pbox .it').forEach(e=>e.classList.remove('on'));$$('.flyer').forEach(e=>e.remove());
+  await W(150,g);s.classList.add('in');await W(o.clip?600:1200,g);
+  const c0=cen($('#cta')),first=cen($('.card[data-i="'+PICKS[0]+'"] .add'));curSet(first.x+260,first.y+60);showCursor();
+  for(let n=0;n<PICKS.length;n++){const i=PICKS[n],card=$('.card[data-i="'+i+'"]'),add=cen($('.add',card));
+    curGo(add.x,add.y,n?650:900);await W(o.clip?(n?640:800):(n?750:1000),g);await curClick(g);
+    card.classList.add('sel');$('.add',card).textContent='✓ added';
+    const cc=rc($('.cc',card)),slot=$$('.slot')[n],dot=rc($('i',slot)),m=MEALS[i];
+    const fl=document.createElement('div');fl.className='flyer';fl.style.cssText=`left:${cc.x}px;top:${cc.y}px;width:${cc.w}px;height:${cc.h}px;background:${m.c}`;stage.appendChild(fl);
+    const dx=dot.x+dot.w/2-cc.x-cc.w/2,dy=dot.y+dot.h/2-cc.y-cc.h/2,sc=dot.w/cc.w;
+    fl.animate([{transform:'translate(0,0) scale(1)'},{transform:`translate(${dx*.5}px,${dy*.5-70}px) scale(.7)`,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:700*K,easing:'cubic-bezier(.4,0,.3,1)',fill:'forwards'}).finished.then(()=>{if(g!==gen)return;fl.remove();slot.classList.add('on');$('span',slot).textContent=m.s;$('i',slot).style.background=m.c;$('#cnt').textContent=n+1;$$('#pbox .it')[n].classList.add('on');if(n===PICKS.length-1)$('#cont').classList.add('ready')}).catch(()=>{});
+    await W(n<PICKS.length-1?(o.clip?120:200):800,g)}
+  const b=cen($('#cont'));curGo(b.x,b.y,800);await W(900,g);await curClick(g);await W(120,g);return{x:b.x,y:b.y}},
+
+async function pack_(g,o){
+  pack.t=0;pack.col=-1;show(2);const box=$('#pkBox');box.classList.remove('in');$$('#pkBox .it,#pkBox .lid,#pkBox .tape').forEach(e=>e.classList.remove('on'));
+  $('#pkBtn').classList.remove('in','press');$('#pkT').textContent='packing your box';$('#pkS').textContent='4 meals · 1 entomo box';
+  await W(250,g);box.classList.add('in');await W(1000,g);
+  for(const it of $$('#pkBox .it')){it.classList.add('on');await W(420,g)}
+  await W(500,g);pack.col=pack.t;await W(900,g);
+  $('#pkBox .lid').classList.add('on');await W(900,g);$('#pkBox .tape').classList.add('on');await W(600,g);
+  $('#pkT').textContent='all packed!';$('#pkS').textContent='ships to 330 university ave';$('#pkBtn').classList.add('in');await W(900,g);
+  const c=cen($('#pkBtn'));curSet(c.x+380,c.y+150);showCursor();await W(50,g);curGo(c.x,c.y+4,850);await W(950,g);
+  $('#pkBtn').classList.add('press');await curClick(g);await W(120,g);return{x:c.x,y:c.y}},
+
+async function email_(g,o){
+  show(3);const em=$('#email'),sc=$('#esc');em.classList.remove('in');sc.scrollTop=0;
+  await W(250,g);em.classList.add('in');await W(o.clip?9000:2600,g);
+  if(!o.clip){const max=sc.scrollHeight-sc.clientHeight;await tween(2600,g,p=>{sc.scrollTop=max*eio(p)});await W(2600,g);await tween(1200,g,p=>{sc.scrollTop=max*(1-eio(p))});await W(600,g)}
+  return{x:640,y:360}}
+];
+
+/* ============ story ============ */
+async function run(i,g,o){let first=true;for(;;){if(!first||o.wipeFirst){}first=false;const org=await scenes[i](g,o);let n=(i+1)%4;if(o.clip&&n===2)n=3;if(n===0)o.clip=false;await wipe(g,org.x,org.y,BG[n]);i=n}}
+function play(o={}){K=1/(o.speed||1);document.documentElement.style.setProperty('--k',K);const g=++gen;paused=false;syncPP();run(o.from||0,g,o).catch(e=>{if(e!==CANCEL)console.error(e)})}
+
+const PAUSE='<svg viewBox="0 0 12 12"><rect x="1.500" y="1" width="3" height="10" rx=".8"/><rect x="7.500" y="1" width="3" height="10" rx=".8"/></svg>',PLAY='<svg viewBox="0 0 12 12"><path d="M2.500 1.200v9.600L10.500 6z"/></svg>';
+function syncPP(){const b=$('#pp');b.innerHTML=paused?PLAY:PAUSE;b.setAttribute('aria-label',paused?'Play':'Pause')}
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+$('#pp').onclick=()=>{if(started===false){started=true;paused=false;play({from:cur_});return}paused=!paused;document.getAnimations().forEach(a=>paused?a.pause():a.play());syncPP()};
+let started=false,cur_=0;
+$$('.ctl [data-s]').forEach(b=>b.onclick=()=>{cur_=+b.dataset.s;started=true;play({from:cur_})});
+window.gc={play,
+  park(){gen++;paused=false;K=1;document.documentElement.style.setProperty('--k',1);hero.t=3.4;show(0);$$('#hLogo,#hTag,#cta').forEach(e=>e.classList.add('in'));syncPP()}};
+document.fonts.ready.then(()=>{syncPP();if(location.search.includes('park'))gc.park();else if(reduce){hero.t=3.4;show(0);$$('#hLogo,#hTag,#cta').forEach(e=>e.classList.add('in'));paused=true;syncPP()}else{started=true;play({})}});
+</script>
+</body>
+</html>
