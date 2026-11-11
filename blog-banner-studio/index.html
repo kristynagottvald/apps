@@ -148,16 +148,11 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
       <details class="sec" open>
         <summary>Mail piece and screen</summary>
         <div class="body">
-          <div class="two">
-            <div><span class="lbl">Format</span><div class="seg" data-k="piece"><button data-v="postcard">Postcard</button><button data-v="split">Split postcard</button><button data-v="flat">Flat postcard</button><button data-v="block">Block postcard</button><button data-v="letter">Letter</button></div></div>
-            <div><span class="lbl">Side</span><div class="seg" data-k="face"><button data-v="front">Front</button><button data-v="back">Back</button></div></div>
-          </div>
+          <div><span class="lbl">Format</span><div class="seg" data-k="piece"><button data-v="block">Block postcard</button><button data-v="letter">Letter</button></div></div>
           <div><span class="lbl">Block postcard layout</span><div class="seg" data-k="blockLayout" id="blockSeg"></div></div>
           <div><span class="lbl">Platform screen</span><div class="seg" data-k="ui"><button data-v="tracking">Campaign tracking</button><button data-v="editor">Live design editor</button></div>
             <label class="chk" style="margin-top:10px"><input type="checkbox" data-k="uiOn"> Show platform screen</label></div>
           <div><span class="lbl">Piece fill</span><div class="seg" data-k="fill"><button data-v="auto">Auto</button><button data-v="accent">Accent</button><button data-v="white">White</button><button data-v="lav">Lavender</button><button data-v="purple">Purple</button></div></div>
-                  <div><span class="lbl">Flat postcard style</span><div class="seg" data-k="flatStyle"><button data-v="link">Link chip</button><button data-v="outline">Outline</button></div></div>
-          <div><span class="lbl">Flat postcard logo</span><div class="seg" data-k="flatLogo"><button data-v="block">Logo block</button><button data-v="name">Company name</button></div></div>
           <div class="two">
             <label class="chk"><input type="checkbox" data-k="abstract"> Abstract text blocks</label>
             <label class="chk"><input type="checkbox" data-k="crop"> Crop marks</label>
@@ -175,14 +170,6 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
               <div class="chips" id="mergeChips"></div>
               <p class="note" style="margin-top:6px">Chips insert into the field you last clicked. Anything in double braces renders as a dashed merge field. Address lines also fill the letter window.</p></div>
             <div><label class="lbl" for="cta">Call to action</label><input type="text" id="cta" data-k="copy.cta"></div>
-            <div><span class="lbl">Link chip (flat postcard)</span><div class="seg" data-k="copy.tag"><button data-v="URL/">URL</button><button data-v="PURL/">PURL</button><button data-v="20% OFF">20% OFF</button></div></div>
-            <span class="lbl" style="margin:6px 0 -2px;padding-top:10px;border-top:1px solid var(--line)">Split postcard chips</span>
-            <div><label class="lbl" for="chip1">Chip 1</label><input type="text" id="chip1" data-k="copy.chip1"></div>
-            <div><label class="lbl" for="chip2">Chip 2</label><input type="text" id="chip2" data-k="copy.chip2"></div>
-            <div><label class="lbl" for="chip3">Chip 3</label><input type="text" id="chip3" data-k="copy.chip3"></div>
-            <span class="lbl" style="margin:6px 0 -2px;padding-top:10px;border-top:1px solid var(--line)">Back of postcard</span>
-            <div><label class="lbl" for="backHead">Back headline</label><input type="text" id="backHead" data-k="copy.backHead"></div>
-            <div><label class="lbl" for="backBody">Back message</label><textarea id="backBody" data-k="copy.backBody" rows="3"></textarea></div>
             <div><label class="lbl" for="addr1">Address line 1</label><input type="text" id="addr1" data-k="copy.addr1"></div>
             <div><label class="lbl" for="addr2">Address line 2</label><input type="text" id="addr2" data-k="copy.addr2"></div>
             <div><label class="lbl" for="addr3">Address line 3</label><input type="text" id="addr3" data-k="copy.addr3"></div>
@@ -213,6 +200,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
       <details class="sec">
         <summary>Composition</summary>
         <div class="body">
+          <div class="btns"><button class="btn primary" data-act="random-comp">Randomize composition</button></div>
           <div><span class="lbl">Photo placeholder</span><div class="seg" data-k="photo" id="photoSeg"></div>
             <p class="note" style="margin-top:6px" id="photoNote"></p></div>
           <div><span class="lbl">Layout preset</span><div class="btns"><button class="btn" data-act="preset-left">Leans left</button><button class="btn" data-act="preset-right">Leans right</button></div></div>
@@ -327,7 +315,7 @@ var MERGE=['{{first_name}}','{{last_name}}','{{offer_code}}','{{address_line1}}'
 /* ---------- state ---------- */
 var LS='blogBannerStudio.v10';
 function defaults(){
-  var S={industry:'insurance',feature:'personalization',piece:'postcard',face:'front',ui:'editor',fill:'auto',
+  var S={industry:'insurance',feature:'personalization',piece:'block',face:'front',ui:'editor',fill:'auto',
     abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',lineTint:34,uiOn:true,uiCx:405,uiCy:320,pieceCx:300,pieceCy:410,badgeX:250,badgeCy:85,snap:true,scale:100,badge:true,photo:'right',blockLayout:'photo-top',rounded:false,
     palette:1,base:1,comp:'auto',seed:7,copy:{brand:'',headline:'',cta:'',dirty:false}};
   applyIndustry(S,'insurance');S.base=1;return S;
@@ -397,7 +385,9 @@ function handles(b,col){var o='<rect x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" hei
 
 /* ---------- context ---------- */
 function makeCtx(S){
-  var I=INDUSTRIES[S.industry],F=FEATURES[S.feature],PL=PALETTES[S.palette],bgc=PL.colors[bgOK(S.palette,S.base)?S.base:okBases(S.palette)[0]];
+  var I=INDUSTRIES[S.industry],F=FEATURES[S.feature],PL0=PALETTES[S.palette],bgc=PL0.colors[bgOK(S.palette,S.base)?S.base:okBases(S.palette)[0]];
+  /* no dark green on pink: the teal in a palette becomes navy when pink is the background */
+  var swap=function(c){return bgc==='#D045DC'&&c==='#163E44'?'#1E2247':c},PL={colors:PL0.colors.map(swap),safe:{}};PL.safe[bgc]=swap(PL0.safe[bgc]);
   var others=PL.colors.filter(function(c){return c!==bgc}).sort(function(x,y){return contrast(y,bgc)-contrast(x,bgc)});
   if(S.palette===0&&bgc==='#1E2247')others=['#4131F1','#F6C93F']; /* navy background: bright blue for pieces, yellow as the second accent */
   var pal={bg:bgc,line:PL.safe[bgc],a:others[0],b:others[1],c:others[1],colors:PL.colors};
@@ -475,7 +465,14 @@ function flatCard(K){
 }
 /* Colour-block postcards (six layouts from the Figma postcard reference). Photo areas are the plain purple placeholder. */
 function blockCard(K){
-  var S=K.S,PL=K.pal.colors,a=K.fill,p=contrast(K.prim,K.pal.bg)<1.5?(K.pal.bg==='#4131F1'?'#1E2247':'#4131F1'):K.prim,W0=K.blk,L=S.blockLayout,o='',brand=S.copy.brand.toUpperCase(),pale=mix(a,'#ffffff',.6),PH=PHOTO_PURPLE;
+  var S=K.S,PL=K.pal.colors,a=K.fill,p=contrast(K.prim,K.pal.bg)<1.5?(K.pal.bg==='#4131F1'?'#1E2247':'#4131F1'):K.prim,W0=K.blk,L=S.blockLayout,o='',brand=S.copy.brand.toUpperCase(),PH='#A99BFF';
+  /* the panel colour must not melt into the photo area or the dark strip: swap it for another palette colour */
+  if(contrast(a,PH)<1.3||contrast(a,p)<1.4){var alt=PL.filter(function(c){return c!==K.pal.bg&&contrast(c,PH)>=1.3&&contrast(c,p)>=1.4}).sort(function(x,y){return contrast(y,K.pal.bg)-contrast(x,K.pal.bg)})[0];a=alt||'#1E2247'}
+  if(K.pal.bg==='#D045DC')a='#1E2247';              /* pink banner: navy panel with white content blocks */
+  var pale=lum(a)<.12?PH:mix(a,'#ffffff',.6);  /* a navy panel pairs with lavender columns, not grey */
+  if(contrast(W0,a)<1.15)W0=PANEL;                      /* white blocks need a tint on a white panel */
+  var pi=contrast(p,a)>=3?p:'#ffffff';                    /* accent ink that reads on the panel */
+  var LBc=lum(a)>.8?mix(p,'#ffffff',.65):mix(W0,a,.15);  /* list dots and bars on the panel */
   function R(x,y,w,h,rx,f){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rx+'" fill="'+f+'"/>'}
   function best(bg){var c=PL.filter(function(x){return x!==bg}).sort(function(x,y){return contrast(y,bg)-contrast(x,bg)})[0];return c&&contrast(c,bg)>=2?c:textOn(bg)}
   function stripes(x,y,w,h,col){var d='';for(var yy=y+2;yy<y+h;yy+=5.5)d+='M'+x+' '+yy+'H'+(x+w);return '<path d="'+d+'" stroke="'+col+'" stroke-width="2.4" fill="none"/>'}
@@ -496,25 +493,28 @@ function blockCard(K){
     o+=outline(326,19,56,26,sc)+R(228,79,132,51,5,W0)+R(228,153,92,3,1.5,mix(p,'#ffffff',.55))+R(228,167,132,3,1.5,mix(p,'#ffffff',.55));
     o+=TL(228,212,S.copy.cta,15,500,'#ffffff')+bracket(352,188,34,'#ffffff',3.5);
   }else if(L==='columns-text'){
-    o+=cols()+outline(24,19,56,26,p);
+    o+=cols()+outline(24,19,56,26,pi);
     var f=fit(S.copy.headline,[19,17,15,13],500,160,3,1.25);
-    o+=drawLines(f,30,78,500,textOn(a))+R(30,155,85,3,1.5,p)+R(30,168,117,3,1.5,p)+bracket(30,203,32,p,3.5)+R(76,207,94,26,4,W0);
+    o+=drawLines(f,30,78,500,textOn(a))+R(30,155,85,3,1.5,pi)+R(30,168,117,3,1.5,pi)+bracket(30,203,32,pi,3.5)+R(76,207,94,26,4,W0);
   }else if(L==='columns-blocks'){
-    o+=cols()+outline(20,18,56,26,p)+R(46,80,130,52,5,W0)+R(46,156,92,3,1.5,p)+R(46,169,117,3,1.5,p)+bracket(30,204,32,p,3.5)+R(77,208,92,26,4,W0);
+    o+=cols()+outline(20,18,56,26,pi)+R(46,80,130,52,5,W0)+R(46,156,92,3,1.5,pi)+R(46,169,117,3,1.5,pi)+bracket(30,204,32,pi,3.5)+R(77,208,92,26,4,W0);
   }else if(L==='coffee'){
-    var st=K.chip,sb=mix(st,'#ffffff',.65);
+    var st=contrast(K.chip,a)<1.5?(contrast(p,a)>=1.5?p:'#ffffff'):K.chip,sb=mix(st,'#ffffff',.65);
     o+=R(0,0,197,192,0,PH)+R(0,192,197,75,0,st)+list(26,214,[107,80],sb,sb)+tag(382,20,brand,st,8,true);
     o+=bars(230,87,[130,100,115],12,22,st)+outline(232,185,91,46,st)+scan(338,191,30,st,W0);
   }else if(L==='finance'){
     var sb2=best(p);
-    o+=R(199,0,201,187,0,PH)+R(152,187,248,80,0,p)+tag(22,20,'// '+brand,p,9.5)+bars(32,114,[116,134],10,23,p);
-    o+=outline(32,188,98,43,p)+list(170,216,[130,100],a,'#ffffff');
+    o+=R(199,0,201,187,0,PH)+R(152,187,248,80,0,p)+tag(22,20,'// '+brand,p,9.5)+bars(32,114,[116,134],10,23,pi);
+    o+=outline(32,188,98,43,pi)+list(170,216,[130,100],a,'#ffffff');
   }else{ /* photo-top */
     var sb3=best(p);
-    o+=R(204,0,196,190,0,PH)+R(204,190,196,77,0,p)+tag(22,20,'// '+brand,p,9.5)+R(30,106,138,57,4,W0)+list(34,191,[107,80,100],mix(W0,a,.12),mix(W0,a,.3));
+    o+=R(204,0,196,190,0,PH)+R(204,190,196,77,0,p)+tag(22,20,'// '+brand,p,9.5)+R(30,106,138,57,4,W0)+list(34,191,[107,80,100],LBc,LBc);
     o+=bars(222,212,[86,56],8,17,sb3)+scan(354,213,30,p,W0);
   }
-  return{svg:o,w:400,h:267,hb:{x:20,y:18,w:150,h:60}};
+  /* selection box for the Creation screen: sits over each layout's text blocks */
+  var HBS={'sale':[222,148,146,74],'columns-blocks':[40,150,134,32],'coffee':[226,82,140,68],'finance':[28,108,144,44],'photo-top':[28,178,148,56]},hv=HBS[L],
+      hb=L==='columns-text'?{x:24,y:78-f.size-2,w:166,h:f.lines.length*f.lh+10}:{x:hv[0],y:hv[1],w:hv[2],h:hv[3]};
+  return{svg:o,w:400,h:267,hb:hb};
 }
 function I2(K){return K.I.campaign.toUpperCase()}
 function stackSVG(K,w,h){var S=K.S,n=S.stack|0,o='',i,bg=K.pal.bg;if(!n)return '';
@@ -578,7 +578,7 @@ function uiTracking(K){
   for(var i=0;i<8;i++){var y=46+i*20,on=i===act;if(on)o+='<rect x="8" y="'+(y-6)+'" width="80" height="18" rx="9" fill="'+mix(P,'#ffffff',.78)+'"/>';
     o+='<rect x="16" y="'+(y-1)+'" width="'+[44,52,38,48,40,50,36,44][i]+'" height="6" rx="3" fill="'+(on?P:'#CFCAF2')+'"/>'}
   o+='<rect x="108" y="10" width="150" height="18" rx="9" fill="#F1F0FB"/><circle cx="119" cy="19" r="3.2" fill="none" stroke="#A9A4DB" stroke-width="1.3"/>';
-  o+='<rect x="408" y="9" width="70" height="20" rx="10" fill="'+P+'"/>'+UP(K,443,22.5,'Create',8,textOn(P),'middle');
+  o+='<rect x="408" y="9" width="70" height="20" rx="10" fill="'+P+'"/>'+UP(K,443,22.5,'Create',8,'#ffffff','middle');
   var title=K.I.campaign,wt=tw(title,12,700)*.78;
   o+=UP(K,108,56,title,12,INK)+'<rect x="'+(108+wt+8)+'" y="45" width="34" height="14" rx="7" fill="'+LC+'"/>'+UP(K,108+wt+25,55,'Live',8,INK,'middle');
   if(f==='chart'){
@@ -604,8 +604,9 @@ function uiTracking(K){
     for(i=0;i<3;i++){var ry=212+i*30;o+='<path d="M108 '+(ry+26)+'H478" stroke="#EEEBFA"/><rect x="108" y="'+(ry+8)+'" width="'+[84,70,92][i]+'" height="6" rx="3" fill="#CFCAF2"/>';
       var wp=tw(st[i][0],7.5,700)*.78+20;o+='<rect x="268" y="'+(ry+3)+'" width="'+wp+'" height="16" rx="8" fill="'+st[i][1]+'"/>'+UP(K,268+wp/2,ry+14,st[i][0],7.5,st[i][2],'middle')+'<rect x="400" y="'+(ry+8)+'" width="'+[60,48,56][i]+'" height="6" rx="3" fill="'+PILL+'"/>'}
   }else if(f==='map'){
-    o+='<rect x="108" y="68" width="246" height="238" rx="6" fill="#EEF0FB"/>';
-    o+='<rect x="120" y="212" width="52" height="40" fill="'+SO+'"/><rect x="262" y="84" width="80" height="44" fill="'+SO+'"/>';
+    var BLD=mix(P,'#ffffff',.74);  /* highlighted buildings: strong enough to read against the pale ground */
+    o+='<rect x="108" y="68" width="246" height="238" rx="6" fill="#F1F2FB"/>';
+    o+='<rect x="120" y="212" width="52" height="40" fill="'+BLD+'"/><rect x="262" y="84" width="80" height="44" fill="'+BLD+'"/>';
     [118,186,250].forEach(function(y){o+='<path d="M108 '+y+'H354" stroke="#fff" stroke-width="8"/>'});
     [158,236,304].forEach(function(x){o+='<path d="M'+x+' 68V306" stroke="#fff" stroke-width="8"/>'});
     o+='<path d="M130 280H158V186H236V118H304" fill="none" stroke="'+P+'" stroke-width="3" stroke-dasharray="7 5" stroke-linejoin="round"/>';
@@ -618,7 +619,7 @@ function uiTracking(K){
     o+='<rect x="122" y="124" width="342" height="10" rx="5" fill="'+PILL+'"/><rect x="122" y="124" width="280" height="10" rx="5" fill="'+P+'"/><rect x="402" y="124" width="40" height="10" fill="'+LC+'"/>';
     ['Addresses verified','Proof approved','Postage paid'].forEach(function(l,j){var cy=170+j*34;o+='<rect x="108" y="'+(cy-14)+'" width="206" height="28" rx="14" fill="#F5F4FF"/>'+check(125,cy,7,P,'#fff')+UP(K,142,cy+3,l,8.5,INK)});
     o+='<rect x="326" y="156" width="152" height="108" rx="8" fill="#fff" stroke="'+EDGE+'" stroke-width="1.5"/>'+UP(K,340,176,'Mail date',8,MUTED)+T(340,208,'Nov 12',22,700,INK)+'<rect x="340" y="222" width="70" height="8" rx="4" fill="'+PILL+'"/>';
-    o+='<rect x="326" y="276" width="152" height="30" rx="15" fill="'+P+'"/>'+UP(K,402,293,'Send campaign',9.5,textOn(P),'middle');
+    o+='<rect x="326" y="276" width="152" height="30" rx="15" fill="'+P+'"/>'+UP(K,402,293,'Send campaign',9.5,'#ffffff','middle');
   }
   return o;
 }
@@ -630,7 +631,7 @@ function uiEditor(K){
   var slug=K.I.campaign.toLowerCase().replace(/\s+/g,'-');
   o+='<path d="M0 30H490" stroke="'+EDGE+'" stroke-width="1.5"/>'+UP(K,14,19,slug,8.5,INK);
   o+='<rect x="146" y="12" width="44" height="6" rx="3" fill="'+PILL+'"/><rect x="196" y="12" width="28" height="6" rx="3" fill="'+PILL+'"/>';
-  o+='<rect x="414" y="6" width="62" height="19" rx="9.5" fill="'+P+'"/>'+UP(K,445,18.5,'Preview',8.5,textOn(P),'middle');
+  o+='<rect x="414" y="6" width="62" height="19" rx="9.5" fill="'+P+'"/>'+UP(K,445,18.5,'Preview',8.5,'#ffffff','middle');
   for(var i=0;i<6;i++){o+='<rect x="10" y="'+(44+i*32)+'" width="22" height="22" rx="6" fill="'+(i===0?P:SO)+'"/><rect x="16" y="'+(53+i*32)+'" width="10" height="4" rx="2" fill="'+(i===0?textOn(P):P)+'" fill-opacity="'+(i===0?1:.6)+'"/>'}
   /* the selected mail piece, scaled into the canvas */
   var pc=renderPiece(Object.assign({},K,{clean:true})),sc=S.piece==='letter'?.58:.5,pw=pc.w*sc,ph=pc.h*sc,cx=S.piece==='letter'?200:212,cy=176,bx=cx-pw/2,by=cy-ph/2;
@@ -639,7 +640,7 @@ function uiEditor(K){
   if(f==='proof')o+='<rect x="'+(bx-9)+'" y="'+(by-9)+'" width="'+(pw+18)+'" height="'+(ph+18)+'" fill="none" stroke="'+dk(K.pal.a)+'" stroke-width="1.3" stroke-dasharray="4 3"/>';
   o+='<g clip-path="url(#edClip)"><g transform="translate('+bx.toFixed(1)+' '+by.toFixed(1)+') scale('+sc+')">'+pc.svg+'</g></g>';
   if(f==='proof')o+='<rect x="'+(bx+9)+'" y="'+(by+9)+'" width="'+(pw-18)+'" height="'+(ph-18)+'" fill="none" stroke="'+dk(P)+'" stroke-width="1.3" stroke-dasharray="4 3"/>'+UP(K,bx-9,by-13,'BLEED',6.5,dk(K.pal.a))+UP(K,bx+9,by+ph-1,'SAFE ZONE',6.5,dk(P));
-  if(f==='canvas')o+=handles(hb,SC)+'<path d="M'+cx+' 38V316M48 '+cy+'H352" stroke="'+SC+'" stroke-width="1" stroke-dasharray="3 3"/>';
+  if(f==='canvas')o+=handles(hb,SC)+'<path d="M'+bx.toFixed(1)+' 32V318M'+(bx+pw).toFixed(1)+' 32V318M42 '+by.toFixed(1)+'H358M42 '+(by+ph).toFixed(1)+'H358" stroke="'+SC+'" stroke-width="1" stroke-dasharray="3 3"/>';  /* guides along the piece's outer edges */
   o+='<rect x="360" y="30" width="130" height="290" fill="#fff"/><path d="M360 30V320" stroke="'+EDGE+'" stroke-width="1.5"/>';
   if(f==='vars'){
     o+=UP(K,372,50,'Variables',8,MUTED);
@@ -662,7 +663,7 @@ function renderUI(K){var inner=K.S.ui==='tracking'?uiTracking(K):uiEditor(K);
 
 /* ---------- background (800 x 400 composition scaled 1.5x) ---------- */
 function bgSVG(K){
-  var S=K.S,PL=PALETTES[S.palette],r=rng(S.seed),bg=K.pal.bg,line=mix(bg,'#ffffff',S.lineTint/100);
+  var S=K.S,PL={colors:K.pal.colors},r=rng(S.seed),bg=K.pal.bg,line=mix(bg,'#ffffff',S.lineTint/100);
   function tint(c){return mix(c,'#ffffff',S.lineTint/100)}
   function rf(a,b){return a+r()*(b-a)}
   function pk(arr){return arr[Math.floor(r()*arr.length)]}
@@ -759,6 +760,12 @@ function presetLayout(side){
 /* ---------- randomizer ---------- */
 function shuffleColors(S,r){var ok=okBases(S.palette),old=S.base,n=0;do{S.base=ok[ri(r,0,ok.length-1)]}while(S.base===old&&++n<20);S.seed=ri(r,1,99999)}
 function randomPalette(S,r){var old=S.palette;do{S.palette=ri(r,0,PALETTES.length-1)}while(S.palette===old);S.base=pick(r,okBases(S.palette));S.seed=ri(r,1,99999)}
+/* new photo layout, block postcard layout, pattern and seed; objects are repositioned to fit */
+function randomComposition(S,r){
+  var others=PHOTOS.filter(function(p){return p.id!==S.photo});S.photo=pick(r,others).id;
+  if(S.piece==='block'){var bl=BLOCKS.filter(function(b){return b[0]!==S.blockLayout});S.blockLayout=pick(r,bl)[0]}
+  S.comp=pick(r,['auto','auto','circuit','grid','flat']);S.seed=ri(r,1,99999);
+  if(S.photo==='none')presetLayout(pick(r,['left','right']));else applyPhoto()}
 function shuffleLayout(S,r){S.seed=ri(r,1,99999)}
 
 /* ---------- build controls ---------- */
@@ -820,6 +827,7 @@ function onChange(e){
   set(S,k,v);if(k==='copy.headline')S.copy.dirty=true;paint();
 }
 var lastField=null;
+if(S.piece!=='block'&&S.piece!=='letter')S.piece='block';S.face='front';
 if(S.flatStyle==='tag')S.flatStyle='link';
 if(['URL/','PURL/','20% OFF'].indexOf(S.copy.tag)<0)S.copy.tag='URL/';
 document.addEventListener('focusin',function(e){if(e.target.dataset&&/^copy\./.test(e.target.dataset.k||'')&&e.target.type!=='checkbox')lastField=e.target});
@@ -844,6 +852,7 @@ document.addEventListener('click',function(e){
   var act=b.dataset.act;if(!act)return;
   var r=rng((Date.now()^(Math.random()*1e9))>>>0);
   if(act==='shuffle-colors'){shuffleColors(S,r);paint()}
+  else if(act==='random-comp'){randomComposition(S,r);paint()}
   else if(act==='random-palette'){randomPalette(S,r);paint()}
   else if(act==='shuffle-all'){shuffleColors(S,r);S.comp='auto';applyPhoto();paint()}
   else if(act==='piece-corner-left'){pieceToCorner('left');paint()}
