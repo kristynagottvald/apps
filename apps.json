@@ -1,5 +1,14 @@
 [
   {
+    "id": "clearco-logistics-guide",
+    "title": "Clearco Logistics Guide",
+    "category": "Landing Page",
+    "url": "clearco-logistics-guide/",
+    "thumbnail": "clearco-logistics-guide/thumb.png",
+    "preview": "clearco-logistics-guide/thumb.webp",
+    "alt": "Clearco Logistics Guide: a landing page with the serif headline 'Navigating Inventory Logistics', three numbered points and a black Read the guide button on white"
+  },
+  {
     "id": "lifecycle-image-engine",
     "title": "Lifecycle Image Studio",
     "category": "Interactive Engine",
