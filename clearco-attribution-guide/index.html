@@ -7,7 +7,7 @@
 <meta name="description" content="The Marketing Attribution Guide: invest in ads that move the needle. A resource for founders from Clearco.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter+Tight:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@100&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter+Tight:wght@400;500&family=Instrument+Serif:ital@0;1&family=Roboto+Mono:wght@100&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#000;--paper:#fff;--wash:#f1f6f9;--line:#d6dde3;--mute:#5d6a75;
@@ -15,7 +15,7 @@
   --serif:"Instrument Serif","Times New Roman",serif;
   --sans:"Inter Tight","Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
   --mono:"DM Mono",ui-monospace,Menlo,monospace;
-  --num:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --num:"Roboto Mono",ui-monospace,Menlo,monospace;
   --grad:linear-gradient(100deg,var(--blue),var(--blue2) 45%,var(--cyan));
   --pv0:#d4f7fc;                 /* foot of a vertical pill: pale on white, faded on black */
   --ring1:rgba(98,230,243,.34);--ring2:rgba(98,230,243,.2);--ring3:rgba(98,230,243,.1);
@@ -52,7 +52,7 @@ section,.band{position:relative;overflow:hidden}
 .btn:hover,.btn:focus-visible{background:transparent;color:#fff}
 .btn.sm{padding:14px 18px;font-size:10px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.num{font:100 clamp(88px,12.5vw,176px)/.8 var(--num);font-feature-settings:"zero" 1;letter-spacing:-.04em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;user-select:none}
+.num{font:100 clamp(88px,12.5vw,176px)/.8 var(--num);letter-spacing:-.04em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;user-select:none}
 
 /* dashed vertical guide lines (the black pages carry these behind the content) */
 .dl{position:absolute;inset:0;pointer-events:none;-webkit-mask-image:linear-gradient(transparent,#000 40%);mask-image:linear-gradient(transparent,#000 40%)}
@@ -97,7 +97,7 @@ section,.band{position:relative;overflow:hidden}
 .points{list-style:none;padding:0;display:grid;gap:14px;margin:0}
 .points li{display:flex;gap:16px;align-items:center;font-size:15px;line-height:1.4}
 .points i{flex:none;width:38px;height:38px;border:1px solid #2b3d52;border-radius:50%;display:grid;place-items:center;font:400 11px/1 var(--mono);font-style:normal;color:var(--cyan)}
-.vis{position:relative;flex:1;margin-top:calc(clamp(12px,2vw,28px) * -1);min-height:clamp(320px,34vw,440px);width:calc(100% + (100vw - min(1120px,100vw - 40px)) / 2)}
+.vis{position:relative;flex:1;margin-top:clamp(12px,1.4vw,18px);min-height:clamp(320px,34vw,440px);width:calc(100% + (100vw - min(1120px,100vw - 40px)) / 2)}
 [data-ripple] .rp i{animation:none;transform:translate(-50%,-50%) scale(calc(.65 + var(--e,0) * .6));opacity:calc(var(--a,0) * 1)}
 [data-ripple] .rp i:nth-child(1){width:190%}[data-ripple] .rp i:nth-child(2){width:250%}[data-ripple] .rp i:nth-child(3){width:320%}
 .vis .dl{-webkit-mask-image:linear-gradient(transparent 20%,#000 60%);mask-image:linear-gradient(transparent 20%,#000 60%)}
@@ -127,12 +127,13 @@ section,.band{position:relative;overflow:hidden}
 
 /* ---------- numbered chapters ---------- */
 .chapter{padding-block:clamp(56px,8vw,112px)}
-.chead{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:clamp(40px,5vw,72px)}
-.chead h2{font:400 clamp(40px,5.6vw,84px)/.92 var(--serif);letter-spacing:-.035em;max-width:11em}
-.chead .num{flex:none;margin-top:-.04em}
-.chead .mono{display:block;margin-bottom:22px;color:var(--mute)}
+.chead{position:relative;margin-bottom:clamp(40px,5vw,72px);min-height:clamp(70px,10vw,141px)}
+.chead h2{position:relative;z-index:1;font:400 clamp(52px,8.6vw,132px)/.88 var(--serif);letter-spacing:-.04em;max-width:none}
+.chead .num{position:absolute;right:0;bottom:0;z-index:0;margin:0}
+.chead .num.hi{top:38px;bottom:auto;right:min(22vw,290px)}
+.chead .mono{display:block;margin-bottom:22px;color:var(--mute);position:relative;z-index:1}
 .dk .chead .mono{color:#8fa0ad}
-@media (max-width:640px){.chead{flex-direction:column-reverse;gap:18px}}
+@media (max-width:640px){.chead .num.hi{top:auto;right:auto}.chead .num{position:static;display:block;margin-bottom:14px}.chead{display:flex;flex-direction:column-reverse}}
 .chap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,72px);align-items:start}
 .chap .txt{max-width:26em}
 .chap p{margin-bottom:1em;color:#26323b;font-size:15px}
@@ -341,7 +342,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
   <div class="wrap">
     <div class="chead">
       <div><span class="mono">What are the different multi-touch attribution models?</span><h2>One journey, six ways to<br>share the credit</h2></div>
-      <span class="num" aria-hidden="true">02</span>
+      <span class="num hi" aria-hidden="true">02</span>
     </div>
     <div class="xp" id="xp">
       <div class="models" role="tablist" aria-label="Attribution model"></div>
