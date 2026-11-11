@@ -425,7 +425,7 @@ function pcFront(K){
   var f=fit(S.copy.headline,[18,16,14,12],700,164,4,1.22);
   o+=drawLines(f,18,66+f.size*.2,700,tc);
   var hb={x:14,y:66+f.size*.2-f.size-4,w:176,h:f.lines.length*f.lh+8};
-  [84,64,76].forEach(function(w,i){var cy=196+i*18;o+=check(24,cy,5,ac,K.fill)+'<rect x="36" y="'+(cy-2.5)+'" width="'+w+'" height="5" rx="2.5" fill="'+K.absCol+'"/>'});
+  [84,64,76].forEach(function(w,i){var cy=196+i*18;o+='<rect x="18" y="'+(cy-2.5)+'" width="'+w+'" height="5" rx="2.5" fill="'+K.absCol+'"/>'});
   return{svg:o,hb:hb};
 }
 function pcBack(K){
