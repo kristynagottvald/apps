@@ -164,10 +164,10 @@ section,.band{position:relative;overflow:hidden}
 .mt:hover b,.mt:focus-visible b{color:#fff}
 .mt:focus-visible{outline:1px solid var(--cyan);outline-offset:2px}
 .chart{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2vw,28px);min-height:clamp(360px,42vw,500px);padding-top:4px}
-.chart .gl{position:absolute;left:0;right:0;top:29px;bottom:34px;pointer-events:none}
+.chart .gl{position:absolute;left:0;right:0;top:4px;bottom:54px;pointer-events:none}
 .chart .gl i{position:absolute;left:0;right:0;border-top:1px dashed rgba(255,255,255,.14)}
 .chart .gl i b{position:absolute;left:0;top:6px;font:400 9px/1 var(--mono);letter-spacing:.18em;color:#5d7285}
-.col{position:relative;display:grid;grid-template-rows:auto 1fr auto;gap:14px;justify-items:center;min-width:0}
+.col{position:relative;display:grid;grid-template-rows:1fr auto auto;gap:14px;justify-items:center;min-width:0}
 .col .tp{color:#8fa0ad;text-align:center;font-size:10px;letter-spacing:.18em}
 .stage{position:relative;width:100%;min-height:240px}
 .pv{position:absolute;bottom:0;left:50%;width:var(--pw,44px);margin-left:calc(var(--pw,44px) / -2);height:calc(var(--pw,44px) + (100% - var(--pw,44px)) * var(--v,0));border-radius:99px;background:linear-gradient(0deg,var(--pv0),var(--blue2) 68%,var(--blue));transition:height 1s cubic-bezier(.3,.85,.2,1)}
@@ -545,7 +545,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
     ];
     var cols = TP.map(function(name){
       var c = document.createElement('div'); c.className = 'col';
-      c.innerHTML = '<span class="mono tp"></span><div class="stage"><div class="pv" style="--v:0"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div></div><span class="val">0%</span>';
+      c.innerHTML = '<div class="stage"><div class="pv" style="--v:0"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div></div><span class="val">0%</span><span class="mono tp"></span>';
       c.querySelector('.tp').textContent = name; chart.appendChild(c); return c;
     });
     var tabs = M.map(function(m, i){
