@@ -27,9 +27,11 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 const APPS = {
   'clearco-logistics-guide': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async (p) => {
     const t0 = Date.now();
-    await at(t0, 900, () => p.evaluate(() => scrollTo(0, 820)));
-    await at(t0, 2700, () => p.evaluate(() => scrollTo(0, 1560)));
-    await at(t0, 4400, () => p.evaluate(() => scrollTo(0, 0)));
+    const go = (id, d) => p.evaluate(([i, o]) => scrollTo(0, document.getElementById(i).offsetTop - 49 + o), [id, d]);
+    await at(t0, 900, () => go('stmt', 0));      // the grid with sliding squares
+    await at(t0, 3000, () => go('ch1', 40));     // chapter one, chart stuck to the top
+    await at(t0, 4300, () => go('ch1', 260));
+    await at(t0, 5200, () => p.evaluate(() => scrollTo(0, 0)));
   } },
   'clearco-terrain': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'clearco-target-frame': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
