@@ -1,8 +1,8 @@
 # Home page clips
 
-Every tile on the home page plays a 6 second looping clip (`<app>/thumb.webp`) and shows `<app>/thumb.png` when it is not playing, with reduced motion on, or while the clip loads.
+Every tile on the home page plays a 6 second looping clip (`<app>/thumb.webp`) and shows `<app>/thumb.png` when it is not playing, with reduced motion on, or while the clip loads. The still is the clip's first frame, which is also where the clip loops, so the tile fades between the two without a visible cut.
 
-`record-clips.js` makes the clips. It opens each app in headless Chromium, runs a short scripted interaction the way a visitor would, records the page, crops it to 16:9 and encodes it as a 960x540 animated WebP at 12 fps. The last half second cross-fades into the first so the loop has no jump.
+`record-clips.js` makes the clips. It opens each app in headless Chromium, runs a short scripted interaction the way a visitor would, records the page, crops it to 16:9 and encodes it as a 960x540 animated WebP at 12 fps, and saves its first frame as `thumb.png`. The last half second cross-fades into the first so the loop has no jump.
 
 ```bash
 node tools/record-clips.js                       # every app

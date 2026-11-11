@@ -1,6 +1,6 @@
 # Sandbox repo
 
-Each app is a folder with an `index.html` (single file, no build step), a `thumb.png` (960×540 still) and a `thumb.webp` (the 6 second looping home page clip, 960×540).
+Each app is a folder with an `index.html` (single file, no build step), a `thumb.webp` (the 6 second looping home page clip, 960×540) and a `thumb.png` (960×540 still that is the clip's first frame; `tools/record-clips.js` writes both).
 
 **Whenever you add a new app, also add it to the homepage.** The homepage (`/index.html`, laid out like the sketches site) draws its tiles from `/apps.json`:
 add an entry at the **top** of the array (tiles are ordered newest first) with `id`, `title`, `category`, `url` (`<folder>/`), `thumbnail` (`<folder>/thumb.png`), `preview` (`<folder>/thumb.webp`) and `alt`.

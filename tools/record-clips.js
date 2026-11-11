@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Records the 6 second looping home page clip of each app and writes <app>/thumb.webp.
+/* Records the 6 second looping home page clip of each app and writes <app>/thumb.webp (and its first frame as <app>/thumb.png).
  *
  *   node tools/record-clips.js                 every app in the table below
  *   node tools/record-clips.js hero-banner-engine blog-banner-studio
@@ -100,7 +100,9 @@ function encode(name, src, start) {
   const fc = base + ',split=3[a0][b0][c0];[a0]trim=0.5:6.0,setpts=PTS-STARTPTS[a];[b0]trim=6.0:6.5,setpts=PTS-STARTPTS[b];[c0]trim=0:0.5,setpts=PTS-STARTPTS[c];[b][c]xfade=transition=fade:duration=0.5:offset=0[bc];[a][bc]concat=n=2:v=1,fps=12[v]';
   cp.execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', src, '-filter_complex', fc, '-map', '[v]', '-t', '6',
     '-c:v', 'libwebp_anim', '-q:v', '62', '-compression_level', '6', '-loop', '0', '-an', out]);
-  console.log(name, '->', path.relative(ROOT, out), Math.round(fs.statSync(out).size / 1024) + ' KB');
+  // the still is the clip's first frame, which is also its loop point, so the tile never visibly cuts between the two
+  cp.execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', src, '-filter_complex', fc, '-map', '[v]', '-frames:v', '1', ROOT + name + '/thumb.png']);
+  console.log(name, '->', path.relative(ROOT, out), Math.round(fs.statSync(out).size / 1024) + ' KB, and thumb.png');
 }
 
 (async () => {

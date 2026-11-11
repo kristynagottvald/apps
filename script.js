@@ -47,12 +47,20 @@
     const set = (i, play) => {
       const im = imgs[i];
       if (!im || !im.dataset.preview) return;
-      // a fresh <img> on the cached clip always starts from its first frame
+      // a fresh <img> on the cached clip always starts from its first frame. It fades in over the old one, so the
+      // clip never cuts to the still (the still is the clip's first frame, which is also where the clip loops)
+      const media = im.parentNode;
       const fresh = im.cloneNode();
+      fresh.classList.remove('is-active');
       fresh.src = play ? im.dataset.preview : im.dataset.still;
       fresh.dataset.on = play ? '1' : '0';
-      im.replaceWith(fresh);
+      media.appendChild(fresh);
       imgs[i] = fresh;
+      const show = () => {
+        requestAnimationFrame(() => requestAnimationFrame(() => fresh.classList.add('is-active')));
+        setTimeout(() => media.querySelectorAll('img').forEach((o) => { if (o !== imgs[i]) o.remove(); }), 900);
+      };
+      if (fresh.complete && fresh.naturalWidth) show(); else fresh.addEventListener('load', show, { once: true });
     };
     const sync = () => imgs.forEach((im, i) => { if (im && im.dataset.on !== (want(i) ? '1' : '0')) set(i, want(i)); });
     const tick = () => {
