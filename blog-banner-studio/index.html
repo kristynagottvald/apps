@@ -467,7 +467,7 @@ function flatCard(K){
 function blockCard(K){
   var S=K.S,PL=K.pal.colors,a=K.fill,p=contrast(K.prim,K.pal.bg)<1.5?(K.pal.bg==='#4131F1'?'#1E2247':'#4131F1'):K.prim,W0=K.blk,L=S.blockLayout,o='',brand=S.copy.brand.toUpperCase(),PH='#A99BFF';
   /* the panel colour must not melt into the photo area or the dark strip: swap it for another palette colour */
-  if(contrast(a,PH)<1.6||contrast(a,p)<1.4){var alt=PL.filter(function(c){return c!==K.pal.bg&&contrast(c,PH)>=1.6&&contrast(c,p)>=1.4}).sort(function(x,y){return contrast(y,K.pal.bg)-contrast(x,K.pal.bg)})[0];a=alt||(K.pal.bg==='#D045DC'?'#EAA9F4':'#D045DC')}
+  if(contrast(a,PH)<1.3||contrast(a,p)<1.4){var alt=PL.filter(function(c){return c!==K.pal.bg&&contrast(c,PH)>=1.3&&contrast(c,p)>=1.4}).sort(function(x,y){return contrast(y,K.pal.bg)-contrast(x,K.pal.bg)})[0];a=alt||(K.pal.bg==='#D045DC'?'#EAA9F4':'#D045DC')}
   var pale=mix(a,'#ffffff',.6);
   if(contrast(W0,a)<1.15)W0=PANEL;                      /* white blocks need a tint on a white panel */
   var LBc=lum(a)>.8?mix(p,'#ffffff',.65):mix(W0,a,.3);  /* list dots and bars on the panel */
