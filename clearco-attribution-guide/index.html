@@ -163,8 +163,8 @@ section,.band{position:relative;overflow:hidden}
 .mt[aria-selected="true"] span.d>span{opacity:1;padding-top:10px}
 .mt:hover b,.mt:focus-visible b{color:#fff}
 .mt:focus-visible{outline:1px solid var(--cyan);outline-offset:2px}
-.chart{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2vw,28px);min-height:clamp(360px,42vw,500px);padding-top:4px}
-.chart .gl{position:absolute;left:0;right:0;top:4px;bottom:54px;pointer-events:none}
+.chart{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2vw,28px);min-height:clamp(360px,42vw,500px)}
+.chart .gl{position:absolute;left:0;right:0;top:0;bottom:54px;pointer-events:none}
 .chart .gl i{position:absolute;left:0;right:0;border-top:1px dashed rgba(255,255,255,.14)}
 .chart .gl i b{position:absolute;left:0;top:6px;font:400 9px/1 var(--mono);letter-spacing:.18em;color:#5d7285}
 .col{position:relative;display:grid;grid-template-rows:1fr auto auto;gap:14px;justify-items:center;min-width:0}
@@ -184,11 +184,11 @@ section,.band{position:relative;overflow:hidden}
 @media (max-width:520px){.col .tp{font-size:8px;letter-spacing:.1em}}
 
 /* the white band: pills trail in from the left edge */
-.band{padding-block:clamp(48px,7vw,96px)}
-.trail{position:relative;min-height:clamp(560px,72vw,940px);display:flex;align-items:flex-end;justify-content:flex-start}
+.band{padding-block:clamp(28px,4vw,56px)}
+.trail{position:relative;min-height:clamp(400px,44vw,580px);display:flex;align-items:center;justify-content:flex-start}
 .trail .pills{position:absolute;inset:0;z-index:2;pointer-events:none}
 .trail .pl{--h:clamp(40px,5.6vw,80px);--hd:calc(var(--h) * 1.2)}
-.trail .copy{position:relative;z-index:1;width:min(1040px,100%);margin-left:min(14vw,180px);padding-bottom:6px}
+.trail .copy{position:relative;z-index:1;width:min(1040px,100%);margin-left:min(14vw,180px);padding:clamp(56px,6vw,88px) 0}
 .trail h2{font:400 clamp(56px,11.6vw,184px)/.84 var(--serif);letter-spacing:-.05em;margin-bottom:42px}
 .trail .rest{color:var(--mute)}
 @media (max-width:760px){.trail{align-items:flex-end}.trail .copy{width:100%;margin-left:0;padding-top:80px}}
@@ -355,10 +355,9 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
 <div class="band lt">
   <div class="trail" data-anim="8.4" data-ripple>
     <div class="pills" aria-hidden="true">
-      <div class="pl" style="--y:3%;--w:.74" data-d="0"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
-      <div class="pl" style="--y:28%;--w:.58" data-d="0.35"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
-      <div class="pl" style="--y:53%;--w:.9" data-d="0.7"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
-      <div class="pl" style="--y:78%;--w:.66" data-d="1"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
+      <div class="pl" style="--y:0%;--w:.74" data-d="0"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
+      <div class="pl" style="--y:41%;--w:.9" data-d=".5"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
+      <div class="pl" style="--y:80%;--w:.66" data-d="1"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
     </div>
     <div class="wrap" style="width:100%;display:flex;justify-content:flex-start">
       <div class="copy">
