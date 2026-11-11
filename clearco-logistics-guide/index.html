@@ -58,7 +58,6 @@ section{padding-block:clamp(18px,2.5vw,32px)}
 .points i{flex:none;width:38px;height:38px;border:1px solid #fff;display:grid;place-items:center;font:400 12px/1 var(--mono);font-style:normal}
 .vis{width:calc(100% + 72px);margin:0 -72px 0 0}
 .vis svg{width:100%;height:auto;display:block;overflow:visible}
-.vis .blk rect{opacity:.9}
 .vis .blk *{vector-effect:non-scaling-stroke}
 /* the stacks of fine lines are drawn by script, with the same motion as the banner stacks */
 .vis .st line{vector-effect:non-scaling-stroke}
@@ -77,7 +76,24 @@ section{padding-block:clamp(18px,2.5vw,32px)}
 .statement .t{padding:clamp(28px,5vw,64px)}
 .statement p.big{font:400 clamp(24px,2.9vw,38px)/1.15 var(--serif)}
 .statement p.big+p.big{margin-top:1em}
+.statement .t{display:flex;flex-direction:column;justify-content:center}
 .statement .src{margin-top:32px;color:#9d9c97}
+/* three blurbs: the active one shows its description and a progress line that fills; when it completes the next one takes over */
+.blurbs{display:grid;gap:22px;align-content:start}
+.bl{display:grid;grid-template-columns:3px 1fr;gap:22px;cursor:pointer;outline-offset:6px}
+.bl .bar{position:relative;background:#3a3a38;overflow:hidden}
+.bl .bar i{position:absolute;left:0;right:0;top:0;height:0;background:#fff}
+.bl.on .bar i{animation:prog 6s linear forwards}
+@keyframes prog{from{height:0}to{height:100%}}
+.blurbs:hover .bl.on .bar i{animation-play-state:paused}
+.bl h3{font:400 clamp(24px,2.6vw,34px)/1.12 var(--serif);letter-spacing:-.01em;color:#7d7c78;transition:color .5s ease}
+.bl.on h3{color:#fff}
+.bl .bd{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .6s ease,opacity .6s ease}
+.bl.on .bd{grid-template-rows:1fr;opacity:1}
+.bl .bd>div{overflow:hidden;min-height:0}
+.bl .bd p{padding-top:12px;font:400 16px/1.5 var(--sans);color:#b8b7b2}
+.blurbs.measuring *{transition:none!important}
+@media (prefers-reduced-motion:reduce){.bl.on .bar i{animation:none;height:100%}.bl .bd{transition:none}}
 .statement img{width:100%;height:100%;object-fit:cover;min-height:340px}
 @media (max-width:820px){.statement{grid-template-columns:1fr}.statement img{order:-1;min-height:240px;max-height:320px}}
 
@@ -206,7 +222,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
     </ul>
     <a class="btn light" href="https://www.clear.co/blog/navigating-inventory-logistics-a-resource-for-founders">Read the guide <svg class="arr" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 3 21 21M21 3v18M3 21h18"/></svg></a>
     </div>
-    <div class="vis"><svg viewBox="-40 -60 620 580" width="620" height="580" role="img" aria-label="Abstract linework: outlined blocks and thin lines radiating from a centre point on black, the left side floating higher than the right, with stacks of parallel white lines that float up and down"><defs><linearGradient id="r0" gradientUnits="userSpaceOnUse" x1="247" y1="258" x2="607.0" y2="258.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r1" gradientUnits="userSpaceOnUse" x1="247" y1="258" x2="501.6" y2="512.6"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r2" gradientUnits="userSpaceOnUse" x1="247" y1="258" x2="247.0" y2="618.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r3" gradientUnits="userSpaceOnUse" x1="247" y1="258" x2="-7.6" y2="512.6"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r4" gradientUnits="userSpaceOnUse" x1="247" y1="258" x2="-113.0" y2="258.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r5" gradientUnits="userSpaceOnUse" x1="247" y1="258" x2="-7.6" y2="3.4"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r6" gradientUnits="userSpaceOnUse" x1="247" y1="258" x2="247.0" y2="-102.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r7" gradientUnits="userSpaceOnUse" x1="247" y1="258" x2="501.6" y2="3.4"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><g fill="none" stroke="#fff" stroke-width="1" vector-effect="non-scaling-stroke"><g class="ray"><line x1="247" y1="258" x2="607.0" y2="258.0" stroke="url(#r0)"/><line x1="247" y1="258" x2="501.6" y2="512.6" stroke="url(#r1)"/><line x1="247" y1="258" x2="247.0" y2="618.0" stroke="url(#r2)"/><line x1="247" y1="258" x2="-7.6" y2="512.6" stroke="url(#r3)"/><line x1="247" y1="258" x2="-113.0" y2="258.0" stroke="url(#r4)"/><line x1="247" y1="258" x2="-7.6" y2="3.4" stroke="url(#r5)"/><line x1="247" y1="258" x2="247.0" y2="-102.0" stroke="url(#r6)"/><line x1="247" y1="258" x2="501.6" y2="3.4" stroke="url(#r7)"/></g><g transform="translate(0,-26)" class="blk"><rect x="0" y="0" width="155" height="155"/><rect x="78" y="395" width="210" height="119"/></g><g transform="translate(0,26)" class="blk"><rect x="288" y="172" width="172" height="223"/><rect x="460" y="52" width="58" height="118"/></g></g><g stroke="#fff" stroke-width="1.5"><g transform="translate(0,-18)"><g class="st" data-x="170" data-y="135" data-h="80" data-w="56" data-start="0.2"></g></g><g transform="translate(0,-26)"><g class="st" data-x="22" data-y="410" data-h="64" data-w="56" data-start="1.4"></g></g><g transform="translate(0,26)"><g class="st" data-x="455" data-y="408" data-h="64" data-w="56" data-start="2.6"></g></g></g></svg></div>
+    <div class="vis"><svg viewBox="-40 -40 596 596" width="596" height="596" role="img" aria-label="Abstract linework: four outlined boxes meeting corner to corner and thin lines radiating from a centre point on black, with stacks of parallel white lines that float up and down"><defs><linearGradient id="r0" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="668.0" y2="288.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r1" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="556.7" y2="556.7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r2" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="288.0" y2="668.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r3" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="19.3" y2="556.7"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r4" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="-92.0" y2="288.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r5" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="19.3" y2="19.3"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r6" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="288.0" y2="-92.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r7" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="556.7" y2="19.3"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><g fill="none" stroke="#fff" stroke-width="1" vector-effect="non-scaling-stroke"><g class="ray"><line x1="288" y1="288" x2="668.0" y2="288.0" stroke="url(#r0)"/><line x1="288" y1="288" x2="556.7" y2="556.7" stroke="url(#r1)"/><line x1="288" y1="288" x2="288.0" y2="668.0" stroke="url(#r2)"/><line x1="288" y1="288" x2="19.3" y2="556.7" stroke="url(#r3)"/><line x1="288" y1="288" x2="-92.0" y2="288.0" stroke="url(#r4)"/><line x1="288" y1="288" x2="19.3" y2="19.3" stroke="url(#r5)"/><line x1="288" y1="288" x2="288.0" y2="-92.0" stroke="url(#r6)"/><line x1="288" y1="288" x2="556.7" y2="19.3" stroke="url(#r7)"/></g><g class="blk" opacity=".9"><rect x="0" y="0" width="156" height="156"/><rect x="288" y="180" width="168" height="216"/><rect x="456" y="60" width="60" height="120"/><rect x="156" y="396" width="132" height="120"/></g></g><g stroke="#fff" stroke-width="1.5"><g class="st" data-x="156" data-y="116" data-h="80" data-w="56" data-start="0.2"></g><g class="st" data-x="100" data-y="484" data-h="64" data-w="56" data-start="1.4"></g><g class="st" data-x="456" data-y="364" data-h="64" data-w="56" data-start="2.6"></g></g></svg></div>
   </div>
 </header>
 
@@ -215,8 +231,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
   <div class="wrap">
     <div class="box dark statement">
       <div class="t">
-        <p class="big">Retailers have been struggling with the battle of over and understocking since the very first store was established.</p>
-        <p class="big">So what can you do to minimize these losses and keep your inventory at optimal levels?</p>
+        <div class="blurbs" role="list"><div class="bl on" role="listitem" tabindex="0" aria-current="true"><span class="bar"><i></i></span><div class="bt"><h3>Overstocks cost 3.2% in lost revenue</h3><div class="bd"><div><p>Retailers have been struggling with the battle of over and understocking since the very first store was established.</p></div></div></div></div><div class="bl" role="listitem" tabindex="0" aria-current="false"><span class="bar"><i></i></span><div class="bt"><h3>Out-of-stock items cost roughly 4%</h3><div class="bd"><div><p>That’s a total of $253 billion worth of losses from the bottom line.</p></div></div></div></div><div class="bl" role="listitem" tabindex="0" aria-current="false"><span class="bar"><i></i></span><div class="bt"><h3>Keep your inventory at optimal levels</h3><div class="bd"><div><p>So what can you do to minimize these losses and keep your inventory at optimal levels?</p></div></div></div></div></div>
         <p class="mono src">Navigating Inventory Logistics</p>
       </div>
       <img src="trucks.webp" width="568" height="360" alt="Aerial view of lorries parked in angled rows at a depot">
@@ -375,7 +390,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
     sec.insertBefore(cv, sec.firstChild);
     var ctx = cv.getContext('2d'), bg = document.createElement('canvas');
     var W = 0, H = 0, dpr = 1, P = 0, B = 0, S = 0, SW = 0, SH = 0, NC = 0, NR = 0, OX = 0, OY = 0;
-    var items = [], occ = {}, blocked = [], visible = false, raf = 0, last = 0, busy = false;
+    var items = [], occ = {}, blocked = [], visible = false, raf = 0, last = 0, busy = false, hasV = [], hasH = [];
     var N_LINES = 12;
 
     function key(i, j){ return i + ',' + j; }
@@ -383,8 +398,8 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
     function py(j){ return OY + j * P; }
     function mod(a, n){ return ((a % n) + n) % n; }
     function isBlocked(i, j){
-      if (mode === 'squares' && j === 0) return true;     // keep the top row of crosspoints free of squares
-      var x = px(i), y = py(j), ex = mode === 'lines' ? SW / 2 + 24 : B, ey = mode === 'lines' ? SH / 2 + 24 : B;
+      if (mode === 'squares' && (py(j) <= 1 || py(j) >= H - 1 || px(i) <= 1 || px(i) >= W - 1)) return true;   // no squares on the outer edge lines
+      var x = px(i), y = py(j), ex = mode === 'lines' ? SW / 2 + 24 : 8, ey = mode === 'lines' ? SH / 2 + 24 : 8;
       for (var k = 0; k < blocked.length; k++) {
         var b = blocked[k];
         if (x > b.x - ex && x < b.x + b.w + ex && y > b.y - ey && y < b.y + b.h + ey) return true;
@@ -395,7 +410,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
       if (busy) return; busy = true;
       var small = sec.getBoundingClientRect().width < 640;
       if (mode === 'lines') { P = small ? 72 : 96; B = small ? 10 : 12; SW = small ? 18 : 24; SH = Math.round(P * .75); }
-      else { P = small ? 64 : 88; B = small ? 8 : 10; S = small ? 5 : 6; }
+      else { P = small ? 48 : 64; B = 0; S = small ? 5 : 6; }          // single lines: there is no band
       var el = blockSel && sec.querySelector(blockSel);
       if (mode === 'squares' && el) {                       // snap the card to the grid: whole cells wide and tall
         el.style.width = ''; el.style.minHeight = '';
@@ -406,7 +421,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
       }
       if (mode === 'squares' && el) {                       // whole rows of padding: the section starts and ends on a horizontal line
         var want = Math.min(96, Math.max(48, sec.getBoundingClientRect().width * .07));
-        sec.style.paddingTop = sec.style.paddingBottom = (Math.max(1, Math.round(want / P)) * P) + 'px';
+        sec.style.paddingTop = sec.style.paddingBottom = (Math.max(2, Math.round(want / P)) * P) + 'px';   // at least two rows, so squares have a strip to slide in
       }
       var r = sec.getBoundingClientRect();
       W = Math.round(r.width); H = Math.round(r.height);
@@ -429,25 +444,31 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
       /* the statement grid uses the finest line the screen can draw (one device pixel) at 80% opacity; the banner keeps its own weight */
       g.strokeStyle = '#fff'; g.lineWidth = mode === 'squares' ? (dpr >= 2 ? 1 / dpr : .6) : 1; g.globalAlpha = mode === 'squares' ? .95 : .9;
       g.beginPath();
-      var rng = mulberry32(1337), ysb = [0], xsb = [0], qq;
-      for (var jj = 0; jj < NR; jj++) { qq = py(jj) + B / 2; if (qq > 1 && qq < H - 1) ysb.push(qq); }   // runs break at the cell edges, so a removed run leaves no stubs
-      ysb.push(H);
-      for (var ii = 0; ii < NC; ii++) { qq = px(ii) + B / 2; if (qq > 1 && qq < W - 1) xsb.push(qq); }
-      xsb.push(W);
-      function vline(x){
-        var xx = (Math.round(x * dpr) + .5) / dpr;
-        if (mode !== 'squares') { g.moveTo(xx, 0); g.lineTo(xx, H); return; }
-        for (var k = 0; k < ysb.length - 1; k++) { if (rng() < .25) continue; g.moveTo(xx, ysb[k]); g.lineTo(xx, ysb[k + 1]); }
+      hasV = []; hasH = [];
+      if (mode === 'squares') {
+        /* single lines running the full width and height. Whole lines are removed at random (25%, then 10% more of the horizontal ones),
+           never pieces of a line, so only clean crossing lines remain. The lines on the card's edges and the top and bottom lines stay. */
+        var cb = blocked.length ? blocked[0] : null, i, j, seed = 1337, tries = 0, rng, spotsFree;
+        do {                                                   // draw the random pattern again until enough crossings are left for the squares
+          rng = mulberry32(seed++);
+          for (i = 0; i < NC; i++) hasV[i] = rng() >= .25;
+          for (j = 0; j < NR; j++) hasH[j] = rng() >= .25 && rng() >= .10;
+          for (i = 0; i < NC; i++) if (cb && (Math.abs(px(i) - cb.x) < 1 || Math.abs(px(i) - (cb.x + cb.w)) < 1)) hasV[i] = true;
+          for (j = 0; j < NR; j++) if (py(j) <= 1 || py(j) >= H - 1 || (cb && (Math.abs(py(j) - cb.y) < 1 || Math.abs(py(j) - (cb.y + cb.h)) < 1))) hasH[j] = true;
+          spotsFree = 0;
+          for (i = 0; i < NC; i++) for (j = 0; j < NR; j++) if (hasV[i] && hasH[j] && !isBlocked(i, j)) spotsFree++;
+        } while (spotsFree < 8 && ++tries < 80);
+        for (i = 0; i < NC; i++) if (hasV[i]) {
+          var cx2 = Math.round(px(i) * dpr) - (cb && Math.abs(px(i) - (cb.x + cb.w)) < 1 ? 1 : 0);   // the card's right edge sits one device pixel inside, like its outline
+          g.moveTo((cx2 + .5) / dpr, 0); g.lineTo((cx2 + .5) / dpr, H);
+        }
+        for (j = 0; j < NR; j++) if (hasH[j]) {
+          var cy2 = Math.round(py(j) * dpr) - ((py(j) >= H - 1 || (cb && Math.abs(py(j) - (cb.y + cb.h)) < 1)) ? 1 : 0);
+          g.moveTo(0, (cy2 + .5) / dpr); g.lineTo(W, (cy2 + .5) / dpr);
+        }
+      } else {
+        for (var jj = 0; jj < NR; jj++) { var yy = (Math.round(py(jj) * dpr) + .5) / dpr; g.moveTo(0, yy - B / 2); g.lineTo(W, yy - B / 2); g.moveTo(0, yy + B / 2); g.lineTo(W, yy + B / 2); }
       }
-      function hline(y){
-        var yy = (Math.round(y * dpr) + .5) / dpr;
-        if (mode !== 'squares') { g.moveTo(0, yy); g.lineTo(W, yy); return; }
-        var edge = y <= 1 || y >= H - 2;                      // the top and bottom lines are never removed
-        if (!edge && rng() < .10) return;
-        for (var k = 0; k < xsb.length - 1; k++) { if (!edge && rng() < .25) continue; g.moveTo(xsb[k], yy); g.lineTo(xsb[k + 1], yy); }
-      }
-      for (var i = -1; i <= NC; i++) if (mode === 'squares') { vline(px(i) - B / 2 - 1); vline(px(i) + B / 2); }
-      for (var j = -1; j <= NR; j++) { hline(py(j) - B / 2 - 1); hline(py(j) + B / 2); }
       g.stroke();
       if (mode === 'lines' && blocked.length) {              // the text panel gets a clean space around it
         var q = blocked[0], pad = 28; g.globalAlpha = 1; g.fillStyle = '#000';
@@ -456,7 +477,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
 
       items = []; occ = {};
       var spots = [];
-      for (var a = 0; a < NC; a++) for (var c = 0; c < NR; c++) if (!isBlocked(a, c)) spots.push([a, c]);
+      for (var a = 0; a < NC; a++) for (var c = 0; c < NR; c++) if (!isBlocked(a, c) && (mode !== 'squares' || (hasV[a] && hasH[c]))) spots.push([a, c]);
       for (var s2 = spots.length - 1; s2 > 0; s2--) { var t = Math.floor(Math.random() * (s2 + 1)), tmp = spots[s2]; spots[s2] = spots[t]; spots[t] = tmp; }
       var count = Math.round(spots.length * (mode === 'lines' ? .28 : .4));
       for (var k = 0; k < count; k++) { items.push({ i: spots[k][0], j: spots[k][1], mv: null }); occ[key(spots[k][0], spots[k][1])] = k; }
@@ -470,6 +491,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
         if (!it || it.mv) continue;
         var dirs = mode === 'lines' ? [[0, -1], [0, 1]] : [[1, 0], [-1, 0], [0, 1], [0, -1]];
         var dir = dirs[Math.floor(Math.random() * dirs.length)];
+        if (mode === 'squares' && (dir[0] !== 0 ? !hasH[it.j] : !hasV[it.i])) continue;   // only along a line that is there
         var d = Math.random() < .5 ? 1 : 2, path = [], ok = true;
         for (var s = 1; s <= d; s++) {
           var ni = it.i + dir[0] * s, nj = it.j + dir[1] * s;
@@ -505,7 +527,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
           }
         }
         if (mode === 'squares') {
-          ctx.fillRect(Math.round(x - S / 2 - .5), Math.round(y - S / 2 - .5), S, S);
+          ctx.fillRect(Math.round(x - S / 2), Math.round(y - S / 2), S, S);
         } else {
           var y0 = it.mv ? py(it.mv.j0) : y, y1 = it.mv ? py(it.mv.j1) : y, span = (N_LINES - 1) * .03;
           for (var k = 0; k < N_LINES; k++) {
@@ -546,6 +568,37 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
       new IntersectionObserver(function(e){ visible = e[0].isIntersecting; sync(); }).observe(sec);
     } else { visible = true; sync(); }
   }
+
+  /* the three blurbs: the active one fills its progress line, then the next one takes over, and it repeats */
+  function Blurbs(root){
+    var items = [].slice.call(root.querySelectorAll('.bl')), cur = 0;
+    function mark(i){
+      items.forEach(function(el, k){ el.classList.toggle('on', k === i); el.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+    }
+    function show(i){
+      mark(i); cur = i;
+      var bar = items[i].querySelector('i'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
+      root.dispatchEvent(new CustomEvent('blurbchange', { detail: i, bubbles: true }));
+    }
+    /* keep the card the same height whichever blurb is open, so nothing around it jumps */
+    function measure(){
+      root.classList.add('measuring'); root.style.minHeight = '';
+      var max = 0;
+      for (var k = 0; k < items.length; k++) { mark(k); max = Math.max(max, root.getBoundingClientRect().height); }
+      mark(cur); root.classList.remove('measuring'); root.style.minHeight = Math.ceil(max) + 'px';
+    }
+    items.forEach(function(el, i){
+      el.addEventListener('click', function(){ show(i); });
+      el.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(i); } });
+      el.querySelector('i').addEventListener('animationend', function(){ if (!reduce && i === cur) show((i + 1) % items.length); });
+    });
+    measure();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    window.addEventListener('load', measure);
+    var t; window.addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(measure, 150); });
+  }
+  [].forEach.call(document.querySelectorAll('.blurbs'), Blurbs);
+
   [].forEach.call(document.querySelectorAll('.gridsec'), Grid);
 
 
