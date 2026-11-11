@@ -149,9 +149,10 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
         <summary>Mail piece and screen</summary>
         <div class="body">
           <div class="two">
-            <div><span class="lbl">Format</span><div class="seg" data-k="piece"><button data-v="postcard">Postcard</button><button data-v="split">Split postcard</button><button data-v="flat">Flat postcard</button><button data-v="letter">Letter</button></div></div>
+            <div><span class="lbl">Format</span><div class="seg" data-k="piece"><button data-v="postcard">Postcard</button><button data-v="split">Split postcard</button><button data-v="flat">Flat postcard</button><button data-v="block">Block postcard</button><button data-v="letter">Letter</button></div></div>
             <div><span class="lbl">Side</span><div class="seg" data-k="face"><button data-v="front">Front</button><button data-v="back">Back</button></div></div>
           </div>
+          <div><span class="lbl">Block postcard layout</span><div class="seg" data-k="blockLayout" id="blockSeg"></div></div>
           <div><span class="lbl">Platform screen</span><div class="seg" data-k="ui"><button data-v="tracking">Campaign tracking</button><button data-v="editor">Live design editor</button></div>
             <label class="chk" style="margin-top:10px"><input type="checkbox" data-k="uiOn"> Show platform screen</label></div>
           <div><span class="lbl">Piece fill</span><div class="seg" data-k="fill"><button data-v="auto">Auto</button><button data-v="accent">Accent</button><button data-v="white">White</button><button data-v="lav">Lavender</button><button data-v="purple">Purple</button></div></div>
@@ -277,6 +278,7 @@ function okBases(pl){return [0,1,2].filter(function(i){return bgOK(pl,i)})}
 var COMPS=[['auto','Auto'],['circuit','Circuit lines'],['grid','Colour blocks'],['flat','Flat']];
 /* Photo placeholder layouts, taken from the SEO Image Library blog variants (800 x 400 space, scaled 1.5x).
    The placeholder is always a plain solid purple block. band = accent strip above it, block = accent block behind it. */
+var BLOCKS=[['photo-top','Photo + strip'],['sale','Sale columns'],['columns-text','Text columns'],['coffee','Photo left'],['columns-blocks','Block columns'],['finance','Photo right']];
 var PHOTO_PURPLE='#5A4BFE',PANEL='#E8E6FD';
 var PHOTOS=[
   {id:'none',label:'None',note:'No photo area. The banner is just the background.'},
@@ -326,7 +328,7 @@ var MERGE=['{{first_name}}','{{last_name}}','{{offer_code}}','{{address_line1}}'
 var LS='blogBannerStudio.v10';
 function defaults(){
   var S={industry:'insurance',feature:'personalization',piece:'postcard',face:'front',ui:'editor',fill:'auto',
-    abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',lineTint:34,uiOn:true,uiCx:405,uiCy:320,pieceCx:300,pieceCy:410,badgeX:250,badgeCy:85,snap:true,scale:100,badge:true,photo:'right',rounded:false,
+    abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',lineTint:34,uiOn:true,uiCx:405,uiCy:320,pieceCx:300,pieceCy:410,badgeX:250,badgeCy:85,snap:true,scale:100,badge:true,photo:'right',blockLayout:'photo-top',rounded:false,
     palette:1,base:1,comp:'auto',seed:7,copy:{brand:'',headline:'',cta:'',dirty:false}};
   applyIndustry(S,'insurance');S.base=1;return S;
 }
@@ -471,6 +473,50 @@ function flatCard(K){
   }
   return{svg:o,w:400,h:267,hb:{x:24,y:24,w:152,h:56}};
 }
+/* Colour-block postcards (six layouts from the Figma postcard reference). Photo areas are the plain purple placeholder. */
+function blockCard(K){
+  var S=K.S,PL=K.pal.colors,a=K.fill,p=contrast(K.prim,K.pal.bg)<1.5?(K.pal.bg==='#4131F1'?'#1E2247':'#4131F1'):K.prim,W0=K.blk,L=S.blockLayout,o='',brand=S.copy.brand.toUpperCase(),pale=mix(a,'#ffffff',.6),PH=PHOTO_PURPLE;
+  function R(x,y,w,h,rx,f){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rx+'" fill="'+f+'"/>'}
+  function best(bg){var c=PL.filter(function(x){return x!==bg}).sort(function(x,y){return contrast(y,bg)-contrast(x,bg)})[0];return c&&contrast(c,bg)>=2?c:textOn(bg)}
+  function stripes(x,y,w,h,col){var d='';for(var yy=y+2;yy<y+h;yy+=5.5)d+='M'+x+' '+yy+'H'+(x+w);return '<path d="'+d+'" stroke="'+col+'" stroke-width="2.4" fill="none"/>'}
+  function scan(x,y,sz,col,bg){return (bg?R(x-6,y-6,sz+12,sz+12,5,bg):'')+bracket(x,y,sz,col,3.5)}
+  function outline(x,y,w,h,col){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="4" fill="none" stroke="'+col+'" stroke-width="3"/>'}
+  function TL(x,y,txt,size,weight,col,extra){if(ABS){var ww=Math.max(24,tw(txt,size,weight)*.8),h=size*.62;return R(x,(y-size*.35-h/2).toFixed(1),ww.toFixed(1),h.toFixed(1),(h/2).toFixed(1),col)}return T(x,y,txt,size,weight,col,extra)}
+  function tag(x,y,txt,fill,size,right){var w=tw(txt,size,800)+22,xx=right?x-w:x;return R(xx,y,w,size*2.9,3,fill)+LBL(xx+w/2,y+size*1.95,txt,size,800,textOn(fill))}
+  function list(x,y,ws,dot,bar){var r='';ws.forEach(function(w,i){var cy=y+i*16;r+='<circle cx="'+(x+4)+'" cy="'+cy+'" r="4.5" fill="'+dot+'"/>'+R(x+18,cy-4,w,8,4,bar)});return r}
+  function bars(x,y,ws,h,gap,col){var r='';ws.forEach(function(w,i){r+=R(x,y+i*gap,w,h,h/2,col)});return r}
+  function cols(){ /* pale column with a striped lower half, and a pale block bottom right */
+    return R(209,0,91,168,0,pale)+R(209,168,91,99,0,pale)+stripes(209,168,91,99,mix(pale,a,.55))+R(300,168,100,99,0,pale)}
+  o+=R(0,0,400,267,0,a);
+  if(L==='sale'){
+    var lav=mix(p,'#ffffff',.55),sc=best(p);
+    o+=R(0,0,400,267,0,p)+R(112,0,79,168,0,lav)+R(0,168,112,99,0,lav)+R(112,168,79,99,0,lav)+stripes(112,168,79,99,mix(lav,p,.5));
+    var words=I2(K).split(' ').slice(0,3);
+    words.forEach(function(wd,i){o+=TL(14,24+i*10,wd,7.5,500,mix(p,'#ffffff',.45),'letter-spacing="1.6"')});
+    o+=outline(326,19,56,26,sc)+R(228,79,132,51,5,W0)+R(228,153,92,3,1.5,mix(p,'#ffffff',.55))+R(228,167,132,3,1.5,mix(p,'#ffffff',.55));
+    o+=TL(228,212,S.copy.cta,15,500,'#ffffff')+bracket(352,188,34,'#ffffff',3.5);
+  }else if(L==='columns-text'){
+    o+=cols()+outline(24,19,56,26,p);
+    var f=fit(S.copy.headline,[19,17,15,13],500,160,3,1.25);
+    o+=drawLines(f,30,78,500,textOn(a))+R(30,155,85,3,1.5,p)+R(30,168,117,3,1.5,p)+bracket(30,203,32,p,3.5)+R(76,207,94,26,4,W0);
+  }else if(L==='columns-blocks'){
+    o+=cols()+outline(20,18,56,26,p)+R(46,80,130,52,5,W0)+R(46,156,92,3,1.5,p)+R(46,169,117,3,1.5,p)+bracket(30,204,32,p,3.5)+R(77,208,92,26,4,W0);
+  }else if(L==='coffee'){
+    var st=K.chip,sb=mix(st,'#ffffff',.65);
+    o+=R(0,0,197,192,0,PH)+R(0,192,197,75,0,st)+list(26,214,[107,80],sb,sb)+tag(382,20,brand,st,8,true);
+    o+=bars(230,87,[130,100,115],12,22,st)+outline(232,185,91,46,st)+scan(338,191,30,st,W0);
+  }else if(L==='finance'){
+    var sb2=best(p);
+    o+=R(199,0,201,187,0,PH)+R(152,187,248,80,0,p)+tag(22,20,'// '+brand,p,9.5)+bars(32,114,[116,134],10,23,p);
+    o+=outline(32,188,98,43,p)+list(170,216,[130,100],a,'#ffffff');
+  }else{ /* photo-top */
+    var sb3=best(p);
+    o+=R(204,0,196,190,0,PH)+R(204,190,196,77,0,p)+tag(22,20,'// '+brand,p,9.5)+R(30,106,138,57,4,W0)+list(34,191,[107,80,100],mix(W0,a,.12),mix(W0,a,.3));
+    o+=bars(222,212,[86,56],8,17,sb3)+scan(354,213,30,p,W0);
+  }
+  return{svg:o,w:400,h:267,hb:{x:20,y:18,w:150,h:60}};
+}
+function I2(K){return K.I.campaign.toUpperCase()}
 function stackSVG(K,w,h){var S=K.S,n=S.stack|0,o='',i,bg=K.pal.bg;if(!n)return '';
   {
     for(i=n;i>=1;i--)o+='<rect x="'+(i*30*w/400).toFixed(1)+'" y="'+(i*24*h/267).toFixed(1)+'" width="'+w+'" height="'+h+'" rx="7" fill="none" stroke="'+K.cropCol+'" stroke-width="3.5"/>';
@@ -509,7 +555,7 @@ function letter(K){
   return{svg:o,w:270,h:350,hb:hb};
 }
 function renderPiece(K){
-  var p=K.S.piece==='letter'?letter(K):K.S.piece==='split'?splitCard(K):K.S.piece==='flat'?flatCard(K):postcard(K),x='';
+  var p=K.S.piece==='letter'?letter(K):K.S.piece==='split'?splitCard(K):K.S.piece==='flat'?flatCard(K):K.S.piece==='block'?blockCard(K):postcard(K),x='';
   if(!K.clean&&(K.S.crop||hasDeco(K,'crop')))x+=crop(p.w,p.h,K.cropCol);
   if(!K.clean&&hasDeco(K,'handles')&&p.hb)x+=handles(p.hb,K.sel);
   return{svg:(K.clean?'':stackSVG(K,p.w,p.h))+p.svg+x,w:p.w,h:p.h,hb:p.hb};
@@ -721,6 +767,7 @@ function buildControls(){
   $('#featGrid').innerHTML=Object.keys(FEATURES).map(function(k){return '<button data-feat="'+k+'"><b>'+FEATURES[k].label+'</b><span>'+esc(FEATURES[k].tag)+'</span></button>'}).join('');
   $('#mergeChips').innerHTML=MERGE.map(function(m){return '<button type="button" data-ins="'+m+'">'+m+'</button>'}).join('');
   $('#presets').innerHTML=PALETTES.map(function(p,i){return '<button class="pre" data-pre="'+i+'" title="'+p.name+'"><div class="strip">'+p.colors.map(function(c){return '<i style="background:'+c+'"></i>'}).join('')+'</div><span>'+p.name+'</span></button>'}).join('');
+  $('#blockSeg').innerHTML=BLOCKS.map(function(b){return '<button data-v="'+b[0]+'">'+b[1]+'</button>'}).join('');
   $('#photoSeg').innerHTML=PHOTOS.map(function(p){return '<button data-v="'+p.id+'">'+p.label+'</button>'}).join('');
   $('#compSeg').innerHTML=COMPS.map(function(c){return '<button data-v="'+c[0]+'">'+c[1]+'</button>'}).join('');
 }
@@ -740,6 +787,7 @@ function sync(){
   $('#lineinfo').innerHTML='Lines and stripes are a lighter tint of the background: <b style="display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;background:'+tintHex+'"></b> '+tintHex+'.';
   document.querySelectorAll('.seg[data-k="face"] button').forEach(function(b){b.disabled=S.piece!=='postcard'&&b.dataset.v==='back'});
   document.querySelectorAll('[data-k="uiCx"],[data-k="uiCy"]').forEach(function(b){b.disabled=!S.uiOn});
+  document.querySelectorAll('.seg[data-k="blockLayout"] button').forEach(function(b){b.disabled=S.piece!=='block'});
   $('#photoNote').textContent=photoDef(S.photo).note;
   document.querySelector('[data-k="comp"]').title='';
 }
@@ -757,7 +805,7 @@ function paint(){
   return svg;
 }
 function altText(){var I=INDUSTRIES[S.industry],F=FEATURES[S.feature],u=uiName();
-  return I.label+' direct mail banner: a '+(S.piece==='split'?'split postcard':S.piece)+' for '+I.campaign.toLowerCase()+(u?' beside the '+u:'')+', highlighting '+F.label.toLowerCase()+'.'}
+  return I.label+' direct mail banner: a '+(S.piece==='split'?'split postcard':S.piece==='block'?'colour-block postcard':S.piece)+' for '+I.campaign.toLowerCase()+(u?' beside the '+u:'')+', highlighting '+F.label.toLowerCase()+'.'}
 function fileName(){return [S.industry,S.feature,S.piece,'banner-1200x600'].join('-')}
 function status(m){$('#status').textContent=m;clearTimeout(status.t);status.t=setTimeout(function(){$('#status').textContent=''},3200)}
 
