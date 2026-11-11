@@ -467,8 +467,10 @@ function flatCard(K){
 function blockCard(K){
   var S=K.S,PL=K.pal.colors,a=K.fill,p=contrast(K.prim,K.pal.bg)<1.5?(K.pal.bg==='#4131F1'?'#1E2247':'#4131F1'):K.prim,W0=K.blk,L=S.blockLayout,o='',brand=S.copy.brand.toUpperCase(),PH='#A99BFF';
   /* the panel colour must not melt into the photo area or the dark strip: swap it for another palette colour */
-  if(contrast(a,PH)<1.6||contrast(a,p)<1.4){var alt=PL.filter(function(c){return c!==K.pal.bg&&contrast(c,PH)>=1.6&&contrast(c,p)>=1.4}).sort(function(x,y){return contrast(y,K.pal.bg)-contrast(x,K.pal.bg)})[0];a=alt||'#FFFFFF'}
+  if(contrast(a,PH)<1.6||contrast(a,p)<1.4){var alt=PL.filter(function(c){return c!==K.pal.bg&&contrast(c,PH)>=1.6&&contrast(c,p)>=1.4}).sort(function(x,y){return contrast(y,K.pal.bg)-contrast(x,K.pal.bg)})[0];a=alt||(K.pal.bg==='#D045DC'?'#EAA9F4':'#D045DC')}
   var pale=mix(a,'#ffffff',.6);
+  if(contrast(W0,a)<1.15)W0=PANEL;                      /* white blocks need a tint on a white panel */
+  var LBc=lum(a)>.8?mix(p,'#ffffff',.65):mix(W0,a,.3);  /* list dots and bars on the panel */
   function R(x,y,w,h,rx,f){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rx+'" fill="'+f+'"/>'}
   function best(bg){var c=PL.filter(function(x){return x!==bg}).sort(function(x,y){return contrast(y,bg)-contrast(x,bg)})[0];return c&&contrast(c,bg)>=2?c:textOn(bg)}
   function stripes(x,y,w,h,col){var d='';for(var yy=y+2;yy<y+h;yy+=5.5)d+='M'+x+' '+yy+'H'+(x+w);return '<path d="'+d+'" stroke="'+col+'" stroke-width="2.4" fill="none"/>'}
@@ -504,10 +506,13 @@ function blockCard(K){
     o+=outline(32,188,98,43,p)+list(170,216,[130,100],a,'#ffffff');
   }else{ /* photo-top */
     var sb3=best(p);
-    o+=R(204,0,196,190,0,PH)+R(204,190,196,77,0,p)+tag(22,20,'// '+brand,p,9.5)+R(30,106,138,57,4,W0)+list(34,191,[107,80,100],mix(W0,a,.12),mix(W0,a,.3));
+    o+=R(204,0,196,190,0,PH)+R(204,190,196,77,0,p)+tag(22,20,'// '+brand,p,9.5)+R(30,106,138,57,4,W0)+list(34,191,[107,80,100],LBc,LBc);
     o+=bars(222,212,[86,56],8,17,sb3)+scan(354,213,30,p,W0);
   }
-  return{svg:o,w:400,h:267,hb:{x:20,y:18,w:150,h:60}};
+  /* selection box for the Creation screen: sits over each layout's text blocks */
+  var HBS={'sale':[222,148,146,74],'columns-blocks':[40,150,134,32],'coffee':[226,82,140,68],'finance':[28,108,144,44],'photo-top':[28,178,148,56]},hv=HBS[L],
+      hb=L==='columns-text'?{x:24,y:78-f.size-2,w:166,h:f.lines.length*f.lh+10}:{x:hv[0],y:hv[1],w:hv[2],h:hv[3]};
+  return{svg:o,w:400,h:267,hb:hb};
 }
 function I2(K){return K.I.campaign.toUpperCase()}
 function stackSVG(K,w,h){var S=K.S,n=S.stack|0,o='',i,bg=K.pal.bg;if(!n)return '';
@@ -633,7 +638,7 @@ function uiEditor(K){
   if(f==='proof')o+='<rect x="'+(bx-9)+'" y="'+(by-9)+'" width="'+(pw+18)+'" height="'+(ph+18)+'" fill="none" stroke="'+dk(K.pal.a)+'" stroke-width="1.3" stroke-dasharray="4 3"/>';
   o+='<g clip-path="url(#edClip)"><g transform="translate('+bx.toFixed(1)+' '+by.toFixed(1)+') scale('+sc+')">'+pc.svg+'</g></g>';
   if(f==='proof')o+='<rect x="'+(bx+9)+'" y="'+(by+9)+'" width="'+(pw-18)+'" height="'+(ph-18)+'" fill="none" stroke="'+dk(P)+'" stroke-width="1.3" stroke-dasharray="4 3"/>'+UP(K,bx-9,by-13,'BLEED',6.5,dk(K.pal.a))+UP(K,bx+9,by+ph-1,'SAFE ZONE',6.5,dk(P));
-  if(f==='canvas')o+=handles(hb,SC)+'<path d="M'+cx+' 38V316M48 '+cy+'H352" stroke="'+SC+'" stroke-width="1" stroke-dasharray="3 3"/>';
+  if(f==='canvas')o+=handles(hb,SC)+'<path d="M'+bx.toFixed(1)+' 32V318M'+(bx+pw).toFixed(1)+' 32V318M42 '+by.toFixed(1)+'H358M42 '+(by+ph).toFixed(1)+'H358" stroke="'+SC+'" stroke-width="1" stroke-dasharray="3 3"/>';  /* guides along the piece's outer edges */
   o+='<rect x="360" y="30" width="130" height="290" fill="#fff"/><path d="M360 30V320" stroke="'+EDGE+'" stroke-width="1.5"/>';
   if(f==='vars'){
     o+=UP(K,372,50,'Variables',8,MUTED);
