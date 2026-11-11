@@ -177,6 +177,10 @@ section{padding-block:clamp(18px,2.5vw,32px)}
 .inside b{font:400 64px/.9 var(--serif)}
 .inside .t{display:block;font:400 22px/1.05 var(--serif)}
 .inside .lock .t{margin-bottom:18px}
+/* the whole chapter 6 card is the button: hovering anywhere on it gives the button its hover state, and clicking anywhere follows the link */
+.inside>.lock{cursor:pointer}
+.inside>.lock .btn::after{content:"";position:absolute;inset:0}
+.inside>.lock:hover .btn.light,.inside>.lock:focus-within .btn.light{background:#000;color:#fff}
 /* resting state: the three tiles are stacked at the right edge of the row, extending to the left, with a generous overlap on a rising
    diagonal (4 lowest, unlock highest).
    Hovering (or tabbing into) the group eases them apart into the flat, spaced row. The hover area is the group's own padded box,
