@@ -1,0 +1,74 @@
+[
+  {
+    "id": "lifecycle-image-engine",
+    "title": "Lifecycle Image Studio",
+    "category": "Interactive Engine",
+    "url": "lifecycle-image-engine/",
+    "thumbnail": "lifecycle-image-engine/thumb.png",
+    "preview": "lifecycle-image-engine/thumb.webp",
+    "alt": "Lifecycle Image Studio: a row of three pink rounded cards with spot illustrations and indigo subheading links, beside the template editor"
+  },
+  {
+    "id": "prompt-demos",
+    "title": "Stop Building Demos",
+    "category": "Motion",
+    "url": "prompt-demos/",
+    "thumbnail": "prompt-demos/thumb.png",
+    "preview": "prompt-demos/thumb.webp",
+    "alt": "Stop Building Demos: the headline 'Stop building demos and start prompting them.' with the Reprise spark logo and radiating lines centred on navy, beside a prompt box"
+  },
+  {
+    "id": "video-synopsis",
+    "title": "Video Synopsis",
+    "category": "Mockup",
+    "url": "video-synopsis/",
+    "thumbnail": "video-synopsis/thumb.png",
+    "preview": "video-synopsis/thumb.webp",
+    "alt": "Video Synopsis: an overlay of people walking through a lobby with yellow frames and time stamps, beside the original footage and clip timelines"
+  },
+  {
+    "id": "clearco-terrain",
+    "title": "Clearco Terrain",
+    "category": "Motion",
+    "url": "clearco-terrain/",
+    "thumbnail": "clearco-terrain/thumb.png",
+    "preview": "clearco-terrain/thumb.webp",
+    "alt": "Clearco Terrain: a square target frame with corner crosshairs around the three-line headline on a dark grid"
+  },
+  {
+    "id": "clearco-target-frame",
+    "title": "Clearco Target Frame",
+    "category": "Motion",
+    "url": "clearco-target-frame/",
+    "thumbnail": "clearco-target-frame/thumb.png",
+    "preview": "clearco-target-frame/thumb.webp",
+    "alt": "Clearco Target Frame: a target frame with corner crosshairs around the dot-matrix Clearco logo"
+  },
+  {
+    "id": "hero-banner-engine",
+    "title": "Banner Template Studio",
+    "category": "Interactive Engine",
+    "url": "hero-banner-engine/",
+    "thumbnail": "hero-banner-engine/thumb.png",
+    "preview": "hero-banner-engine/thumb.webp",
+    "alt": "Banner Template Studio: Lob's No-Code Design Suite banner"
+  },
+  {
+    "id": "blog-banner-studio",
+    "title": "Blog Banner Studio",
+    "category": "Interactive Engine",
+    "url": "blog-banner-studio/",
+    "thumbnail": "blog-banner-studio/thumb.png",
+    "preview": "blog-banner-studio/thumb.webp",
+    "alt": "Blog Banner Studio: a block postcard beside a design editor on a line-work background"
+  },
+  {
+    "id": "ab-testing",
+    "title": "A/B Test: PSC Page Variants",
+    "category": "Mockup",
+    "url": "ab-testing/",
+    "thumbnail": "ab-testing/thumb.png",
+    "preview": "ab-testing/thumb.webp",
+    "alt": "A/B Testing: a dark analytics dashboard comparing Control and Variant conversion for two Mavenoid community pages"
+  }
+]
