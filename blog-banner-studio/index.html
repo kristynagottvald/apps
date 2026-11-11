@@ -157,7 +157,6 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
           <div><span class="lbl">Piece fill</span><div class="seg" data-k="fill"><button data-v="auto">Auto</button><button data-v="accent">Accent</button><button data-v="white">White</button><button data-v="lav">Lavender</button><button data-v="purple">Purple</button></div></div>
                   <div><span class="lbl">Flat postcard style</span><div class="seg" data-k="flatStyle"><button data-v="link">Link chip</button><button data-v="outline">Outline</button></div></div>
           <div><span class="lbl">Flat postcard logo</span><div class="seg" data-k="flatLogo"><button data-v="block">Logo block</button><button data-v="name">Company name</button></div></div>
-          <label class="chk"><input type="checkbox" data-k="splitShadow" id="splitShadow"> Shadow behind split postcard</label>
           <div class="two">
             <label class="chk"><input type="checkbox" data-k="abstract"> Abstract text blocks</label>
             <label class="chk"><input type="checkbox" data-k="crop"> Crop marks</label>
@@ -327,7 +326,7 @@ var MERGE=['{{first_name}}','{{last_name}}','{{offer_code}}','{{address_line1}}'
 var LS='blogBannerStudio.v10';
 function defaults(){
   var S={industry:'insurance',feature:'personalization',piece:'postcard',face:'front',ui:'editor',fill:'auto',
-    abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',splitShadow:true,lineTint:34,uiOn:true,uiCx:405,uiCy:320,pieceCx:300,pieceCy:410,badgeX:250,badgeCy:85,snap:true,scale:100,badge:true,photo:'right',rounded:false,
+    abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',lineTint:34,uiOn:true,uiCx:405,uiCy:320,pieceCx:300,pieceCy:410,badgeX:250,badgeCy:85,snap:true,scale:100,badge:true,photo:'right',rounded:false,
     palette:1,base:1,comp:'auto',seed:7,copy:{brand:'',headline:'',cta:'',dirty:false}};
   applyIndustry(S,'insurance');S.base=1;return S;
 }
@@ -479,7 +478,7 @@ function stackSVG(K,w,h){var S=K.S,n=S.stack|0,o='',i,bg=K.pal.bg;if(!n)return '
   return o}
 function splitCard(K){
   var S=K.S,o='',chip=K.chip,ink=K.chipInk,prim=K.prim,bs=[[32,32,80],[32,50,127],[32,67,116]];
-  o+=(S.splitShadow?'<rect x="-31" y="32" width="398" height="266" fill="'+shade(K.pal.bg)+'"/>':'')+'<rect width="400" height="267" fill="'+K.fill+'"/>';
+  o+='<rect width="400" height="267" fill="'+K.fill+'"/>';
   bs.forEach(function(b){o+='<rect x="'+b[0]+'" y="'+b[1]+'" width="'+b[2]+'" height="8" rx="4" fill="'+chip+'"/>'});
   o+='<rect x="27" y="123" width="144" height="54" rx="4" fill="'+K.blk+'"/><rect x="27" y="189" width="144" height="37" rx="4" fill="'+K.blk+'"/>';
   o+='<rect x="198" y="20" width="3.5" height="222" fill="'+prim+'"/>';
@@ -735,7 +734,6 @@ function sync(){
   document.querySelectorAll('[data-pre]').forEach(function(b){b.setAttribute('aria-pressed',String(Number(b.dataset.pre)===S.palette))});
   var PL=PALETTES[S.palette];
   $('#bases').innerHTML=okBases(S.palette).map(function(i){var c=PL.colors[i];return '<button class="base" data-base="'+i+'" aria-pressed="'+(i===S.base)+'" aria-label="Background '+c+'" title="'+c+'"><i style="background:'+c+'"></i><span>'+c+'</span></button>'}).join('');
-  $('#splitShadow').disabled=S.piece!=='split';
   document.querySelectorAll('.seg[data-k="ripple"] button').forEach(function(b){b.disabled=!S.badge});
   document.querySelectorAll('.seg[data-k="flatStyle"] button,.seg[data-k="flatLogo"] button,.seg[data-k="copy.tag"] button').forEach(function(b){b.disabled=S.piece!=='flat'});
   var tintHex=mix(PL.colors[S.base],'#ffffff',S.lineTint/100);
