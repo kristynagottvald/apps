@@ -161,11 +161,11 @@ footer .btn{--fill:#040a10}
 /* chapter two: the model explorer. Four vertical pills, one per touchpoint; a model decides how tall each one is. */
 .xp{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,5vw,80px);align-items:stretch}
 .models{display:grid;gap:0;align-content:start}
-.mt{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:baseline;text-align:left;width:100%;background:none;border:0;border-top:1px solid #1d2a38;padding:16px 0;color:#7b8c99;cursor:pointer;font:inherit}
+.mt{display:grid;grid-template-columns:1fr;gap:6px 18px;align-items:baseline;text-align:left;width:100%;background:none;border:0;border-top:1px solid #1d2a38;padding:16px 0;color:#7b8c99;cursor:pointer;font:inherit}
 .mt:last-of-type{border-bottom:1px solid #1d2a38}
 .mt .mono{color:inherit;letter-spacing:.2em}
 .mt b{font:400 clamp(22px,2.2vw,30px)/1.05 var(--serif);letter-spacing:-.015em;color:inherit;transition:color .3s}
-.mt span.d{grid-column:2;display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s ease}
+.mt span.d{grid-column:1;display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s ease}
 .mt span.d>span{overflow:hidden;min-height:0;font:400 14px/1.5 var(--sans);color:#aebbc5;opacity:0;transition:opacity .5s}
 .mt[aria-selected="true"]{color:var(--cyan)}
 .mt[aria-selected="true"] b{color:#fff}
@@ -357,7 +357,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
     <div class="xp" id="xp">
       <div class="models" role="tablist" aria-label="Attribution model"></div>
       <div class="chart" role="img" aria-live="polite" aria-label="Credit given to each touchpoint by the selected attribution model">
-        <div class="gl" aria-hidden="true"><i style="top:0"><b>100%</b></i><i style="top:50%"><b>50%</b></i></div>
+        <div class="gl" aria-hidden="true"><i style="top:0"><b>100%</b></i><i style="top:calc((100% - var(--pw,44px)) * .25)"><b>75%</b></i><i style="top:calc((100% - var(--pw,44px)) * .5)"><b>50%</b></i><i style="top:calc((100% - var(--pw,44px)) * .75)"><b>25%</b></i></div>
       </div>
     </div>
   </div>
@@ -567,7 +567,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
     });
     var tabs = M.map(function(m, i){
       var b = document.createElement('button'); b.type = 'button'; b.className = 'mt'; b.setAttribute('role', 'tab');
-      b.innerHTML = '<span class="mono">0' + (i + 1) + '</span><b></b><span class="d"><span></span></span>';
+      b.innerHTML = '<b></b><span class="d"><span></span></span>';
       b.querySelector('b').textContent = m.n; b.querySelector('.d>span').textContent = m.d;
       b.addEventListener('click', function(){ auto = false; set(i); });
       list.appendChild(b); return b;
