@@ -26,7 +26,7 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
   // the hero pills run on a 8.2 s cycle on their own; wait until the circle has grown so the loop starts on the full composition
-  'clearco-attribution-guide': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1400, run: async () => {} },
+  'clearco-attribution-guide': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#still-title', ready: 1400, run: async () => {} },
   'clearco-logistics-guide': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async (p) => {
     const t0 = Date.now();
     const go = (id, d) => p.evaluate(([i, o]) => scrollTo(0, document.getElementById(i).offsetTop - 49 + o), [id, d]);
@@ -107,7 +107,7 @@ async function record(name) {
   const errs = [];
   page.on('pageerror', (e) => errs.push(e.message));
   if (A.p5 && process.env.P5_LIB) await page.route('**/p5.min.js', (r) => r.fulfill({ path: process.env.P5_LIB, contentType: 'application/javascript' }));
-  await page.goto('file://' + ROOT + name + '/index.html');
+  await page.goto('file://' + ROOT + name + '/index.html' + (A.hash || ''));
   await page.waitForLoadState('networkidle').catch(() => {});
   if (A.setup) { const c = await A.setup(page); if (Array.isArray(c)) A.crop = c; }
   await page.waitForTimeout(A.ready || 600);
