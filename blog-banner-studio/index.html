@@ -148,16 +148,11 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
       <details class="sec" open>
         <summary>Mail piece and screen</summary>
         <div class="body">
-          <div class="two">
-            <div><span class="lbl">Format</span><div class="seg" data-k="piece"><button data-v="postcard">Postcard</button><button data-v="split">Split postcard</button><button data-v="flat">Flat postcard</button><button data-v="block">Block postcard</button><button data-v="letter">Letter</button></div></div>
-            <div><span class="lbl">Side</span><div class="seg" data-k="face"><button data-v="front">Front</button><button data-v="back">Back</button></div></div>
-          </div>
+          <div><span class="lbl">Format</span><div class="seg" data-k="piece"><button data-v="block">Block postcard</button><button data-v="letter">Letter</button></div></div>
           <div><span class="lbl">Block postcard layout</span><div class="seg" data-k="blockLayout" id="blockSeg"></div></div>
           <div><span class="lbl">Platform screen</span><div class="seg" data-k="ui"><button data-v="tracking">Campaign tracking</button><button data-v="editor">Live design editor</button></div>
             <label class="chk" style="margin-top:10px"><input type="checkbox" data-k="uiOn"> Show platform screen</label></div>
           <div><span class="lbl">Piece fill</span><div class="seg" data-k="fill"><button data-v="auto">Auto</button><button data-v="accent">Accent</button><button data-v="white">White</button><button data-v="lav">Lavender</button><button data-v="purple">Purple</button></div></div>
-                  <div><span class="lbl">Flat postcard style</span><div class="seg" data-k="flatStyle"><button data-v="link">Link chip</button><button data-v="outline">Outline</button></div></div>
-          <div><span class="lbl">Flat postcard logo</span><div class="seg" data-k="flatLogo"><button data-v="block">Logo block</button><button data-v="name">Company name</button></div></div>
           <div class="two">
             <label class="chk"><input type="checkbox" data-k="abstract"> Abstract text blocks</label>
             <label class="chk"><input type="checkbox" data-k="crop"> Crop marks</label>
@@ -175,14 +170,6 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
               <div class="chips" id="mergeChips"></div>
               <p class="note" style="margin-top:6px">Chips insert into the field you last clicked. Anything in double braces renders as a dashed merge field. Address lines also fill the letter window.</p></div>
             <div><label class="lbl" for="cta">Call to action</label><input type="text" id="cta" data-k="copy.cta"></div>
-            <div><span class="lbl">Link chip (flat postcard)</span><div class="seg" data-k="copy.tag"><button data-v="URL/">URL</button><button data-v="PURL/">PURL</button><button data-v="20% OFF">20% OFF</button></div></div>
-            <span class="lbl" style="margin:6px 0 -2px;padding-top:10px;border-top:1px solid var(--line)">Split postcard chips</span>
-            <div><label class="lbl" for="chip1">Chip 1</label><input type="text" id="chip1" data-k="copy.chip1"></div>
-            <div><label class="lbl" for="chip2">Chip 2</label><input type="text" id="chip2" data-k="copy.chip2"></div>
-            <div><label class="lbl" for="chip3">Chip 3</label><input type="text" id="chip3" data-k="copy.chip3"></div>
-            <span class="lbl" style="margin:6px 0 -2px;padding-top:10px;border-top:1px solid var(--line)">Back of postcard</span>
-            <div><label class="lbl" for="backHead">Back headline</label><input type="text" id="backHead" data-k="copy.backHead"></div>
-            <div><label class="lbl" for="backBody">Back message</label><textarea id="backBody" data-k="copy.backBody" rows="3"></textarea></div>
             <div><label class="lbl" for="addr1">Address line 1</label><input type="text" id="addr1" data-k="copy.addr1"></div>
             <div><label class="lbl" for="addr2">Address line 2</label><input type="text" id="addr2" data-k="copy.addr2"></div>
             <div><label class="lbl" for="addr3">Address line 3</label><input type="text" id="addr3" data-k="copy.addr3"></div>
@@ -327,7 +314,7 @@ var MERGE=['{{first_name}}','{{last_name}}','{{offer_code}}','{{address_line1}}'
 /* ---------- state ---------- */
 var LS='blogBannerStudio.v10';
 function defaults(){
-  var S={industry:'insurance',feature:'personalization',piece:'postcard',face:'front',ui:'editor',fill:'auto',
+  var S={industry:'insurance',feature:'personalization',piece:'block',face:'front',ui:'editor',fill:'auto',
     abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',lineTint:34,uiOn:true,uiCx:405,uiCy:320,pieceCx:300,pieceCy:410,badgeX:250,badgeCy:85,snap:true,scale:100,badge:true,photo:'right',blockLayout:'photo-top',rounded:false,
     palette:1,base:1,comp:'auto',seed:7,copy:{brand:'',headline:'',cta:'',dirty:false}};
   applyIndustry(S,'insurance');S.base=1;return S;
@@ -820,6 +807,7 @@ function onChange(e){
   set(S,k,v);if(k==='copy.headline')S.copy.dirty=true;paint();
 }
 var lastField=null;
+if(S.piece!=='block'&&S.piece!=='letter')S.piece='block';S.face='front';
 if(S.flatStyle==='tag')S.flatStyle='link';
 if(['URL/','PURL/','20% OFF'].indexOf(S.copy.tag)<0)S.copy.tag='URL/';
 document.addEventListener('focusin',function(e){if(e.target.dataset&&/^copy\./.test(e.target.dataset.k||'')&&e.target.type!=='checkbox')lastField=e.target});
