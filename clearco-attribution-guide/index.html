@@ -100,14 +100,10 @@ section,.band{position:relative;overflow:hidden}
 .vis .dl{-webkit-mask-image:linear-gradient(transparent 20%,#000 60%);mask-image:linear-gradient(transparent 20%,#000 60%)}
 @media (max-width:820px){.hero .wrap{grid-template-columns:1fr}.vis{height:360px}}
 
-/* ---------- "Track every touchpoint": ripple field and the three stops of the journey ---------- */
-#stmt{padding-block:clamp(56px,8vw,112px)}
-.flank{position:relative;height:clamp(320px,40vw,500px);display:flex;align-items:center;justify-content:space-between;gap:24px}
-.flank canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.flank p{position:relative;z-index:1;font:500 clamp(34px,5.4vw,72px)/1 var(--sans);letter-spacing:-.035em}
-@media (max-width:640px){.flank{flex-direction:column;justify-content:space-between;align-items:flex-start;height:400px;padding-block:8px}.flank p.r{align-self:flex-end}}
+/* ---------- the three stops of the journey ---------- */
+#stmt{padding-block:clamp(48px,6vw,88px)}
 /* three blurbs side by side: the active one shows its description and a progress line that fills; when it completes the next takes over */
-.blurbs{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3.4vw,56px);margin-top:clamp(40px,5vw,72px)}
+.blurbs{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3.4vw,56px)}
 .bl{cursor:pointer;outline-offset:8px}
 .bl .bar{display:block;position:relative;height:2px;background:#1f2b38;border-radius:2px;overflow:hidden;margin-bottom:22px}
 .bl .bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--grad)}
@@ -290,11 +286,6 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
 <section class="dk" id="stmt">
   <div class="dl" aria-hidden="true"><i style="left:14%"></i><i style="left:32%"></i><i style="left:68%"></i><i style="left:86%"></i></div>
   <div class="wrap">
-    <div class="flank">
-      <canvas id="ripple" aria-hidden="true"></canvas>
-      <p class="l">Track every</p>
-      <p class="r">touchpoint.</p>
-    </div>
     <div class="blurbs" role="list">
       <div class="bl on" role="listitem" tabindex="0" aria-current="true"><span class="bar"><i></i></span><span class="mono k">Touchpoint 01</span><div class="bt"><h3>A YouTube ad plants the idea</h3><div class="bd"><div><p>A potential customer watches a video, sees your ad and skips it. It still counts as a touchpoint.</p></div></div></div></div>
       <div class="bl" role="listitem" tabindex="0" aria-current="false"><span class="bar"><i></i></span><span class="mono k">Touchpoint 02</span><div class="bt"><h3>A Google search brings them back</h3><div class="bd"><div><p>They search “iPhone case”, see your sponsored result and click through, but don’t buy.</p></div></div></div></div>
@@ -488,43 +479,6 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
       g.dots.forEach(function(d){ d.el.style.setProperty('--s', reduce ? 1 : clamp01((lead - d.at) / .06).toFixed(3)); });
     });
   }
-
-  /* ---- ripple field behind "Track every touchpoint": soft discs flow outwards from a grainy blue circle ---- */
-  (function(){
-    var cv = document.getElementById('ripple'), ctx = cv.getContext('2d');
-    var off = document.createElement('canvas'), og = off.getContext('2d');
-    var W = 0, H = 0, dpr = 1, on = false, raf = 0, kick = -1e5, nPat = null;
-    function size(){
-      var r = cv.getBoundingClientRect(); W = Math.round(r.width); H = Math.round(r.height); if (!W || !H) return;
-      dpr = Math.min(1.5, window.devicePixelRatio || 1);
-      cv.width = off.width = Math.round(W * dpr); cv.height = off.height = Math.round(H * dpr);
-      nPat = og.createPattern(maskTile, 'repeat'); draw(performance.now());
-    }
-    function draw(now){
-      var t = reduce ? 0 : now / 1000, cx = W / 2, cy = H / 2, R0 = Math.min(H * .2, W * .13), maxR = Math.min(W * .46, H * .5);
-      var boost = 1 + .35 * Math.exp(-(now - kick) / 700);
-      og.setTransform(dpr, 0, 0, dpr, 0, 0); og.globalCompositeOperation = 'source-over'; og.clearRect(0, 0, W, H);
-      var N = 5, k, f, r;
-      for (k = N - 1; k >= 0; k--) {                       // the outermost disc first, so the centre builds up brighter
-        f = ((t * .16 + k / N) % 1); r = R0 * 1.15 + (maxR - R0 * 1.15) * eo(f) * (boost > 1.01 ? 1 : 1);
-        og.fillStyle = 'rgba(70,170,205,' + (.34 * Math.pow(1 - f, 1.4)).toFixed(3) + ')';
-        og.beginPath(); og.arc(cx, cy, r, 0, 7); og.fill();
-      }
-      og.setTransform(1, 0, 0, 1, 0, 0); og.globalCompositeOperation = 'destination-in'; og.fillStyle = nPat; og.fillRect(0, 0, off.width, off.height);
-      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); ctx.drawImage(off, 0, 0);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var pr = R0 * (1 + .03 * Math.sin(t * 1.6) + .06 * (boost - 1));
-      var gr = ctx.createLinearGradient(cx - pr, cy + pr * .6, cx + pr, cy - pr * .6); gr.addColorStop(0, '#2447f5'); gr.addColorStop(.5, '#3b8cff'); gr.addColorStop(1, '#62e6f3');
-      ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(cx, cy, pr, 0, 7); ctx.fill();
-      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, pr, 0, 7); ctx.clip(); ctx.globalAlpha = .5; ctx.globalCompositeOperation = 'overlay';
-      ctx.fillStyle = ctx.createPattern(grainTile, 'repeat'); ctx.fillRect(cx - pr, cy - pr, pr * 2, pr * 2); ctx.restore();
-    }
-    function frame(now){ raf = 0; if (!on) return; draw(now); raf = requestAnimationFrame(frame); }
-    size();
-    if ('ResizeObserver' in window) new ResizeObserver(size).observe(cv);
-    vis(cv, function(v){ on = v; if (v && !reduce && !raf) raf = requestAnimationFrame(frame); });
-    document.addEventListener('blurbchange', function(){ kick = performance.now(); });
-  })();
 
   /* ---- the three blurbs: the active one fills its progress line, then the next one takes over, and it repeats ---- */
   function Blurbs(root){
