@@ -672,7 +672,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
   (function(){
     var svgEl = document.querySelector('.vis svg');
     if (!svgEl) return;
-    var N = 12, STEP = 36, RANGE = 2, NS = 'http://www.w3.org/2000/svg';
+    var TOPMIN = -20, BOTMAX = 520, N = 12, STEP = 36, RANGE = 2, NS = 'http://www.w3.org/2000/svg';
     var stacks = [].map.call(svgEl.querySelectorAll('.st'), function(g){
       var d = g.dataset, st = { x: +d.x, y: +d.y, base: +d.y, h: +d.h, w: +d.w, n: +d.n || N, range: +d.range || RANGE, mv: null, next: performance.now() + (+d.start) * 1000, lines: [] };
       for (var k = 0; k < st.n; k++) {
@@ -698,9 +698,10 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
         return;
       }
       if (now < st.next) return;
-      var ups = st.y - STEP >= st.base - st.range * STEP, downs = st.y + STEP <= st.base + st.range * STEP;
+      var lo = Math.max(st.base - st.range * STEP, TOPMIN + st.h / 2), hi = Math.min(st.base + st.range * STEP, BOTMAX - st.h / 2);   // every stack stays inside the visual, clear of its top and bottom edges
+      var ups = st.y - STEP >= lo, downs = st.y + STEP <= hi;
       var dir = ups && downs ? (Math.random() < .5 ? -1 : 1) : (ups ? -1 : 1);
-      var room = dir < 0 ? Math.floor((st.y - (st.base - st.range * STEP)) / STEP) : Math.floor(((st.base + st.range * STEP) - st.y) / STEP);
+      var room = dir < 0 ? Math.floor((st.y - lo) / STEP) : Math.floor((hi - st.y) / STEP);
       var dist = Math.min(room, Math.random() < .5 ? 1 : 2);
       st.mv = { t0: now, dur: 1500 + dist * 650, y0: st.y, y1: st.y + dir * dist * STEP, dir: dir };
     }
@@ -710,8 +711,8 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
     var gEl = stacks[0].lines[0].parentNode.parentNode, T = 12, CX = 288, LW = 56, GAP = 18, DD = 44;
     function mk(){ var l = document.createElementNS(NS, 'line'); l.style.display = 'none'; gEl.appendChild(l); return l; }
     var groups = [
-      { dir: -1, off: 0,  src: stacks[0], idx: [2, 4], sl: [mk(), mk()], em: [mk()], prev: 99, Y: [] },
-      { dir: 1,  off: .9, src: stacks[1], idx: [8],    sl: [mk()],       em: [mk(), mk()], prev: 99, Y: [] }
+      { dir: -1, off: 0,  src: stacks[0], idx: [2, 4], sl: [mk(), mk()], em: [mk()], prev: 99, Y: [], srcY: [], dd: DD },
+      { dir: 1,  off: .9, src: stacks[1], idx: [8],    sl: [mk()],       em: [mk(), mk()], prev: 99, Y: [], srcY: [], dd: DD }
     ];
     function sgn(x){ return Math.sin(Math.PI * clamp01(x)); }
     function seq(now){
@@ -719,8 +720,10 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
         var t = (((now / 1000 - g.off) % T) + T) % T;
         if (t < g.prev) {                                           // new cycle: take the lines' current heights
           var ys = g.idx.map(function(i){ return +g.src.lines[i].getAttribute('y1'); });
-          if (g.dir < 0) { ys.sort(function(a, b){ return a - b; }); g.Y = [ys[0], ys[1], ys[0] - GAP]; }
-          else { g.Y = [ys[0], ys[0] + GAP, ys[0] + 2 * GAP]; }
+          g.srcY = ys.slice();
+          if (g.dir < 0) { ys.sort(function(a, b){ return a - b; }); g.srcY = ys.slice(); g.Y = [ys[0], ys[1], ys[0] - GAP]; }
+          else { var y0 = Math.min(ys[0], 420); g.Y = [y0, y0 + GAP, y0 + 2 * GAP]; }     // the lower stack is kept well clear of the bottom edge
+          g.dd = g.dir < 0 ? Math.max(0, Math.min(DD, g.Y[2] - 24)) : Math.max(0, Math.min(DD, 500 - g.Y[2]));   // so is its float
         }
         g.prev = t;
         var all = g.sl.length + g.em.length;
@@ -731,7 +734,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
           srcLine.style.visibility = on ? 'hidden' : '';
           l.style.display = on ? '' : 'none';
           if (!on) return;
-          var live = +srcLine.getAttribute('y1'), y = g.Y[k] * (1 - pout) + live * pout + g.dir * DD * sgn((t - 3.2 - k * .1) / 3.2);
+          var live = +srcLine.getAttribute('y1'), yb = g.srcY[k] + (g.Y[k] - g.srcY[k]) * pin, y = yb * (1 - pout) + live * pout + g.dir * g.dd * sgn((t - 3.2 - k * .1) / 3.2);
           var x1 = g.src.x + (CX - LW / 2 - g.src.x) * p;
           l.setAttribute('x1', x1.toFixed(2)); l.setAttribute('x2', (x1 + LW).toFixed(2)); l.setAttribute('y1', y.toFixed(2)); l.setAttribute('y2', y.toFixed(2));
         });
@@ -740,7 +743,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
           var f = ease.sine(clamp01((t - e0) / .7)) - ease.sine(clamp01((t - d0) / .7));
           if (f < .002) { l.style.display = 'none'; return; }
           l.style.display = '';
-          var y = g.Y[k] + g.dir * DD * sgn((t - 3.2 - k * .1) / 3.2), h = LW / 2 * f;
+          var y = g.Y[k] + g.dir * g.dd * sgn((t - 3.2 - k * .1) / 3.2), h = LW / 2 * f;
           l.setAttribute('x1', (CX - h).toFixed(2)); l.setAttribute('x2', (CX + h).toFixed(2)); l.setAttribute('y1', y.toFixed(2)); l.setAttribute('y2', y.toFixed(2));
         });
       });
