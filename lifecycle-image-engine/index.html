@@ -450,10 +450,10 @@ function drawBanner(c,S,L,opts){
   c.fillStyle='rgba(255,255,255,.28)';
   for(let y=8;y<t.h;y+=11)for(let x=((y/11|0)%2?13.5:8);x<t.w;x+=11){c.beginPath();c.arc(x,y,1,0,7);c.fill()}
   const cy=t.h/2, r=55.5, cx1=t.w/2-46, cx2=t.w/2+46;
-  c.fillStyle='rgba(255,255,255,.6)';c.beginPath();c.arc(cx1,cy,r,0,7);c.fill();
+  c.fillStyle='rgba(255,255,255,.85)';c.beginPath();c.arc(cx1,cy,r,0,7);c.fill();
   c.fillStyle='rgba(255,255,255,.85)';c.beginPath();c.arc(cx2,cy,r,0,7);c.fill();
   drawIntegration(c,S.bInteg,cx1,cy);
-  drawLobLogo(c,cx2,cy,68);
+  drawLobLogo(c,cx2+6,cy,46);
   c.restore();
   // placeholder text beside
   c.save();
