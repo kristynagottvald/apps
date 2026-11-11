@@ -539,7 +539,7 @@ function postcard(K){var r=K.S.face==='front'?pcFront(K):pcBack(K);
   return{svg:'<rect width="400" height="267" fill="'+K.fill+'"/>'+r.svg,w:400,h:267,hb:r.hb};}
 function letter(K){
   var S=K.S,tc=K.tc,o='<rect width="270" height="350" fill="'+K.fill+'"/>';
-  o+=brandRow(K,22,32,tc);
+  if(!K.clean)o+=brandRow(K,22,32,tc);  /* the copy inside the UI screen doesn't need the name and icon */
   o+='<rect x="22" y="72" width="150" height="46" fill="'+K.soft+'" stroke="'+K.ac+'" stroke-width="1.5" stroke-dasharray="4 3"/>';
   /* the window is a light tint, so its text blocks use the banner colour (or a dark ink) rather than the fill-based block colour */
   var wc=contrast(K.pal.bg,K.soft)>=2.5?K.pal.bg:[K.prim,K.darkest,INK].filter(function(c){return contrast(c,K.soft)>=3})[0]||INK,sv=ABSCOL;
