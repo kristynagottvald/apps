@@ -384,7 +384,9 @@ function handles(b,col){var o='<rect x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" hei
 
 /* ---------- context ---------- */
 function makeCtx(S){
-  var I=INDUSTRIES[S.industry],F=FEATURES[S.feature],PL=PALETTES[S.palette],bgc=PL.colors[bgOK(S.palette,S.base)?S.base:okBases(S.palette)[0]];
+  var I=INDUSTRIES[S.industry],F=FEATURES[S.feature],PL0=PALETTES[S.palette],bgc=PL0.colors[bgOK(S.palette,S.base)?S.base:okBases(S.palette)[0]];
+  /* no dark green on pink: the teal in a palette becomes navy when pink is the background */
+  var swap=function(c){return bgc==='#D045DC'&&c==='#163E44'?'#1E2247':c},PL={colors:PL0.colors.map(swap),safe:{}};PL.safe[bgc]=swap(PL0.safe[bgc]);
   var others=PL.colors.filter(function(c){return c!==bgc}).sort(function(x,y){return contrast(y,bgc)-contrast(x,bgc)});
   if(S.palette===0&&bgc==='#1E2247')others=['#4131F1','#F6C93F']; /* navy background: bright blue for pieces, yellow as the second accent */
   var pal={bg:bgc,line:PL.safe[bgc],a:others[0],b:others[1],c:others[1],colors:PL.colors};
@@ -649,7 +651,7 @@ function renderUI(K){var inner=K.S.ui==='tracking'?uiTracking(K):uiEditor(K);
 
 /* ---------- background (800 x 400 composition scaled 1.5x) ---------- */
 function bgSVG(K){
-  var S=K.S,PL=PALETTES[S.palette],r=rng(S.seed),bg=K.pal.bg,line=mix(bg,'#ffffff',S.lineTint/100);
+  var S=K.S,PL={colors:K.pal.colors},r=rng(S.seed),bg=K.pal.bg,line=mix(bg,'#ffffff',S.lineTint/100);
   function tint(c){return mix(c,'#ffffff',S.lineTint/100)}
   function rf(a,b){return a+r()*(b-a)}
   function pk(arr){return arr[Math.floor(r()*arr.length)]}
