@@ -282,13 +282,13 @@ var PHOTO_PURPLE='#5A4BFE',PANEL='#E8E6FD';
 var PHOTOS=[
   {id:'none',label:'None',note:'No photo area. The banner is just the background.'},
   {id:'right',label:'Right, under band',note:'Photo on the right starting 52 px down, under an accent band. Hero straddles the seam.',
-    band:[363,0,437,52],photo:[363,52,437,348],pos:{ui:[405,320],piece:[300,410],badge:[250,85]}},
+    band:[363,0,437,52],photo:[363,52,437,348],pos:{ui:[560,290],piece:[229,440],badge:[390,72]}},
   {id:'left',label:'Left, full height',note:'Photo fills the left side top to bottom. Hero sits on the seam.',
-    photo:[0,0,450,400],pos:{ui:[885,290],piece:[760,410],badge:[930,75]}},
+    photo:[0,0,450,400],pos:{ui:[880,290],piece:[549,440],badge:[760,72]}},
   {id:'left-low',label:'Left, starting lower',note:'Photo on the left starting 99 px down. Hero sits right of it.',
-    photo:[0,99,449,301],pos:{ui:[930,285],piece:[700,410],badge:[800,70]}},
+    photo:[0,99,449,301],pos:{ui:[880,285],piece:[549,435],badge:[740,66]}},
   {id:'panel',label:'Panel + colour block',note:'Lavender panel on the left, accent block behind a lower-starting photo on the right. No linework.',
-    panel:[0,82,390,318],block:[390,0,410,400],photo:[390,82,410,318],pos:{ui:[300,320],piece:[400,405],badge:[470,60]}}
+    panel:[0,82,390,318],block:[390,0,410,400],photo:[390,82,410,318],pos:{ui:[340,300],piece:[671,450],badge:[470,60]}}
 ];
 /* brand colours offered as piece fills; the ones that do not work with the current palette and background are disabled */
 var BRAND=[['#1E2247','Navy'],['#4131F1','Indigo'],['#D045DC','Magenta'],['#EAA9F4','Light pink'],['#9D8DF1','Light purple'],['#E8E4FF','Lavender'],['#163E44','Dark green'],['#C0CE00','Lime'],['#E6EBA3','Pale lime'],['#F6C93F','Yellow'],['#FFFFFF','White']];
@@ -338,7 +338,7 @@ var MERGE=['{{first_name}}','{{last_name}}','{{offer_code}}','{{address_line1}}'
 var LS='blogBannerStudio.v10';
 function defaults(){
   var S={industry:'insurance',feature:'personalization',piece:'block',face:'front',ui:'editor',fill:'auto',
-    abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',lineTint:34,uiOn:true,uiCx:405,uiCy:320,pieceCx:300,pieceCy:410,badgeX:250,badgeCy:85,snap:true,scale:100,badge:true,photo:'right',blockLayout:'photo-top',rounded:false,
+    abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',lineTint:34,uiOn:true,uiCx:560,uiCy:290,pieceCx:229,pieceCy:440,badgeX:390,badgeCy:72,snap:true,scale:100,badge:true,photo:'right',blockLayout:'photo-top',rounded:false,
     palette:1,base:1,comp:'auto',seed:7,copy:{brand:'',headline:'',cta:'',dirty:false}};
   applyIndustry(S,'insurance');S.base=1;return S;
 }
@@ -792,7 +792,7 @@ function setPos(el,cx,cy){var k=S.scale/100;
   else if(el==='badge'){S.badgeX=Math.round(clamp(snapAxis(cx,0),60,1140));S.badgeCy=Math.round(clamp(cy,30,570))}
   else if(el==='piece'){var hw=(S.piece!=='letter'?200:135)*(S.uiOn?k:(S.piece!=='letter'?1.35:1.3)*k)*pscale();
     S.pieceCx=Math.round(clamp(snapAxis(cx,hw),60,1140));S.pieceCy=Math.round(clamp(cy,100,500))}}
-function pieceToCorner(side){var k=S.scale/100;S.pieceCx=Math.round(side==='left'?S.uiCx-245*k-60:S.uiCx+245*k+60);S.pieceCy=Math.round(S.uiCy+130*k)}
+function pieceToCorner(side){var k=S.scale/100;S.pieceCx=Math.round(side==='left'?S.uiCx-245*k-86:S.uiCx+245*k+86);S.pieceCy=Math.round(S.uiCy+150*k)}
 function presetLayout(side){
   S.uiCx=side==='left'?645:555;S.uiCy=270;pieceToCorner(side);
   S.badgeX=side==='left'?400:800;S.badgeCy=75}
