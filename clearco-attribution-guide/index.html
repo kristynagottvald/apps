@@ -100,6 +100,8 @@ section,.band{position:relative;overflow:hidden}
 .points i{flex:none;width:38px;height:38px;border:1px solid #2b3d52;border-radius:50%;display:grid;place-items:center;font:400 11px/1 var(--mono);font-style:normal;color:var(--cyan)}
 .vis{position:relative;flex:1;margin-top:clamp(12px,1.4vw,18px);min-height:clamp(320px,34vw,440px);width:calc(100% + (100vw - min(1120px,100vw - 40px)) / 2)}
 .vis .pr{--off:calc(var(--hd,56px) * 1.9);right:calc(var(--off) * -1);width:calc((var(--w,1) * 100% + var(--off)) * var(--p,1))}
+[data-grow] .pr .hw{margin-left:calc(var(--hd,56px) / -2 + var(--h,34px) / 2)}
+[data-grow] .hd{box-shadow:0 0 0 calc(var(--hd,56px) * .12) rgba(40,140,190,calc((var(--hs,.41) - .41) * .5))}
 [data-grow] .hw{will-change:transform;opacity:1;transform:translateY(-50%) scale(var(--hs,.41))}
 [data-ripple] .rp i{animation:none;transform:translate(-50%,-50%) scale(calc(.65 + var(--e,0) * .6));opacity:calc(var(--a,0) * 1)}
 [data-ripple] .rp i:nth-child(1){width:190%}[data-ripple] .rp i:nth-child(2){width:250%}[data-ripple] .rp i:nth-child(3){width:320%}
