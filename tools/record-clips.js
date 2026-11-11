@@ -15,6 +15,11 @@ const ROOT = path.resolve(__dirname, '..') + '/';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const at = async (t0, t, fn) => { const d = t - (Date.now() - t0); if (d > 0) await sleep(d); await fn(); };
 const click = async (p, txt) => { try { await p.locator('button').filter({ hasText: txt }).first().click({ timeout: 1500 }); } catch (e) { console.log('  click failed:', txt); } };
+/* crop rectangle of an element, forced to 16:9, measured on the page being recorded */
+const cropOf = (sel) => async (p) => {
+  const r = await p.evaluate((s) => { const b = document.querySelector(s).getBoundingClientRect(); return [b.x, b.y, b.width]; }, sel);
+  return [Math.round(r[0]), Math.round(r[1]), Math.round(r[2]), Math.round(r[2] * 9 / 16)];
+};
 const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click(), sel);
 
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
@@ -22,7 +27,7 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 const APPS = {
   'clearco-terrain': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'clearco-target-frame': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
-  'video-synopsis': { vp: [1280, 769], crop: [257, 188, 1002, 564], run: async () => {} },
+  'video-synopsis': { vp: [1280, 769], setup: cropOf('#vSyn'), run: async () => {} },
   'prompt-demos': { vp: [1280, 769], crop: [19, 59, 1242, 699], ready: 2200, p5: true, run: async () => {} },
   'lifecycle-image-engine': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async (p) => {
     const t0 = Date.now();
@@ -33,7 +38,7 @@ const APPS = {
     await at(t0, 5000, () => click(p, /^Spot illo$/));
     await at(t0, 5600, () => click(p, /^Pink$/));
   } },
-  'hero-banner-engine': { vp: [1280, 769], crop: [384, 123, 872, 491], run: async (p) => {
+  'hero-banner-engine': { vp: [1280, 769], setup: cropOf('#cv'), run: async (p) => {
     const t0 = Date.now();
     await at(t0, 800, () => click(p, /^Midnight$/));
     await at(t0, 1800, () => click(p, /^Lime$/));
