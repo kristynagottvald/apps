@@ -200,6 +200,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
       <details class="sec">
         <summary>Composition</summary>
         <div class="body">
+          <div class="btns"><button class="btn primary" data-act="random-comp">Randomize composition</button></div>
           <div><span class="lbl">Photo placeholder</span><div class="seg" data-k="photo" id="photoSeg"></div>
             <p class="note" style="margin-top:6px" id="photoNote"></p></div>
           <div><span class="lbl">Layout preset</span><div class="btns"><button class="btn" data-act="preset-left">Leans left</button><button class="btn" data-act="preset-right">Leans right</button></div></div>
@@ -748,6 +749,12 @@ function presetLayout(side){
 /* ---------- randomizer ---------- */
 function shuffleColors(S,r){var ok=okBases(S.palette),old=S.base,n=0;do{S.base=ok[ri(r,0,ok.length-1)]}while(S.base===old&&++n<20);S.seed=ri(r,1,99999)}
 function randomPalette(S,r){var old=S.palette;do{S.palette=ri(r,0,PALETTES.length-1)}while(S.palette===old);S.base=pick(r,okBases(S.palette));S.seed=ri(r,1,99999)}
+/* new photo layout, block postcard layout, pattern and seed; objects are repositioned to fit */
+function randomComposition(S,r){
+  var others=PHOTOS.filter(function(p){return p.id!==S.photo});S.photo=pick(r,others).id;
+  if(S.piece==='block'){var bl=BLOCKS.filter(function(b){return b[0]!==S.blockLayout});S.blockLayout=pick(r,bl)[0]}
+  S.comp=pick(r,['auto','auto','circuit','grid','flat']);S.seed=ri(r,1,99999);
+  if(S.photo==='none')presetLayout(pick(r,['left','right']));else applyPhoto()}
 function shuffleLayout(S,r){S.seed=ri(r,1,99999)}
 
 /* ---------- build controls ---------- */
@@ -834,6 +841,7 @@ document.addEventListener('click',function(e){
   var act=b.dataset.act;if(!act)return;
   var r=rng((Date.now()^(Math.random()*1e9))>>>0);
   if(act==='shuffle-colors'){shuffleColors(S,r);paint()}
+  else if(act==='random-comp'){randomComposition(S,r);paint()}
   else if(act==='random-palette'){randomPalette(S,r);paint()}
   else if(act==='shuffle-all'){shuffleColors(S,r);S.comp='auto';applyPhoto();paint()}
   else if(act==='piece-corner-left'){pieceToCorner('left');paint()}
