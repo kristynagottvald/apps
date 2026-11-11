@@ -89,6 +89,13 @@ input[type=text],select{width:100%;padding:8px 10px;border:1px solid var(--line)
 .base{border:2px solid transparent;background:var(--bg);border-radius:8px;padding:4px;display:grid;gap:4px;color:var(--muted);font:400 10px var(--font-mono)}
 .base i{display:block;height:28px;border-radius:5px;border:1px solid var(--line)}
 .base[aria-pressed="true"]{border-color:var(--accent);color:var(--fg)}
+.fills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fill{width:36px;height:36px;border-radius:8px;border:2px solid var(--line);padding:0;position:relative;background:var(--sw)}
+.fill[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px}
+.fill:disabled{opacity:.3;cursor:not-allowed}
+.fill:disabled::after{content:"";position:absolute;inset:0;border-radius:6px;background:linear-gradient(to top right,transparent calc(50% - 1px),var(--fg) 50%,transparent calc(50% + 1px))}
+.fill.auto{width:auto;padding:0 12px;background:var(--bg);color:var(--fg);font:600 13px var(--font-ui)}
+.fill.auto[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);outline:none;border-color:var(--accent)}
 .pk{display:grid;gap:4px;justify-items:center;font-size:11px;color:var(--muted);font-weight:600}
 .pk input{width:100%;height:34px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer}
 .pk output{font:400 10px var(--font-mono)}
@@ -152,7 +159,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
           <div><span class="lbl">Block postcard layout</span><div class="seg" data-k="blockLayout" id="blockSeg"></div></div>
           <div><span class="lbl">Platform screen</span><div class="seg" data-k="ui"><button data-v="tracking">Campaign tracking</button><button data-v="editor">Live design editor</button></div>
             <label class="chk" style="margin-top:10px"><input type="checkbox" data-k="uiOn"> Show platform screen</label></div>
-          <div><span class="lbl">Piece fill</span><div class="seg" data-k="fill"><button data-v="auto">Auto</button><button data-v="accent">Accent</button><button data-v="white">White</button><button data-v="lav">Lavender</button><button data-v="purple">Purple</button></div></div>
+          <div><span class="lbl">Piece fill</span><div class="fills" id="fills"></div></div>
           <div class="two">
             <label class="chk"><input type="checkbox" data-k="abstract"> Abstract text blocks</label>
             <label class="chk"><input type="checkbox" data-k="crop"> Crop marks</label>
@@ -279,6 +286,17 @@ var PHOTOS=[
   {id:'panel',label:'Panel + colour block',note:'Lavender panel on the left, accent block behind a lower-starting photo on the right. No linework.',
     panel:[0,82,390,318],block:[390,0,410,400],photo:[390,82,410,318],pos:{ui:[300,320],piece:[400,405],badge:[470,60]}}
 ];
+/* brand colours offered as piece fills; the ones that do not work with the current palette and background are disabled */
+var BRAND=[['#1E2247','Navy'],['#4131F1','Indigo'],['#D045DC','Magenta'],['#EAA9F4','Light pink'],['#9D8DF1','Light purple'],['#E8E4FF','Lavender'],['#163E44','Dark green'],['#C0CE00','Lime'],['#E6EBA3','Pale lime'],['#F6C93F','Yellow'],['#FFFFFF','White']];
+function isLime(c){return c==='#C0CE00'||c==='#E6EBA3'}
+function isPink(c){return c==='#D045DC'||c==='#EAA9F4'}
+function bgFor(S){var PL=PALETTES[S.palette];return PL.colors[bgOK(S.palette,S.base)?S.base:okBases(S.palette)[0]]}
+function fillAllowed(S,c){var bg=bgFor(S),pc=PALETTES[S.palette].colors.map(function(x){return bg==='#D045DC'&&x==='#163E44'?'#1E2247':x});
+  if(c===bg)return false;
+  if(c!=='#FFFFFF'&&c!=='#E8E4FF'&&pc.indexOf(c)<0)return false;   /* neutrals work everywhere, other colours must be in the palette */
+  if(isLime(c)&&isPink(bg))return false;                            /* lime never sits on pink */
+  if(isPink(c)&&isLime(bg))return false;
+  return contrast(c,bg)>=1.4}
 function photoDef(id){return PHOTOS.filter(function(p){return p.id===id})[0]||PHOTOS[0]}
 /* circuit linework: nested outline rectangles [x,y,w,h] in 800 x 400 space, copied from the Figma frames (A, D) */
 var CIRCUITS=[
@@ -332,6 +350,9 @@ function applyFeature(S,k){var F=FEATURES[k],I=INDUSTRIES[S.industry];S.feature=
 var S=defaults();
 try{var saved=JSON.parse(localStorage.getItem(LS)||'null');
   if(saved&&saved.copy&&PALETTES[saved.palette]&&saved.base>=0&&saved.base<3){S=Object.assign(S,saved,{copy:Object.assign(S.copy,saved.copy)});}}catch(e){}
+
+var FILL_MIG={accent:'auto',white:'#FFFFFF',lav:'#E8E4FF',purple:'#4131F1'};
+if(FILL_MIG[S.fill]!==undefined)S.fill=FILL_MIG[S.fill];
 
 /* ---------- text layout with merge-field chips ---------- */
 function layout(text,size,weight,maxW){
@@ -391,8 +412,7 @@ function makeCtx(S){
   var others=PL.colors.filter(function(c){return c!==bgc}).sort(function(x,y){return contrast(y,bgc)-contrast(x,bgc)});
   if(S.palette===0&&bgc==='#1E2247')others=['#4131F1','#F6C93F']; /* navy background: bright blue for pieces, yellow as the second accent */
   var pal={bg:bgc,line:PL.safe[bgc],a:others[0],b:others[1],c:others[1],colors:PL.colors};
-  var fillKey=S.fill==='auto'?(S.piece==='letter'?'white':(S.piece==='flat'?(S.flatStyle==='outline'?'accent':'white'):'accent')):S.fill;
-  var fill=fillKey==='accent'?pal.a:fillKey==='lav'?'#E8E4FF':fillKey==='purple'?'#4131F1':'#FFFFFF';
+  var fill=/^#/.test(S.fill)&&fillAllowed(S,S.fill)?S.fill:(S.piece==='letter'?'#FFFFFF':pal.a);  /* auto: white letter, accent postcard */
   var prim=lum(pal.bg)<.3?pal.bg:(lum(pal.a)<.4?pal.a:'#4131F1');
   var light=lum(fill)>.6,tc=textOn(fill);
   var sel=[pal.c,pal.b,pal.a,INK].filter(function(c){return contrast(c,fill)>=2.2})[0]||INK;
@@ -467,8 +487,10 @@ function flatCard(K){
 function blockCard(K){
   var S=K.S,PL=K.pal.colors,a=K.fill,p=contrast(K.prim,K.pal.bg)<1.5?(K.pal.bg==='#4131F1'?'#1E2247':'#4131F1'):K.prim,W0=K.blk,L=S.blockLayout,o='',brand=S.copy.brand.toUpperCase(),PH='#A99BFF';
   /* the panel colour must not melt into the photo area or the dark strip: swap it for another palette colour */
-  if(contrast(a,PH)<1.3||contrast(a,p)<1.4){var alt=PL.filter(function(c){return c!==K.pal.bg&&contrast(c,PH)>=1.3&&contrast(c,p)>=1.4}).sort(function(x,y){return contrast(y,K.pal.bg)-contrast(x,K.pal.bg)})[0];a=alt||'#1E2247'}
-  if(K.pal.bg==='#D045DC')a='#1E2247';              /* pink banner: navy panel with white content blocks */
+  var explicitFill=/^#/.test(S.fill)&&fillAllowed(S,S.fill);   /* a swatch the user picked always wins over the automatic panel colour */
+  if(explicitFill){a=S.fill;if(contrast(p,a)<1.4)p=a==='#1E2247'?'#4131F1':'#1E2247'}  /* keep the dark strip distinct from the picked panel */
+  if(!explicitFill&&(contrast(a,PH)<1.3||contrast(a,p)<1.4)){var alt=PL.filter(function(c){return c!==K.pal.bg&&contrast(c,PH)>=1.3&&contrast(c,p)>=1.4}).sort(function(x,y){return contrast(y,K.pal.bg)-contrast(x,K.pal.bg)})[0];a=alt||'#1E2247'}
+  if(!explicitFill&&K.pal.bg==='#D045DC')a='#1E2247';              /* pink banner: navy panel with white content blocks */
   var pale=lum(a)<.12?PH:mix(a,'#ffffff',.6);  /* a navy panel pairs with lavender columns, not grey */
   if(contrast(W0,a)<1.15)W0=PANEL;                      /* white blocks need a tint on a white panel */
   var pi=contrast(p,a)>=3?p:'#ffffff';                    /* accent ink that reads on the panel */
@@ -802,6 +824,8 @@ function sync(){
   document.querySelectorAll('.seg[data-k="face"] button').forEach(function(b){b.disabled=S.piece!=='postcard'&&b.dataset.v==='back'});
   document.querySelectorAll('[data-k="uiCx"],[data-k="uiCy"]').forEach(function(b){b.disabled=!S.uiOn});
   document.querySelectorAll('.seg[data-k="blockLayout"] button').forEach(function(b){b.disabled=S.piece!=='block'});
+  if(/^#/.test(S.fill)&&!fillAllowed(S,S.fill))S.fill='auto';
+  $('#fills').innerHTML='<button class="fill auto" data-fill="auto" aria-pressed="'+(S.fill==='auto')+'">Auto</button>'+BRAND.map(function(b){var ok=fillAllowed(S,b[0]);return '<button class="fill" data-fill="'+b[0]+'" style="--sw:'+b[0]+'" title="'+b[1]+(ok?'':' (does not work on this background)')+'" aria-label="'+b[1]+'" aria-pressed="'+(S.fill===b[0])+'"'+(ok?'':' disabled')+'></button>'}).join('');
   $('#photoNote').textContent=photoDef(S.photo).note;
   document.querySelector('[data-k="comp"]').title='';
 }
@@ -851,6 +875,7 @@ document.addEventListener('click',function(e){
     if(k==='photo')applyPhoto();
     if(k==='comp')S.seed=1+Math.floor(Math.random()*99999); /* every click on a composition re-randomizes its lines or blocks */
     paint();return}
+  if(b.dataset.fill){S.fill=b.dataset.fill;paint();return}
   if(b.dataset.feat){applyFeature(S,b.dataset.feat);paint();return}
   if(b.dataset.pre){S.palette=Number(b.dataset.pre);paint();return}
   if(b.dataset.base){S.base=Number(b.dataset.base);paint();return}
