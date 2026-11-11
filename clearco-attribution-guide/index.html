@@ -98,6 +98,7 @@ section,.band{position:relative;overflow:hidden}
 .points li{display:flex;gap:16px;align-items:center;font-size:15px;line-height:1.4}
 .points i{flex:none;width:38px;height:38px;border:1px solid #2b3d52;border-radius:50%;display:grid;place-items:center;font:400 11px/1 var(--mono);font-style:normal;color:var(--cyan)}
 .vis{position:relative;flex:1;margin-top:clamp(12px,1.4vw,18px);min-height:clamp(320px,34vw,440px);width:calc(100% + (100vw - min(1120px,100vw - 40px)) / 2)}
+[data-grow] .hw{opacity:1;transform:translateY(-50%) scale(var(--hs,.41))}
 [data-ripple] .rp i{animation:none;transform:translate(-50%,-50%) scale(calc(.65 + var(--e,0) * .6));opacity:calc(var(--a,0) * 1)}
 [data-ripple] .rp i:nth-child(1){width:190%}[data-ripple] .rp i:nth-child(2){width:250%}[data-ripple] .rp i:nth-child(3){width:320%}
 .vis .dl{-webkit-mask-image:linear-gradient(transparent 20%,#000 60%);mask-image:linear-gradient(transparent 20%,#000 60%)}
@@ -130,7 +131,7 @@ section,.band{position:relative;overflow:hidden}
 .chead{position:relative;margin-bottom:clamp(40px,5vw,72px);min-height:clamp(96px,15.2vw,218px)}
 .chead h2{position:relative;z-index:1;font:400 clamp(52px,8.6vw,132px)/.88 var(--serif);letter-spacing:-.04em;max-width:none}
 .chead .num{position:absolute;right:clamp(0px,11vw,150px);bottom:0;z-index:0;margin:0}
-.chead .num.hi{top:38px;bottom:auto;right:min(22vw,290px)}
+.chead .num.hi{top:38px;bottom:auto;right:0}
 .chead .mono{display:block;margin-bottom:22px;color:var(--mute);position:relative;z-index:1}
 .dk .chead .mono{color:#8fa0ad}
 @media (max-width:640px){.chead .num.hi{top:auto;right:auto}.chead .num{position:static;display:block;margin-bottom:14px}.chead{display:flex;flex-direction:column-reverse}}
@@ -291,7 +292,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
       </ul>
     </div>
     <div class="rcol">
-    <div class="vis" data-anim="6.4" data-ripple role="img" aria-label="Three horizontal gradient pills extend in from the right edge of a black page with dashed guide lines; the longest ends in a glowing circle with ripples around it">
+    <div class="vis" data-anim="7.4" data-ripple data-grow role="img" aria-label="Three horizontal gradient pills extend in from the right edge of a black page with dashed guide lines; the longest ends in a glowing circle with ripples around it">
       <div class="pr" style="--y:12%;--h:38px;--w:.46" data-d="0.5"></div>
       <div class="pr" style="--y:30%;--h:38px;--w:.7" data-d="0.25"></div>
       <div class="pr" style="--y:48%;--h:38px;--w:.84;--hd:92px" data-d="0"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
@@ -356,9 +357,9 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
 <div class="band lt">
   <div class="trail" data-anim="8.4" data-ripple>
     <div class="pills" aria-hidden="true">
-      <div class="pr" style="--y:calc(50% - var(--h) * 2.05);--w:.9" data-d="0"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
-      <div class="pr" style="--y:calc(50% - var(--h) * .65);--w:.74" data-d=".5"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
-      <div class="pr" style="--y:calc(50% + var(--h) * .75);--w:.84" data-d="1"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
+      <div class="pr" style="--y:calc(50% - var(--h) * 2.4);--w:.44" data-d="0"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
+      <div class="pr" style="--y:calc(50% - var(--h) * .65);--w:.33" data-d=".5"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
+      <div class="pr" style="--y:calc(50% + var(--h) * 1.1);--w:.4" data-d="1"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
     </div>
     <div class="wrap" style="width:100%;display:flex;justify-content:flex-start">
       <div class="copy">
@@ -473,7 +474,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
      with the circle leading, hold, then pull back in. Dots with data-at appear as the lead pill passes them. */
   var groups = [].map.call(document.querySelectorAll('[data-anim]'), function(el){
     var g = { el: el, T: +el.dataset.anim || 7, on: false,
-      pls: [].map.call(el.querySelectorAll('.pl,.pr'), function(p){ return { el: p, d: +p.dataset.d || 0 }; }),
+      pls: [].map.call(el.querySelectorAll('.pl,.pr'), function(p){ var cs = getComputedStyle(p), h = parseFloat(cs.getPropertyValue('--h')) || 34, hd = parseFloat(cs.getPropertyValue('--hd')) || 56; return { el: p, d: +p.dataset.d || 0, k: Math.min(1, h / hd) }; }),
       dots: [].map.call(el.querySelectorAll('[data-at]'), function(d){ d.style.setProperty('--at', d.dataset.at); return { el: d, at: +d.dataset.at }; }) };
     vis(el, function(v){ g.on = v; });
     return g;
@@ -493,7 +494,12 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
         p.el.style.setProperty('--p', v.toFixed(4));
         var rp = g.el.hasAttribute('data-ripple') && p.el.querySelector('.rp');
         if (rp) {            /* the circle comes in as the pill extends; once it rests the ripple pulses twice */
-          var r = reduce ? .5 : clamp01((t - p.d - 1.7) / (g.T - 2.7 - 1.7));
+          var u = t - p.d, grow = g.el.hasAttribute('data-grow'), r0 = grow ? 2.5 : 1.7, r1 = grow ? g.T - 3.5 : g.T - 2.7;
+          var r = reduce ? .5 : clamp01((u - r0) / (r1 - r0));
+          if (grow) {        /* the head grows out of the bar's thickness, rests while the ripple plays, then falls back into the bar */
+            var up = eio(clamp01((u - 1.8) / .7)), dn = eio(clamp01((u - (g.T - 3.4)) / .6));
+            p.el.querySelector('.hw').style.setProperty('--hs', (reduce ? 1 : p.k + (1 - p.k) * up * (1 - dn)).toFixed(4));
+          }
           [].forEach.call(rp.children, function(ring, n){
             var f = reduce ? .5 : ((r * 2 - n * .1) % 1 + 1) % 1, on = reduce || (r > 0 && r < 1 && r * 2 - n * .1 > 0);
             ring.style.setProperty('--e', f.toFixed(3)); ring.style.setProperty('--a', on ? (Math.sin(Math.PI * f) * (1 - n * .22)).toFixed(3) : 0);
