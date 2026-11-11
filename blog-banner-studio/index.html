@@ -639,7 +639,7 @@ function uiEditor(K){
   function dk(c){return contrast(c,'#ECEAFB')>=3?c:INK}
   if(f==='proof')o+='<rect x="'+(bx-9)+'" y="'+(by-9)+'" width="'+(pw+18)+'" height="'+(ph+18)+'" fill="none" stroke="'+dk(K.pal.a)+'" stroke-width="1.3" stroke-dasharray="4 3"/>';
   o+='<g clip-path="url(#edClip)"><g transform="translate('+bx.toFixed(1)+' '+by.toFixed(1)+') scale('+sc+')">'+pc.svg+'</g></g>';
-  if(f==='proof')o+='<rect x="'+(bx+9)+'" y="'+(by+9)+'" width="'+(pw-18)+'" height="'+(ph-18)+'" fill="none" stroke="'+dk(P)+'" stroke-width="1.3" stroke-dasharray="4 3"/>'+UP(K,bx-9,by-13,'BLEED',6.5,dk(K.pal.a))+UP(K,bx+9,by+ph-1,'SAFE ZONE',6.5,dk(P));
+  if(f==='proof')o+='<rect x="'+(bx+9)+'" y="'+(by+9)+'" width="'+(pw-18)+'" height="'+(ph-18)+'" fill="none" stroke="'+dk(P)+'" stroke-width="1.3" stroke-dasharray="4 3"/>';
   if(f==='canvas')o+=handles(hb,SC)+'<path d="M'+bx.toFixed(1)+' 32V318M'+(bx+pw).toFixed(1)+' 32V318M42 '+by.toFixed(1)+'H358M42 '+(by+ph).toFixed(1)+'H358" stroke="'+SC+'" stroke-width="1" stroke-dasharray="3 3"/>';  /* guides along the piece's outer edges */
   o+='<rect x="360" y="30" width="130" height="290" fill="#fff"/><path d="M360 30V320" stroke="'+EDGE+'" stroke-width="1.5"/>';
   if(f==='vars'){
