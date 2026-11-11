@@ -153,7 +153,7 @@ select option{background:var(--ink);color:var(--text)}
         <label class="check" data-show="spot icon"><input type="checkbox" data-key="arrow"> Add → to subheading links</label>
         <div>
           <span class="lbl">Background</span>
-          <div class="seg" data-key="bgMode"><button data-v="white">White</button><button data-v="clear">Transparent</button></div>
+          <div class="seg" data-key="bgMode"><button data-v="clear">Transparent</button><button data-v="white">White</button></div>
         </div>
       </div>
     </details>
@@ -217,7 +217,7 @@ const ICON_FEATURES = [
 ];
 
 const DEFAULTS = {
-  tpl:'spot', cols:3, theme:'pink', radius:6, linkColor:'indigo', arrow:true, bgMode:'white',
+  tpl:'spot', cols:3, theme:'pink', radius:6, linkColor:'indigo', arrow:true, bgMode:'clear',
   featSpot:[0,1,2], featIcon:[0,1,2],
   txtSpot:SPOT_FEATURES.map(f=>f.text),
   txtIcon:ICON_FEATURES.map(f=>f.text),
@@ -481,6 +481,7 @@ function render(ctx,S,sc,opts={}){
   ctx.clearRect(0,0,Math.ceil(cw*sc)+2,Math.ceil(ch*sc)+2);
   ctx.setTransform(sc,0,0,sc,-ox*sc,-oy*sc);
   if(S.bgMode==='white'||opts.forceWhite){ctx.fillStyle='#fff';ctx.fillRect(ox,oy,cw,ch)}
+  if(L.tpl==='banner'&&opts.preview&&S.bgMode==='clear'){ctx.fillStyle='#fff';ctx.fillRect(L.tile.w,0,L.W-L.tile.w,L.H)}   // preview only: keeps the dark placeholder text legible
   if(L.tpl==='banner')drawBanner(ctx,S,L,opts);
   else L.cards.forEach(k=>drawCard(ctx,S,L,k));
   if(L.tpl==='banner'&&opts.preview&&!S.bText){
@@ -573,7 +574,6 @@ function syncUI(){
   buildSlots(); syncSlots();
   const d=outDims();
   $('#dlLabel').textContent=`${d.w} × ${d.h} ${state.fmt.toUpperCase()}`;
-  cv.classList.toggle('chk',state.bgMode==='clear'&&state.fmt!=='jpg');
 }
 function exportBox(){
   const L=layout(state);
