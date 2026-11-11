@@ -33,7 +33,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .abs{position:absolute}
 .logo{font-weight:700;letter-spacing:-.035em;line-height:1;white-space:nowrap;display:inline-flex;align-items:flex-end}
 .logo i{font-style:normal}
-.logo svg{width:.68em;height:.6em;margin-left:.03em;margin-bottom:.02em}
+.logo svg{width:.62em;height:.76em;margin-left:.06em;margin-bottom:.1em}
 
 /* ===== 1 hero ===== */
 #s0{background:var(--navy)}
@@ -155,15 +155,15 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
         <text class="hl" y="-10" font-size="37" letter-spacing="-.6">dehydrated</text>
         <text class="hl" y="32" font-size="37" letter-spacing="-.6">grasshoppers</text>
         <text class="hl" y="86" font-size="13.5" font-weight="600" letter-spacing="3">NET WT 20g</text></g></g>
-    <g id="hFront"></g><g id="hOrb"></g></svg>
-  <div class="abs logo" id="hLogo">grub<i>club</i><svg viewBox="0 0 28 24" fill="var(--kiwi)"><path d="M2 18c3-10 8-10 9-3.5s6 4 11-6.500" fill="none" stroke="var(--kiwi)" stroke-width="3.4" stroke-linecap="round"/><circle cx="24.500" cy="4.500" r="2.400"/></svg></div>
+    <g id="hFront"></g></svg>
+  <div class="abs logo" id="hLogo">grub<i>club</i><svg viewBox="8 0 36 44" fill="var(--kiwi)"><path d="M13 34C14 24 17 18 24 18C30 18 31 25 36 25C41 25 41 17 36 9" fill="none" stroke="var(--kiwi)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="5" r="4.6"/></svg></div>
   <div class="abs" id="hTag">THE ENTOMO BOX</div>
   <div class="abs" id="cta" role="button">build your box<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></div>
 </section>
 
 <!-- 2 pick -->
 <section class="scene" id="s1" aria-label="Pick your meals">
-  <div class="abs logo" id="pLogo">grub<i>club</i><svg viewBox="0 0 28 24" fill="var(--kale)"><path d="M2 18c3-10 8-10 9-3.5s6 4 11-6.500" fill="none" stroke="var(--kale)" stroke-width="3.4" stroke-linecap="round"/><circle cx="24.500" cy="4.500" r="2.400"/></svg></div>
+  <div class="abs logo" id="pLogo">grub<i>club</i><svg viewBox="8 0 36 44" fill="var(--kale)"><path d="M13 34C14 24 17 18 24 18C30 18 31 25 36 25C41 25 41 17 36 9" fill="none" stroke="var(--kale)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="5" r="4.6"/></svg></div>
   <div class="abs" id="pStep"><em class="a">1 PICK</em><em>2 PACK</em><em>3 DELIVER</em></div>
   <div class="abs" id="pHead"><h1>pick your meals</h1><p>choose 4 you like for your entomo box</p></div>
   <div class="abs" id="grid"></div>
@@ -182,7 +182,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 <section class="scene" id="s3" aria-label="Order email">
  <div id="esc"><div id="esz"><div id="eim"><div id="email">
   <div class="hero"></div><div class="band"></div>
-  <div class="logo rv" id="eLogo" style="--d:0">grub<i>club</i><svg viewBox="0 0 28 24" fill="var(--kiwi)"><path d="M2 18c3-10 8-10 9-3.5s6 4 11-6.500" fill="none" stroke="var(--kiwi)" stroke-width="3.4" stroke-linecap="round"/><circle cx="24.500" cy="4.500" r="2.400"/></svg></div>
+  <div class="logo rv" id="eLogo" style="--d:0">grub<i>club</i><svg viewBox="8 0 36 44" fill="var(--kiwi)"><path d="M13 34C14 24 17 18 24 18C30 18 31 25 36 25C41 25 41 17 36 9" fill="none" stroke="var(--kiwi)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="5" r="4.6"/></svg></div>
   <div class="rv" id="eOrd" style="--d:80">ORDER #347467</div>
   <h2 class="rv" id="eTitle" style="--d:200">your order has arrived!</h2>
   <p class="rv" id="eHi" style="--d:320">hi kristyna,<br>thanks for shopping with grubclub. your package was delivered to:</p>
@@ -272,13 +272,14 @@ $('#eThumb').innerHTML=boxSVG('',[]);$('#eThumb .lid').classList.add('on');$('#e
 const HB=[[300,610,62,'#EEF6A8'],[196,470,92,'#A8C7DA'],[1000,590,84,'#BFE3DF'],[1090,440,50,'#EEF6A8']];
 $('#hBlobs').innerHTML=HB.map(b=>`<circle cx="${b[0]}" cy="${b[1]}" r="${b[2]}" fill="${b[3]}" opacity=".9"/>`).join('');
 const BACK=[[130,762,-26,420,88,-34,2],[130,762,4,370,76,24,1],[130,762,32,290,62,-14,6],[130,762,-52,300,60,20,3],[-14,430,80,330,70,16,0],[-14,570,64,250,56,-10,7],
- [1150,762,26,420,88,34,3],[1150,762,-4,370,76,-24,1],[1150,762,-32,290,62,14,2],[1150,762,52,300,60,-20,6],[1294,430,-80,330,70,-16,1],[1294,570,-64,250,56,10,0]];
-const FRONT=[[470,764,-18,330,88,-30,0],[700,764,14,320,84,26,4],[855,764,42,280,70,22,5],[385,764,-46,260,64,12,1]];
+ [1150,762,26,420,88,34,3],[1150,762,-4,370,76,-24,1],[1150,762,-32,290,62,14,2],[1150,762,52,300,60,-20,6],[1294,430,-80,330,70,-16,1],[1294,570,-64,250,56,10,0],
+ [380,-20,168,200,50,10,6],[470,-20,196,160,44,-8,3],[820,-20,190,200,50,-10,2],[920,-20,162,170,46,8,7],[-14,200,100,230,56,-12,2],[1294,205,-100,230,56,12,6],[-14,300,62,210,48,-10,1],[1294,310,-62,200,48,10,3],
+ [260,764,-8,360,70,18,6],[260,764,24,300,60,-14,5],[1020,764,8,360,70,-18,2],[1020,764,-24,300,60,14,3],[330,764,-34,250,54,12,7],[950,764,34,250,54,-12,0]];
+const FRONT=[[470,764,-18,330,88,-30,0],[700,764,14,320,84,26,4],[855,764,42,280,70,22,5],[385,764,-46,260,64,12,1],[570,764,2,250,70,18,7],[790,764,26,260,64,-16,1],[300,764,-60,220,52,-10,4],[960,764,60,210,50,10,0]];
 const hero={t:0,L:[]};
 function buildLeaves(sel,arr,from){const g=$(sel);g.innerHTML=LF(arr);[...g.querySelectorAll('.lf')].forEach((el,i)=>{const a=arr[i];hero.L.push({el,x:a[0],y:a[1],r:a[2],d:.15+(from+i)*.05,ph:i*1.7,amp:1.6+(i%3)*.7,sp:.8+(i%4)*.18})})}
 buildLeaves('#hBack',BACK,0);buildLeaves('#hFront',FRONT,BACK.length);
 $('#hRings').innerHTML=[0,1,2].map(i=>`<circle cx="640" cy="340" r="212" fill="none" stroke="${['#EEFB71','#8CE39B','#3FA0BE'][i]}" stroke-width="3"/>`).join('');
-$('#hOrb').innerHTML=['#EEFB71','#8CE39B','#3FA0BE'].map((c,i)=>`<circle r="${[13,17,10][i]}" fill="${c}"/>`).join('');
 $('#pkRings').innerHTML=`<circle cx="640" cy="410" r="225" fill="#0F5A5C"/><circle cx="640" cy="410" r="188" fill="#1C8859" opacity=".5"/><circle cx="640" cy="410" r="150" fill="none" stroke="#EEFB71" stroke-opacity=".5" stroke-width="2"/>`;
 $('#pkOrb').innerHTML=PICKS.map(i=>`<circle r="15" fill="${MEALS[i].c}"/>`).join('');
 
@@ -290,7 +291,7 @@ function drawHero(){const t=hero.t;
   $('#hTxt').setAttribute('transform',`rotate(${-9+Math.sin(t*.9)*1.3})`);
   $$('.hl').forEach((e,i)=>{const p=clamp((t-(.9+i*.14))/.5);e.setAttribute('opacity',p);e.setAttribute('dy',(1-p)*14)});
   $$('#hRings circle').forEach((c,i)=>{const p=(t*.4+i/3)%1,on=clamp((t-1.1)/.6);c.setAttribute('r',212+p*190);c.setAttribute('opacity',(1-p)*.32*on)});
-  $$('#hOrb circle').forEach((c,i)=>{const a=t*.7+i*2.0944,on=clamp((t-1.4)/.6);c.setAttribute('cx',640+Math.cos(a)*(300+Math.sin(t*1.1+i)*8));c.setAttribute('cy',340+Math.sin(a)*(300+Math.sin(t*1.1+i)*8));c.setAttribute('opacity',on)})}
+}
 function drawPack(){const t=pack.t;
   $$('#pkOrb circle').forEach((c,i)=>{const a=t*.9+i*1.5708,cp=pack.col<0?0:eio((t-pack.col)/.9),R=262*(1-cp),on=clamp((t-.2)/.6)*(1-clamp((t-pack.col-.7)/.3)*(pack.col<0?0:1));
     c.setAttribute('cx',640+Math.cos(a)*R);c.setAttribute('cy',410+Math.sin(a)*R*.86);c.setAttribute('opacity',on)});
