@@ -16,7 +16,7 @@
 *{box-sizing:border-box;margin:0}
 html,body{height:100%}
 body{background:var(--ink);color:var(--text);font:400 14px/1.4 var(--font);-webkit-font-smoothing:antialiased}
-button,input,textarea{font:inherit;color:inherit}
+button,input,textarea,select{font:inherit;color:inherit}
 /* ---------- Back nav (shared across all apps) ---------- */
 nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
 nav.back a{color:#8d8d8d;text-decoration:none}
@@ -77,12 +77,12 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;background:var(--lime
 /* ---------- card slots ---------- */
 .slot{display:grid;gap:8px;background:var(--ink);border:2px solid var(--line);border-radius:10px;padding:10px}
 .slot h3{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.picks{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.pick{border:2px solid var(--line);border-radius:8px;background:none;padding:3px;cursor:pointer;display:block;text-align:center;color:var(--muted);font-size:10px;font-weight:500}
-.pick canvas{display:block;width:100%;height:auto;border-radius:5px;background:none}
-.pick[aria-pressed=true]{border-color:var(--lime);color:var(--text)}
-.pick:hover:not([aria-pressed=true]){border-color:var(--lav)}
-.pick span{display:block;padding:3px 0 1px}
+.slotrow{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:end}
+.slotrow canvas{display:block;width:84px;height:auto;border-radius:6px;border:2px solid var(--line)}
+select{width:100%;background:var(--ink);border:2px solid var(--line);border-radius:6px;padding:9px 30px 9px 11px;font-size:16px;appearance:none;-webkit-appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23A99CF7' stroke-width='2'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+select:focus{outline:none;border-color:var(--lav)}
+select option{background:var(--ink);color:var(--text)}
 
 /* ---------- stage ---------- */
 .stage{display:grid;place-items:center;padding:24px;min-width:0;min-height:0;position:relative;background-color:var(--ink)}
@@ -199,13 +199,24 @@ const THEMES = {
   sun:  {name:'Sunny',    card:'#FCEFC0', tint:'#F6D56E', banner:'#F7C61F'}
 };
 const FONT = '"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif';
-const SPOT_NAMES = ['Dashboard','API','Builder'], ICON_NAMES = ['Globe','Eye','Check'];
+/* Lob features: each one owns its illustration / icon and a default subheading link.
+   Add a line here to add a feature to the dropdowns. */
+const SPOT_FEATURES = [
+  {name:'Campaign status', illo:0, text:'Check your campaign status'},
+  {name:'API automation',  illo:1, text:'Learn about API automation'},
+  {name:'Campaign builder',illo:2, text:'Build your next campaign'}
+];
+const ICON_FEATURES = [
+  {name:'Account access',  icon:0, text:'Manage your account access'},
+  {name:'Campaign status', icon:1, text:'Check your campaign status'},
+  {name:'Help Center',     icon:2, text:'Get tips from our Help Center'}
+];
 
 const DEFAULTS = {
   tpl:'spot', cols:3, theme:'pink', radius:6, linkColor:'indigo', arrow:true, bgMode:'white',
-  illo:[0,1,2], icon:[0,1,2],
-  txtSpot:['Explore your dashboard','Learn about API automation','Build something new'],
-  txtIcon:['Build your next project','Get tips from our Help Center','Invite your team'],
+  featSpot:[0,1,2], featIcon:[0,1,2],
+  txtSpot:SPOT_FEATURES.map(f=>f.text),
+  txtIcon:ICON_FEATURES.map(f=>f.text),
   bLogo:'Logo', bTitle:'Title goes here', bBody:'Placeholder copy sits beside the illustration. Swap in your real message when you build the email.',
   bBtn:'Button', bText:false, fmt:'png', size:'2'
 };
@@ -327,8 +338,8 @@ function drawCard(c,S,L,card){
   const th=THEMES[S.theme], R=+S.radius;
   box(c,card.x,card.y,card.w,card.h,R,th.card);
   const pad=L.pad;
-  if(S.tpl==='spot') drawIllo(c,S.illo[card.i],card.x+pad,card.y+33,1);
-  else drawIconDisc(c,S.icon[card.i],card.x+pad,card.y+(L.n===3?27:31),th,38);
+  if(S.tpl==='spot') drawIllo(c,SPOT_FEATURES[S.featSpot[card.i]].illo,card.x+pad,card.y+33,1);
+  else drawIconDisc(c,ICON_FEATURES[S.featIcon[card.i]].icon,card.x+pad,card.y+(L.n===3?27:31),th,38);
   // subheading link
   const raw=(S.tpl==='spot'?S.txtSpot:S.txtIcon)[card.i]||'', words=raw.trim().split(/\s+/).filter(Boolean);
   if(!words.length)return;
@@ -396,36 +407,37 @@ $('#themes').innerHTML=Object.entries(THEMES).map(([k,t])=>
   `<button data-v="${k}" aria-label="${t.name} colour"><span><b style="background:${t.card}"></b><b style="background:${t.banner}"></b></span><em>${t.name}</em></button>`).join('');
 
 const HINTS={
-  spot:'Row of 3 rounded cards: pick a spot illustration for each, then edit its subheading link.',
-  icon:'Row of icon cards in a white disc with a subheading link. Switch between 3-up and 2-up.',
+  spot:'Row of 3 rounded cards: choose a Lob feature for each and its spot illustration follows. Edit the subheading link if needed.',
+  icon:'Row of icon cards: choose a Lob feature for each and its icon follows. Switch between 3-up and 2-up.',
   banner:'Single inline banner: illustration fills the left 50%, placeholder text sits beside it.'
 };
 
-/* card slot editor */
+/* card slot editor: Lob feature dropdown -> illustration / icon + default link */
 let slotKey='';
 function buildSlots(){
   const key=state.tpl+state.cols; if(key===slotKey||state.tpl==='banner')return; slotKey=key;
-  const n=state.tpl==='icon'?+state.cols:3, isSpot=state.tpl==='spot', names=isSpot?SPOT_NAMES:ICON_NAMES;
+  const n=state.tpl==='icon'?+state.cols:3, isSpot=state.tpl==='spot', feats=isSpot?SPOT_FEATURES:ICON_FEATURES;
   $('#slots').innerHTML=[...Array(n).keys()].map(i=>`
     <div class="slot" data-slot="${i}">
       <h3>Card ${i+1}</h3>
-      <div class="picks" role="group" aria-label="Card ${i+1} ${isSpot?'illustration':'icon'}">${names.map((nm,k)=>
-        `<button class="pick" data-pick="${k}" aria-label="${nm}"><canvas width="${isSpot?150:80}" height="${isSpot?100:80}"></canvas><span>${nm}</span></button>`).join('')}</div>
-      <input type="text" data-slottext="${i}" aria-label="Card ${i+1} subheading link" autocomplete="off">
+      <div class="slotrow">
+        <canvas class="thumb" width="${isSpot?150:80}" height="${isSpot?100:80}" aria-hidden="true"></canvas>
+        <div><label for="feat${i}">Lob feature</label>
+          <select id="feat${i}" data-feat="${i}">${feats.map((f,k)=>`<option value="${k}">${f.name}</option>`).join('')}</select></div>
+      </div>
+      <div><label for="link${i}">Subheading link</label>
+      <input type="text" id="link${i}" data-slottext="${i}" autocomplete="off"></div>
     </div>`).join('');
   syncSlots();
 }
 function syncSlots(){
-  const isSpot=state.tpl==='spot', th=THEMES[state.theme], arr=isSpot?state.illo:state.icon;
+  const isSpot=state.tpl==='spot', th=THEMES[state.theme], feats=isSpot?SPOT_FEATURES:ICON_FEATURES, sel=isSpot?state.featSpot:state.featIcon;
   $$('.slot').forEach(sl=>{
-    const i=+sl.dataset.slot;
-    sl.querySelectorAll('.pick').forEach(b=>{
-      const k=+b.dataset.pick; b.setAttribute('aria-pressed',String(arr[i]===k));
-      const c=b.querySelector('canvas').getContext('2d'),cw=b.querySelector('canvas').width,chh=b.querySelector('canvas').height;
-      c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cw,chh);
-      c.fillStyle=th.card;c.fillRect(0,0,cw,chh);
-      if(isSpot)drawIllo(c,k,5,6,1);else drawIconDisc(c,k,10,21,th,38*1.0+0);
-    });
+    const i=+sl.dataset.slot, f=feats[sel[i]], cvs=sl.querySelector('canvas'), c=cvs.getContext('2d');
+    sl.querySelector('select').value=sel[i];
+    c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cvs.width,cvs.height);
+    c.fillStyle=th.card;c.fillRect(0,0,cvs.width,cvs.height);
+    if(isSpot)drawIllo(c,f.illo,5,6,1);else drawIconDisc(c,f.icon,21,21,th,38);
     const inp=sl.querySelector('input'),v=(isSpot?state.txtSpot:state.txtIcon)[i];
     if(document.activeElement!==inp)inp.value=v;
   });
@@ -454,12 +466,17 @@ function exportBox(){
 function outDims(){const b=exportBox(),s=+state.size;return{w:Math.round(b.w*s),h:Math.round(b.h*s),s}}
 
 document.addEventListener('click',e=>{
-  const pick=e.target.closest('.pick');
-  if(pick){const i=+pick.closest('.slot').dataset.slot;(state.tpl==='spot'?state.illo:state.icon)[i]=+pick.dataset.pick;syncUI();schedule();return}
   const btn=e.target.closest('.seg button,.swatches button'); if(!btn)return;
   const key=btn.closest('[data-key]').dataset.key; let v=btn.dataset.v;
   if(key==='cols')v=+v;
   state[key]=v; syncUI(); schedule();
+});
+document.addEventListener('change',e=>{
+  const el=e.target; if(el.dataset.feat==null)return;
+  const i=+el.dataset.feat, v=+el.value, spot=state.tpl==='spot';
+  (spot?state.featSpot:state.featIcon)[i]=v;
+  (spot?state.txtSpot:state.txtIcon)[i]=(spot?SPOT_FEATURES:ICON_FEATURES)[v].text;   // feature pre-fills its link copy
+  syncUI();schedule();
 });
 document.addEventListener('input',e=>{
   const el=e.target;
