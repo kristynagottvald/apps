@@ -227,7 +227,7 @@ function wrapText(ctx,text,maxW){return text.split('\n').flatMap(p=>{const w=p.s
 const bar=(c,x,y,w,h,col)=>box(c,x,y,w,h,h/2,col);
 function illoDashboard(c){            // 140 × 89
   const th=THEMES[state.theme], IND='#4030F0', LINE='#E4E3EE', G='#CFCFDA';
-  box(c,0,6,133,83,2,th.tint);                       // offset underlay (left + bottom)
+  box(c,0,6,125,83,2,th.tint);                         // offset copy of the window, shifted down-left
   c.save();rr(c,7,0,125,83,2);c.clip();
   c.fillStyle='#fff';c.fillRect(7,0,125,83);
   c.fillStyle=IND;c.fillRect(7,0,38,83);              // sidebar
