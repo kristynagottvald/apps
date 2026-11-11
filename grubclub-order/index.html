@@ -141,7 +141,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 
 <!-- 1 hero -->
 <section class="scene" id="s0" aria-label="Hero">
-  <svg class="bg" id="hSvg" viewBox="0 0 1280 720"><g id="hBlobs"></g><g id="hBack"></g><g id="hRings"></g>
+  <svg class="bg" id="hSvg" viewBox="0 0 1280 720"><g id="hBlobs"></g><g id="hBack"></g>
     <g id="hc"><circle r="212" fill="#D6ECE8"/><circle r="198" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2"/>
       <g id="hTxt" transform="rotate(-9)" font-family="Poppins,sans-serif" text-anchor="middle" fill="#14396B" font-weight="700">
         <text class="hl" y="-52" font-size="37" letter-spacing="-.6">lightly salted</text>
@@ -252,17 +252,16 @@ $('#pkBox').innerHTML='<img id="pkImg" src="box.webp" alt="The grubclub box">';
 $('#eThumb').innerHTML='<img src="box.webp" alt="">';
 
 /* hero collage */
-const HB=[[300,610,62,'#EEF6A8'],[196,470,92,'#A8C7DA'],[1000,590,84,'#BFE3DF'],[1090,440,50,'#EEF6A8']];
+const HB=[[300,610,62,'#EEF6A8'],[200,600,90,'#A8C7DA'],[1000,590,84,'#BFE3DF'],[900,640,40,'#EEF6A8']];
 $('#hBlobs').innerHTML=HB.map(b=>`<circle cx="${b[0]}" cy="${b[1]}" r="${b[2]}" fill="${b[3]}" opacity=".9"/>`).join('');
 const BACK=[[130,762,-26,420,88,-34,2],[130,762,4,370,76,24,1],[130,762,32,290,62,-14,6],[130,762,-52,300,60,20,3],[-14,430,80,330,70,16,0],[-14,570,64,250,56,-10,7],
  [1150,762,26,420,88,34,3],[1150,762,-4,370,76,-24,1],[1150,762,-32,290,62,14,2],[1150,762,52,300,60,-20,6],[1294,430,-80,330,70,-16,1],[1294,570,-64,250,56,10,0],
  [380,-20,168,200,50,10,6],[470,-20,196,160,44,-8,3],[820,-20,190,200,50,-10,2],[920,-20,162,170,46,8,7],[-14,200,100,230,56,-12,2],[1294,205,-100,230,56,12,6],[-14,300,62,210,48,-10,1],[1294,310,-62,200,48,10,3],
- [260,764,-8,360,70,18,6],[260,764,24,300,60,-14,5],[1020,764,8,360,70,-18,2],[1020,764,-24,300,60,14,3],[330,764,-34,250,54,12,7],[950,764,34,250,54,-12,0]];
+ [260,764,-8,360,70,18,6],[260,764,24,300,60,-14,5],[1020,764,8,360,70,-18,2],[1020,764,-24,300,60,14,3],[330,764,-34,250,54,12,7],[950,764,34,250,54,-12,0]].filter(a=>a[1]>700);   // leaves grow from the bottom edge only
 const FRONT=[[470,764,-18,330,88,-30,0],[700,764,14,320,84,26,4],[855,764,42,280,70,22,5],[385,764,-46,260,64,12,1],[570,764,2,250,70,18,7],[790,764,26,260,64,-16,1],[300,764,-60,220,52,-10,4],[960,764,60,210,50,10,0]];
 const hero={t:0,L:[]};
 function buildLeaves(sel,arr,from){const g=$(sel);g.innerHTML=LF(arr);[...g.querySelectorAll('.lf')].forEach((el,i)=>{const a=arr[i];hero.L.push({el,x:a[0],y:a[1],r:a[2],d:.15+(from+i)*.05,ph:i*1.7,amp:1.6+(i%3)*.7,sp:.8+(i%4)*.18})})}
 buildLeaves('#hBack',BACK,0);buildLeaves('#hFront',FRONT,BACK.length);
-$('#hRings').innerHTML=[0,1,2].map(i=>`<circle cx="640" cy="340" r="212" fill="none" stroke="${['#EEFB71','#8CE39B','#3FA0BE'][i]}" stroke-width="3"/>`).join('');
 $('#pkRings').innerHTML=`<circle cx="640" cy="410" r="225" fill="#0F5A5C"/><circle cx="640" cy="410" r="188" fill="#1C8859" opacity=".5"/><circle cx="640" cy="410" r="150" fill="none" stroke="#EEFB71" stroke-opacity=".5" stroke-width="2"/>`;
 
 /* ============ per-frame drawing ============ */
@@ -272,7 +271,6 @@ function drawHero(){const t=hero.t;
   const s=eob((t-.15)/.95)*(1+.022*Math.sin(t*1.7));$('#hc').setAttribute('transform',`translate(640 340) scale(${Math.max(s,.0001)})`);
   $('#hTxt').setAttribute('transform',`rotate(${-9+Math.sin(t*.9)*1.3})`);
   $$('.hl').forEach((e,i)=>{const p=clamp((t-(.9+i*.14))/.5);e.setAttribute('opacity',p);e.setAttribute('dy',(1-p)*14)});
-  $$('#hRings circle').forEach((c,i)=>{const p=(t*.4+i/3)%1,on=clamp((t-1.1)/.6);c.setAttribute('r',212+p*190);c.setAttribute('opacity',(1-p)*.32*on)});
 }
 function drawPack(){const t=pack.t,r=$('#pkRings').children;r[0].setAttribute('r',225+Math.sin(t*1.5)*6);r[1].setAttribute('r',188+Math.sin(t*1.5+.6)*8);
   $('#pkImg').style.transform=`translateY(${Math.sin(t*1.8)*6}px) rotate(${Math.sin(t*.9)*1.2}deg)`}
