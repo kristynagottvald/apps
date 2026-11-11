@@ -89,6 +89,10 @@ input[type=text],select{width:100%;padding:8px 10px;border:1px solid var(--line)
 .base{border:2px solid transparent;background:var(--bg);border-radius:8px;padding:4px;display:grid;gap:4px;color:var(--muted);font:400 10px var(--font-mono)}
 .base i{display:block;height:28px;border-radius:5px;border:1px solid var(--line)}
 .base[aria-pressed="true"]{border-color:var(--accent);color:var(--fg)}
+.seg#blockSeg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+#blockSeg button{padding:4px;line-height:0;border-radius:8px}
+#blockSeg svg{display:block;width:100%;height:auto;border-radius:4px}
+#blockSeg button:disabled svg{opacity:.5}
 .fills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .fill{width:36px;height:36px;border-radius:8px;border:2px solid var(--line);padding:0;position:relative;background:var(--sw)}
 .fill[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px}
@@ -803,11 +807,18 @@ function buildControls(){
   $('#featGrid').innerHTML=Object.keys(FEATURES).map(function(k){return '<button data-feat="'+k+'"><b>'+FEATURES[k].label+'</b><span>'+esc(FEATURES[k].tag)+'</span></button>'}).join('');
   $('#mergeChips').innerHTML=MERGE.map(function(m){return '<button type="button" data-ins="'+m+'">'+m+'</button>'}).join('');
   $('#presets').innerHTML=PALETTES.map(function(p,i){return '<button class="pre" data-pre="'+i+'" title="'+p.name+'"><div class="strip">'+p.colors.map(function(c){return '<i style="background:'+c+'"></i>'}).join('')+'</div><span>'+p.name+'</span></button>'}).join('');
-  $('#blockSeg').innerHTML=BLOCKS.map(function(b){return '<button data-v="'+b[0]+'">'+b[1]+'</button>'}).join('');
   $('#photoSeg').innerHTML=PHOTOS.map(function(p){return '<button data-v="'+p.id+'">'+p.label+'</button>'}).join('');
   $('#compSeg').innerHTML=COMPS.map(function(c){return '<button data-v="'+c[0]+'">'+c[1]+'</button>'}).join('');
 }
+/* small live preview of a block postcard layout, in the current palette and fill */
+function blockThumb(id,name){
+  var K2=makeCtx(Object.assign({},S,{piece:'block',blockLayout:id})),sv=[ABS,ABSCOL];
+  ABS=true;ABSCOL=K2.absCol;var c=blockCard(K2);ABS=sv[0];ABSCOL=sv[1];
+  return '<button data-v="'+id+'" title="'+name+'" aria-label="'+name+'"><svg viewBox="0 0 400 267" aria-hidden="true">'+c.svg+'</svg></button>'}
 function sync(){
+  var fo=document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#blockSeg')?document.activeElement.dataset.v:null;
+  $('#blockSeg').innerHTML=BLOCKS.map(function(b){return blockThumb(b[0],b[1])}).join('');
+  if(fo){var fb=document.querySelector('#blockSeg button[data-v="'+fo+'"]');if(fb)fb.focus()}
   document.querySelectorAll('[data-k]').forEach(function(el){var k=el.dataset.k,v=get(S,k);
     if(el.classList.contains('seg')){el.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===String(v)))})}
     else if(el.type==='checkbox')el.checked=!!v;
