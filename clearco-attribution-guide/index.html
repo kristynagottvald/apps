@@ -52,7 +52,8 @@ section,.band{position:relative;overflow:hidden}
 .btn:hover,.btn:focus-visible{background:transparent;color:#fff}
 .btn.sm{padding:14px 18px;font-size:10px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.num{font:100 clamp(120px,19vw,272px)/.8 var(--num);letter-spacing:-.04em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;user-select:none}
+.num{font:100 clamp(120px,calc(min(1vw,12.8px) * 19),272px)/.8 var(--num);letter-spacing:-.04em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:.007em #fff;user-select:none}
+.dk .num{-webkit-text-stroke-color:#000}
 
 /* dashed vertical guide lines (the black pages carry these behind the content) */
 .dl{position:absolute;inset:0;pointer-events:none;-webkit-mask-image:linear-gradient(transparent,#000 40%);mask-image:linear-gradient(transparent,#000 40%)}
@@ -128,9 +129,9 @@ section,.band{position:relative;overflow:hidden}
 
 /* ---------- numbered chapters ---------- */
 .chapter{padding-block:clamp(56px,8vw,112px)}
-.chead{position:relative;margin-bottom:clamp(40px,5vw,72px);min-height:clamp(96px,15.2vw,218px)}
-.chead h2{position:relative;z-index:1;font:400 clamp(52px,8.6vw,132px)/.88 var(--serif);letter-spacing:-.04em;max-width:none}
-.chead .num{position:absolute;right:clamp(0px,11vw,150px);bottom:0;z-index:0;margin:0}
+.chead{--u:min(1vw,12.8px);position:relative;margin-bottom:clamp(40px,5vw,72px);min-height:clamp(96px,calc(var(--u) * 15.2),218px)}
+.chead h2{position:relative;z-index:1;font:400 clamp(52px,calc(var(--u) * 8.6),132px)/.88 var(--serif);letter-spacing:-.04em;max-width:none}
+.chead .num{position:absolute;right:calc(var(--u) * 12.6);bottom:0;z-index:0;margin:0}
 .chead .num.hi{top:38px;bottom:auto;right:0}
 .chead .mono{display:block;margin-bottom:22px;color:var(--mute);position:relative;z-index:1}
 .dk .chead .mono{color:#8fa0ad}
