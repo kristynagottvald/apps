@@ -75,22 +75,6 @@
     clipTimer = setInterval(tick, CLIP_MS);
   }
 
-  /* ---------- Navigation pill ---------- */
-
-  const hb = $('#hb'), hbToggle = $('#hb-toggle'), hbPill = $('.hb-pill');
-  if (hbPill) {
-    hbPill.addEventListener('mouseleave', () => {
-      hb.classList.remove('open');
-      hbToggle.setAttribute('aria-expanded', 'false');
-    });
-  }
-  if (hbToggle) {
-    hbToggle.addEventListener('click', () => {
-      const isOpen = hb.classList.toggle('open');
-      hbToggle.setAttribute('aria-expanded', String(isOpen));
-    });
-  }
-
   /* ---------- Heading letter bounce: every 5-8 seconds the letters hop up one after another ---------- */
 
   (function bounceHeading() {
