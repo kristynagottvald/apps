@@ -57,7 +57,7 @@ section{padding-block:clamp(18px,2.5vw,32px)}
 .points li{display:flex;gap:14px;align-items:flex-start;font-size:14px;line-height:1.4}
 .points i{flex:none;width:38px;height:38px;border:1px solid #fff;display:grid;place-items:center;font:400 12px/1 var(--mono);font-style:normal}
 .vis{position:relative;width:min(520px,100%);margin:0 auto;box-shadow:0 0 0 1px #2a2a2a}
-.vis img{width:100%;height:auto;display:block}
+.vis svg{width:100%;height:auto;display:block}
 /* the parallel lines: each slides or breathes in length, one after another */
 .vl{position:absolute;height:2px;margin-top:-1px;background:#fff;animation:vl 6s ease-in-out infinite alternate}
 .vl.a{transform-origin:50% 50%;animation-name:vla}
@@ -74,7 +74,7 @@ section{padding-block:clamp(18px,2.5vw,32px)}
 .gridsec>.wrap{position:relative;z-index:1}
 .gridbg{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
 #stmt{padding-block:clamp(48px,7vw,96px)}
-#stmt .statement{outline:1px solid #fff;outline-offset:-1px}
+#stmt .statement{outline:.5px solid rgba(255,255,255,.8);outline-offset:-.5px}
 
 /* ---------- statement card (the 7shifts quote card) ---------- */
 .statement{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;padding:0;overflow:hidden}
@@ -200,7 +200,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
     </ul>
     <a class="btn light" href="https://www.clear.co/blog/navigating-inventory-logistics-a-resource-for-founders">Read the guide <svg class="arr" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 3 21 21M21 3v18M3 21h18"/></svg></a>
     </div>
-    <div class="vis"><img src="hero-visual.png" width="1036" height="1028" alt="Black and white halftone collage of warehouse and cable photography crossed by thin radiating lines, with parallel white lines that slide in and out"><i class="vl a" style="left:33.01%;width:18.15%;top:19.65%;animation-duration:5.6s;animation-delay:-0.0s"></i><i class="vl a" style="left:32.24%;width:24.13%;top:26.26%;animation-duration:6.4s;animation-delay:-0.9s"></i><i class="vl a" style="left:34.94%;width:17.18%;top:28.02%;animation-duration:7.2s;animation-delay:-1.8s"></i><i class="vl a" style="left:31.08%;width:25.10%;top:29.96%;animation-duration:5.9s;animation-delay:-2.7s"></i><i class="vl a" style="left:31.27%;width:23.75%;top:31.71%;animation-duration:6.8s;animation-delay:-3.6s"></i><i class="vl a" style="left:29.54%;width:24.13%;top:32.49%;animation-duration:7.6s;animation-delay:-4.5s"></i><i class="vl b" style="left:0.00%;width:15.83%;top:75.88%;animation-duration:5.6s;animation-delay:-0.0s"></i><i class="vl b" style="left:0.00%;width:15.44%;top:78.21%;animation-duration:6.4s;animation-delay:-0.9s"></i><i class="vl b" style="left:0.00%;width:15.44%;top:81.32%;animation-duration:7.2s;animation-delay:-1.8s"></i><i class="vl b" style="left:0.00%;width:13.71%;top:83.46%;animation-duration:5.9s;animation-delay:-2.7s"></i><i class="vl c" style="left:88.03%;width:11.97%;top:76.85%;animation-duration:5.6s;animation-delay:-0.0s"></i><i class="vl c" style="left:87.84%;width:12.16%;top:79.77%;animation-duration:6.4s;animation-delay:-0.9s"></i><i class="vl c" style="left:87.84%;width:12.16%;top:81.71%;animation-duration:7.2s;animation-delay:-1.8s"></i></div>
+    <div class="vis"><svg viewBox="0 0 518 514" width="518" height="514" role="img" aria-label="Abstract linework: outlined blocks and thin lines radiating from a centre point on black, with parallel white lines that slide in and out"><g fill="none" stroke="#fff" vector-effect="non-scaling-stroke" stroke-width="1"><path d="M0 258H518M247 0V514M0 11 503 514M0 505 505 0" opacity=".5" vector-effect="non-scaling-stroke"/><path d="M0 14H155M0 28H155M0 42H155M0 56H155M0 70H155M0 84H155M0 98H155M0 112H155M0 126H155M0 140H155M288 186H460M288 200H460M288 214H460M288 228H460M288 242H460M288 256H460M288 270H460M288 284H460M288 298H460M288 312H460M288 326H460M288 340H460M288 354H460M288 368H460M288 382H460M460 66H518M460 80H518M460 94H518M460 108H518M460 122H518M460 136H518M460 150H518M460 164H518M78 409H288M78 423H288M78 437H288M78 451H288M78 465H288M78 479H288M78 493H288M78 507H288" opacity=".26" vector-effect="non-scaling-stroke"/><g opacity=".9"><rect x="0" y="0" width="155" height="155"/><rect x="288" y="172" width="172" height="223"/><rect x="460" y="52" width="58" height="118"/><rect x="78" y="395" width="210" height="119"/></g></g></svg><i class="vl a" style="left:33.01%;width:18.15%;top:19.65%;animation-duration:5.6s;animation-delay:-0.0s"></i><i class="vl a" style="left:32.24%;width:24.13%;top:26.26%;animation-duration:6.4s;animation-delay:-0.9s"></i><i class="vl a" style="left:34.94%;width:17.18%;top:28.02%;animation-duration:7.2s;animation-delay:-1.8s"></i><i class="vl a" style="left:31.08%;width:25.10%;top:29.96%;animation-duration:5.9s;animation-delay:-2.7s"></i><i class="vl a" style="left:31.27%;width:23.75%;top:31.71%;animation-duration:6.8s;animation-delay:-3.6s"></i><i class="vl a" style="left:29.54%;width:24.13%;top:32.49%;animation-duration:7.6s;animation-delay:-4.5s"></i><i class="vl b" style="left:0.00%;width:15.83%;top:75.88%;animation-duration:5.6s;animation-delay:-0.0s"></i><i class="vl b" style="left:0.00%;width:15.44%;top:78.21%;animation-duration:6.4s;animation-delay:-0.9s"></i><i class="vl b" style="left:0.00%;width:15.44%;top:81.32%;animation-duration:7.2s;animation-delay:-1.8s"></i><i class="vl b" style="left:0.00%;width:13.71%;top:83.46%;animation-duration:5.9s;animation-delay:-2.7s"></i><i class="vl c" style="left:88.03%;width:11.97%;top:76.85%;animation-duration:5.6s;animation-delay:-0.0s"></i><i class="vl c" style="left:87.84%;width:12.16%;top:79.77%;animation-duration:6.4s;animation-delay:-0.9s"></i><i class="vl c" style="left:87.84%;width:12.16%;top:81.71%;animation-duration:7.2s;animation-delay:-1.8s"></i></div>
   </div>
 </header>
 
@@ -414,10 +414,11 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
       var g = bg.getContext('2d');
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
       g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
-      g.strokeStyle = '#fff'; g.lineWidth = 1; g.globalAlpha = .9;
+      /* the statement grid uses the finest line the screen can draw (one device pixel) at 80% opacity; the banner keeps its own weight */
+      g.strokeStyle = '#fff'; g.lineWidth = mode === 'squares' ? (dpr >= 2 ? 1 / dpr : .6) : 1; g.globalAlpha = mode === 'squares' ? .8 : .9;
       g.beginPath();
-      function vline(x){ var xx = Math.round(x) + .5; g.moveTo(xx, 0); g.lineTo(xx, H); }
-      function hline(y){ var yy = Math.round(y) + .5; g.moveTo(0, yy); g.lineTo(W, yy); }
+      function vline(x){ var xx = (Math.round(x * dpr) + .5) / dpr; g.moveTo(xx, 0); g.lineTo(xx, H); }
+      function hline(y){ var yy = (Math.round(y * dpr) + .5) / dpr; g.moveTo(0, yy); g.lineTo(W, yy); }
       for (var i = -1; i <= NC; i++) if (mode === 'squares') { vline(px(i) - B / 2 - 1); vline(px(i) + B / 2); }
       for (var j = -1; j <= NR; j++) { hline(py(j) - B / 2 - 1); hline(py(j) + B / 2); }
       g.stroke();
