@@ -56,12 +56,12 @@ section{padding-block:clamp(18px,2.5vw,32px)}
 .points{list-style:none;padding:0;display:grid;grid-template-columns:1fr;gap:14px;margin:0 0 36px}
 .points li{display:flex;gap:16px;align-items:center;font-size:15px;line-height:1.4}
 .points i{flex:none;width:38px;height:38px;border:1px solid #fff;display:grid;place-items:center;font:400 12px/1 var(--mono);font-style:normal}
-.vis{width:calc(100% + 72px);margin:0 -72px 0 0}
+.vis{position:relative;top:-76px;width:calc(100% + 72px);margin:0 -72px 0 0}
 .vis svg{width:100%;height:auto;display:block;overflow:visible}
 .vis .blk *{vector-effect:non-scaling-stroke}
 /* the stacks of fine lines are drawn by script, with the same motion as the banner stacks */
 .vis .st line{vector-effect:non-scaling-stroke}
-@media (max-width:820px){.hero .wrap{grid-template-columns:1fr}.vis{width:min(460px,100%);margin:0 auto}}
+@media (max-width:820px){.hero .wrap{grid-template-columns:1fr}.vis{width:min(460px,100%);margin:0 auto;top:0}}
 
 /* ---------- animated grid backgrounds ---------- */
 .gridsec{position:relative;background:#000;overflow:hidden}
@@ -200,6 +200,16 @@ section{padding-block:clamp(18px,2.5vw,32px)}
 footer{background:#000;color:#fff;padding:clamp(40px,6vw,80px) 0 40px;border-top:1px solid #1c1c1c}
 footer .panel{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(28px,5vw,72px);align-items:center;border:1px solid #3a3a38;background:#050505;padding:clamp(28px,5vw,64px)}
 footer h2{font:400 clamp(34px,4.6vw,62px)/1.04 var(--serif);letter-spacing:-.015em;margin-bottom:clamp(28px,4vw,44px)}
+/* email sign-up next to the button */
+.signup{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch}
+.signup .btn{cursor:pointer;font-family:var(--mono)}
+.signup .em{flex:1 1 240px;max-width:360px;display:flex}
+.signup input{width:100%;background:transparent;color:#fff;border:1px solid #fff;padding:0 18px;min-height:52px;font:400 15px/1 var(--sans);border-radius:0;outline-offset:3px}
+.signup input::placeholder{color:#9d9c97}
+.signup input:focus-visible{outline:2px solid #fff}
+.signup input[aria-invalid="true"]{border-color:#ff6b6b}
+.signup .err{flex-basis:100%;margin:0;color:#ff9a9a;font-size:14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 footer .checks{list-style:none;padding:0;display:grid;gap:22px}
 footer .checks li{display:flex;gap:14px;align-items:flex-start;font-size:18px;line-height:1.3}
 footer .checks svg{flex:none;margin-top:3px}
@@ -224,7 +234,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
     </ul>
     <a class="btn light" href="https://www.clear.co/blog/navigating-inventory-logistics-a-resource-for-founders">Read the guide <svg class="arr" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 3 21 21M21 3v18M3 21h18"/></svg></a>
     </div>
-    <div class="vis"><svg viewBox="-40 -40 596 596" width="596" height="596" role="img" aria-label="Abstract linework: four outlined boxes meeting corner to corner and thin lines radiating from a centre point on black, with stacks of parallel white lines that float up and down"><defs><linearGradient id="r0" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="538.0" y2="288.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r1" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="464.8" y2="464.8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r2" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="288.0" y2="538.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r3" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="111.2" y2="464.8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r4" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="38.0" y2="288.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r5" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="111.2" y2="111.2"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r6" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="288.0" y2="38.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r7" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="464.8" y2="111.2"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><g fill="none" stroke="#fff" stroke-width="1" vector-effect="non-scaling-stroke"><g class="ray"><line x1="288" y1="288" x2="538.0" y2="288.0" stroke="url(#r0)"/><line x1="288" y1="288" x2="464.8" y2="464.8" stroke="url(#r1)"/><line x1="288" y1="288" x2="288.0" y2="538.0" stroke="url(#r2)"/><line x1="288" y1="288" x2="111.2" y2="464.8" stroke="url(#r3)"/><line x1="288" y1="288" x2="38.0" y2="288.0" stroke="url(#r4)"/><line x1="288" y1="288" x2="111.2" y2="111.2" stroke="url(#r5)"/><line x1="288" y1="288" x2="288.0" y2="38.0" stroke="url(#r6)"/><line x1="288" y1="288" x2="464.8" y2="111.2" stroke="url(#r7)"/></g><g class="blk" opacity=".9"><rect x="0" y="0" width="156" height="156"/><rect x="288" y="180" width="168" height="216"/><rect x="456" y="60" width="60" height="120"/><rect x="156" y="396" width="132" height="120"/></g></g><g stroke="#fff" stroke-width="1"><g class="st" data-x="156" data-y="116" data-h="80" data-w="56" data-start="0.2"></g><g class="st" data-x="100" data-y="484" data-h="64" data-w="56" data-start="1.4"></g><g class="st" data-x="456" data-y="364" data-h="64" data-w="56" data-start="2.6"></g><g class="st" data-x="381" data-y="133" data-h="194" data-w="28" data-n="16" data-start="0.9"></g><g class="st" data-x="180" data-y="390" data-h="120" data-w="28" data-n="12" data-start="2.1"></g><g class="st" data-x="-8" data-y="78" data-h="120" data-w="22" data-n="14" data-range="1" data-start="1.7"></g></g></svg></div>
+    <div class="vis"><svg viewBox="-40 -40 596 596" width="596" height="596" role="img" aria-label="Abstract linework: four outlined boxes meeting corner to corner and thin lines radiating from a centre point on black, with stacks of parallel white lines that float up and down"><defs><linearGradient id="r0" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="538.0" y2="288.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r1" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="464.8" y2="464.8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r2" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="288.0" y2="538.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r3" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="111.2" y2="464.8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r4" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="38.0" y2="288.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r5" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="111.2" y2="111.2"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r6" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="288.0" y2="38.0"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="r7" gradientUnits="userSpaceOnUse" x1="288" y1="288" x2="464.8" y2="111.2"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><g fill="none" stroke="#fff" stroke-width="1" vector-effect="non-scaling-stroke"><g class="ray"><line x1="288" y1="288" x2="538.0" y2="288.0" stroke="url(#r0)"/><line x1="288" y1="288" x2="464.8" y2="464.8" stroke="url(#r1)"/><line x1="288" y1="288" x2="288.0" y2="538.0" stroke="url(#r2)"/><line x1="288" y1="288" x2="111.2" y2="464.8" stroke="url(#r3)"/><line x1="288" y1="288" x2="38.0" y2="288.0" stroke="url(#r4)"/><line x1="288" y1="288" x2="111.2" y2="111.2" stroke="url(#r5)"/><line x1="288" y1="288" x2="288.0" y2="38.0" stroke="url(#r6)"/><line x1="288" y1="288" x2="464.8" y2="111.2" stroke="url(#r7)"/></g><g class="blk" opacity=".9"><rect x="0" y="0" width="156" height="156"/><rect x="288" y="180" width="168" height="216"/><rect x="456" y="60" width="60" height="120"/><rect x="156" y="396" width="132" height="120"/></g></g><g stroke="#fff" stroke-width="1"><g class="st" data-x="156" data-y="116" data-h="80" data-w="56" data-start="0.2"></g><g class="st" data-x="100" data-y="484" data-h="64" data-w="56" data-start="1.4"></g><g class="st" data-x="456" data-y="364" data-h="64" data-w="56" data-start="2.6"></g><g class="st" data-x="381" data-y="133" data-h="194" data-w="28" data-n="16" data-start="0.9"></g><g class="st" data-x="180" data-y="390" data-h="120" data-w="28" data-n="12" data-start="2.1"></g><g class="st" data-x="36" data-y="68" data-h="132" data-w="22" data-n="16" data-range="1" data-start="1.7"></g></g></svg></div>
   </div>
 </header>
 
@@ -349,7 +359,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
     <div class="panel">
       <div class="l">
         <h2>It pays to stay<br>in stock with Clearco</h2>
-        <a class="btn light" href="https://www.clear.co/blog/navigating-inventory-logistics-a-resource-for-founders">Read the guide <svg class="arr" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 3 21 21M21 3v18M3 21h18"/></svg></a>
+        <form class="signup" action="https://www.clear.co/blog/navigating-inventory-logistics-a-resource-for-founders" data-guide="https://www.clear.co/blog/navigating-inventory-logistics-a-resource-for-founders" novalidate><label class="em"><span class="sr">Email address</span><input type="email" name="email" placeholder="Enter your email" autocomplete="email" required></label><button class="btn light" type="submit">Read the guide <svg class="arr" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 3 21 21M21 3v18M3 21h18"/></svg></button><p class="err" role="alert" hidden>Please enter a valid email address.</p></form>
       </div>
       <ul class="checks">
         <li><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2.5 8.5 6 12l7.5-8"/></svg>Keep inventory at optimal levels</li>
@@ -609,6 +619,16 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
     var t; window.addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(measure, 150); });
   }
   [].forEach.call(document.querySelectorAll('.blurbs'), Blurbs);
+
+  /* footer sign-up: checks the address, then opens the guide. The address is not sent or stored anywhere (front end only). */
+  var form = document.querySelector('.signup');
+  if (form) form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var inp = form.querySelector('input'), err = form.querySelector('.err'), ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(inp.value.trim());
+    inp.setAttribute('aria-invalid', ok ? 'false' : 'true'); err.hidden = ok;
+    if (ok) window.open(form.dataset.guide, '_blank', 'noopener');
+    else inp.focus();
+  });
   /* the photos follow the blurbs: blurb 1 shows photo 1, and so on */
   var shots = [].slice.call(document.querySelectorAll('.statement .shots img'));
   document.addEventListener('blurbchange', function(e){ shots.forEach(function(im, k){ im.classList.toggle('on', k === e.detail); }); });
@@ -652,7 +672,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
   (function(){
     var svgEl = document.querySelector('.vis svg');
     if (!svgEl) return;
-    var N = 12, STEP = 36, RANGE = 2, NS = 'http://www.w3.org/2000/svg';
+    var TOPMIN = -20, BOTMAX = 520, N = 12, STEP = 36, RANGE = 2, NS = 'http://www.w3.org/2000/svg';
     var stacks = [].map.call(svgEl.querySelectorAll('.st'), function(g){
       var d = g.dataset, st = { x: +d.x, y: +d.y, base: +d.y, h: +d.h, w: +d.w, n: +d.n || N, range: +d.range || RANGE, mv: null, next: performance.now() + (+d.start) * 1000, lines: [] };
       for (var k = 0; k < st.n; k++) {
@@ -678,9 +698,10 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
         return;
       }
       if (now < st.next) return;
-      var ups = st.y - STEP >= st.base - st.range * STEP, downs = st.y + STEP <= st.base + st.range * STEP;
+      var lo = Math.max(st.base - st.range * STEP, TOPMIN + st.h / 2), hi = Math.min(st.base + st.range * STEP, BOTMAX - st.h / 2);   // every stack stays inside the visual, clear of its top and bottom edges
+      var ups = st.y - STEP >= lo, downs = st.y + STEP <= hi;
       var dir = ups && downs ? (Math.random() < .5 ? -1 : 1) : (ups ? -1 : 1);
-      var room = dir < 0 ? Math.floor((st.y - (st.base - st.range * STEP)) / STEP) : Math.floor(((st.base + st.range * STEP) - st.y) / STEP);
+      var room = dir < 0 ? Math.floor((st.y - lo) / STEP) : Math.floor((hi - st.y) / STEP);
       var dist = Math.min(room, Math.random() < .5 ? 1 : 2);
       st.mv = { t0: now, dur: 1500 + dist * 650, y0: st.y, y1: st.y + dir * dist * STEP, dir: dir };
     }
@@ -690,8 +711,8 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
     var gEl = stacks[0].lines[0].parentNode.parentNode, T = 12, CX = 288, LW = 56, GAP = 18, DD = 44;
     function mk(){ var l = document.createElementNS(NS, 'line'); l.style.display = 'none'; gEl.appendChild(l); return l; }
     var groups = [
-      { dir: -1, off: 0,  src: stacks[0], idx: [2, 4], sl: [mk(), mk()], em: [mk()], prev: 99, Y: [] },
-      { dir: 1,  off: .9, src: stacks[1], idx: [8],    sl: [mk()],       em: [mk(), mk()], prev: 99, Y: [] }
+      { dir: -1, off: 0,  src: stacks[0], idx: [2, 4], sl: [mk(), mk()], em: [mk()], prev: 99, Y: [], srcY: [], dd: DD },
+      { dir: 1,  off: .9, src: stacks[1], idx: [8],    sl: [mk()],       em: [mk(), mk()], prev: 99, Y: [], srcY: [], dd: DD }
     ];
     function sgn(x){ return Math.sin(Math.PI * clamp01(x)); }
     function seq(now){
@@ -699,8 +720,10 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
         var t = (((now / 1000 - g.off) % T) + T) % T;
         if (t < g.prev) {                                           // new cycle: take the lines' current heights
           var ys = g.idx.map(function(i){ return +g.src.lines[i].getAttribute('y1'); });
-          if (g.dir < 0) { ys.sort(function(a, b){ return a - b; }); g.Y = [ys[0], ys[1], ys[0] - GAP]; }
-          else { g.Y = [ys[0], ys[0] + GAP, ys[0] + 2 * GAP]; }
+          g.srcY = ys.slice();
+          if (g.dir < 0) { ys.sort(function(a, b){ return a - b; }); g.srcY = ys.slice(); g.Y = [ys[0], ys[1], ys[0] - GAP]; }
+          else { var y0 = Math.min(ys[0], 420); g.Y = [y0, y0 + GAP, y0 + 2 * GAP]; }     // the lower stack is kept well clear of the bottom edge
+          g.dd = g.dir < 0 ? Math.max(0, Math.min(DD, g.Y[2] - 24)) : Math.max(0, Math.min(DD, 500 - g.Y[2]));   // so is its float
         }
         g.prev = t;
         var all = g.sl.length + g.em.length;
@@ -711,7 +734,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
           srcLine.style.visibility = on ? 'hidden' : '';
           l.style.display = on ? '' : 'none';
           if (!on) return;
-          var live = +srcLine.getAttribute('y1'), y = g.Y[k] * (1 - pout) + live * pout + g.dir * DD * sgn((t - 3.2 - k * .1) / 3.2);
+          var live = +srcLine.getAttribute('y1'), yb = g.srcY[k] + (g.Y[k] - g.srcY[k]) * pin, y = yb * (1 - pout) + live * pout + g.dir * g.dd * sgn((t - 3.2 - k * .1) / 3.2);
           var x1 = g.src.x + (CX - LW / 2 - g.src.x) * p;
           l.setAttribute('x1', x1.toFixed(2)); l.setAttribute('x2', (x1 + LW).toFixed(2)); l.setAttribute('y1', y.toFixed(2)); l.setAttribute('y2', y.toFixed(2));
         });
@@ -720,7 +743,7 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
           var f = ease.sine(clamp01((t - e0) / .7)) - ease.sine(clamp01((t - d0) / .7));
           if (f < .002) { l.style.display = 'none'; return; }
           l.style.display = '';
-          var y = g.Y[k] + g.dir * DD * sgn((t - 3.2 - k * .1) / 3.2), h = LW / 2 * f;
+          var y = g.Y[k] + g.dir * g.dd * sgn((t - 3.2 - k * .1) / 3.2), h = LW / 2 * f;
           l.setAttribute('x1', (CX - h).toFixed(2)); l.setAttribute('x2', (CX + h).toFixed(2)); l.setAttribute('y1', y.toFixed(2)); l.setAttribute('y2', y.toFixed(2));
         });
       });
