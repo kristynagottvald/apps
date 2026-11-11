@@ -68,6 +68,7 @@ const APPS = {
     // the preview is sticky: scroll the controls into view first so it sits still, then crop its middle 16:9
     setup: async (p) => {
       await p.evaluate(() => document.querySelectorAll('details.sec').forEach((d) => (d.open = true)));
+      await p.evaluate(() => { const c = document.querySelector('input[data-k="badge"]'); if (c && c.checked) c.click(); });   // no industry badge in the tile
       await p.evaluate(() => document.querySelector('[data-act="random-comp"]').scrollIntoView({ block: 'center' }));
       await p.waitForTimeout(500);
       const r = await p.evaluate(() => { const b = document.querySelector('#banner').getBoundingClientRect(); return [b.x, b.y, b.width, b.height]; });
