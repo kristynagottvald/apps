@@ -337,11 +337,11 @@ function illoQR(c){
 function illoOffers(c){
   const IND='#4033F2';
   c.save();c.scale(.33,.33);c.translate(-127,-137);
-  box(c,127,137,423,260,10,'#E7F46F');
+  box(c,127,137,423,260,10,'#F5A3F1');
   box(c,154,164,68,40,0,IND);
   c.fillStyle='#fff';c.font='600 15px '+FONT;c.textAlign='center';c.textBaseline='middle';c.fillText('// co.',188,184.5);
   c.fillStyle='#1F2145';c.font='700 35px '+FONT;c.textAlign='left';c.textBaseline='alphabetic';c.fillText('Save $50',154,262);
-  box(c,154,294,171,12,6,'#C3D03F');box(c,154,317,124,11,5.5,'#C3D03F');
+  box(c,154,294,171,12,6,'#E27FDD');box(c,154,317,124,11,5.5,'#E27FDD');
   c.fillStyle=IND;c.fillRect(355,163,4,206);
   c.strokeStyle=IND;c.lineWidth=4;c.lineCap='round';
   rr(c,474,163,51,60,4);c.stroke();
@@ -351,8 +351,7 @@ function illoOffers(c){
 }
 /* ---- Live editor ---- */
 function illoEditor(c){
-  c.save();c.scale(.245,.245);c.translate(-76,-72);
-  for(let i=0;i<18;i++){c.fillStyle='rgba(31,36,71,.011)';const g=i*2.4;rr(c,76-g+8,72-g+24,572+g*2-16,390+g*2-4,g+4);c.fill()}
+  c.save();c.scale(.2285,.2285);c.translate(-76,-72);
   c.fillStyle='#20244A';c.fillRect(76,72,324,390);
   c.fillStyle='#4033F2';c.fillRect(399,72,249,390);
   c.fillStyle='#6259F7';c.fillRect(399,241,166,221);
@@ -480,10 +479,33 @@ const HINTS={
   banner:'Single inline banner: illustration fills the left 50%, placeholder text sits beside it.'
 };
 
+/* a feature can only be used once per row: a clashing card moves to an unused feature */
+function rowInfo(){const spot=state.tpl==='spot';return{spot,n:spot?3:+state.cols,sel:spot?state.featSpot:state.featIcon,txt:spot?state.txtSpot:state.txtIcon,feats:spot?SPOT_FEATURES:ICON_FEATURES}}
+function setFeature(i,v,fallback){
+  const {n,sel,txt,feats}=rowInfo(), old=sel[i];
+  sel[i]=v; txt[i]=feats[v].text;
+  for(let j=0;j<n;j++){
+    if(j===i||sel[j]!==v)continue;
+    const free=feats.map((_,k)=>k).filter(k=>!sel.slice(0,n).includes(k));
+    const pick=free.length?free[0]:(fallback!=null?fallback:old);       // no spare feature: swap with the old one
+    sel[j]=pick; txt[j]=feats[pick].text;
+  }
+}
+function dedupeRow(){
+  const {n,sel,txt,feats}=rowInfo(), seen=new Set();
+  for(let i=0;i<n;i++){
+    if(seen.has(sel[i])){
+      const k=feats.map((_,x)=>x).find(x=>!sel.slice(0,n).includes(x)&&!seen.has(x));
+      if(k!=null){sel[i]=k;txt[i]=feats[k].text}
+    }
+    seen.add(sel[i]);
+  }
+}
 /* card slot editor: Lob feature dropdown -> illustration / icon + default link */
 let slotKey='';
 function buildSlots(){
   const key=state.tpl+state.cols; if(key===slotKey||state.tpl==='banner')return; slotKey=key;
+  dedupeRow();
   const n=state.tpl==='icon'?+state.cols:3, isSpot=state.tpl==='spot', feats=isSpot?SPOT_FEATURES:ICON_FEATURES;
   $('#slots').innerHTML=[...Array(n).keys()].map(i=>`
     <div class="slot" data-slot="${i}">
@@ -541,9 +563,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('change',e=>{
   const el=e.target; if(el.dataset.feat==null)return;
-  const i=+el.dataset.feat, v=+el.value, spot=state.tpl==='spot';
-  (spot?state.featSpot:state.featIcon)[i]=v;
-  (spot?state.txtSpot:state.txtIcon)[i]=(spot?SPOT_FEATURES:ICON_FEATURES)[v].text;   // feature pre-fills its link copy
+  setFeature(+el.dataset.feat,+el.value);      // feature pre-fills its link copy; clashing card moves to an unused one
   syncUI();schedule();
 });
 document.addEventListener('input',e=>{
