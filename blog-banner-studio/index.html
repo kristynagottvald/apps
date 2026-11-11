@@ -110,7 +110,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
 <div class="wrap">
   <header class="top">
     <h1>Blog Banner Studio</h1>
-    <p>Landscape 2:1 blog banners built from code. Mail pieces, platform screens and line-work backgrounds. Stock photo slot is optional.</p>
+    <p>Landscape 2:1 blog banners built from code. Mail pieces, platform screens, circuit-line or colour-block backgrounds and a purple photo placeholder.</p>
   </header>
 
   <div class="grid">
@@ -196,7 +196,7 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
           <div><span class="lbl">Palette</span><div class="pres" id="presets"></div></div>
           <div><span class="lbl">Background colour</span><div class="bases" id="bases"></div>
             <p class="note" id="lineinfo" style="margin-top:8px"></p></div>
-          <div><span class="lbl">Composition</span><div class="seg" data-k="comp" id="compSeg"></div></div>
+          <div><span class="lbl">Pattern</span><div class="seg" data-k="comp" id="compSeg"></div></div>
           <label class="row"><span>Line tint</span><input type="range" data-k="lineTint" min="10" max="60" step="2"><output data-o="lineTint"></output></label>
           <div class="two">
             <div><label class="lbl" for="seed">Seed</label><input type="text" inputmode="numeric" id="seed" data-k="seed"></div>
@@ -213,6 +213,8 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
       <details class="sec">
         <summary>Composition</summary>
         <div class="body">
+          <div><span class="lbl">Photo placeholder</span><div class="seg" data-k="photo" id="photoSeg"></div>
+            <p class="note" style="margin-top:6px" id="photoNote"></p></div>
           <div><span class="lbl">Layout preset</span><div class="btns"><button class="btn" data-act="preset-left">Leans left</button><button class="btn" data-act="preset-right">Leans right</button></div></div>
           <div><span class="lbl">Move postcard onto the screen's</span><div class="btns"><button class="btn" data-act="piece-corner-left">Lower left corner</button><button class="btn" data-act="piece-corner-right">Lower right corner</button></div>
             <p class="note" style="margin-top:6px">The postcard and screen are separate objects. The screen always stays behind the postcard. Click an object on the preview to pick it up, click again to place it.</p></div>
@@ -226,8 +228,6 @@ textarea{width:100%;min-height:90px;resize:vertical;font:400 11px var(--font-mon
           <label class="row"><span>Scale</span><input type="range" data-k="scale" min="70" max="125" step="5"><output data-o="scale"></output></label>
           <label class="chk"><input type="checkbox" data-k="badge"> Industry icon badge</label>
           <div><span class="lbl">Badge ripples</span><div class="seg" data-k="ripple"><button data-v="palette">Palette colour</button><button data-v="white">White</button></div></div>
-          <label class="chk"><input type="checkbox" data-k="slot"> Reserve a stock photo slot</label>
-          <div><span class="lbl">Slot side</span><div class="seg" data-k="slotSide"><button data-v="left">Left third</button><button data-v="right">Right third</button></div></div>
           <label class="chk"><input type="checkbox" data-k="rounded"> Rounded corners</label>
         </div>
       </details>
@@ -275,7 +275,27 @@ var PALETTES=[
 var NO_BG=['#F6C93F','#C0CE00','#E6EBA3']; /* yellow and lime are never used as a background; dark green is */
 function bgOK(pl,i){return NO_BG.indexOf(PALETTES[pl].colors[i])<0}
 function okBases(pl){return [0,1,2].filter(function(i){return bgOK(pl,i)})}
-var COMPS=[['auto','Auto'],['lines','Line network'],['grid','Colour grid']];
+var COMPS=[['auto','Auto'],['circuit','Circuit lines'],['grid','Colour blocks'],['flat','Flat']];
+/* Photo placeholder layouts, taken from the SEO Image Library blog variants (800 x 400 space, scaled 1.5x).
+   The placeholder is always a plain solid purple block. band = accent strip above it, block = accent block behind it. */
+var PHOTO_PURPLE='#5A4BFE',PANEL='#E8E6FD';
+var PHOTOS=[
+  {id:'none',label:'None',note:'No photo area. The banner is just the background.'},
+  {id:'right',label:'Right, under band',note:'Photo on the right starting 52 px down, under an accent band. Hero straddles the seam.',
+    band:[363,0,437,52],photo:[363,52,437,348],pos:{ui:[405,320],piece:[300,410],badge:[250,85]}},
+  {id:'left',label:'Left, full height',note:'Photo fills the left side top to bottom. Hero sits on the seam.',
+    photo:[0,0,450,400],pos:{ui:[885,290],piece:[760,410],badge:[930,75]}},
+  {id:'left-low',label:'Left, starting lower',note:'Photo on the left starting 99 px down. Hero sits right of it.',
+    photo:[0,99,449,301],pos:{ui:[930,285],piece:[700,410],badge:[800,70]}},
+  {id:'panel',label:'Panel + colour block',note:'Lavender panel on the left, accent block behind a lower-starting photo on the right. No linework.',
+    panel:[0,82,390,318],block:[390,0,410,400],photo:[390,82,410,318],pos:{ui:[300,320],piece:[400,405],badge:[470,60]}}
+];
+function photoDef(id){return PHOTOS.filter(function(p){return p.id===id})[0]||PHOTOS[0]}
+/* circuit linework: nested outline rectangles [x,y,w,h] in 800 x 400 space, copied from the Figma frames (A, D) */
+var CIRCUITS=[
+  [[53,331,406,167],[53,205,530,293],[969,106,320,73],[1045,142,371,167],[564,238,454,247],[32,-41,346,216],[139,86,721,298],[-73,-52,507,297],[843,-147,320,73],[919,-111,371,167],[615,-18,277,215],[-94,26,386,96],[-94,-294,346,216]],
+  [[196,305,751,332],[65,122,673,376],[65,-27,347,525],[931,106,303,73],[1003,142,351,167],[474,270,503,215],[146,52,682,298],[-54,70,378,175],[812,-147,303,73],[884,-111,351,167],[596,65,262,167],[-74,-294,327,216]]
+];
 var ICONS={
   mail:'<path d="M3 6h18v12H3Z"/><path d="M3 7l9 6 9-6"/>',
   bank:'<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20.5 3.5V8H16" transform="translate(-1 0)"/><path d="M12 7.5v9M14.6 9.8h-3.1a1.6 1.6 0 0 0 0 3.2h1a1.6 1.6 0 0 1 0 3.2H9.4"/>',
@@ -304,12 +324,12 @@ var FEATURES={
 var MERGE=['{{first_name}}','{{last_name}}','{{offer_code}}','{{address_line1}}','{{appointment_date}}','{{account_id}}'];
 
 /* ---------- state ---------- */
-var LS='blogBannerStudio.v9';
+var LS='blogBannerStudio.v10';
 function defaults(){
   var S={industry:'insurance',feature:'personalization',piece:'postcard',face:'front',ui:'editor',fill:'auto',
-    abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',splitShadow:true,lineTint:28,uiOn:true,uiCx:645,uiCy:270,pieceCx:340,pieceCy:400,badgeX:400,badgeCy:75,snap:true,scale:100,badge:true,slot:false,slotSide:'left',rounded:false,
-    palette:1,base:0,comp:'auto',seed:7,copy:{brand:'',headline:'',cta:'',dirty:false}};
-  applyIndustry(S,'insurance');return S;
+    abstract:true,crop:false,stack:0,flatStyle:'link',flatLogo:'block',ripple:'palette',splitShadow:true,lineTint:34,uiOn:true,uiCx:405,uiCy:320,pieceCx:300,pieceCy:410,badgeX:250,badgeCy:85,snap:true,scale:100,badge:true,photo:'right',rounded:false,
+    palette:1,base:1,comp:'auto',seed:7,copy:{brand:'',headline:'',cta:'',dirty:false}};
+  applyIndustry(S,'insurance');S.base=1;return S;
 }
 function applyIndustry(S,k){var I=INDUSTRIES[k];S.industry=k;
   S.palette=I.pal[0];S.base=I.pal[1];
@@ -400,8 +420,6 @@ function brandRow(K,x,y,col){return icon(K,x,y-12,14,col)+T(x+20,y,K.S.copy.bran
 function pcFront(K){
   var S=K.S,tc=K.tc,ac=K.ac,o='',soft=K.soft;
   o+='<rect x="200" width="200" height="188" fill="'+K.chip+'"/>';
-  var gi=mix(K.chip,'#ffffff',.55);
-  o+='<g fill="none" stroke="'+gi+'" stroke-width="2.5" stroke-linejoin="round"><circle cx="330" cy="64" r="10"/><path d="M228 160L284 100L318 138L340 116L372 160Z"/></g>';
   o+='<rect x="200" y="188" width="200" height="79" fill="#fff"/>';
   o+='<rect x="216" y="212" width="168" height="30" rx="4" fill="'+soft+'"/>'+LBL(300,231,S.copy.cta,10.5,700,ABS?K.darkest:K.prim);
   o+=brandRow(K,18,27,tc);
@@ -603,25 +621,21 @@ function bgSVG(K){
   function tint(c){return mix(c,'#ffffff',S.lineTint/100)}
   function rf(a,b){return a+r()*(b-a)}
   function pk(arr){return arr[Math.floor(r()*arr.length)]}
-  /* Connected line network: horizontal rules run edge to edge; vertical lines only run from one rule (or the edge) to the next,
-     so no line ends in empty space. A vertical line never exceeds 50% of the panel height. */
-  function net(x,y,w,h,col){var g=40,MAXV=h/2,rows=Math.floor(h/g),cols=Math.floor(w/g),i,j;
-    var ys={},n;for(i=0,n=Math.floor(rf(3,6));i<n;i++)ys[Math.floor(rf(1,rows))*g]=1;
-    var bounds=[0].concat(Object.keys(ys).map(Number).sort(function(a,b){return a-b}),[h]);
-    for(i=0;i<bounds.length-1;i++)if(bounds[i+1]-bounds[i]>MAXV){bounds.splice(i+1,0,Math.round((bounds[i]+bounds[i+1])/2/g)*g);i--}
-    var o='',usedX={};
-    function span(){var a=Math.floor(rf(0,bounds.length-1)),opts=[];for(var b=a+1;b<bounds.length;b++)if(bounds[b]-bounds[a]<=MAXV)opts.push(b);
-      if(!opts.length)return null;return[bounds[a],bounds[pk(opts)]]}
-    function vline(cx,sp){o+='<path d="M'+(x+cx)+' '+(y+sp[0])+'V'+(y+sp[1])+'"/>'}
-    function freeCol(){for(var t=0;t<30;t++){var c=Math.floor(rf(1,cols))*g;if(!usedX[c]){usedX[c]=1;return c}}return null}
-    bounds.slice(1,-1).forEach(function(by){o+='<path d="M'+x+' '+(y+by)+'H'+(x+w)+'"/>'});
-    for(i=0,j=Math.floor(rf(1,3));i<j;i++){var sp=span(),c1=freeCol(),c2=freeCol();if(sp&&c1!==null&&c2!==null){vline(c1,sp);vline(c2,sp)}}  /* boxes */
-    for(i=0,j=Math.floor(rf(5,10));i<j;i++){var sp2=span(),c3=freeCol();if(sp2&&c3!==null)vline(c3,sp2)}
-    return '<g fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="square">'+o+'</g>'}
+  /* Circuit linework: the nested outline rectangles from the Figma library, picked and mirrored per layout. */
+  function circuit(col){
+    var ph=S.photo,v;
+    if(ph==='right')v=[[0,0],[1,1]][Math.floor(r()*2)];            /* [template, mirrored] */
+    else if(ph==='left')v=[[0,1],[1,0]][Math.floor(r()*2)];
+    else if(ph==='left-low')v=[[1,0],[0,1]][Math.floor(r()*2)];
+    else v=[[0,0],[0,1],[1,0],[1,1]][Math.floor(r()*4)];
+    var flipY=ph==='none'&&r()>.5,o='';
+    CIRCUITS[v[0]].forEach(function(t){var x=v[1]?800-t[0]-t[2]:t[0],y=flipY?400-t[1]-t[3]:t[1];
+      o+='<rect x="'+x+'" y="'+y+'" width="'+t[2]+'" height="'+t[3]+'"/>'});
+    return '<g fill="none" stroke="'+col+'" stroke-width="2.5">'+o+'</g>'}
   function stripes(x,y,w,h,col){var hc=Math.min(h,200);if(hc<h){y=r()>.5?y:y+h-hc;h=hc}var d='';for(var sx=x+8;sx<x+w;sx+=8)d+='M'+sx+' '+y+'V'+(y+h);return '<path d="'+d+'" stroke="'+col+'" stroke-width="2" fill="none"/>'}
   function R(x,y,w,h,c){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+c+'"/>'}
-  var comp=S.comp==='auto'?['lines','grid'][Math.floor(r()*2)]:S.comp,o='<g transform="scale(1.5)">'+R(0,0,800,400,bg);
-  if(comp==='lines')o+=net(0,0,800,400,line);
+  var comp=S.comp==='auto'?(S.photo==='panel'?'flat':S.photo==='none'?['circuit','grid'][Math.floor(r()*2)]:'circuit'):S.comp,o='<g transform="scale(1.5)">'+R(0,0,800,400,bg);
+  if(comp==='circuit'&&S.photo!=='panel')o+=circuit(line);
   else if(comp==='grid'){
     var ra=[1/3,2/3],sx=800*ra[Math.floor(r()*2)],sy=400*ra[Math.floor(r()*2)];
     var cols3=PL.colors.filter(function(c){return NO_BG.indexOf(c)<0}),bl,q,w2,tmp;
@@ -635,6 +649,15 @@ function bgSVG(K){
   }
   return o+'</g>';
 }
+/* Photo placeholder: a plain solid purple block, plus the layout's accent band or panel and block. */
+function photoSVG(K){
+  var D=photoDef(K.S.photo);if(!D.photo)return '';
+  function R(g,c){return '<rect x="'+g[0]+'" y="'+g[1]+'" width="'+g[2]+'" height="'+g[3]+'" fill="'+c+'"/>'}
+  var acc=K.pal.colors.filter(function(c){return c!==K.pal.bg}).sort(function(x,y){return lum(y)-lum(x)})[0],o='<g pointer-events="none" transform="scale(1.5)">';
+  if(D.block)o+=R(D.block,acc);
+  if(D.panel)o+=R(D.panel,PANEL);
+  if(D.band)o+=R(D.band,acc);
+  return o+R(D.photo,PHOTO_PURPLE)+'</g>'}
 /* Badge: one colour. Ripples fade outward (drawn behind everything), solid ring, white disc, dark icon. */
 function badgeRipples(K){var c=K.S.ripple==='white'?'#ffffff':K.pal.a;
   return [[138,.14],[96,.28],[52,.45]].map(function(r){return '<circle r="'+r[0]+'" fill="'+c+'" fill-opacity="'+r[1]+'"/>'}).join('')}
@@ -649,13 +672,9 @@ function renderBanner(S,view){
   var o='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">';
   o+='<defs><clipPath id="bclip"><rect width="'+W+'" height="'+H+'" rx="'+(S.rounded?20:0)+'"/></clipPath><clipPath id="uiClip"><rect width="490" height="320" rx="8"/></clipPath></defs>';
   o+='<g clip-path="url(#bclip)"><rect width="'+W+'" height="'+H+'" fill="'+K.pal.bg+'"/>';
-  o+=bgSVG(K);
+  o+=bgSVG(K)+photoSVG(K);
   var L1=W/3,k=S.scale/100,bT='translate('+S.badgeX+' '+S.badgeCy+') scale('+(k*1.15).toFixed(3)+')';
   if(S.badge)o+='<g pointer-events="none" transform="'+bT+'">'+badgeRipples(K)+'</g>';
-  var slotL=S.slotSide!=='right',slotX=slotL?0:2*L1;
-  if(S.slot){var sc=mix(K.pal.bg,'#000000',.2),tcn=textOn(sc);
-    o+='<g transform="translate('+slotX+' 0)"><rect width="'+L1+'" height="'+H+'" fill="'+sc+'"/><rect x="24" y="24" width="'+(L1-48)+'" height="552" fill="none" stroke="'+tcn+'" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="6 5"/>';
-    o+='<g fill="none" stroke="'+tcn+'" stroke-opacity=".6" stroke-width="3" stroke-linejoin="round"><circle cx="227" cy="262" r="14"/><path d="M135 380L190 316L227 356L257 330L301 380Z"/></g>'+T(L1/2,420,'STOCK IMAGE',11,700,tcn,'text-anchor="middle" letter-spacing="1.6" fill-opacity=".7"')+'</g>';}
   function grp(name,tr,inner){return '<g'+(view?' data-el="'+name+'"':'')+' transform="'+tr+'">'+inner+'</g>'}
   var piece=renderPiece(K),post=S.piece!=='letter',g='',G={};
   /* screen and postcard are independent objects; the screen is always drawn behind the postcard */
@@ -703,6 +722,7 @@ function buildControls(){
   $('#featGrid').innerHTML=Object.keys(FEATURES).map(function(k){return '<button data-feat="'+k+'"><b>'+FEATURES[k].label+'</b><span>'+esc(FEATURES[k].tag)+'</span></button>'}).join('');
   $('#mergeChips').innerHTML=MERGE.map(function(m){return '<button type="button" data-ins="'+m+'">'+m+'</button>'}).join('');
   $('#presets').innerHTML=PALETTES.map(function(p,i){return '<button class="pre" data-pre="'+i+'" title="'+p.name+'"><div class="strip">'+p.colors.map(function(c){return '<i style="background:'+c+'"></i>'}).join('')+'</div><span>'+p.name+'</span></button>'}).join('');
+  $('#photoSeg').innerHTML=PHOTOS.map(function(p){return '<button data-v="'+p.id+'">'+p.label+'</button>'}).join('');
   $('#compSeg').innerHTML=COMPS.map(function(c){return '<button data-v="'+c[0]+'">'+c[1]+'</button>'}).join('');
 }
 function sync(){
@@ -722,7 +742,8 @@ function sync(){
   $('#lineinfo').innerHTML='Lines and stripes are a lighter tint of the background: <b style="display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;background:'+tintHex+'"></b> '+tintHex+'.';
   document.querySelectorAll('.seg[data-k="face"] button').forEach(function(b){b.disabled=S.piece!=='postcard'&&b.dataset.v==='back'});
   document.querySelectorAll('[data-k="uiCx"],[data-k="uiCy"]').forEach(function(b){b.disabled=!S.uiOn});
-  document.querySelectorAll('.seg[data-k="slotSide"] button').forEach(function(b){b.disabled=!S.slot});
+  $('#photoNote').textContent=photoDef(S.photo).note;
+  document.querySelector('[data-k="comp"]').title='';
 }
 function uiName(){return !S.uiOn?'':S.ui==='tracking'?'campaign tracking screen':S.ui==='editor'?'live design editor':''}
 function paint(){
@@ -743,13 +764,14 @@ function fileName(){return [S.industry,S.feature,S.piece,'banner-1200x600'].join
 function status(m){$('#status').textContent=m;clearTimeout(status.t);status.t=setTimeout(function(){$('#status').textContent=''},3200)}
 
 /* ---------- events ---------- */
-function applySlot(){if(!S.slot)return;
-  presetLayout(S.slotSide==='left'?'right':'left');S.badgeX=S.slotSide==='left'?400:800;S.badgeCy=300}
+function applyPhoto(){var D=photoDef(S.photo);
+  if(!D.pos){presetLayout('left');return}
+  S.uiCx=D.pos.ui[0];S.uiCy=D.pos.ui[1];S.pieceCx=D.pos.piece[0];S.pieceCy=D.pos.piece[1];S.badgeX=D.pos.badge[0];S.badgeCy=D.pos.badge[1]}
 function onChange(e){
   var el=e.target.closest('[data-k]');if(!el||el.classList.contains('seg'))return;
   var k=el.dataset.k,v=el.type==='checkbox'?el.checked:el.type==='range'?Number(el.value):el.value;
   if(k==='seed'){v=parseInt(v,10);if(!isFinite(v))return}
-  set(S,k,v);if(k==='copy.headline')S.copy.dirty=true;if(k==='slot')applySlot();paint();
+  set(S,k,v);if(k==='copy.headline')S.copy.dirty=true;paint();
 }
 var lastField=null;
 if(S.flatStyle==='tag')S.flatStyle='link';
@@ -765,7 +787,7 @@ document.addEventListener('click',function(e){
     else set(S,k,k==='stack'?Number(b.dataset.v):b.dataset.v);
     if(k==='flatStyle'){if(S.flatStyle==='link'){S.crop=true;S.stack=0;if(S.pieceCx<460)S.pieceCx=460}else{S.crop=false;S.stack=2}}
     if(k==='piece'&&S.piece!=='postcard')S.face='front';
-    if(k==='slotSide')applySlot();
+    if(k==='photo')applyPhoto();
     if(k==='comp')S.seed=1+Math.floor(Math.random()*99999); /* every click on a composition re-randomizes its lines or blocks */
     paint();return}
   if(b.dataset.feat){applyFeature(S,b.dataset.feat);paint();return}
@@ -777,7 +799,7 @@ document.addEventListener('click',function(e){
   var r=rng((Date.now()^(Math.random()*1e9))>>>0);
   if(act==='shuffle-colors'){shuffleColors(S,r);paint()}
   else if(act==='random-palette'){randomPalette(S,r);paint()}
-  else if(act==='shuffle-all'){shuffleColors(S,r);S.comp='auto';presetLayout(pick(r,['left','right']));paint()}
+  else if(act==='shuffle-all'){shuffleColors(S,r);S.comp='auto';applyPhoto();paint()}
   else if(act==='piece-corner-left'){pieceToCorner('left');paint()}
   else if(act==='piece-corner-right'){pieceToCorner('right');paint()}
   else if(act==='preset-left'){presetLayout('left');paint()}
