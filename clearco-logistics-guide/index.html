@@ -460,6 +460,15 @@ footer .sign{margin-top:28px;color:#fff;font-size:14px}
           spotsFree = 0;
           for (i = 0; i < NC; i++) for (j = 0; j < NR; j++) if (hasV[i] && hasH[j] && !isBlocked(i, j)) spotsFree++;
         } while (spotsFree < 8 && ++tries < 80);
+        /* line the hero visual's centre ray up with the nearest vertical line of this grid: nudge the visual sideways and keep that line */
+        var vis = document.querySelector('.vis'), vsvg = vis && vis.querySelector('svg');
+        if (vsvg) {
+          vis.style.transform = '';
+          var vr = vsvg.getBoundingClientRect(), hx = vr.left + vr.width * (288 + 40) / 596, best = 0, bd = 1e9;
+          for (i = 0; i < NC; i++) { var dd = Math.abs(r.left + px(i) - hx); if (dd < bd) { bd = dd; best = i; } }
+          hasV[best] = true;
+          vis.style.transform = 'translateX(' + (r.left + px(best) - hx).toFixed(2) + 'px)';
+        }
         for (i = 0; i < NC; i++) if (hasV[i]) {
           var cx2 = Math.round(px(i) * dpr) - (cb && Math.abs(px(i) - (cb.x + cb.w)) < 1 ? 1 : 0);   // the card's right edge sits one device pixel inside, like its outline
           g.moveTo((cx2 + .5) / dpr, 0); g.lineTo((cx2 + .5) / dpr, H);
