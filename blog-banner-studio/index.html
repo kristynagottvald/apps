@@ -541,7 +541,11 @@ function letter(K){
   var S=K.S,tc=K.tc,o='<rect width="270" height="350" fill="'+K.fill+'"/>';
   o+=brandRow(K,22,32,tc);
   o+='<rect x="22" y="72" width="150" height="46" fill="'+K.soft+'" stroke="'+K.ac+'" stroke-width="1.5" stroke-dasharray="4 3"/>';
+  /* the window is a light tint, so its text blocks use the banner colour (or a dark ink) rather than the fill-based block colour */
+  var wc=contrast(K.pal.bg,K.soft)>=2.5?K.pal.bg:[K.prim,K.darkest,INK].filter(function(c){return contrast(c,K.soft)>=3})[0]||INK,sv=ABSCOL;
+  ABSCOL=wc;
   [S.copy.addr1,S.copy.addr2].forEach(function(t,i){var f=fit(t,[9,8.5,8],600,108,1,1.2);o+=drawLines(f,30,92+i*13,600,INK)});
+  ABSCOL=sv;
   o+='<path d="M22 134H248" stroke="'+K.ac+'" stroke-width="1.5"/>';
   var f=fit(S.copy.headline,[16,14,12],700,226,3,1.25);
   var by=156+f.size*.2;
