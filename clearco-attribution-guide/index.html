@@ -81,7 +81,6 @@ section,.band{position:relative;overflow:hidden}
 @keyframes rip{0%,100%{transform:translate(-50%,-50%) scale(.82);opacity:.55}50%{transform:translate(-50%,-50%) scale(1.06);opacity:1}}
 .dot{position:absolute;top:var(--y,50%);left:calc(var(--w,1) * var(--at,0) * 100%);width:var(--hd,26px);height:var(--hd,26px);margin:calc(var(--hd,26px) / -2) 0 0 calc(var(--hd,26px) / -2);border-radius:50%;background:radial-gradient(circle at 28% 26%,var(--cyan),var(--blue2) 62%,var(--blue));box-shadow:0 0 0 5px rgba(40,140,190,.22);opacity:var(--s,1);transform:scale(var(--s,1))}
 .dot .lab{position:absolute;top:calc(100% + 18px);left:50%;transform:translateX(-50%);white-space:nowrap;color:var(--mute);font:400 10px/1.4 var(--mono);letter-spacing:.2em;text-transform:uppercase}
-.dot.first .lab{left:-8px;transform:none}
 .dot.ghost{background:none;box-shadow:none}
 .dot.ghost .lab{left:auto;right:0;transform:none;color:#0a1722}
 .dot.up .lab{top:auto;bottom:calc(100% + 18px)}
@@ -90,7 +89,8 @@ section,.band{position:relative;overflow:hidden}
 .hero{border-bottom:1px solid rgba(255,255,255,.3);overflow-x:clip;padding:clamp(40px,6vw,80px) 0 clamp(48px,6vw,88px)}
 .hero .wrap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,72px);align-items:stretch}
 .rcol{display:flex;flex-direction:column;justify-content:space-between;gap:28px;min-width:0}
-.rcol .signup{position:relative;z-index:1}
+.rcol .signup{position:relative;z-index:1;margin-left:-48px}
+@media (max-width:820px){.rcol .signup{margin-left:0}}
 .hero .logo{width:150px;margin:0 0 clamp(40px,6vw,76px)}
 .hero .mono{color:#8fa0ad}
 .hero h1{font:400 clamp(52px,7vw,100px)/.9 var(--serif);letter-spacing:-.035em;margin:26px 0 26px}
@@ -332,7 +332,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
         <div class="tlv" data-anim="7.6" role="img" aria-label="A journey drawn as one gradient pill with stops for a YouTube ad, Google Search and email, ending in a Facebook ad purchase with ripples around it">
           <div class="dl" aria-hidden="true"><i style="left:12%"></i><i style="left:30%"></i><i style="left:48%"></i><i style="left:66%"></i><i style="left:84%"></i></div>
           <div class="pl" data-d="0"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
-          <span class="dot up first" data-at="0.06" style="--hd:22px"><span class="lab">YouTube</span></span>
+          <span class="dot up" data-at="0.1" style="--hd:22px"><span class="lab">YouTube</span></span>
           <span class="dot" data-at="0.36" style="--hd:22px"><span class="lab">Google Search</span></span>
           <span class="dot up" data-at="0.68" style="--hd:22px"><span class="lab">Email</span></span>
           <span class="dot ghost" data-at="0.98" style="--hd:2px"><span class="lab" style="top:calc(100% + 52px)">Facebook ad · purchase</span></span>
