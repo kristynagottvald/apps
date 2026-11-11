@@ -76,9 +76,10 @@ const APPS = {
     },
     run: async (p) => {
       const t0 = Date.now(), rand = () => domClick(p, '[data-act="random-comp"]');
-      await at(t0, 900, rand); await at(t0, 2100, rand);
-      await at(t0, 3300, () => domClick(p, '[data-act="random-palette"]'));
-      await at(t0, 4300, rand); await at(t0, 5500, rand);
+      // a long lead-in: the loop starts 0.5s into the footage and must show the default composition, even if the video lags the page a little
+      await at(t0, 1400, rand); await at(t0, 2500, rand);
+      await at(t0, 3600, () => domClick(p, '[data-act="random-palette"]'));
+      await at(t0, 4600, rand); await at(t0, 5500, rand);
     } },
 };
 
