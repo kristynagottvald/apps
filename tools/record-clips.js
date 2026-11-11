@@ -33,6 +33,15 @@ const APPS = {
     await at(t0, 4300, () => go('ch1', 260));
     await at(t0, 5200, () => p.evaluate(() => scrollTo(0, 0)));
   } },
+  'grubclub-order': { vp: [1280, 769], crop: [0, 49, 1280, 720],
+    // park on the hero (collage already grown in), then play the order flow at 2.4x speed: click, pick four meals, email
+    setup: async (p) => { await p.evaluate(() => gc.park()); },
+    ready: 700,
+    run: async (p) => {
+      const t0 = Date.now();
+      await at(t0, 700, () => p.evaluate(() => gc.play({ speed: 2.4, clip: true })));
+      await sleep(5600);
+    } },
   'clearco-terrain': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'clearco-target-frame': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'video-synopsis': { vp: [1280, 769], setup: cropOf('#vSyn'), run: async () => {} },

@@ -1,5 +1,14 @@
 [
   {
+    "id": "grubclub-order",
+    "title": "Grubclub Order",
+    "category": "Motion",
+    "url": "grubclub-order/",
+    "thumbnail": "grubclub-order/thumb.png",
+    "preview": "grubclub-order/thumb.webp",
+    "alt": "Grubclub Order: a dark blue hero with a pale circle reading 'lightly salted dehydrated grasshoppers' ringed by pulsing circles and surrounded by a collage of striped green, mint and teal leaves"
+  },
+  {
     "id": "clearco-logistics-guide",
     "title": "Clearco Logistics Guide",
     "category": "Landing Page",
