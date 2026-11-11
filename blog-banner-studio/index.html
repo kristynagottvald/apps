@@ -610,7 +610,7 @@ function uiTracking(K){
     [118,186,250].forEach(function(y){o+='<path d="M108 '+y+'H354" stroke="#fff" stroke-width="8"/>'});
     [158,236,304].forEach(function(x){o+='<path d="M'+x+' 68V306" stroke="#fff" stroke-width="8"/>'});
     o+='<path d="M130 280H158V186H236V118H304" fill="none" stroke="'+P+'" stroke-width="3" stroke-dasharray="7 5" stroke-linejoin="round"/>';
-    o+='<circle cx="130" cy="280" r="5" fill="'+P+'"/><circle cx="304" cy="118" r="10" fill="'+LC+'" stroke="'+P+'" stroke-width="3"/><circle cx="304" cy="118" r="3" fill="'+P+'"/>';
+    o+='<circle cx="130" cy="280" r="5" fill="'+P+'"/><circle cx="304" cy="118" r="6" fill="'+P+'"/>';
     o+='<rect x="364" y="68" width="114" height="108" rx="6" fill="#fff" stroke="'+EDGE+'" stroke-width="1.5"/>'+check(421,100,14,P,'#fff')+UP(K,421,134,'Delivered',12,INK,'middle')+T(421,148,'Oct 24, 2:14 PM',7.5,500,MUTED,'text-anchor="middle"')+'<rect x="391" y="156" width="60" height="5" rx="2.5" fill="'+PILL+'"/>';
     o+='<rect x="364" y="186" width="114" height="120" rx="6" fill="#fff" stroke="'+EDGE+'" stroke-width="1.5"/>';
     ['Address verified','Facility scan','Delivered'].forEach(function(l,j){var cy=214+j*34;o+=check(380,cy,6,P,'#fff')+UP(K,392,cy+3,l,8,INK)});
