@@ -486,7 +486,7 @@ function splitCard(K){
   o+='<rect x="230" y="67" width="144" height="94" rx="4" fill="'+K.blk+'"/><rect x="231.5" y="179.5" width="141" height="56" rx="4" fill="'+K.blk+'" stroke="'+prim+'" stroke-width="3"/>';
   var cs=[S.copy.chip1,S.copy.chip2,S.copy.chip3],x=298,w,pos=[];
   w=Math.max(78,tw(cs[0],12.5,500)+34);pos.push([298,98,w]);w=Math.max(78,tw(cs[1],12.5,500)+34);pos.push([298+pos[0][2]+13,98,w]);w=Math.max(78,tw(cs[2],12.5,500)+40);pos.push([298,157,w]);
-  pos.forEach(function(p,i){o+='<rect x="'+p[0]+'" y="'+p[1]+'" width="'+p[2]+'" height="48" rx="6" fill="'+chip+'"/>'+T(p[0]+p[2]/2,p[1]+29,cs[i],12.5,500,ink,'text-anchor="middle"')});
+  if(!K.clean)pos.forEach(function(p,i){o+='<rect x="'+p[0]+'" y="'+p[1]+'" width="'+p[2]+'" height="48" rx="6" fill="'+chip+'"/>'+T(p[0]+p[2]/2,p[1]+29,cs[i],12.5,500,ink,'text-anchor="middle"')});
   return{svg:o,w:400,h:267,hb:{x:24,y:24,w:150,h:62}};
 }
 function postcard(K){var r=K.S.face==='front'?pcFront(K):pcBack(K);
