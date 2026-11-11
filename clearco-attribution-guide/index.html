@@ -141,12 +141,12 @@ section,.band{position:relative;overflow:hidden}
 @media (max-width:820px){.chap{grid-template-columns:1fr}}
 
 /* chapter one: one journey drawn as a single pill with a stop for each touchpoint and a ripple where it ends in a purchase */
-.tlv{position:relative;height:clamp(300px,34vw,420px);width:calc(100% + (100vw - min(1120px,100vw - 40px)) / 2);--w:.8;overflow:hidden}
+.tlv{position:relative;height:clamp(300px,34vw,420px);margin-left:-56px;width:calc(100% + 56px + (100vw - min(1120px,100vw - 40px)) / 2);--w:.8;overflow:hidden}
 .tlv .pl{border-radius:99px;top:50%;margin-top:-22px;--h:44px;--hd:64px;--w:.8}
 .tlv .dl{-webkit-mask-image:none;mask-image:none}
 .tlv .dl i{border-left-color:rgba(36,71,245,.16)}
 .tlv .dot{--y:50%}
-@media (max-width:820px){.tlv{width:100%}}
+@media (max-width:820px){.tlv{width:100%;margin-left:0}}
 
 /* chapter two: the model explorer. Four vertical pills, one per touchpoint; a model decides how tall each one is. */
 .xp{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,5vw,80px);align-items:stretch}
@@ -223,9 +223,16 @@ section,.band{position:relative;overflow:hidden}
 .inside>a,.inside>.lock{display:flex;flex-direction:column;justify-content:space-between;min-height:270px;padding:20px;border:1px solid #0a1722;background:#fff;text-decoration:none;position:relative;overflow:hidden;transition:background .3s,color .3s}
 .inside>a:hover,.inside>a:focus-visible{background:#000;color:#fff}
 .inside>.lock{background:#000;color:#fff}
+.inside .top{display:block}
+.inside .top .mono{display:block;margin-bottom:12px;font-size:10px;color:var(--mute);transition:color .3s}
+.inside>a:hover .top .mono,.inside>a:focus-visible .top .mono{color:#8fa0ad}
+.inside>.lock .top .mono{color:#8fa0ad}
 .inside b{font:400 64px/.9 var(--serif)}
 .inside .t{display:block;font:400 22px/1.05 var(--serif)}
 .inside .lock .t{margin-bottom:18px}
+.inside>.lock .btn::after{content:"";position:absolute;inset:0}
+.inside>.lock{cursor:pointer}
+.inside>.lock:hover .btn,.inside>.lock:focus-within .btn{background:transparent;color:#fff}
 /* resting state: tiles stacked at the right edge on a rising diagonal; hovering the group eases them apart into a row */
 @media (hover:hover) and (min-width:641px){
   .inside{--ov:48px;--rise:28px;padding-block:44px;margin-block:-44px}
@@ -269,7 +276,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
 <nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Clearco Attribution Guide</b></nav>
 
 <header class="hero dk">
-  <div class="dl" aria-hidden="true"><i style="left:8%"></i><i style="left:26%"></i><i style="left:44%"></i><i style="left:62%"></i><i style="left:80%"></i></div>
+  <div class="dl" aria-hidden="true"><i style="left:calc(100% / 12 * 1)"></i><i style="left:calc(100% / 12 * 2)"></i><i style="left:calc(100% / 12 * 3)"></i><i style="left:calc(100% / 12 * 4)"></i><i style="left:calc(100% / 12 * 5)"></i><i style="left:calc(100% / 12 * 6)"></i><i style="left:calc(100% / 12 * 7)"></i><i style="left:calc(100% / 12 * 8)"></i><i style="left:calc(100% / 12 * 9)"></i><i style="left:calc(100% / 12 * 10)"></i><i style="left:calc(100% / 12 * 11)"></i></div>
   <div class="wrap">
     <div class="copy">
       <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="-489.3 -58.1 978.8 116.8" role="img" aria-label="Clearco"><circle cx="-481.7" cy="-13.1" r="7.63"/><circle cx="-481.7" cy="14.1" r="7.63"/><circle cx="-468.7" cy="-34.5" r="7.63"/><circle cx="-468.7" cy="36.5" r="7.63"/><circle cx="-445.2" cy="-47.1" r="7.63"/><circle cx="-445.2" cy="47.6" r="7.63"/><circle cx="-419.1" cy="-50.5" r="7.63"/><circle cx="-419.1" cy="51.0" r="7.63"/><circle cx="-395.3" cy="-45.6" r="7.63"/><circle cx="-395.3" cy="46.7" r="7.63"/><circle cx="-374.7" cy="-32.9" r="7.63"/><circle cx="-374.7" cy="34.3" r="7.63"/><circle cx="-334.8" cy="-47.6" r="7.63"/><circle cx="-334.8" cy="-23.8" r="7.63"/><circle cx="-334.8" cy="-0.4" r="7.63"/><circle cx="-334.8" cy="23.7" r="7.63"/><circle cx="-334.8" cy="46.7" r="7.63"/><circle cx="-310.3" cy="47.6" r="7.63"/><circle cx="-286.6" cy="47.6" r="7.63"/><circle cx="-263.5" cy="47.6" r="7.63"/><circle cx="-239.7" cy="47.6" r="7.63"/><circle cx="-206.0" cy="-47.6" r="7.63"/><circle cx="-206.0" cy="-23.8" r="7.63"/><circle cx="-206.0" cy="-0.4" r="7.63"/><circle cx="-206.0" cy="23.7" r="7.63"/><circle cx="-206.0" cy="47.6" r="7.63"/><circle cx="-181.3" cy="-47.6" r="7.63"/><circle cx="-181.3" cy="-0.4" r="7.63"/><circle cx="-181.3" cy="47.6" r="7.63"/><circle cx="-158.0" cy="-47.6" r="7.63"/><circle cx="-158.0" cy="-0.4" r="7.63"/><circle cx="-158.0" cy="47.6" r="7.63"/><circle cx="-134.5" cy="-47.6" r="7.63"/><circle cx="-134.5" cy="-0.4" r="7.63"/><circle cx="-134.5" cy="47.6" r="7.63"/><circle cx="-111.2" cy="-47.6" r="7.63"/><circle cx="-111.2" cy="47.6" r="7.63"/><circle cx="-76.2" cy="49.9" r="7.63"/><circle cx="-63.7" cy="28.1" r="7.63"/><circle cx="-52.1" cy="7.7" r="7.63"/><circle cx="-40.1" cy="-13.1" r="7.63"/><circle cx="-40.1" cy="28.1" r="7.63"/><circle cx="-28.5" cy="-32.9" r="7.63"/><circle cx="-17.0" cy="-50.5" r="7.63"/><circle cx="-17.0" cy="28.1" r="7.63"/><circle cx="-6.2" cy="-32.9" r="7.63"/><circle cx="5.2" cy="-13.1" r="7.63"/><circle cx="6.8" cy="28.1" r="7.63"/><circle cx="16.9" cy="7.7" r="7.63"/><circle cx="28.7" cy="28.1" r="7.63"/><circle cx="40.6" cy="47.6" r="7.63"/><circle cx="76.9" cy="-47.1" r="7.63"/><circle cx="76.9" cy="-23.8" r="7.63"/><circle cx="76.9" cy="0.4" r="7.63"/><circle cx="76.9" cy="23.7" r="7.63"/><circle cx="76.9" cy="47.6" r="7.63"/><circle cx="101.3" cy="-47.6" r="7.63"/><circle cx="101.3" cy="-0.4" r="7.63"/><circle cx="124.8" cy="-47.6" r="7.63"/><circle cx="124.8" cy="-0.4" r="7.63"/><circle cx="148.2" cy="-47.6" r="7.63"/><circle cx="148.2" cy="-0.4" r="7.63"/><circle cx="163.6" cy="23.7" r="7.63"/><circle cx="171.0" cy="-45.6" r="7.63"/><circle cx="172.6" cy="-2.5" r="7.63"/><circle cx="181.5" cy="-23.8" r="7.63"/><circle cx="181.5" cy="47.6" r="7.63"/><circle cx="218.0" cy="-13.1" r="7.63"/><circle cx="218.0" cy="14.1" r="7.63"/><circle cx="231.4" cy="-34.5" r="7.63"/><circle cx="231.4" cy="35.4" r="7.63"/><circle cx="254.8" cy="-47.1" r="7.63"/><circle cx="254.8" cy="47.6" r="7.63"/><circle cx="280.8" cy="-50.5" r="7.63"/><circle cx="280.8" cy="51.0" r="7.63"/><circle cx="304.4" cy="-45.6" r="7.63"/><circle cx="304.4" cy="46.7" r="7.63"/><circle cx="325.4" cy="-32.9" r="7.63"/><circle cx="325.4" cy="35.4" r="7.63"/><circle cx="362.0" cy="-11.6" r="7.63"/><circle cx="362.0" cy="14.1" r="7.63"/><circle cx="375.2" cy="-32.9" r="7.63"/><circle cx="375.2" cy="35.4" r="7.63"/><circle cx="398.8" cy="-45.6" r="7.63"/><circle cx="398.8" cy="46.7" r="7.63"/><circle cx="424.6" cy="-47.6" r="7.63"/><circle cx="424.6" cy="49.9" r="7.63"/><circle cx="448.3" cy="-44.0" r="7.63"/><circle cx="448.3" cy="46.7" r="7.63"/><circle cx="469.0" cy="-31.9" r="7.63"/><circle cx="469.0" cy="34.3" r="7.63"/><circle cx="481.8" cy="-11.6" r="7.63"/><circle cx="481.8" cy="14.1" r="7.63"/></svg>
@@ -284,7 +291,6 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
     </div>
     <div class="rcol">
     <div class="vis" data-anim="6.4" data-ripple role="img" aria-label="Three horizontal gradient pills extend in from the right edge of a black page with dashed guide lines; the longest ends in a glowing circle with ripples around it">
-      <div class="dl" aria-hidden="true"><i style="left:6%"></i><i style="left:20%"></i><i style="left:34%"></i><i style="left:48%"></i><i style="left:62%"></i><i style="left:76%"></i></div>
       <div class="pr" style="--y:12%;--h:38px;--w:.46" data-d="0.5"></div>
       <div class="pr" style="--y:30%;--h:38px;--w:.7" data-d="0.25"></div>
       <div class="pr" style="--y:48%;--h:38px;--w:.84;--hd:92px" data-d="0"><span class="hw"><span class="rp"><i></i><i></i><i></i></span><span class="hd"></span></span></div>
@@ -405,9 +411,9 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
       <h2>Everything founders need to credit every order</h2>
     </div>
     <div class="inside">
-      <a href="https://www.clear.co/"><b>4</b><span class="t">Understanding single-touch attribution</span></a>
-      <a href="https://www.clear.co/"><b>5</b><span class="t">Choosing your attribution model</span></a>
-      <div class="lock"><b>6</b><div><span class="t">Unlock the rest</span><a class="btn sm" href="https://www.clear.co/">Download <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M8 2v9M4 7.5 8 11.5l4-4M2.5 14h11"/></svg></a></div></div>
+      <a href="https://www.clear.co/"><span class="top"><span class="mono">Chapter</span><b>4</b></span><span class="t">Understanding single-touch attribution</span></a>
+      <a href="https://www.clear.co/"><span class="top"><span class="mono">Chapter</span><b>5</b></span><span class="t">Choosing your attribution model</span></a>
+      <div class="lock"><span class="top"><span class="mono">Chapter</span><b>6</b></span><div><span class="t">Unlock the rest</span><a class="btn sm" href="https://www.clear.co/">Download <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M8 2v9M4 7.5 8 11.5l4-4M2.5 14h11"/></svg></a></div></div>
     </div>
   </div>
 </section>
