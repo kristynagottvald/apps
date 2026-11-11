@@ -465,7 +465,10 @@ function flatCard(K){
 }
 /* Colour-block postcards (six layouts from the Figma postcard reference). Photo areas are the plain purple placeholder. */
 function blockCard(K){
-  var S=K.S,PL=K.pal.colors,a=K.fill,p=contrast(K.prim,K.pal.bg)<1.5?(K.pal.bg==='#4131F1'?'#1E2247':'#4131F1'):K.prim,W0=K.blk,L=S.blockLayout,o='',brand=S.copy.brand.toUpperCase(),pale=mix(a,'#ffffff',.6),PH=PHOTO_PURPLE;
+  var S=K.S,PL=K.pal.colors,a=K.fill,p=contrast(K.prim,K.pal.bg)<1.5?(K.pal.bg==='#4131F1'?'#1E2247':'#4131F1'):K.prim,W0=K.blk,L=S.blockLayout,o='',brand=S.copy.brand.toUpperCase(),PH='#A99BFF';
+  /* the panel colour must not melt into the photo area or the dark strip: swap it for another palette colour */
+  if(contrast(a,PH)<1.6||contrast(a,p)<1.4){var alt=PL.filter(function(c){return c!==K.pal.bg&&contrast(c,PH)>=1.6&&contrast(c,p)>=1.4}).sort(function(x,y){return contrast(y,K.pal.bg)-contrast(x,K.pal.bg)})[0];a=alt||'#FFFFFF'}
+  var pale=mix(a,'#ffffff',.6);
   function R(x,y,w,h,rx,f){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rx+'" fill="'+f+'"/>'}
   function best(bg){var c=PL.filter(function(x){return x!==bg}).sort(function(x,y){return contrast(y,bg)-contrast(x,bg)})[0];return c&&contrast(c,bg)>=2?c:textOn(bg)}
   function stripes(x,y,w,h,col){var d='';for(var yy=y+2;yy<y+h;yy+=5.5)d+='M'+x+' '+yy+'H'+(x+w);return '<path d="'+d+'" stroke="'+col+'" stroke-width="2.4" fill="none"/>'}
@@ -568,7 +571,7 @@ function uiTracking(K){
   for(var i=0;i<8;i++){var y=46+i*20,on=i===act;if(on)o+='<rect x="8" y="'+(y-6)+'" width="80" height="18" rx="9" fill="'+mix(P,'#ffffff',.78)+'"/>';
     o+='<rect x="16" y="'+(y-1)+'" width="'+[44,52,38,48,40,50,36,44][i]+'" height="6" rx="3" fill="'+(on?P:'#CFCAF2')+'"/>'}
   o+='<rect x="108" y="10" width="150" height="18" rx="9" fill="#F1F0FB"/><circle cx="119" cy="19" r="3.2" fill="none" stroke="#A9A4DB" stroke-width="1.3"/>';
-  o+='<rect x="408" y="9" width="70" height="20" rx="10" fill="'+P+'"/>'+UP(K,443,22.5,'Create',8,textOn(P),'middle');
+  o+='<rect x="408" y="9" width="70" height="20" rx="10" fill="'+P+'"/>'+UP(K,443,22.5,'Create',8,'#ffffff','middle');
   var title=K.I.campaign,wt=tw(title,12,700)*.78;
   o+=UP(K,108,56,title,12,INK)+'<rect x="'+(108+wt+8)+'" y="45" width="34" height="14" rx="7" fill="'+LC+'"/>'+UP(K,108+wt+25,55,'Live',8,INK,'middle');
   if(f==='chart'){
@@ -594,8 +597,9 @@ function uiTracking(K){
     for(i=0;i<3;i++){var ry=212+i*30;o+='<path d="M108 '+(ry+26)+'H478" stroke="#EEEBFA"/><rect x="108" y="'+(ry+8)+'" width="'+[84,70,92][i]+'" height="6" rx="3" fill="#CFCAF2"/>';
       var wp=tw(st[i][0],7.5,700)*.78+20;o+='<rect x="268" y="'+(ry+3)+'" width="'+wp+'" height="16" rx="8" fill="'+st[i][1]+'"/>'+UP(K,268+wp/2,ry+14,st[i][0],7.5,st[i][2],'middle')+'<rect x="400" y="'+(ry+8)+'" width="'+[60,48,56][i]+'" height="6" rx="3" fill="'+PILL+'"/>'}
   }else if(f==='map'){
-    o+='<rect x="108" y="68" width="246" height="238" rx="6" fill="#EEF0FB"/>';
-    o+='<rect x="120" y="212" width="52" height="40" fill="'+SO+'"/><rect x="262" y="84" width="80" height="44" fill="'+SO+'"/>';
+    var BLD=mix(P,'#ffffff',.74);  /* highlighted buildings: strong enough to read against the pale ground */
+    o+='<rect x="108" y="68" width="246" height="238" rx="6" fill="#F1F2FB"/>';
+    o+='<rect x="120" y="212" width="52" height="40" fill="'+BLD+'"/><rect x="262" y="84" width="80" height="44" fill="'+BLD+'"/>';
     [118,186,250].forEach(function(y){o+='<path d="M108 '+y+'H354" stroke="#fff" stroke-width="8"/>'});
     [158,236,304].forEach(function(x){o+='<path d="M'+x+' 68V306" stroke="#fff" stroke-width="8"/>'});
     o+='<path d="M130 280H158V186H236V118H304" fill="none" stroke="'+P+'" stroke-width="3" stroke-dasharray="7 5" stroke-linejoin="round"/>';
@@ -608,7 +612,7 @@ function uiTracking(K){
     o+='<rect x="122" y="124" width="342" height="10" rx="5" fill="'+PILL+'"/><rect x="122" y="124" width="280" height="10" rx="5" fill="'+P+'"/><rect x="402" y="124" width="40" height="10" fill="'+LC+'"/>';
     ['Addresses verified','Proof approved','Postage paid'].forEach(function(l,j){var cy=170+j*34;o+='<rect x="108" y="'+(cy-14)+'" width="206" height="28" rx="14" fill="#F5F4FF"/>'+check(125,cy,7,P,'#fff')+UP(K,142,cy+3,l,8.5,INK)});
     o+='<rect x="326" y="156" width="152" height="108" rx="8" fill="#fff" stroke="'+EDGE+'" stroke-width="1.5"/>'+UP(K,340,176,'Mail date',8,MUTED)+T(340,208,'Nov 12',22,700,INK)+'<rect x="340" y="222" width="70" height="8" rx="4" fill="'+PILL+'"/>';
-    o+='<rect x="326" y="276" width="152" height="30" rx="15" fill="'+P+'"/>'+UP(K,402,293,'Send campaign',9.5,textOn(P),'middle');
+    o+='<rect x="326" y="276" width="152" height="30" rx="15" fill="'+P+'"/>'+UP(K,402,293,'Send campaign',9.5,'#ffffff','middle');
   }
   return o;
 }
@@ -620,7 +624,7 @@ function uiEditor(K){
   var slug=K.I.campaign.toLowerCase().replace(/\s+/g,'-');
   o+='<path d="M0 30H490" stroke="'+EDGE+'" stroke-width="1.5"/>'+UP(K,14,19,slug,8.5,INK);
   o+='<rect x="146" y="12" width="44" height="6" rx="3" fill="'+PILL+'"/><rect x="196" y="12" width="28" height="6" rx="3" fill="'+PILL+'"/>';
-  o+='<rect x="414" y="6" width="62" height="19" rx="9.5" fill="'+P+'"/>'+UP(K,445,18.5,'Preview',8.5,textOn(P),'middle');
+  o+='<rect x="414" y="6" width="62" height="19" rx="9.5" fill="'+P+'"/>'+UP(K,445,18.5,'Preview',8.5,'#ffffff','middle');
   for(var i=0;i<6;i++){o+='<rect x="10" y="'+(44+i*32)+'" width="22" height="22" rx="6" fill="'+(i===0?P:SO)+'"/><rect x="16" y="'+(53+i*32)+'" width="10" height="4" rx="2" fill="'+(i===0?textOn(P):P)+'" fill-opacity="'+(i===0?1:.6)+'"/>'}
   /* the selected mail piece, scaled into the canvas */
   var pc=renderPiece(Object.assign({},K,{clean:true})),sc=S.piece==='letter'?.58:.5,pw=pc.w*sc,ph=pc.h*sc,cx=S.piece==='letter'?200:212,cy=176,bx=cx-pw/2,by=cy-ph/2;
