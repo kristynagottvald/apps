@@ -1,70 +1,86 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Apps</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#000;--fg:#fff;--muted:#fff;--line:#fff}
-*{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:var(--fg);font:400 16px/1.4 "Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
-  -webkit-font-smoothing:antialiased;min-height:100vh;padding:clamp(20px,5vw,64px)}
-header{max-width:1200px;margin:0 auto clamp(28px,6vw,64px)}
-h1{font-weight:300;font-size:clamp(40px,8vw,96px);line-height:1.02;letter-spacing:-.02em}
-.grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:24px}
-.card{display:block;color:inherit;text-decoration:none}
-.card img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000;border:2px solid var(--line);border-radius:16px}
-.cat{display:block;margin-top:14px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
-.title{display:block;margin-top:6px;font-size:24px;font-weight:400;letter-spacing:-.01em}
-.card:hover .title,.card:focus-visible .title{text-decoration:underline;text-underline-offset:4px}
-.card:focus-visible{outline:2px solid #fff;outline-offset:6px}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sandbox • Kristyna Gottvald</title>
+  <meta name="description" content="Interactive tools, motion studies and mockups by Kristyna Gottvald.">
+  <meta name="theme-color" content="#000000">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-<header><h1>Apps</h1></header>
-<main class="grid">
-  <a class="card" href="lifecycle-image-engine/">
-    <img src="lifecycle-image-engine/thumb.png" alt="Lifecycle Image Studio preview: a row of three pink rounded cards with spot illustrations and indigo subheading links, beside the template editor">
-    <span class="cat">Interactive Engine</span>
-    <span class="title">Lifecycle Image Studio</span>
-  </a>
-  <a class="card" href="prompt-demos/">
-    <img src="prompt-demos/thumb.png" alt="Stop Building Demos preview: the headline 'Stop building demos and start prompting them.' with the Reprise spark logo and radiating lines centred on navy, beside a prompt box">
-    <span class="cat">Motion</span>
-    <span class="title">Stop Building Demos</span>
-  </a>
-  <a class="card" href="video-synopsis/">
-    <img src="video-synopsis/thumb.png" alt="Video Synopsis preview: an overlay of people walking through a lobby with yellow frames and time stamps, beside the original footage and clip timelines">
-    <span class="cat">Mockup</span>
-    <span class="title">Video Synopsis</span>
-  </a>
-  <a class="card" href="clearco-terrain/">
-    <img src="clearco-terrain/thumb.png" alt="Clearco Terrain preview: a square target frame with corner crosshairs around the three-line headline on a dark grid">
-    <span class="cat">Motion</span>
-    <span class="title">Clearco Terrain</span>
-  </a>
-  <a class="card" href="clearco-target-frame/">
-    <img src="clearco-target-frame/thumb.png" alt="Clearco Target Frame preview: a target frame with corner crosshairs around the dot-matrix Clearco logo">
-    <span class="cat">Motion</span>
-    <span class="title">Clearco Target Frame</span>
-  </a>
-  <a class="card" href="hero-banner-engine/">
-    <img src="hero-banner-engine/thumb.png" alt="Banner Template Studio preview: Lob's No-Code Design Suite banner">
-    <span class="cat">Interactive Engine</span>
-    <span class="title">Banner Template Studio</span>
-  </a>
-  <a class="card" href="blog-banner-studio/">
-    <img src="blog-banner-studio/thumb.png" alt="Blog Banner Studio preview: an insurance postcard beside a design editor on an indigo line-work background">
-    <span class="cat">Interactive Engine</span>
-    <span class="title">Blog Banner Studio</span>
-  </a>
-  <a class="card" href="ab-testing/">
-    <img src="ab-testing/thumb.png" alt="A/B Testing preview: a dark analytics dashboard comparing Control and Variant conversion for two Mavenoid community pages">
-    <span class="cat">Mockup</span>
-    <span class="title">A/B Test: PSC Page Variants</span>
-  </a>
-</main>
+
+  <!-- Floating navigation pill -->
+  <header class="hb" id="hb">
+    <div class="hb-pill">
+      <div class="hb-bar">
+        <a class="logo" href="#" aria-label="Kristyna Gottvald">KRISTYNA</a>
+        <span class="hb-label">Sandbox</span>
+        <button class="hb-toggle" id="hb-toggle" type="button" aria-expanded="false" aria-controls="hb-menu">
+          <span class="sr">Toggle menu</span>
+          <svg class="nav-ptr" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7.2 6.4l8.4 3.3-3.6 1.4-1.4 3.6z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+      <nav class="hb-menu" id="hb-menu" aria-label="Main Navigation">
+        <a href="#" aria-current="page"><b>Sandbox</b><span>Prototypes &amp; experiments</span></a>
+        <a href="https://kristynagottvald.github.io/sketches/"><b>Tools</b><span>Brand tools &amp; systems</span></a>
+        <div class="hb-channels">
+          <a href="https://kristynagottvald.github.io/" target="_blank" rel="noopener noreferrer">Design Portfolio</a>
+          <a href="https://dribbble.com/gottbot/" target="_blank" rel="noopener noreferrer">Dribbble</a>
+          <a href="https://openprocessing.org/user/500421/#sketches" target="_blank" rel="noopener noreferrer">OpenProcessing</a>
+          <a href="https://www.linkedin.com/in/kgottvald/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="work" aria-label="Sandbox">
+      <div class="work-side">
+        <div class="work-side-in">
+          <h1 class="t-condensed">Sandbox</h1>
+          <p class="work-sub">Interactive tools, motion studies and mockups, built to try out ideas.</p>
+        </div>
+      </div>
+      <!-- Tiles are rendered from apps.json by script.js -->
+      <div class="pj-grid" id="pj-grid"></div>
+    </section>
+  </main>
+
+  <footer class="contact" id="contact" aria-label="Contact">
+    <div class="contact-grid">
+      <div class="contact-head"><h2 class="t-condensed">Contact</h2></div>
+      <div class="contact-rows">
+        <div class="contact-row"><h3>Email</h3><div><a id="mail" href="mailto:kgottvald@gmail.com">kgottvald@gmail.com</a></div></div>
+        <div class="contact-row"><h3>Channels</h3><div class="grey">
+          <a href="https://kristynagottvald.github.io/" target="_blank" rel="noopener noreferrer">Design Portfolio</a>
+          <a href="https://www.linkedin.com/in/kgottvald/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="https://dribbble.com/gottbot/" target="_blank" rel="noopener noreferrer">Dribbble</a>
+          <a href="https://openprocessing.org/user/500421/#sketches" target="_blank" rel="noopener noreferrer">OpenProcessing</a>
+        </div></div>
+      </div>
+    </div>
+    <div class="contact-base">
+      <div class="widget">
+        <div class="widget-body">
+          <span class="caps grey">Design Portfolio</span>
+          <span class="widget-mail">kristynagottvald.github.io</span>
+        </div>
+        <a href="https://kristynagottvald.github.io/" target="_blank" rel="noopener noreferrer" class="copy">View</a>
+      </div>
+      <div class="foot">
+        <span>© Kristyna Gottvald</span>
+        <a href="#">Back to top ↑</a>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>

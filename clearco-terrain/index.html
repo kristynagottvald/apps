@@ -13,7 +13,7 @@
 html,body{height:100%;background:#000;color:var(--fg);overflow:hidden;
   font:600 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif}
 body{display:flex;flex-direction:column}
-/* ---------- Back nav (shared across all apps) ---------- */
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
 nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
 nav.back a{color:#8d8d8d;text-decoration:none}
 nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
@@ -25,7 +25,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
-<nav class="back" aria-label="Apps"><a href="../">Apps</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Clearco Terrain</b></nav>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Clearco Terrain</b></nav>
 <main><canvas id="c" aria-label="Clearco terrain motif: the target frame zooms out through nested terrains of frames, slides to a new terrain, then zooms in on the target as it resizes around the next headline"></canvas></main>
 <script>
 /* Clearco terrain motif.
