@@ -477,7 +477,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
      with the circle leading, hold, then pull back in. Dots with data-at appear as the lead pill passes them. */
   var groups = [].map.call(document.querySelectorAll('[data-anim]'), function(el){
     var g = { el: el, T: +el.dataset.anim || 7, on: false,
-      pls: [].map.call(el.querySelectorAll('.pl,.pr'), function(p){ var cs = getComputedStyle(p), h = parseFloat(cs.getPropertyValue('--h')) || 34, hd = parseFloat(cs.getPropertyValue('--hd')) || 56; return { el: p, d: +p.dataset.d || 0, k: Math.min(1, h / hd) }; }),
+      pls: [].map.call(el.querySelectorAll('.pl,.pr'), function(p, n){ var cs = getComputedStyle(p), h = parseFloat(cs.getPropertyValue('--h')) || 34, hd = parseFloat(cs.getPropertyValue('--hd')) || 56; return { el: p, d: +p.dataset.d || 0, k: Math.min(1, h / hd), head: !!p.querySelector('.hw'), per: 6.5 + n * 2.1, ph: n * 2.4 }; }),
       dots: [].map.call(el.querySelectorAll('[data-at]'), function(d){ d.style.setProperty('--at', d.dataset.at); return { el: d, at: +d.dataset.at }; }) };
     vis(el, function(v){ g.on = v; });
     return g;
@@ -493,6 +493,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
       var t = reduce ? 1e3 : base % g.T, lead = 1;
       g.pls.forEach(function(p, k){
         var v = reduce ? 1 : pill(t, p.d, g.T);
+        if (!reduce && !p.head && g.el.hasAttribute('data-grow')) v *= 1 - .06 * v * (.5 + .5 * Math.sin(base * 6.2832 / p.per + p.ph));   /* the bars without a circle slowly breathe in and out while they rest */
         if (k === 0 || p.el.classList.contains('lead')) lead = k === 0 ? v : lead;
         p.el.style.setProperty('--p', v.toFixed(4));
         var rp = g.el.hasAttribute('data-ripple') && p.el.querySelector('.rp');
