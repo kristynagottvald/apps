@@ -405,6 +405,9 @@ function check(cx,cy,r,fill,ink){return '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+
 function crop(w,h,col){var o='<g stroke="'+col+'" stroke-width="2.5" fill="none">';
   [[0,0,-1,-1],[w,0,1,-1],[0,h,-1,1],[w,h,1,1]].forEach(function(c){o+='<path d="M'+(c[0]+c[2]*9)+' '+c[1]+'h'+(c[2]*16)+'M'+c[0]+' '+(c[1]+c[3]*9)+'v'+(c[3]*16)+'"/>'});
   return o+'</g>'}
+/* selection box for the editor screen: a white halo under the coloured line keeps it visible on any postcard colour */
+function selBox(b,col){var r='x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" height="'+b.h+'" fill="none"',o='<rect '+r+' stroke="#fff" stroke-width="3.6"/><rect '+r+' stroke="'+col+'" stroke-width="1.5"/>';
+  [[b.x,b.y],[b.x+b.w,b.y],[b.x,b.y+b.h],[b.x+b.w,b.y+b.h]].forEach(function(p){o+='<rect x="'+(p[0]-3.5)+'" y="'+(p[1]-3.5)+'" width="7" height="7" fill="#fff" stroke="'+col+'" stroke-width="1.5"/>'});return o}
 function handles(b,col){var o='<rect x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" height="'+b.h+'" fill="none" stroke="'+col+'" stroke-width="1.5"/>';
   [[b.x,b.y],[b.x+b.w,b.y],[b.x,b.y+b.h],[b.x+b.w,b.y+b.h]].forEach(function(p){o+='<rect x="'+(p[0]-3.5)+'" y="'+(p[1]-3.5)+'" width="7" height="7" fill="#fff" stroke="'+col+'" stroke-width="1.5"/>'});return o}
 
@@ -538,7 +541,7 @@ function blockCard(K){
     o+=bars(222,212,[86,56],8,17,sb3)+scan(354,213,30,p,W0);
   }
   /* selection box for the Creation screen: sits over each layout's text blocks */
-  var HBS={'sale':[222,148,146,74],'columns-blocks':[40,150,134,32],'coffee':[226,82,140,68],'finance':[28,108,144,44],'photo-top':[28,178,148,56]},hv=HBS[L],
+  var HBS={'sale':[224,149,140,25],'columns-blocks':[40,150,134,32],'coffee':[226,82,140,68],'finance':[28,108,144,44],'photo-top':[28,178,148,56]},hv=HBS[L],
       hb=L==='columns-text'?{x:24,y:78-f.size-2,w:166,h:f.lines.length*f.lh+10}:{x:hv[0],y:hv[1],w:hv[2],h:hv[3]};
   return{svg:o,w:400,h:267,hb:hb};
 }
@@ -669,10 +672,14 @@ function uiEditor(K){
   var pc=renderPiece(Object.assign({},K,{clean:true})),sc=S.piece==='letter'?.58:.5,pw=pc.w*sc,ph=pc.h*sc,cx=S.piece==='letter'?200:212,cy=176,bx=cx-pw/2,by=cy-ph/2;
   var hb=pc.hb?{x:bx+pc.hb.x*sc,y:by+pc.hb.y*sc,w:pc.hb.w*sc,h:pc.hb.h*sc}:{x:bx,y:by,w:pw,h:ph};
   function dk(c){return contrast(c,'#ECEAFB')>=3?c:INK}
+  var selInk=[K.prim,K.pal.a,K.pal.b,INK].filter(function(c){return contrast(c,'#ffffff')>=3})[0]||INK;   /* the line colour that sits on the white halo */
+  /* guides along the piece's outer edges sit behind the piece */
+  if(f==='canvas')o+='<path d="M'+bx.toFixed(1)+' 32V318M'+(bx+pw).toFixed(1)+' 32V318M42 '+by.toFixed(1)+'H358M42 '+(by+ph).toFixed(1)+'H358" stroke="'+SC+'" stroke-width="1" stroke-dasharray="3 3"/>';
   if(f==='proof')o+='<rect x="'+(bx-9)+'" y="'+(by-9)+'" width="'+(pw+18)+'" height="'+(ph+18)+'" fill="none" stroke="'+dk(K.pal.a)+'" stroke-width="1.3" stroke-dasharray="4 3"/>';
   o+='<g clip-path="url(#edClip)"><g transform="translate('+bx.toFixed(1)+' '+by.toFixed(1)+') scale('+sc+')">'+pc.svg+'</g></g>';
-  if(f==='proof')o+='<rect x="'+(bx+9)+'" y="'+(by+9)+'" width="'+(pw-18)+'" height="'+(ph-18)+'" fill="none" stroke="'+dk(P)+'" stroke-width="1.3" stroke-dasharray="4 3"/>';
-  if(f==='canvas')o+=handles(hb,SC)+'<path d="M'+bx.toFixed(1)+' 32V318M'+(bx+pw).toFixed(1)+' 32V318M42 '+by.toFixed(1)+'H358M42 '+(by+ph).toFixed(1)+'H358" stroke="'+SC+'" stroke-width="1" stroke-dasharray="3 3"/>';  /* guides along the piece's outer edges */
+  if(f==='proof'){var sz='x="'+(bx+9)+'" y="'+(by+9)+'" width="'+(pw-18)+'" height="'+(ph-18)+'" fill="none" stroke-dasharray="4 3"';   /* white halo, then the colour, so it reads on the postcard */
+    o+='<rect '+sz+' stroke="#fff" stroke-width="3.2"/><rect '+sz+' stroke="'+selInk+'" stroke-width="1.3"/>'}
+  if(f==='canvas')o+=selBox(hb,selInk);
   o+='<rect x="360" y="30" width="130" height="290" fill="#fff"/><path d="M360 30V320" stroke="'+EDGE+'" stroke-width="1.5"/>';
   if(f==='vars'){
     o+=UP(K,372,50,'Variables',8,MUTED);
