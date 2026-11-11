@@ -7,7 +7,7 @@
 <meta name="description" content="The Marketing Attribution Guide: invest in ads that move the needle. A resource for founders from Clearco.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter+Tight:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@200;300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter+Tight:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@100&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#000;--paper:#fff;--wash:#f1f6f9;--line:#d6dde3;--mute:#5d6a75;
@@ -52,7 +52,7 @@ section,.band{position:relative;overflow:hidden}
 .btn:hover,.btn:focus-visible{background:transparent;color:#fff}
 .btn.sm{padding:14px 18px;font-size:10px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.num{font:200 clamp(88px,12.5vw,176px)/.8 var(--num);font-feature-settings:"zero" 1;letter-spacing:-.04em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;user-select:none}
+.num{font:100 clamp(88px,12.5vw,176px)/.8 var(--num);font-feature-settings:"zero" 1;letter-spacing:-.04em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;user-select:none}
 
 /* dashed vertical guide lines (the black pages carry these behind the content) */
 .dl{position:absolute;inset:0;pointer-events:none;-webkit-mask-image:linear-gradient(transparent,#000 40%);mask-image:linear-gradient(transparent,#000 40%)}
@@ -172,6 +172,10 @@ section,.band{position:relative;overflow:hidden}
 .stage{position:relative;width:100%;min-height:240px}
 .pv{position:absolute;bottom:0;left:50%;width:var(--pw,44px);margin-left:calc(var(--pw,44px) / -2);height:calc(var(--pw,44px) + (100% - var(--pw,44px)) * var(--v,0));border-radius:99px;background:linear-gradient(0deg,var(--pv0),var(--blue2) 68%,var(--blue));transition:height 1s cubic-bezier(.3,.85,.2,1)}
 .pv .hw{left:50%;top:calc(var(--pw,44px) / 2);margin-left:calc(var(--pw,44px) / -2);--hd:var(--pw,44px);opacity:1;transform:translateY(-50%)}
+.pv{border-radius:99px 99px 0 0}
+.pv::after,.pv .hd::after{opacity:.3}
+.col.zero .pv{background:none}
+.col.zero .pv::after{display:none}
 .pv .hd{box-shadow:0 0 0 6px rgba(40,140,190,.26)}
 .pv .rp{opacity:0;transition:opacity .6s}
 .col.max .pv .rp{opacity:1}
@@ -551,7 +555,7 @@ footer .sign{margin-top:28px;color:#8fa0ad;font-size:14px}
       tabs.forEach(function(b, k){ b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; });
       cols.forEach(function(c, k){
         c.querySelector('.pv').style.setProperty('--v', (m.v[k] / 100).toFixed(3));
-        c.querySelector('.val').textContent = m.v[k] + '%'; c.classList.toggle('max', m.v[k] === top);
+        c.querySelector('.val').textContent = m.v[k] + '%'; c.classList.toggle('max', m.v[k] === top); c.classList.toggle('zero', m.v[k] === 0);
       });
       chart.setAttribute('aria-label', m.n + ' attribution: ' + TP.map(function(t, k){ return t + ' ' + m.v[k] + '%'; }).join(', '));
     }
