@@ -159,7 +159,8 @@ section{padding-block:clamp(18px,2.5vw,32px)}
 .inside b{font:400 64px/.9 var(--serif)}
 .inside .t{display:block;font:400 22px/1.05 var(--serif)}
 .inside .lock .t{margin-bottom:18px}
-/* resting state: the three tiles are stacked with a generous overlap on a rising diagonal (4 lowest, unlock highest).
+/* resting state: the three tiles are stacked at the right edge of the row, extending to the left, with a generous overlap on a rising
+   diagonal (4 lowest, unlock highest).
    Hovering (or tabbing into) the group eases them apart into the flat, spaced row. The hover area is the group's own padded box,
    not the tiles, so tiles sliding under or away from the pointer can't make the state flicker. */
 @media (hover:hover) and (min-width:641px){
@@ -167,9 +168,9 @@ section{padding-block:clamp(18px,2.5vw,32px)}
   .inside>a,.inside>.lock{position:relative;will-change:transform;
     transition:transform .95s cubic-bezier(.45,0,.15,1) calc(var(--i) * 50ms),background-color .5s ease,color .5s ease}
   .inside>a{padding-right:calc(18px + var(--ov))}      /* text stops short of the tile that overlaps it */
-  .inside>:nth-child(1){--i:0;z-index:1;transform:translateY(var(--rise))}
-  .inside>:nth-child(2){--i:1;z-index:2;transform:translateX(calc(-1 * (12px + var(--ov))))}
-  .inside>:nth-child(3){--i:2;z-index:3;transform:translate(calc(-2 * (12px + var(--ov))),calc(-1 * var(--rise)))}
+  .inside>:nth-child(1){--i:0;z-index:1;transform:translate(calc(2 * (12px + var(--ov))),var(--rise))}
+  .inside>:nth-child(2){--i:1;z-index:2;transform:translateX(calc(12px + var(--ov)))}
+  .inside>:nth-child(3){--i:2;z-index:3;transform:translateY(calc(-1 * var(--rise)))}
   .inside:hover>*,.inside:focus-within>*{transform:none}
 }
 @media (prefers-reduced-motion:reduce){.inside>*{transition:none}}
