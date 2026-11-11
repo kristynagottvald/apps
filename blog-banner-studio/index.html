@@ -580,7 +580,7 @@ function uiTracking(K){
   o+='<rect x="108" y="10" width="150" height="18" rx="9" fill="#F1F0FB"/><circle cx="119" cy="19" r="3.2" fill="none" stroke="#A9A4DB" stroke-width="1.3"/>';
   o+='<rect x="408" y="9" width="70" height="20" rx="10" fill="'+P+'"/>'+UP(K,443,22.5,'Create',8,'#ffffff','middle');
   var title=K.I.campaign,wt=tw(title,12,700)*.78;
-  o+=UP(K,108,56,title,12,INK)+'<rect x="'+(108+wt+8)+'" y="45" width="34" height="14" rx="7" fill="'+LC+'"/>'+UP(K,108+wt+25,55,'Live',8,INK,'middle');
+  o+=UP(K,108,56,title,12,INK)+'<rect x="'+(108+wt+8)+'" y="45" width="34" height="14" rx="7" fill="'+LC+'"/>'+UP(K,108+wt+25,55,'Live',8,onc(LC),'middle');
   if(f==='chart'){
     o+=tile(K,108,68,118,44,'Scans','4,212')+tile(K,234,68,118,44,'Site visits','1,038')+tile(K,360,68,118,44,'Conversion','6.4%');
     o+='<rect x="108" y="122" width="370" height="184" rx="6" fill="#fff" stroke="'+EDGE+'" stroke-width="1.5"/>'+UP(K,120,141,'Scans over time',8,MUTED);
@@ -600,7 +600,7 @@ function uiTracking(K){
       else if(j===2)o+='<circle cx="'+cx+'" cy="152" r="9" fill="#fff" stroke="'+P+'" stroke-width="3"/><circle cx="'+cx+'" cy="152" r="3" fill="'+P+'"/>';
       else o+='<circle cx="'+cx+'" cy="152" r="9" fill="#fff" stroke="'+PILL+'" stroke-width="3"/>';
       o+=UP(K,cx,181,l,7.5,j===3?MUTED:INK,'middle')});
-    var st=[['In transit',SO,P],['Delivered',LC,INK],['Delivered',LC,INK]];
+    var st=[['In transit',SO,P],['Delivered',LC,onc(LC)],['Delivered',LC,onc(LC)]];
     for(i=0;i<3;i++){var ry=212+i*30;o+='<path d="M108 '+(ry+26)+'H478" stroke="#EEEBFA"/><rect x="108" y="'+(ry+8)+'" width="'+[84,70,92][i]+'" height="6" rx="3" fill="#CFCAF2"/>';
       var wp=tw(st[i][0],7.5,700)*.78+20;o+='<rect x="268" y="'+(ry+3)+'" width="'+wp+'" height="16" rx="8" fill="'+st[i][1]+'"/>'+UP(K,268+wp/2,ry+14,st[i][0],7.5,st[i][2],'middle')+'<rect x="400" y="'+(ry+8)+'" width="'+[60,48,56][i]+'" height="6" rx="3" fill="'+PILL+'"/>'}
   }else if(f==='map'){
@@ -616,13 +616,15 @@ function uiTracking(K){
     ['Address verified','Facility scan','Delivered'].forEach(function(l,j){var cy=214+j*34;o+=check(380,cy,6,P,'#fff')+UP(K,392,cy+3,l,8,INK)});
   }else{ /* send: pill blocks, numbers and the date stay as detail */
     o+='<rect x="108" y="68" width="370" height="78" rx="8" fill="#fff" stroke="'+EDGE+'" stroke-width="1.5"/>'+UP(K,122,86,'Audience',8,MUTED)+T(122,112,'12,480',20,700,INK)+UP(K,122+tw('12,480',20,700)+10,112,'recipients',9,MUTED);
-    o+='<rect x="122" y="124" width="342" height="10" rx="5" fill="'+PILL+'"/><rect x="122" y="124" width="280" height="10" rx="5" fill="'+P+'"/><rect x="402" y="124" width="40" height="10" fill="'+LC+'"/>';
+    o+='<rect x="122" y="124" width="342" height="10" rx="5" fill="'+PILL+'"/><rect x="122" y="124" width="280" height="10" rx="5" fill="'+P+'"/>';
     ['Addresses verified','Proof approved','Postage paid'].forEach(function(l,j){var cy=170+j*34;o+='<rect x="108" y="'+(cy-14)+'" width="206" height="28" rx="14" fill="#F5F4FF"/>'+check(125,cy,7,P,'#fff')+UP(K,142,cy+3,l,8.5,INK)});
     o+='<rect x="326" y="156" width="152" height="108" rx="8" fill="#fff" stroke="'+EDGE+'" stroke-width="1.5"/>'+UP(K,340,176,'Mail date',8,MUTED)+T(340,208,'Nov 12',22,700,INK)+'<rect x="340" y="222" width="70" height="8" rx="4" fill="'+PILL+'"/>';
     o+='<rect x="326" y="276" width="152" height="30" rx="15" fill="'+P+'"/>'+UP(K,402,293,'Send campaign',9.5,'#ffffff','middle');
   }
   return o;
 }
+/* label colour that reads on a filled pill: white on dark or saturated fills, ink on light ones */
+function onc(c){return contrast(c,'#ffffff')>=3?'#ffffff':INK}
 function selectorCol(K){var sc='#ECEAFB';return [K.prim,K.pal.a,K.pal.b,INK].filter(function(c){return contrast(c,sc)>=3})[0]||INK}
 function uiEditor(K){
   var S=K.S,P=K.prim,SO=K.soft,f=K.F.focus,o='',SC=selectorCol(K),LC=K.pal.c;
@@ -649,7 +651,7 @@ function uiEditor(K){
   }else if(f==='proof'){
     o+=UP(K,372,50,'Proof checks',8,MUTED);
     ['Bleed set','Safe zone clear','Address block'].forEach(function(l,j){var cy=76+j*32;o+='<rect x="372" y="'+(cy-13)+'" width="106" height="26" rx="13" fill="#F5F4FF"/>'+check(387,cy,6.5,P,'#fff')+UP(K,399,cy+3,l,8,INK)});
-    o+='<rect x="372" y="176" width="64" height="18" rx="9" fill="'+LC+'"/>'+UP(K,404,188,'Approved',8,INK,'middle');
+    o+='<rect x="372" y="176" width="64" height="18" rx="9" fill="'+LC+'"/>'+UP(K,404,188,'Approved',8,onc(LC),'middle');
   }else{
     o+=UP(K,372,50,'Properties',8,MUTED);
     [K.pal.a,K.pal.b,K.pal.c,P].forEach(function(c,j){o+='<rect x="'+(372+j*27)+'" y="60" width="22" height="22" rx="6" fill="'+c+'" stroke="'+EDGE+'"/>'});
