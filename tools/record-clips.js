@@ -44,6 +44,17 @@ const APPS = {
       await at(t0, 700, () => p.evaluate(() => gc.play({ speed: 2.4, clip: true })));
       await sleep(5600);
     } },
+  'grubclub-end-card': { vp: [1280, 769], crop: [0, 49, 1280, 720],
+    // park on the finished card, replay the end card animation at 3x, then swap theme and format the way a visitor would
+    setup: async (p) => { await p.evaluate(() => ec.seek(125)); },
+    ready: 700,
+    run: async (p) => {
+      const t0 = Date.now();
+      await at(t0, 1400, () => p.evaluate(() => ec.play({ speed: 3 })));
+      await at(t0, 3500, () => domClick(p, '#themes .opt:nth-child(3)'));
+      await at(t0, 4500, () => domClick(p, '#ratios .opt:nth-child(2)'));
+      await at(t0, 5500, () => domClick(p, '#themes .opt:nth-child(2)'));
+    } },
   'clearco-terrain': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'clearco-target-frame': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'video-synopsis': { vp: [1280, 769], setup: cropOf('#vSyn'), run: async () => {} },

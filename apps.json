@@ -1,5 +1,14 @@
 [
   {
+    "id": "grubclub-end-card",
+    "title": "Grubclub End Card Maker",
+    "category": "Interactive Engine",
+    "url": "grubclub-end-card/",
+    "thumbnail": "grubclub-end-card/thumb.png",
+    "preview": "grubclub-end-card/thumb.webp",
+    "alt": "Grubclub End Card Maker: a pale blue 9:16 end card with the grubclub logo, a delivery box and a green pouch, and the headline 'delicious starts here', next to a navy panel of theme, aspect ratio, text and product controls"
+  },
+  {
     "id": "clearco-attribution-guide",
     "title": "Clearco Attribution Guide",
     "category": "Landing Page",
