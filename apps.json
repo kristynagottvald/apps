@@ -9,6 +9,15 @@
     "alt": "A phone showing a shopper asking an AI chat for a warm, floral fall scent, two Glossier perfume recommendations, choosing a size, paying with Apple Pay and Face ID, and the order confirmed back in the chat"
   },
   {
+    "id": "ilg-pixel-globe",
+    "title": "ILG Pixel Globe",
+    "category": "Motion",
+    "url": "ilg-pixel-globe/",
+    "thumbnail": "ilg-pixel-globe/thumb.png",
+    "preview": "ilg-pixel-globe/thumb.webp",
+    "alt": "Black screen with a slowly turning globe made of white pixels and thin arcs of orders flying between cities, beside the ILG cube logo and the headline 'Get the guide navigating the world's inventory logistics'"
+  },
+  {
     "id": "human-tech-motion",
     "title": "Human / Tech Motion Loop",
     "category": "Motion",
