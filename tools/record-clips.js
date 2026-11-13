@@ -25,6 +25,8 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  // loops on its own (12 s cycle, random events); start at 1 s so the clip spans a busy peak, a lull and the next peak
+  'human-tech-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#t=1', ready: 1000, q: 38, run: async () => {} },
   'workout-year-reels': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // the cycle starts on the circles; step through the new styles and one older one the way a visitor would with the switcher
     ready: 1500,
@@ -193,7 +195,7 @@ function encode(name, src, start) {
   const base = `[0:v]trim=start=${start.toFixed(3)}:duration=6.6,setpts=PTS-STARTPTS,fps=30,crop=${cw}:${ch}:${cx}:${cy},scale=960:540:flags=lanczos,format=yuv420p`;
   const fc = base + ',split=3[a0][b0][c0];[a0]trim=0.5:6.0,setpts=PTS-STARTPTS[a];[b0]trim=6.0:6.5,setpts=PTS-STARTPTS[b];[c0]trim=0:0.5,setpts=PTS-STARTPTS[c];[b][c]xfade=transition=fade:duration=0.5:offset=0[bc];[a][bc]concat=n=2:v=1,fps=12[v]';
   cp.execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', src, '-filter_complex', fc, '-map', '[v]', '-t', '6',
-    '-c:v', 'libwebp_anim', '-q:v', '62', '-compression_level', '6', '-loop', '0', '-an', out]);
+    '-c:v', 'libwebp_anim', '-q:v', String(A.q || 62), '-compression_level', '6', '-loop', '0', '-an', out]);
   // the still is the clip's first frame, which is also its loop point, so the tile never visibly cuts between the two
   cp.execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', src, '-filter_complex', fc, '-map', '[v]', '-frames:v', '1', ROOT + name + '/thumb.png']);
   console.log(name, '->', path.relative(ROOT, out), Math.round(fs.statSync(out).size / 1024) + ' KB, and thumb.png');
