@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Clearco Logistics Hero</title>
+<title>Clearco Logistics Motion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
@@ -18,17 +18,23 @@ nav.back a{color:#8d8d8d;text-decoration:none}
 nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
 nav.back span{color:#6e6e6e}
 nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:640px){nav.back{padding:0 16px}}
+.sw{margin-left:auto;display:flex;border:1px solid #333;border-radius:999px;padding:2px;flex:none}
+.sw button{font:500 12px/1 "Inter","Helvetica Neue",Arial,sans-serif;color:#8d8d8d;background:none;border:0;border-radius:999px;padding:6px 12px;cursor:pointer}
+.sw button:hover{color:#fff}
+.sw button.on{background:#fff;color:#000}
+.sw button:focus-visible{outline:2px solid #fff;outline-offset:1px}
+@media (max-width:640px){nav.back{padding:0 16px}nav.back>span:nth-of-type(2),nav.back>b{display:none}}
 main{flex:1;min-height:0;position:relative}
 canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
-<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Clearco Logistics Hero</b></nav>
-<main><canvas id="c" role="img" aria-label="Clearco inventory logistics hero animation: outlined boxes, rays and floating stacks of fine lines behind the headlines, then the Clearco logo fades in"></canvas></main>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Clearco Logistics Motion</b>
+<div class="sw" role="group" aria-label="Animation variant"><button type="button" data-v="hero" aria-pressed="true">Hero</button><button type="button" data-v="lines" aria-pressed="false">Lines</button></div></nav>
+<main><canvas id="c" role="img" aria-label="Clearco inventory logistics headline animation with two variants: the guide hero visual of boxes, rays and floating line stacks, or a grid of thin lines with sliding stacks and squares; the Clearco logo fades in at the end"></canvas></main>
 <script>
 
-const BG=(()=>{
+const BG_HERO=(()=>{
   const BOXES=[[0,0,156,156],[288,180,168,216],[456,60,60,120],[156,396,132,120]];
   const ST=[[156,116,80,56,12,.2,2],[100,484,64,56,12,1.4,2],[456,364,64,56,12,2.6,2],[381,133,194,28,16,.9,2],[180,390,120,28,12,2.1,2],[36,68,132,22,16,1.7,1]];
   const STEP=36,TOP=-20,BOT=520;
@@ -75,6 +81,61 @@ const BG=(()=>{
   }
   return {resize,draw};
 })();
+const BG_LINES=(()=>{
+  let P=96,B=12,SW=24,SH=72,NC=0,NR=0,OX=0,OY=0,stacks=[],sq=[],W0=0,H0=0;
+  const N=12;
+  function resize(W,H){
+    W0=W;H0=H; const small=W<640; P=small?72:96; B=small?10:12; SW=small?18:24; SH=Math.round(P*.75);
+    NC=Math.floor(W/P)+1; NR=Math.floor(H/P)+1; OX=Math.round((W-(NC-1)*P)/2); OY=Math.round((H-(NR-1)*P)/2);
+    stacks=[]; const want=Math.round(NC*NR*.4), used=new Set();
+    const spots=[]; for(let i=0;i<NC;i++)for(let j=1;j<NR-1;j++) spots.push([i,j]);
+    for(let i=spots.length-1;i>0;i--){const r=Math.floor(Math.random()*(i+1));[spots[i],spots[r]]=[spots[r],spots[i]];}
+    for(const [i,j] of spots.slice(0,want)) stacks.push({i,j,mv:null,next:Math.random()*4000,wide:Math.random()<.25?2:1});
+    sq=[]; for(let n=0;n<Math.round(NC*NR*.08);n++) sq.push({i:Math.floor(Math.random()*NC),j:Math.floor(Math.random()*NR),mv:null,next:Math.random()*3000});
+  }
+  function move(it,now,axis){
+    const d=Math.random()<.5?1:2, dir=Math.random()<.5?-1:1;
+    let i1=it.i+(axis==='x'?dir*d:0), j1=it.j+(axis==='y'?dir*d:0);
+    if(i1<0||i1>=NC||j1<(axis==='y'?1:0)||j1>=NR-(axis==='y'?1:0)){ i1=it.i-(axis==='x'?dir*d:0); j1=it.j-(axis==='y'?dir*d:0); }
+    if(i1<0||i1>=NC||j1<0||j1>=NR){it.next=now+500;return;}
+    it.mv={t0:now,dur:(axis==='y'?2400:1500)+d*(axis==='y'?1000:700),i0:it.i,j0:it.j,i1,j1,dir:Math.sign(j1-it.j)};
+  }
+  function draw(c,W,H,T,s,a){
+    const now=s*1000;
+    c.save(); c.globalAlpha=a;
+    // thin black bands with white edge lines, plus faint verticals that pulse
+    c.lineWidth=1; c.strokeStyle='rgba(255,255,255,.3)'; c.beginPath();
+    for(let j=0;j<NR;j++){const y=Math.round(OY+j*P)+.5; c.moveTo(0,y-B/2);c.lineTo(W,y-B/2);c.moveTo(0,y+B/2);c.lineTo(W,y+B/2);}
+    c.stroke();
+    // a scanning sweep: a bright band travels across the grid
+    const sx=((s*160)%(W+400))-200, g=c.createLinearGradient(sx-200,0,sx+200,0);
+    g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(.5,'rgba(255,255,255,.08)'); g.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=g; for(let j=0;j<NR;j++) c.fillRect(sx-200,OY+j*P-B/2,400,B);
+    c.fillStyle='rgba(255,255,255,.45)';
+    for(const it of stacks){
+      if(it.mv){ if(now-it.mv.t0>=it.mv.dur){it.i=it.mv.i1;it.j=it.mv.j1;it.mv=null;it.next=now+600+Math.random()*2200;} }
+      else if(now>=it.next) move(it,now,'y');
+      const x=OX+it.i*P; let y0=OY+it.j*P,y1=y0,p=1,dir=0;
+      if(it.mv){p=clamp01((now-it.mv.t0)/it.mv.dur);y0=OY+it.mv.j0*P;y1=OY+it.mv.j1*P;dir=it.mv.dir;}
+      const span=(N-1)*.03, w=SW*it.wide;
+      for(let k=0;k<N;k++){
+        const t=k/(N-1), ofs=-SH/2+SH*(1-Math.pow(1-t,1.35)), order=dir>0?N-1-k:k;
+        const pk=it.mv?easeSine((p-order*.03)/(1-span)):1;
+        c.fillRect(Math.round(x-w/2),Math.round(y0+(y1-y0)*pk+ofs),w,1);
+      }
+    }
+    // small squares slide along the bands horizontally and vertically
+    for(const q of sq){
+      if(q.mv){ if(now-q.mv.t0>=q.mv.dur){q.i=q.mv.i1;q.j=q.mv.j1;q.mv=null;q.next=now+500+Math.random()*1800;} }
+      else if(now>=q.next) move(q,now,Math.random()<.5?'x':'y');
+      let x=OX+q.i*P,y=OY+q.j*P;
+      if(q.mv){const e=easeIO(clamp01((now-q.mv.t0)/q.mv.dur)); x=OX+(q.mv.i0+(q.mv.i1-q.mv.i0)*e)*P; y=OY+(q.mv.j0+(q.mv.j1-q.mv.j0)*e)*P;}
+      c.fillStyle='rgba(255,255,255,.6)'; c.fillRect(Math.round(x-3),Math.round(y-3),6,6);
+    }
+    c.restore();
+  }
+  return {resize,draw};
+})();
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const TL = { s1In:[0.4,1.7], s1Fade:[3.6,4.6], s2In1:[4.9,5.9], s2In2:[6.1,7.1],
@@ -92,6 +153,8 @@ const S2=['Plan your inventory logistics','before your next peak season.'];
 const LOGO_DOTS=[[-481.7,-13.1],[-481.7,14.1],[-468.7,-34.5],[-468.7,36.5],[-445.2,-47.1],[-445.2,47.6],[-419.1,-50.5],[-419.1,51],[-395.3,-45.6],[-395.3,46.7],[-374.7,-32.9],[-374.7,34.3],[-334.8,-47.6],[-334.8,-23.8],[-334.8,-0.4],[-334.8,23.7],[-334.8,46.7],[-310.3,47.6],[-286.6,47.6],[-263.5,47.6],[-239.7,47.6],[-206,-47.6],[-206,-23.8],[-206,-0.4],[-206,23.7],[-206,47.6],[-181.3,-47.6],[-181.3,-0.4],[-181.3,47.6],[-158,-47.6],[-158,-0.4],[-158,47.6],[-134.5,-47.6],[-134.5,-0.4],[-134.5,47.6],[-111.2,-47.6],[-111.2,47.6],[-76.2,49.9],[-63.7,28.1],[-52.1,7.7],[-40.1,-13.1],[-40.1,28.1],[-28.5,-32.9],[-17,-50.5],[-17,28.1],[-6.2,-32.9],[5.2,-13.1],[6.8,28.1],[16.9,7.7],[28.7,28.1],[40.6,47.6],[76.9,-47.1],[76.9,-23.8],[76.9,0.4],[76.9,23.7],[76.9,47.6],[101.3,-47.6],[101.3,-0.4],[124.8,-47.6],[124.8,-0.4],[148.2,-47.6],[148.2,-0.4],[163.6,23.7],[171,-45.6],[172.6,-2.5],[181.5,-23.8],[181.5,47.6],[218,-13.1],[218,14.1],[231.4,-34.5],[231.4,35.4],[254.8,-47.1],[254.8,47.6],[280.8,-50.5],[280.8,51],[304.4,-45.6],[304.4,46.7],[325.4,-32.9],[325.4,35.4],[362,-11.6],[362,14.1],[375.2,-32.9],[375.2,35.4],[398.8,-45.6],[398.8,46.7],[424.6,-47.6],[424.6,49.9],[448.3,-44],[448.3,46.7],[469,-31.9],[469,34.3],[481.8,-11.6],[481.8,14.1]];
 const LOGO_SPAN=963.5, LOGO_DOT_R=7.63;
 
+let BG=BG_HERO;
+const BGS={hero:BG_HERO,lines:BG_LINES};
 const cv=document.getElementById('c'), ctx=cv.getContext('2d');
 let W=0,H=0,DPR=1,t0=performance.now(),ready=false,L={};
 function setFont(size){ctx.font='400 '+size+'px '+FONT; if('letterSpacing' in ctx) ctx.letterSpacing=(-size*.03)+'px';}
@@ -161,6 +224,15 @@ link.href='https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400&dis
 const START=+((location.hash.match(/t=([d.]+)/)||[])[1]||0);   // #t=4.6 starts the sequence part way in (used for the home page clip)
 const boot=()=>{layout();t0=performance.now()-START*1000;ready=true;};
 Promise.race([document.fonts.load('400 40px "Instrument Sans"'),new Promise(r=>setTimeout(r,1500))]).then(boot,boot);
+function setVariant(v,restart){
+  if(!BGS[v]) v='hero'; BG=BGS[v];
+  document.querySelectorAll('.sw button').forEach(b=>{const on=b.dataset.v===v; b.setAttribute('aria-pressed',on); b.classList.toggle('on',on);});
+  try{localStorage.setItem('logisticsMotionVariant',v);}catch(e){}
+  if(ready){BG.resize(W,H); if(restart) t0=performance.now();}
+}
+document.querySelectorAll('.sw button').forEach(b=>b.addEventListener('click',()=>setVariant(b.dataset.v,true)));
+let initV='hero'; try{initV=(location.hash.match(/v=(w+)/)||[])[1]||localStorage.getItem('logisticsMotionVariant')||'hero';}catch(e){}
+setVariant(initV,false);
 addEventListener('resize',()=>{if(ready)layout();});
 requestAnimationFrame(frame);
 
