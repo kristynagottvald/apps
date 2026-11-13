@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workout Year in Review Reels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06122e}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);overflow:hidden}
+body{display:flex;flex-direction:column;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;color:#fff}
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+.sw{margin-left:auto;display:flex;border:1px solid #333;border-radius:999px;padding:2px;flex:none}
+.sw button{font:500 12px/1 "Inter","Helvetica Neue",Arial,sans-serif;color:#8d8d8d;background:none;border:0;border-radius:999px;padding:6px 11px;cursor:pointer}
+.sw button:hover{color:#fff}
+.sw button[aria-pressed=true]{background:#fff;color:#000}
+.sw button:focus-visible{outline:2px solid #fff;outline-offset:1px}
+@media (max-width:900px){nav.back>span:nth-of-type(2),nav.back>b{display:none}}
+@media (max-width:640px){nav.back{padding:0 10px;gap:6px}nav.back>span:nth-of-type(1),nav.back>a{display:none}.sw{margin:0 auto}.sw button{padding:6px 8px;font-size:11px}}
+main{flex:1;min-height:0;display:grid;place-items:center;padding:16px}
+#cv{display:block;border-radius:30px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7)}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Workout Year in Review Reels</b>
+<div class="sw" id="sw" role="group" aria-label="Motion style"></div></nav>
+<main id="stage"><canvas id="cv" role="img" aria-label="Looping minimalist flat geometric animations in a 9:16 reels frame, with a workout year in review headline in each style"></canvas></main>
+<script>
+const W=540,H=960,LOOP=6,TAU=Math.PI*2;
+const P={blue:'#0A66FF',navy:'#07163D',peach:'#FFBFAE',green:'#9BE59E',cream:'#F5F1E7',sky:'#D8E7FB',orange:'#F4693A',pine:'#2F5E45',ink:'#161616',white:'#fff'};
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const eo=t=>1-Math.pow(1-clamp(t),3), eio=t=>{t=clamp(t);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2};
+const mod=(a,n)=>((a%n)+n)%n;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* repeating rings: q = steps travelled (a loop is L steps), ring id i has colour pal[i mod L], so the loop point is seamless.
+   draws from the outside in; fn(pos 0..1, colour index, id) */
+function rings(q,N,L,fn){
+  const f=Math.floor(q);
+  for(let m=N;m>=0;m--){const i=f-m;fn((q-i)/N,mod(i,L),i);}
+}
+
+/* ---------------- the six motion styles ---------------- */
+const STYLES=[
+ { id:'circles', name:'Circles', bg:P.blue, ink:P.white, layout:'left',
+   kicker:'You put in the work', big:'318', sub:'days on the move',
+   draw(c,p){
+     // three overlapping circles orbiting each other; every overlap is its own flat colour
+     const cx=W/2,cy=650,orb=64+14*Math.sin(p*TAU*2),r=118+8*Math.sin(p*TAU);
+     const pts=[0,1,2].map(k=>{const a=p*TAU+k*TAU/3-Math.PI/2;return[cx+Math.cos(a)*orb,cy+Math.sin(a)*orb]});
+     const cols=[P.orange,P.peach,P.cream];
+     const path=k=>{c.beginPath();c.arc(pts[k][0],pts[k][1],r,0,TAU)};
+     pts.forEach((_,k)=>{path(k);c.fillStyle=cols[k];c.fill()});
+     for(const [a,b] of [[0,1],[1,2],[0,2]]){c.save();path(a);c.clip();path(b);c.fillStyle=P.navy;c.fill();c.restore()}
+     c.save();path(0);c.clip();path(1);c.clip();path(2);c.fillStyle=P.blue;c.fill();c.restore();
+   }},
+ { id:'curves', name:'Curves', bg:P.sky, ink:P.navy, layout:'left',
+   kicker:'You logged', big:'1,284', sub:'miles, one wave at a time',
+   draw(c,p){
+     // a sun sinking behind flowing bands of curved lines
+     c.fillStyle=P.orange;c.beginPath();c.arc(W/2,560+16*Math.sin(p*TAU),92,0,TAU);c.fill();
+     const cols=[P.blue,'#EAF2FD',P.navy,P.blue,'#EAF2FD'],N=9;
+     for(let i=0;i<N;i++){
+       c.beginPath();
+       for(let x=-10;x<=W+10;x+=10){
+         const y=600+i*52+(26-i*1.5)*Math.sin(x/W*TAU*1.25-p*TAU+i*.55);
+         x===-10?c.moveTo(x,y):c.lineTo(x,y);
+       }
+       c.lineTo(W+10,H+10);c.lineTo(-10,H+10);c.closePath();
+       c.fillStyle=cols[i%cols.length];c.fill();
+     }
+   }},
+ { id:'chakra', name:'Chakra', bg:P.peach, ink:P.ink, layout:'center',
+   title:'Power Lifter', cap:'You moved heavy things, rep after rep, and made it look easy.',
+   draw(c,p){
+     // concentric rounded shapes that keep growing out of the centre and swap colour as they go
+     const pal=[P.blue,P.ink,P.cream,P.orange,P.pine,P.sky],L=pal.length,cx=W/2,cy=550;
+     c.beginPath();c.arc(cx,cy,255,0,TAU);c.clip();   // rings leave outside the clip, so there is no pop
+     rings(p*L,8,L,(pos,ci,id)=>{
+       const h=8+pos*320,rot=(id%2?1:-1)*pos*.9;
+       c.save();c.translate(cx,cy);c.rotate(rot);
+       c.beginPath();c.roundRect(-h,-h,h*2,h*2,h*.34);c.fillStyle=pal[ci];c.fill();c.restore();
+     });
+   }},
+ { id:'sunset', name:'Sunset', bg:P.green, ink:P.pine, layout:'left',
+   kicker:'You rose early', big:'5:42', sub:'am was your average start',
+   draw(c,p){
+     // repeating sunset: half-discs keep rising off the horizon, reflected in the lines below
+     const pal=[P.orange,P.peach,P.cream,P.pine,P.blue,P.sky],L=pal.length,hy=770,cx=W/2;
+     const drawSet=()=>rings(p*L,7,L,(pos,ci)=>{
+       const r=6+pos*470;c.beginPath();c.arc(cx,hy,r,0,TAU);c.fillStyle=pal[ci];c.fill();
+     });
+     c.save();c.beginPath();c.rect(0,0,W,hy);c.clip();c.beginPath();c.arc(cx,hy,440,0,TAU);c.clip();drawSet();c.restore();
+     c.save();c.beginPath();c.rect(0,hy,W,H-hy);c.clip();c.beginPath();c.arc(cx,hy,440,0,TAU);c.clip();drawSet();c.restore();
+     // reflection: lines of the background colour get thicker towards the bottom
+     c.fillStyle=P.green;
+     for(let y=hy,g=2;y<H;g+=1.25){c.fillRect(0,y,W,g);y+=g+11}
+     c.fillRect(0,hy-2,W,3);
+   }},
+ { id:'lines', name:'Lines', bg:P.navy, ink:P.white, layout:'left-title',
+   title:'True\nNight Owl\nenergy', cap:'Your peak workouts were after 7 pm',
+   draw(c,p){
+     // a circle drifting through a field of lines pushes them out of its way
+     const cx=W/2+120*Math.sin(p*TAU),cy=690+64*Math.sin(p*TAU*2),R=74,N=24;
+     c.lineWidth=3;c.lineCap='round';c.strokeStyle='#3B82FF';
+     for(let i=0;i<N;i++){
+       const y0=520+i*17.5;c.beginPath();
+       for(let x=36;x<=W-36;x+=6){
+         const dx=x-cx,dy=y0-cy,d=Math.hypot(dx,dy),f=Math.exp(-Math.pow(d/(R*1.45),2));
+         const y=y0+(dy>=0?1:-1)*f*R*.85;
+         x===36?c.moveTo(x,y):c.lineTo(x,y);
+       }
+       c.stroke();
+     }
+     c.fillStyle=P.white;c.beginPath();c.arc(cx,cy,R*.55,0,TAU);c.fill();
+   }},
+ { id:'path', name:'Path', bg:P.cream, ink:P.ink, layout:'center',
+   title:'Big Mover', cap:'You kept the streak alive for 42 weeks in a row.',
+   draw(c,p){
+     // a ball runs the full length of a looping path, leaving a darker trail
+     const cx=W/2,cy=600,A=225,pt=a=>{const s=Math.sin(a),k=A/(1+s*s);return[cx+Math.cos(a)*k,cy+s*Math.cos(a)*k*1.05]};
+     const trace=(a0,a1)=>{c.beginPath();for(let a=a0;a<=a1+.001;a+=.03){const q=pt(a);a===a0?c.moveTo(q[0],q[1]):c.lineTo(q[0],q[1])}};
+     c.lineCap='round';c.lineJoin='round';
+     c.lineWidth=52;c.strokeStyle=P.blue;trace(0,TAU);c.stroke();
+     const a=p*TAU-Math.PI/2;
+     c.strokeStyle=P.ink;c.lineWidth=52;trace(a-1.5,a);c.stroke();
+     c.strokeStyle=P.orange;c.lineWidth=52;trace(a-.45,a);c.stroke();
+     const b=pt(a);
+     c.fillStyle=P.cream;c.beginPath();c.arc(b[0],b[1],34,0,TAU);c.fill();
+     c.fillStyle=P.orange;c.beginPath();c.arc(b[0],b[1],24,0,TAU);c.fill();
+   }},
+];
+
+/* ---------------- text ---------------- */
+function txt(c,s,x,y,size,weight,align,color,delay,ts,lh){
+  const a=eo((ts-delay)/.7);if(a<=0)return y;
+  c.save();c.globalAlpha=a;c.fillStyle=color;c.textAlign=align;c.textBaseline='alphabetic';
+  c.font=weight+' '+size+'px Inter,"Helvetica Neue",Arial,sans-serif';
+  const lines=s.split('\n');lh=lh||size*1.12;
+  lines.forEach((l,i)=>c.fillText(l,x,y+i*lh+(1-a)*22));
+  c.restore();return y+lines.length*lh;
+}
+function wrap(c,s,max,size,weight){
+  c.font=weight+' '+size+'px Inter,Arial,sans-serif';
+  const out=[];let cur='';
+  for(const w of s.split(' ')){const t=cur?cur+' '+w:w;if(c.measureText(t).width>max&&cur){out.push(cur);cur=w}else cur=t}
+  out.push(cur);return out.join('\n');
+}
+function text(c,S,ts){
+  const ink=S.ink;
+  if(S.layout==='left'){
+    txt(c,S.kicker,36,168,25,500,'left',ink,.15,ts);
+    txt(c,S.big,34,262,104,700,'left',ink,.3,ts,100);
+    txt(c,S.sub,36,308,25,500,'left',ink,.5,ts);
+  }else if(S.layout==='left-title'){
+    const y=txt(c,S.title,36,176,46,700,'left',ink,.15,ts,48);
+    txt(c,wrap(c,S.cap,330,22,400),36,y+14,22,400,'left',ink,.5,ts,29);
+  }else{
+    txt(c,S.title,W/2,190,42,700,'center',ink,.15,ts);
+    txt(c,wrap(c,S.cap,360,21,400),W/2,846,21,400,'center',ink,.5,ts,28);
+  }
+}
+function topbar(c,S,idx,prog){
+  c.save();c.fillStyle=S.ink;
+  const gap=5,sw=(W-72-gap*(STYLES.length-1))/STYLES.length;
+  for(let i=0;i<STYLES.length;i++){
+    const x=36+i*(sw+gap);
+    c.globalAlpha=.25;c.beginPath();c.roundRect(x,58,sw,4,2);c.fill();
+    const f=i<idx?1:i===idx?prog:0;
+    if(f>0){c.globalAlpha=1;c.beginPath();c.roundRect(x,58,Math.max(4,sw*f),4,2);c.fill()}
+  }
+  c.globalAlpha=.9;c.font='600 14px Inter,Arial,sans-serif';c.textAlign='left';c.textBaseline='alphabetic';
+  c.fillText('Workout  ·  Year in Review',36,96);
+  c.textAlign='right';c.fillText('✕',W-36,96);
+  c.restore();
+}
+function frame(c,i,ts){
+  const S=STYLES[i],p=reduce?.35:mod(ts,LOOP)/LOOP;
+  c.fillStyle=S.bg;c.fillRect(0,0,W,H);
+  c.save();S.draw(c,p,ts);c.restore();
+  text(c,S,reduce?9:ts);
+  topbar(c,S,i,p);
+}
+
+/* ---------------- player ---------------- */
+const cv=document.getElementById('cv'),c=cv.getContext('2d'),stage=document.getElementById('stage'),sw=document.getElementById('sw');
+let cur=0,prev=null,t0=performance.now()/1000,auto=true;
+const btns=[];
+function mk(label,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed','false');b.onclick=fn;sw.appendChild(b);btns.push(b);return b}
+mk('Cycle',()=>{auto=true;sync()});
+STYLES.forEach((S,i)=>mk(S.name,()=>{auto=false;go(i)}));
+function sync(){btns[0].setAttribute('aria-pressed',auto);STYLES.forEach((_,i)=>btns[i+1].setAttribute('aria-pressed',!auto&&i===cur))}
+function go(i){
+  const now=performance.now()/1000;
+  if(i!==cur){prev={i:cur,t0:t0};cur=i;t0=now}
+  else if(!auto){t0=now;prev=null}   // pressing the active style replays it
+  sync();
+}
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){auto=false;go(mod(cur+(e.key==='ArrowRight'?1:-1),STYLES.length))}
+  else if(e.key===' '){e.preventDefault();auto=!auto;sync()}
+});
+function resize(){
+  const r=stage.getBoundingClientRect(),pad=32;
+  const h=Math.min(r.height-pad,(r.width-pad)*16/9),w=h*9/16,dpr=Math.min(2,devicePixelRatio||1);
+  cv.style.width=w+'px';cv.style.height=h+'px';
+  cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
+}
+addEventListener('resize',resize);
+
+function tick(){
+  const now=performance.now()/1000;
+  let ts=now-t0;
+  if(auto&&!reduce&&ts>=LOOP){go(mod(cur+1,STYLES.length));ts=now-t0}
+  c.setTransform(cv.width/W,0,0,cv.height/H,0,0);
+  const wp=prev?clamp(ts/.6):1;
+  if(prev&&wp>=1)prev=null;
+  if(prev){frame(c,prev.i,now-prev.t0);
+    // the new style opens as a circle growing out of the bottom centre
+    c.save();c.beginPath();c.arc(W/2,H,eio(wp)*1150,0,TAU);c.clip();frame(c,cur,ts);c.restore();
+  }else frame(c,cur,ts);
+  requestAnimationFrame(tick);
+}
+sync();resize();
+(document.fonts&&document.fonts.load?Promise.all([400,500,600,700].map(w=>document.fonts.load(w+' 20px Inter'))).catch(()=>{}):Promise.resolve()).then(()=>{t0=performance.now()/1000;requestAnimationFrame(tick)});
+window.reels={go:i=>{auto=false;go(i)},cycle:()=>{auto=true;sync()}};
+</script>
+</body>
+</html>
