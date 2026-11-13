@@ -266,21 +266,21 @@ const PACK=[
  {k:'t',body:'#2F9A74',ink:'#fff',nm:['brownie','mix'],lv:[0,1]},
  {k:'p',body:'#A9D8CF',ink:'#0E3251',cir:'#fff',nm:['matcha','bar'],lv:[6,4]}];
 function mini(m,i){const P=PACK[i],j=(i%3-1)*5,id='k'+(uid++),back='';
-  const tub='M77 24H133L130 80Q129 88 121 88H89Q81 88 80 80Z',pouch='M77 8H133L135 86Q105 94 75 86Z';
+  const tub='M62 24H148L144 80Q143 88 135 88H75Q67 88 66 80Z',pouch='M77 8H133L135 86Q105 94 75 86Z';
   const spr='';
   let g;
   if(P.k==='t'){
     g=`<clipPath id="${id}"><path d="${tub}"/></clipPath><path d="${tub}" fill="${P.body}"/>
     <g clip-path="url(#${id})">${spr}</g>
-    <path d="M70 24V15Q70 12 73 12H76L79 5H131L134 12H137Q140 12 140 15V24Z" fill="#165B63"/>
-    <text x="84" y="38" font-family="Poppins,sans-serif" font-weight="700" font-size="6.5" fill="${P.ink}">grubclub</text>
-    <text font-family="Poppins,sans-serif" font-weight="700" font-size="10.5" letter-spacing="-.3" fill="${P.ink}"><tspan x="84" y="52">${P.nm[0]}</tspan><tspan x="84" y="63">${P.nm[1]}</tspan></text>`}
+    <path d="M55 24V15Q55 12 58 12H62L66 5H144L148 12H152Q155 12 155 15V24Z" fill="#165B63"/>
+    <text x="74" y="38" font-family="Poppins,sans-serif" font-weight="700" font-size="7" fill="${P.ink}">grubclub</text>
+    <text font-family="Poppins,sans-serif" font-weight="700" font-size="12" letter-spacing="-.3" fill="${P.ink}"><tspan x="74" y="54">${P.nm[0]}</tspan><tspan x="74" y="68">${P.nm[1]}</tspan></text>`}
   else{
     g=`<clipPath id="${id}"><path d="${pouch}"/></clipPath><path d="${pouch}" fill="${P.body}"/>
     <g clip-path="url(#${id})">${spr}<rect x="70" y="8" width="70" height="8" fill="#000" opacity=".2"/><path d="M80 12H130" stroke="#fff" stroke-opacity=".35" stroke-width="1" stroke-dasharray="2 2"/></g>
     <text x="105" y="29" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="6.5" fill="${P.ink}">grubclub</text>
-    <circle cx="105" cy="55" r="21" fill="${P.cir}"/>
-    <text text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="8.5" letter-spacing="-.2" fill="#14396B"><tspan x="105" y="53">${P.nm[0]}</tspan><tspan x="105" y="63">${P.nm[1]}</tspan></text>`}
+    <circle cx="105" cy="56" r="24" fill="${P.cir}"/>
+    <text text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="7.4" fill="#14396B"><tspan x="105" y="54">${P.nm[0]}</tspan><tspan x="105" y="64">${P.nm[1]}</tspan></text>`}
   return `<svg viewBox="0 0 210 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">${back}<g class="cc" transform="translate(105 61) scale(1.2) translate(-105 -48)">${g}</g></svg>`}
 
 /* ============ build static DOM ============ */
