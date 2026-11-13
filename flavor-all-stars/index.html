@@ -57,10 +57,8 @@ footer{background:var(--navy);color:var(--egg);text-align:left;padding:4cqw 5cqw
 footer .logo{font-size:max(22px,3.3cqw);color:#fff}
 footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-height:1.6;color:#8fb4c4}
 .pat{position:relative;background:var(--veg);overflow:hidden}
-.pat::before,.pat::after{content:"";position:absolute;top:0;bottom:0;width:50.5%;background:url(pattern-a.webp) center 30%/cover no-repeat}
-.pat::before{left:0}
-.pat::after{right:0;background-image:url(pattern-b.webp);background-position:center 40%;-webkit-mask:linear-gradient(90deg,transparent,#000 7%);mask:linear-gradient(90deg,transparent,#000 7%)}
 .pat>*{position:relative;z-index:1}
+.pat>svg.art{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
 .t{font-weight:800;letter-spacing:-.025em;line-height:.98;margin:0}
 .t em{font-style:normal;color:var(--kiwi)}
 .up{opacity:0;transform:translateY(20px);transition:opacity .7s,transform .8s cubic-bezier(.2,.8,.2,1);transition-delay:var(--d,0ms)}
@@ -92,8 +90,8 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
 .badge.blue span{font-size:max(12px,2.7cqw);letter-spacing:-.01em;text-transform:none;font-weight:800;line-height:1.05;margin:0}
 
 /* ===== 1 flavor all stars ===== */
-#e1 .hero{position:relative;background:var(--navy);padding:0 0 20cqw;isolation:isolate}
-#e1 .hero .pat{position:absolute;left:0;right:0;bottom:0;height:36cqw;z-index:-1;-webkit-mask:linear-gradient(to bottom,transparent,#000 30%);mask:linear-gradient(to bottom,transparent,#000 30%)}
+#e1 .hero{position:relative;background:var(--veg);padding:0 0 20cqw;isolation:isolate}
+#e1 .hero .pat{position:absolute;inset:0;z-index:-1}
 #e1 h1{margin:3.2cqw 5cqw 0;text-align:center;font-size:max(30px,7.4cqw);color:var(--egg)}
 #e1 .panel{margin-top:3.4cqw}
 #e1 .badge{right:-6cqw;top:50%;margin-top:-8.5cqw}
@@ -201,7 +199,7 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
 <article class="email" id="e1" aria-label="Flavor All Stars email">
   <div data-hdr></div>
   <section class="hero">
-    <div class="pat"></div>
+    <div class="pat" data-h="680" data-grad="0.32,0.9"></div>
     <h1 class="t up" style="--d:100ms">2026 Flavor <em>All Stars</em></h1>
     <div class="panel up" style="--d:350ms">
       <div class="amt">$160 off</div>
@@ -262,7 +260,7 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
 <article class="email" id="e3" aria-label="Private Sale, last day to save email" hidden>
   <div data-hdr></div>
   <section class="top"><h1 class="t up"><span class="t s">Private Sale</span><span class="t b">Last Day</span><span class="t s">To Save!</span></h1></section>
-  <section class="pat scene"><img class="up" style="--d:300ms" src="plate-lastday.webp" alt="Cricket-crusted cutlet in cream sauce with roasted squash and green beans on a blue plate"></section>
+  <section class="pat scene" data-h="460"><img class="up" style="--d:300ms" src="plate-lastday.webp" alt="Cricket-crusted cutlet in cream sauce with roasted squash and green beans on a blue plate"></section>
   <section class="full">
     <div class="amt">17 Free Meals*</div>
     <p class="sub">+ First box ships free<br>+ 3 Surprise gifts</p>
@@ -285,7 +283,7 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
       <div class="badge blue"><b></b><b></b><b></b><div><span>Last<br>Chance!</span></div></div>
     </div>
   </section>
-  <section class="pat row3" style="margin-top:4cqw">
+  <section class="pat row3" data-h="560" style="margin-top:4cqw">
     <img class="rv" src="plate-row-a.webp" alt="Mealworm and cricket grain bowl with lemon"><img class="rv" src="plate-row-b.webp" alt="Seared buffalo worm steak with salad and roasted potatoes"><img class="rv" src="plate-row-c.webp" alt="Cricket cutlet in mushroom sauce with wilted greens and lemon">
   </section>
   <section class="ext"><h2 class="t">Extended One<br>More Day!</h2><p>Good news&mdash;you have one more day to snag our <b>Private Sale</b> deal on delicious recipes delivered. Don&rsquo;t wait, save now!</p></section>
@@ -302,6 +300,49 @@ function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t
 const LOGO='<div class="logo">grub<i>club</i><span class="wm" style="color:var(--kiwi)"></span></div>';
 $$('[data-hdr]').forEach(e=>{e.className='hdr';e.innerHTML=LOGO+'<a>View in browser</a>'});
 $$('[data-ftr]').forEach(e=>{const t=e.dataset.ftr;e.outerHTML='<footer>'+LOGO+'<p>'+t+'</p></footer>'});
+
+
+/* ===== the veggie + grasshopper illustration, drawn as vectors =====
+   flat shapes in the Grubclub greens on dark green; art() scatters them with dart throwing, so the density can ramp from none at the top to full at the bottom */
+const f1=n=>Math.round(n*10)/10;
+function leafPath(h,w,lobes,amp){const N=64,Lp=[],Rp=[];for(let i=0;i<=N;i++){const t=i/N,y=-h/2+h*t,base=Math.pow(Math.sin(Math.PI*Math.pow(t,.85)),.7)*w/2,k=1+amp*Math.sin(t*lobes*2*Math.PI);Lp.push(f1(-base*k)+' '+f1(y));Rp.push(f1(base*k)+' '+f1(y))}return 'M'+Lp.join('L')+'L'+Rp.reverse().join('L')+'Z'}
+const GR={lt:'#9ED04B',md:'#5BB343',dk:'#2E8B3C',kale:'#3D9F3E'};
+const SYM={
+ carrot:`<path d="M0 -44 C-20 -44 -20 0 -4 62 Q0 68 4 62 C20 0 20 -44 0 -44Z" fill="#F0922F"/><path d="M-11 -24h9M3 -8h9M-9 10h8M2 28h6" stroke="#C8691E" stroke-width="3" stroke-linecap="round"/><path d="M0 -44C-12 -62 -10 -84 -20 -104 -2 -92 3 -68 0 -44ZM0 -44C12 -62 12 -80 24 -98 8 -84 2 -64 0 -44Z" fill="${GR.md}"/><path d="M0 -44C-3 -70 -3 -90 0 -108 4 -90 4 -70 0 -44Z" fill="${GR.dk}"/>`,
+ parsnip:`<path d="M0 -46 C-14 -46 -13 0 -3 66 Q0 72 3 66 C13 0 14 -46 0 -46Z" fill="#F4E8C8"/><path d="M-8 -26h7M2 -10h8M-7 8h7M1 26h6" stroke="#E7A35B" stroke-width="2.6" stroke-linecap="round"/><path d="M0 -46C-8 -70 -4 -92 -8 -112 4 -94 6 -70 0 -46Z" fill="${GR.md}"/><path d="M0 -46C8 -64 16 -78 26 -88 14 -62 8 -52 0 -46Z" fill="${GR.dk}"/>`,
+ beet:`<path d="M-8 -34C-44 -36 -50 8 -26 30 -14 40 -6 44 -4 56 -2 68 6 78 22 84 14 70 10 58 12 46 40 36 50 6 36 -18 24 -34 8 -40 -8 -34Z" fill="#D95A43"/><path d="M-30 -8Q-6 -2 -14 24M-6 -24Q22 -14 14 12M16 -20Q34 -8 30 6" fill="none" stroke="#A8412E" stroke-width="3.4" stroke-linecap="round"/><path d="M-6 -34C-14 -56 -28 -66 -44 -64 -36 -48 -22 -38 -6 -34Z" fill="${GR.md}"/><path d="M-4 -36C0 -58 8 -72 22 -78 18 -58 10 -44 -4 -36Z" fill="${GR.dk}"/>`,
+ radish:`<path d="M0 -30C-26 -30 -34 4 -16 26 -8 36 -2 44 0 66 2 44 8 36 16 26 34 4 26 -30 0 -30Z" fill="#E98A84"/><path d="M-4 -30C-10 -52 -22 -62 -38 -60 -30 -44 -18 -34 -4 -30ZM4 -30C10 -52 22 -62 38 -60 30 -44 18 -34 4 -30Z" fill="${GR.md}"/>`,
+ berry:`<path d="M0 36C-34 14 -34 -24 -16 -28 -8 -26 -4 -22 0 -22 4 -22 8 -26 16 -28 34 -24 34 14 0 36Z" fill="#E04A3F"/><g fill="#F5C65A"><ellipse cx="-12" cy="-8" rx="2.4" ry="3.6"/><ellipse cx="6" cy="-12" rx="2.4" ry="3.6"/><ellipse cx="18" cy="0" rx="2.4" ry="3.6"/><ellipse cx="-2" cy="4" rx="2.4" ry="3.6"/><ellipse cx="-18" cy="8" rx="2.4" ry="3.6"/><ellipse cx="10" cy="16" rx="2.4" ry="3.6"/><ellipse cx="-4" cy="22" rx="2.4" ry="3.6"/></g><path d="M-20 -26 -10 -38 0 -28 10 -38 20 -26 8 -22 0 -16 -8 -22Z" fill="${GR.md}"/><path d="M0 -28V-44" stroke="${GR.dk}" stroke-width="4" stroke-linecap="round"/>`,
+ avo:`<path d="M0 -62C32 -62 48 -24 48 8 48 42 26 62 0 62-26 62-48 42-48 8-48-24-32-62 0-62Z" fill="#5FAE3A"/><path d="M0 -50C24 -50 38 -20 38 8 38 34 20 50 0 50-20 50-38 34-38 8-38-20-24-50 0-50Z" fill="#B3DB5E"/><circle cx="0" cy="14" r="20" fill="#B8652E"/>`,
+ apple:`<path d="M0 -34C-12 -44 -44 -36 -44 0 -44 36 -22 50 0 44 22 50 44 36 44 0 44 -36 12 -44 0 -34Z" fill="#8CC63F"/><path d="M0 -26C-10 -34 -36 -28 -36 0 -36 30 -18 42 0 37 18 42 36 30 36 0 36 -28 10 -34 0 -26Z" fill="#F3E4B8"/><ellipse cx="0" cy="2" rx="12" ry="15" fill="#E8D29C"/><ellipse cx="-3" cy="2" rx="2.2" ry="4" fill="#B5652E"/><ellipse cx="3" cy="2" rx="2.2" ry="4" fill="#B5652E"/><path d="M0 -30V-48" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/>`,
+ lettuce:`<path d="${leafPath(132,68,5,.16)}" fill="${GR.lt}"/><path d="M0 -62V66M0 -20Q-14 -30 -22 -40M0 6Q14 -4 22 -14M0 30Q-14 20 -22 10" fill="none" stroke="${GR.md}" stroke-width="3" stroke-linecap="round"/><path d="M0 66V96" stroke="#7A8F3A" stroke-width="6" stroke-linecap="round"/>`,
+ kale:`<path d="${leafPath(156,60,7,.22)}" fill="${GR.kale}"/><path d="M0 -74V78" stroke="#1F6F2B" stroke-width="3.4" stroke-linecap="round"/><path d="M0 78V104" stroke="${GR.kale}" stroke-width="6" stroke-linecap="round"/>`,
+ arugula:`<path d="${leafPath(120,42,4,.32)}" fill="${GR.md}"/><path d="M0 -56V58" stroke="${GR.dk}" stroke-width="3" stroke-linecap="round"/><path d="M0 58V84" stroke="${GR.md}" stroke-width="5" stroke-linecap="round"/>`,
+ sprig:`<path d="M0 70C-4 20 4 -20 0 -70" fill="none" stroke="#3E9A47" stroke-width="4" stroke-linecap="round"/><g fill="${GR.md}"><ellipse cx="-16" cy="-52" rx="13" ry="10" transform="rotate(-20 -16 -52)"/><ellipse cx="15" cy="-34" rx="13" ry="10" transform="rotate(20 15 -34)"/><ellipse cx="-17" cy="-12" rx="14" ry="11" transform="rotate(-20 -17 -12)"/><ellipse cx="16" cy="10" rx="14" ry="11" transform="rotate(20 16 10)"/><ellipse cx="-14" cy="32" rx="12" ry="9" transform="rotate(-20 -14 32)"/><ellipse cx="0" cy="-74" rx="10" ry="12"/></g>`,
+ flower:`<path d="M0 0V84M0 44Q-16 32 -22 12M0 60Q16 48 22 28" fill="none" stroke="#E9A23B" stroke-width="4" stroke-linecap="round"/><path d="${(()=>{let d='';for(let i=0;i<28;i++){const a=i/28*Math.PI*2,r=i%2?15:30;d+=(i?'L':'M')+f1(Math.cos(a)*r)+' '+f1(Math.sin(a)*r)}return d+'Z'})()}" fill="#F2B33D"/><circle r="9" fill="#F7CD6B"/>`,
+ drop:`<path d="M0 -20C14 0 14 16 0 18-14 16-14 0 0 -20Z" fill="#E0553F"/>`,
+ drop2:`<path d="M0 -20C14 0 14 16 0 18-14 16-14 0 0 -20Z" fill="#EF8E86"/>`,
+ dot:`<circle r="5" fill="#F3B33E"/>`,
+ hopper:`<g fill="none" stroke="#62B64E" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"><path d="M-22 8L-28 24L-36 38M0 10L-4 28L-12 42M14 6L36 -22L58 24L66 38"/><path d="M-40 -8Q-54 -34 -70 -44M-38 -10Q-44 -40 -52 -56"/></g><path d="M-34 0Q-14 -14 22 -8Q42 -4 46 8Q22 14 -12 12Q-30 10 -34 0Z" fill="#62B64E"/><path d="M-26 -4Q14 -26 62 8Q16 -2 -26 -4Z" fill="#46973A"/><ellipse cx="-38" cy="-3" rx="10" ry="9" fill="#62B64E"/><circle cx="-41" cy="-6" r="2.2" fill="#0A4B3D"/>`,
+ hopperR:`<g fill="none" stroke="#C4543A" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"><path d="M-22 8L-28 24L-36 38M0 10L-4 28L-12 42M14 6L36 -22L58 24L66 38"/><path d="M-40 -8Q-54 -34 -70 -44M-38 -10Q-44 -40 -52 -56"/></g><path d="M-34 0Q-14 -14 22 -8Q42 -4 46 8Q22 14 -12 12Q-30 10 -34 0Z" fill="#C4543A"/><path d="M-26 -4Q14 -26 62 8Q16 -2 -26 -4Z" fill="#A23F2B"/><ellipse cx="-38" cy="-3" rx="10" ry="9" fill="#C4543A"/><circle cx="-41" cy="-6" r="2.2" fill="#0A4B3D"/>`
+};
+/* type: symbol, weight, radius at scale 1 (for spacing), max tilt in degrees */
+const KIND=[['carrot',3,58,26],['parsnip',3,58,26],['beet',2,48,50],['radish',1,40,30],['berry',1.4,38,30],['avo',1,56,30],['apple',1,48,30],['lettuce',3,56,22],['kale',2.4,66,22],['arugula',1.6,48,26],['sprig',2.6,52,18],['flower',1.1,44,18],['hopper',2.4,52,40],['hopperR',.6,52,40]];
+const SMALL=[['drop',3,14,180],['drop2',2,14,180],['dot',3,6,0]];
+(function(){const d=document.createElementNS('http://www.w3.org/2000/svg','svg');d.setAttribute('width',0);d.setAttribute('height',0);d.setAttribute('aria-hidden','true');d.style.cssText='position:absolute;left:-9999px';
+  d.innerHTML='<defs>'+Object.keys(SYM).map(k=>`<g id="v-${k}">${SYM[k]}</g>`).join('')+'</defs>';document.body.prepend(d)})();
+function art(host,seed){const W=1000,H=+host.dataset.h||600,g=host.dataset.grad?host.dataset.grad.split(',').map(Number):null,R=rng(seed);
+  const dens=y=>{if(!g)return 1;const t=clamp((y/H-g[0])/(g[1]-g[0]));return t*t*(3-2*t)};   // 0 at the top, 1 at the bottom: fewer pieces, never a fade
+  const pick=L=>{let r=R()*L.reduce((a,k)=>a+k[1],0);for(const k of L){if((r-=k[1])<0)return k}return L[0]};
+  const out=[],placed=[];
+  const tryPlace=(L,tries,sMin,sMax,gap,ydens)=>{for(let n=0;n<tries;n++){const k=pick(L),sc=sMin+R()*(sMax-sMin),x=-20+R()*(W+40),y=-20+R()*(H+40),r=k[2]*sc;
+      if(R()>ydens(y-r*.85))continue;
+      if(placed.some(p=>Math.hypot(p[0]-x,p[1]-y)<(p[2]+r)*gap))continue;
+      placed.push([x,y,r]);out.push(`<use href="#v-${k[0]}" transform="translate(${f1(x)} ${f1(y)}) rotate(${f1((R()*2-1)*k[3])}) scale(${f1(sc)})"/>`)}};
+  tryPlace(KIND,2600,1.15,1.75,.72,dens);                              // the vegetables and grasshoppers
+  tryPlace(SMALL,1600,.9,1.5,1.0,y=>dens(y)*.9);                         // drops and dots in the gaps
+  host.insertAdjacentHTML('afterbegin',`<svg class="art" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${out.join('')}</svg>`)}
+$$('.pat').forEach((h,i)=>art(h,17+i*31));
 
 /* confetti beside the timeline: seeded so it is always the same, kept in the margins so it never touches the text */
 (function(){const R=rng(5),cols=['#EEFB71','#8CE39B','#D7F5FA'];let h='';
