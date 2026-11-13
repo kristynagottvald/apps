@@ -1,5 +1,14 @@
 [
   {
+    "id": "agentic-storefront",
+    "title": "Agentic Storefront Walkthrough",
+    "category": "Motion",
+    "url": "agentic-storefront/",
+    "thumbnail": "agentic-storefront/thumb.png",
+    "preview": "agentic-storefront/thumb.webp",
+    "alt": "A phone showing a shopper asking an AI chat for a warm, floral fall scent, two Glossier perfume recommendations, choosing a size, paying with Apple Pay and Face ID, and the order confirmed back in the chat"
+  },
+  {
     "id": "ilg-pixel-globe",
     "title": "ILG Pixel Globe",
     "category": "Motion",
