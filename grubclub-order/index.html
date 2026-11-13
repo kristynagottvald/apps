@@ -50,7 +50,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 #pLogo i{color:var(--bean)}
 #pStep{right:56px;top:40px;font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--bean);display:flex;gap:18px}
 #pStep em{font-style:normal;opacity:.4}#pStep em.a{opacity:1}
-#pHead{left:169px;top:150px}
+#pHead{left:169px;top:164px}
 #pHead h1{margin:0;font-size:31px;line-height:1.1;font-weight:700;letter-spacing:-.01em}
 #pHead p{margin:6px 0 0;font-size:14px;color:#3d6f74}
 #grid{left:56px;top:216px;width:744px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
@@ -99,20 +99,21 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 
 #pkCd,#pkBtns{opacity:0;transform:translateY(14px);transition:opacity calc(.6s*var(--k)),transform calc(.7s*var(--k)) cubic-bezier(.2,.8,.2,1)}
 #pkCd.in,#pkBtns.in{opacity:1;transform:none}
-#pkCd{left:120px;top:412px;display:flex;align-items:center;gap:10px;color:var(--egg);font:500 15px/1 Poppins,sans-serif}
+#pkCd{left:120px;top:436px;display:flex;align-items:center;gap:10px;color:var(--egg);font:500 15px/1 Poppins,sans-serif}
 #pkCd svg{width:22px;height:22px;flex:none}
 #pkCd b{font-weight:600;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.05em;font-size:17px}
-#pkBtns{left:120px;top:452px;display:flex;gap:14px}
+#pkBtns{left:120px;top:476px;display:flex;gap:14px}
 .pbtn{height:54px;padding:0 28px;border-radius:999px;border:1.5px solid rgba(255,255,255,.65);color:#fff;font:600 16px/51px Poppins,sans-serif;white-space:nowrap}
 .pbtn.pri{background:var(--kiwi);border-color:var(--kiwi);color:var(--bean)}
+#pkT.sm{font-size:38px}
 /* shipped: all the text on the left, the map sits above the ripple on the right */
 #pkT,#pkS{transition:opacity .3s,color .6s}
-#pkMap{left:728px;top:314px;width:450px;height:320px;border-radius:34px;overflow:hidden;background:#dfe9e4;box-shadow:0 30px 60px -22px rgba(0,0,0,.55);opacity:0;transform:translateY(34px) scale(.96);transition:opacity calc(.7s*var(--k)),transform calc(.9s*var(--k)) cubic-bezier(.2,.8,.2,1);z-index:5}
+#pkMap{left:845px;top:230px;width:410px;height:300px;border-radius:34px;overflow:hidden;background:#dfe9e4;box-shadow:0 30px 60px -22px rgba(0,0,0,.55);opacity:0;transform:translateY(34px) scale(.96);transition:opacity calc(.7s*var(--k)),transform calc(.9s*var(--k)) cubic-bezier(.2,.8,.2,1);z-index:5}
 #pkMap.in{opacity:1;transform:none}
-#mapTiles{position:absolute;left:0;top:0;width:768px;height:768px;transform-origin:225px 160px;transform:scale(1.18);transition:transform calc(2.2s*var(--k)) cubic-bezier(.2,.7,.2,1)}
+#mapTiles{position:absolute;left:0;top:0;width:768px;height:768px;transform-origin:205px 150px;transform:scale(1.18);transition:transform calc(2.2s*var(--k)) cubic-bezier(.2,.7,.2,1)}
 #pkMap.in #mapTiles{transform:none}
 #mapTiles img{position:absolute;width:256px;height:256px;display:block}
-#mapPin{position:absolute;left:225px;top:160px;width:0;height:0}
+#mapPin{position:absolute;left:205px;top:150px;width:0;height:0}
 #mapPin i{position:absolute;left:-13px;top:-13px;width:26px;height:26px;border-radius:50%;background:var(--navy);border:5px solid var(--kiwi);box-shadow:0 4px 10px rgba(0,0,0,.35);opacity:0;transform:translateY(-40px)}
 #pkMap.in #mapPin i{animation:pinDrop calc(.7s*var(--k)) calc(1s*var(--k)) cubic-bezier(.3,1.5,.5,1) forwards}
 #mapPin b{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;opacity:0}
@@ -139,17 +140,17 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 
 
 /* pick: roomier cards with product photos */
-#grid{left:169px;top:230px;width:600px;grid-template-columns:repeat(2,1fr);gap:24px}
-.card{display:flex;gap:14px;padding:14px;height:186px;border-radius:20px;outline:none;transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),background .3s}
+#grid{left:169px;top:242px;width:600px;grid-template-columns:repeat(2,1fr);gap:24px}
+.card{display:flex;gap:14px;padding:14px;height:178px;border-radius:20px;outline:none;transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),background .3s}
 #s1.in .card.sel{transform:translateY(-3px);outline:none;background:var(--kiwi)}
-.card .il{flex:none;width:108px;height:158px;border-radius:14px;overflow:hidden;background:#D7F5FA}
+.card .il{flex:none;width:108px;height:150px;border-radius:14px;overflow:hidden;background:#D7F5FA}
 .card .il img{display:block;width:100%;height:100%;object-fit:cover}
 .card .tx{display:flex;flex-direction:column;flex:1;min-width:0}
 .card .tx h4{margin:12px 0 0;height:auto;font-size:14px;line-height:1.3;font-weight:600}
 .card .tx .rw{margin-top:auto}
 .card.sel .add{background:var(--navy);color:var(--kiwi)}
 .card.sel .rw small{color:var(--navy)}
-.bx{left:800px;top:150px;width:323px;height:466px;border-radius:22px}
+.bx{left:800px;top:164px;width:323px;height:452px;border-radius:22px}
 #pbox{left:70px;top:58px;width:184px}
 #slots{top:262px;left:22px;right:22px;gap:8px}
 .slot{height:44px}
@@ -158,7 +159,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 /* ===== checkout flow pages (layout after the supplied references) ===== */
 .logo.dk{color:#0A5033}.logo.dk i{color:#0A5033}.logo.dk .wm{color:#B9E22E}
 .flow,#s1{background:var(--paper);color:#0A2F25}
-.fh{position:absolute;left:0;top:0;width:1280px;height:76px}
+.fh{position:absolute;left:0;top:0;width:1280px;height:92px}
 .fh .logo{position:absolute;left:56px;top:30px;font-size:32px}
 .fh .bk{position:absolute;left:246px;top:35px;width:22px;height:22px;color:#0A2F25}
 .fh .pg{position:absolute;left:300px;top:0;width:924px;height:76px;font:500 12px/1 Poppins,sans-serif;color:#5b6f69}
@@ -167,21 +168,21 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .pg .bar{position:absolute;top:40px;height:4px;border-radius:2px;background:#bfc4c2;overflow:hidden}
 .pg .bar i{display:block;height:100%;width:0;background:#0F5A5C;transition:width calc(1.1s*var(--k)) ease}
 .pg .d1{left:0}.pg .b1{left:12px;width:408px}.pg .d2{left:420px}.pg .b2{left:432px;width:480px}.pg .d3{left:912px}
-.pg em{position:absolute;top:58px;font-style:normal}
+.pg em{position:absolute;top:58px;font-style:normal;text-transform:uppercase;letter-spacing:.09em;font-size:11px;font-weight:600}
 .pg .l1{left:0}.pg .l2{left:426px;transform:translateX(-50%)}.pg .l3{right:0}
 .pg em.on{color:#0F5A5C;font-weight:600}
 .pg em.dn{color:#0F5A5C}
-.fb{position:absolute;left:0;top:76px;width:1280px;height:50px;background:#D6F3E0;display:flex;align-items:center;justify-content:center;gap:12px;font:400 13px/1 Poppins,sans-serif;color:#0A2F25}
+.fb{position:absolute;left:0;top:92px;width:1280px;height:50px;background:#D6F3E0;display:flex;align-items:center;justify-content:center;gap:12px;font:400 13px/1 Poppins,sans-serif;color:#0A2F25}
 .fb svg{width:18px;height:18px;flex:none}.fb .x{position:absolute;right:56px;top:16px;width:18px;height:18px}
 .fbar{position:absolute;left:0;top:640px;width:1280px;height:80px;border-top:1px solid #dcdfdd;background:var(--paper)}
 .fbar .bkb{position:absolute;left:421px;top:14px;width:72px;height:41px;border:1.5px solid #0A2F25;border-radius:8px;font:600 14px/38px Poppins,sans-serif;text-align:center}
 .fbar .nx{position:absolute;left:509px;top:14px;width:360px;height:41px;border-radius:8px;background:var(--navy);color:#fff;font:600 14px/41px Poppins,sans-serif;text-align:center;transition:transform .15s,opacity .3s}
 .fbar .nx.press{transform:scale(.97)}
 #cont{opacity:.4}#cont.ready{opacity:1}
-.pcol{position:absolute;left:169px;top:166px;width:460px;height:460px}
+.pcol{position:absolute;left:169px;top:184px;width:460px;height:440px}
 .pcol.wide{width:954px}
 .ph{margin:0;font:700 31px/1.15 Poppins,sans-serif;letter-spacing:-.025em;color:#0A2F25}
-.pimg{position:absolute;left:658px;top:152px;width:462px;height:472px;border-radius:26px;overflow:hidden;background:#d4ea70}
+.pimg{position:absolute;left:658px;top:168px;width:462px;height:456px;border-radius:26px;overflow:hidden;background:#d4ea70}
 .pimg img{display:block;width:100%;height:100%;object-fit:cover}
 .flow .pc,.flow .pcol>*,.flow .pimg,.flow .sum{opacity:0;transform:translateY(16px);transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1)}
 .flow.in .pcol>*,.flow.in .pimg,.flow.in .sum{opacity:1;transform:none}
@@ -209,7 +210,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .note{position:absolute;left:0;width:446px;height:70px;border-radius:8px;background:#E1F4E1;display:flex;align-items:center;gap:14px;padding:0 16px}
 .note b{display:block;font:600 13px/1.3 Poppins,sans-serif;color:#0A2F25}.note span{display:block;margin-top:3px;font:400 12px/1.4 Poppins,sans-serif;color:#33524a}
 .note .ni{flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;display:grid;place-items:center;background:#fff}.note .ni svg{width:24px;height:24px}.note .ni img{width:100%;height:100%;object-fit:cover}
-.note.mid{left:0;top:388px;width:954px;height:68px}
+.note.mid{left:0;top:376px;width:954px;height:68px}
 /* flavours */
 .flv{position:absolute;left:12px;top:70px;display:grid;grid-template-columns:repeat(3,190px);gap:30px 12px}
 .fv{height:136px}
@@ -230,7 +231,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .seg{position:absolute;left:0;width:461px;height:36px;display:flex;border:1.5px solid #0A2F25;border-radius:8px;overflow:hidden}
 .seg span{flex:1;font:600 13.5px/33px Poppins,sans-serif;text-align:center;border-left:1.5px solid #0A2F25;transition:background .3s,color .3s}
 .seg span:first-child{border-left:0}.seg span.sel{background:#0A2F25;color:#fff}
-.sum{position:absolute;left:658px;top:152px;width:462px;height:468px;border-radius:14px;background:#E9EFEA;padding:22px 20px}
+.sum{position:absolute;left:658px;top:168px;width:462px;height:452px;border-radius:14px;background:#E9EFEA;padding:22px 20px}
 .sum h3{margin:0 0 14px;font:700 20px/1.2 Poppins,sans-serif;letter-spacing:-.02em}
 .sum .sh{display:block;font:600 14.5px/1.3 Poppins,sans-serif;margin-top:6px}
 .sum p{margin:6px 0 0;font:400 13px/1.4 Poppins,sans-serif}.sum s,.sum .row s{color:#6e7b76}.sum em{font-style:normal;color:#0F5A5C;font-weight:600}
@@ -285,7 +286,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 
 <!-- flow: address -->
 <section class="scene flow" id="s4" aria-label="Delivery address">
-  <div class="pcol" style="top:178px"><span class="okd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.500"/></svg></span><p class="gn" id="gn1">Good news!</p><h1 class="ph" id="gn2">We deliver to your area!</h1>
+  <div class="pcol" style="top:196px"><span class="okd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.500"/></svg></span><p class="gn" id="gn1">Good news!</p><h1 class="ph" id="gn2">We deliver to your area!</h1>
     <div class="fld" id="fld"><label>Enter delivery address</label><span id="typed"></span><i class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.500"/></svg></i></div></div>
   <div class="pimg"><img src="box-photo.webp" alt="" style="object-position:48% 52%"></div>
 </section>
@@ -293,7 +294,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 <section class="scene flow" id="s5" aria-label="How often">
   <div class="pcol"><h1 class="ph">How often should we handle dinner?</h1>
     <div class="opts" id="optsDays"><div class="opt">1-2 days per week</div><div class="opt">3-4 days per week</div><div class="opt">5-6 days per week</div><div class="opt">All week</div></div>
-    <div class="note" style="top:372px"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#0F5A5C" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2.500"/><path d="M4 10h16M8 3v4M16 3v4"/></svg></span><div><b>Flexible, no lock-in plans</b><span>Skip or pause flexibly</span></div></div></div>
+    <div class="note" style="top:360px"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#0F5A5C" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2.500"/><path d="M4 10h16M8 3v4M16 3v4"/></svg></span><div><b>Flexible, no lock-in plans</b><span>Skip or pause flexibly</span></div></div></div>
   <div class="pimg mc"><i class="lc"></i><img class="plate" src="flow-plate.webp" alt="A plate of food"></div>
 </section>
 <!-- flow: flavours -->
@@ -448,7 +449,7 @@ function getLoc(){return new Promise(res=>{if(!navigator.geolocation)return res(
   if(navigator.permissions&&navigator.permissions.query)navigator.permissions.query({name:'geolocation'}).then(r=>r.state==='denied'?res(HOME):ask()).catch(ask);else ask();
   setTimeout(()=>res(HOME),5500)})}
 function showMap(L){const z=15,n=2**z,xt=(L.lon+180)/360*n,la=L.lat*Math.PI/180,yt=(1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n,tx=Math.floor(xt),ty=Math.floor(yt);
-  const T=$('#mapTiles');T.style.left=(225-(1+xt-tx)*256)+'px';T.style.top=(160-(1+yt-ty)*256)+'px';
+  const T=$('#mapTiles');T.style.left=(205-(1+xt-tx)*256)+'px';T.style.top=(150-(1+yt-ty)*256)+'px';
   T.innerHTML=[0,1,2].map(r=>[0,1,2].map(c=>`<img alt="" style="left:${c*256}px;top:${r*256}px" src="https://tile.openstreetmap.org/${z}/${tx-1+c}/${ty-1+r}.png">`).join('')).join('')}
 const scenes=[
 async function hero_(g,o){
@@ -474,7 +475,7 @@ async function pick_(g,o){
   const b=cen($('#cont'));curGo(b.x,b.y,800);await W(900,g);await curClick(g);await W(120,g);return{x:b.x,y:b.y}},
 
 async function pack_(g,o){
-  pack.t=0;pack.out=null;show(2);$('#pkMap').classList.remove('in');$('#pkCd').classList.remove('in');$('#pkBtns').classList.remove('in');pack.cd0=null;const loc=getLoc();
+  pack.t=0;pack.out=null;show(2);$('#pkMap').classList.remove('in');$('#pkCd').classList.remove('in');$('#pkBtns').classList.remove('in');$('#pkT').classList.remove('sm');pack.cd0=null;const loc=getLoc();
   $('#pkBtn').classList.remove('in','press');$('#pkT').innerHTML='Packing<br>your box';$('#pkS').textContent=PICKS.length+' meals · 1 entomo box';
   await W(250,g);await W(2600,g);
   $('#pkT').textContent='All packed!';$('#pkS').textContent='Ready to ship';$('#pkBtn').classList.add('in');await W(900,g);
@@ -482,7 +483,7 @@ async function pack_(g,o){
   $('#pkBtn').classList.add('press');await curClick(g);await W(120,g);
   /* shipped: hold for a beat, then the map */
   cursor.style.opacity=0;$('#pkBtn').classList.remove('in');pack.out=pack.t;
-  const L=await loc;$('#pkT').textContent="It's on its way!";$('#pkS').innerHTML=L.here?'Shipping to<br>your location':'Shipping to<br>500 Prince Edward Drive, Etobicoke, ON';
+  const L=await loc;$('#pkT').classList.add('sm');$('#pkT').textContent="It's on its way!";$('#pkS').innerHTML=L.here?'Shipping to<br>your location':'Shipping to<br>500 Prince Edward Drive,<br>Etobicoke, ON';
   await W(1300,g);showMap(L);$('#pkMap').classList.add('in');$('#pkCd').classList.add('in');$('#pkBtns').classList.add('in');pack.cd0=pack.t;await W(5200,g);
   return{x:640,y:360}}
 ];
