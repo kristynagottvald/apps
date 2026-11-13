@@ -118,6 +118,8 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px}
       <div class="row" id="themes"></div></div>
     <div class="sec"><h2>aspect ratio</h2>
       <div class="row" id="ratios"></div></div>
+    <div class="sec"><h2>style</h2>
+      <div class="row" id="styles"></div></div>
     <div class="sec"><h2>motion</h2>
       <div class="row" id="motions"></div>
       <div class="sl" id="msl"><label>speed<input id="mSpeed" type="range" min="0.5" max="2" step="0.05" value="1"></label><label>scale<input id="mScale" type="range" min="0.4" max="1.4" step="0.05" value="1"></label><label id="mThirdL" class="full"><span id="mThirdT">elasticity</span><input id="mThird" type="range" min="1" max="6" step="1" value="2"></label></div></div>
@@ -155,7 +157,7 @@ const THEMES=[
 const RATIOS=[['16:9',1920,1080],['1:1',1080,1080],['4:5',1080,1350],['3:4',1080,1440],['9:16',1080,1920]];
 
 /* ---------------- state ---------------- */
-const S={theme:0,ratio:4,motion:0,sub:'',mspeed:1,mscale:1,melas:2,mrings:6,text:'delicious starts here',prods:[],speed:1};
+const S={theme:0,ratio:4,style:0,motion:0,sub:'',mspeed:1,mscale:1,melas:2,mrings:6,text:'delicious starts here',prods:[],speed:1};
 let frame=FR, playing=false, last=0, acc=0, exporting=false;
 const wm=new Image(); wm.src=WM_SRC;
 const wmCache={};
@@ -170,15 +172,17 @@ function tintedWm(color,h){ // wordmark mark, tinted
 const SETS=[
  {n:'2 boxes',  p:[['boxes.webp','entomo boxes']]},
  {n:'2 pouches',p:[['pouch-green.webp','honey roasted buffalo worms'],['pouch-blue.webp','lightly salted dehydrated grasshoppers']]},
- {n:'box + pouch',p:[['box.webp','entomo box'],['pouch-green.webp','honey roasted buffalo worms']]}];
+ {n:'box + pouch',p:[['box.webp','entomo box'],['pouch-green.webp','honey roasted buffalo worms']]},
+ {n:'plate',p:[['plate.webp','plate']]}];
 const IMGS={};
 function pic(src){ if(!IMGS[src]){ const im=new Image(); im.onload=()=>{render();tiles()}; im.src=src; IMGS[src]=im; } return IMGS[src]; }
 function loadSet(i){ S.set=i; S.prods=SETS[i].p.map(([src,name])=>({img:pic(src),name,dx:0,dy:0,sc:1})); tiles(); render(); }
 S.prods=[]; S.set=2;
 
 /* ---------------- drawing ---------------- */
+let circScale=1.15;
 function slots(n){
-  return n===1?[[0,0,1.15]]:n===2&&S.set===1?[[-.22,.2,.84],[.22,-.06,1]]:n===2&&S.set===2?[[-.29,.04,.84],[.33,.02,1.08]]:n===2?[[-.3,.12,.8],[.3,-.04,1]]:[[-.42,.14,.74],[.42,.14,.74],[0,-.04,1]];
+  return n===1?[[0,0,S.style===1?circScale:1.15]]:n===2&&S.set===1?[[-.22,.2,.84],[.22,-.06,1]]:n===2&&S.set===2?[[-.29,.04,.84],[.33,.02,1.08]]:n===2?[[-.3,.12,.8],[.3,-.04,1]]:[[-.42,.14,.74],[.42,.14,.74],[0,-.04,1]];
 }
 let ctx, hits=[];
 function layout(W,H){
@@ -226,8 +230,9 @@ function drawMotion(c,f,T,z){
   }
   c.restore();
 }
+let curK=1;
 function draw(c,W,H,f,k,collect){
-  ctx=c; c.save(); c.scale(k,k);
+  ctx=c; curK=k; c.save(); c.scale(k,k);
   scene(c,W,H,f,collect,S.theme);
   if(S.motion===3){ const L=layout(W,H), R=macroR(f,W,H,L.zone);
     if(R>0){ c.save(); c.beginPath(); c.arc(L.zone.cx,L.zone.cy,R,0,Math.PI*2); c.clip(); scene(c,W,H,f,false,INV[S.theme]); c.restore(); } }
@@ -245,6 +250,9 @@ function scene(c,W,H,f,collect,th){
     c.textAlign='left'; c.fillStyle=T.g; c.fillText('grub',x0,base); c.fillStyle=T.c; c.fillText('club',x0+w1,base);
     if(wm.complete&&wm.naturalWidth) c.drawImage(tintedWm(T.a,Math.round(wmh)),x0+w1+w2-lf*.02,base-wmh+lf*.035,wmw,wmh);
     c.restore(); }
+  if(S.style===1){   // circle style: one big circle in the theme's accent, bleeding off the card, with the hero on top
+    const RC=L.wide?L.zone.s*.84:Math.min(L.zone.s*.84,L.zone.cy-(L.logo.y+L.logo.f*.8)-L.zone.s*.04); circScale=2*RC*.72/L.zone.s;   // the circle stops short of the logo; the plate fills ~72% of it
+    const R=RC*sine((f-2)/28); if(R>0){ c.fillStyle=T.url; c.beginPath(); c.arc(L.zone.cx,L.zone.cy,R,0,Math.PI*2); c.fill(); } }
   if(S.motion&&S.motion<3) drawMotion(c,f,T,L.zone);
   /* products */
   const n=S.prods.length, sl=slots(n), z=L.zone, order=sl.map((s,i)=>i).sort((a,b)=>sl[a][2]-sl[b][2]);
@@ -255,7 +263,7 @@ function scene(c,W,H,f,collect,th){
     const bob=f>=FR-1?0:0; const cx=z.cx+sx*z.s+p.dx*W, cy=z.cy+sy*z.s+p.dy*H+(1-a)*z.s*.35;
     const im=p.img, iw=im.naturalWidth||im.width, ih=im.naturalHeight||im.height; if(!iw) return;
     const r=Math.min(sz/iw,sz/ih), dw=iw*r, dh=ih*r;
-    c.save(); c.globalAlpha=o; c.translate(cx,cy+bob); c.rotate((1-a)*(i%2?.12:-.12)); c.drawImage(im,-dw/2,-dh/2,dw,dh); c.restore();
+    c.save(); c.globalAlpha=o; if(S.style===1){ c.shadowColor='rgba(10,45,35,.3)'; c.shadowBlur=70*curK; c.shadowOffsetY=22*curK; } c.translate(cx,cy+bob); c.rotate((1-a)*(i%2?.12:-.12)); c.drawImage(im,-dw/2,-dh/2,dw,dh); c.restore();
     if(collect) hits.push({i,x:cx-dw/2,y:cy-dh/2,w:dw,h:dh});
   });
   /* headline, with the optional subheading under it */
@@ -319,6 +327,10 @@ $('#ratios').innerHTML=RATIOS.map((r,i)=>`<button class="opt" data-i="${i}" aria
 $('#sets').innerHTML=SETS.map((m,i)=>`<button class="opt" data-i="${i}" aria-pressed="false">${m.n}</button>`).join('');
 $('#sets').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; loadSet(+b.dataset.i); press($('#sets'),S.set)};
 const unset=()=>{ S.set=-1; press($('#sets'),-1); };
+const STYLES=['classic','circle'];
+$('#styles').innerHTML=STYLES.map((m,i)=>`<button class="opt" data-i="${i}" aria-pressed="${i===S.style}">${m}</button>`).join('');
+$('#styles').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; S.style=+b.dataset.i; press($('#styles'),S.style);
+  if(S.style===1&&S.set!==3){ loadSet(3); press($('#sets'),3); } else if(S.style===0&&S.set===3){ loadSet(2); press($('#sets'),2); } else render(); };
 const MOTIONS=['off','grow','evolve','macro'];
 $('#motions').innerHTML=MOTIONS.map((m,i)=>`<button class="opt" data-i="${i}" aria-pressed="${i===S.motion}">${m}</button>`).join('');
 $('#motions').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; S.motion=+b.dataset.i; press($('#motions'),S.motion); thirdUI(); render()};
