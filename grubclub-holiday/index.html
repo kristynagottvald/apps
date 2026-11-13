@@ -107,6 +107,9 @@ const GRID = {
 };
 const S = { ratio: '16:9', dens: 1, gut: 'white', word: 'GRUBCLUB', seed: 7 };
 
+/* the Grubclub logo worm (same PNG the other Grubclub apps use as the logo mark), 131x112 */
+const WORM_PNG = 'data:image/png;base64,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';
+
 /* ---------- seeded random ---------- */
 const rngOf = (s) => { let a = s >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
 const pick = (r, a) => a[Math.floor(r() * a.length)];
@@ -126,8 +129,6 @@ const poly = (pts, fill) => `<polygon points="${pts.map((p) => p.map(f).join(','
 /* faceted star built from kites: long points N/E/S/W, short points on the diagonals, each point split into two tones */
 const star8 = (cx, cy, R, c1, c2, longK = 1, shortK = .74) => { let s = ''; for (let i = 0; i < 8; i++) { const an = (i * 45 - 90) * Math.PI / 180, ln = R * (i % 2 ? shortK : longK), vr = R * .4, a1 = an - Math.PI / 8, a2 = an + Math.PI / 8; const P = (a, r) => [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; s += poly([[cx, cy], P(a1, vr), P(an, ln)], c1) + poly([[cx, cy], P(an, ln), P(a2, vr)], c2); } return s; };
 const splitCircle = (k, r = 46) => halfL(50, 50, r, k.a) + halfR(50, 50, r, k.b);
-const glyph = (k, d, sc = 1.1) => `<g transform="translate(50 50) scale(${sc}) translate(-50 -50)">${line(d, k.bg, 2.5)}</g>`;
-const ell = (cx, cy, rx, ry) => `M${cx - rx} ${cy} A${rx} ${ry} 0 1 1 ${cx + rx} ${cy} A${rx} ${ry} 0 1 1 ${cx - rx} ${cy}Z`;
 
 const ICON = {
   /* thin cap and loop, big round bauble, split tone or wavy diagonal lines */
@@ -171,18 +172,8 @@ const ICON = {
   holly: (k) => { const lv = '<path d="M25 0 A25 25 0 0 0 75 0Z"/><path d="M25 25 A25 25 0 0 0 75 25Z"/>'; const off = 20.7 /* outer half-disc sits in the tile corner on the diagonals */;
     const motif = (d, o) => rot(d, 50, 50, `<g transform="translate(0 ${-o})"><g fill="${k.leaf}">${lv}</g><path d="M50 0 V${46 + o}" stroke="${k.bg}" stroke-width="2.6"/></g>`);
     const bs = [[50, 41.5], [40, 58.8], [60, 58.8]]; return motif(0, 0) + motif(135, off) + motif(225, off) + bs.map(([x, y]) => circ(x, y, 11.4, k.bg)).join('') + bs.map(([x, y]) => circ(x, y, 10, k.berry)).join(''); },
-  /* split circles with thin line-art food, like the burger / fries / shake / cone circles */
-  lineBowl: (k) => splitCircle(k) + glyph(k, 'M24 50 H76 Q76 76 50 76 Q24 76 24 50Z M38 42 Q34 35 38 28 M50 42 Q46 34 50 25 M62 42 Q58 35 62 28 M40 84 H60'),
-  lineCup: (k) => splitCircle(k) + glyph(k, 'M35 36 L38.5 77 Q39 80 42 80 H58 Q61 80 61.5 77 L65 36 M30 36 H70 M53 36 L57 14 H69 M37 53 Q43.5 46 50 53 T63 53'),
-  lineFork: (k) => splitCircle(k) + glyph(k, 'M32 20 V38 Q32 48 41 48 Q50 48 50 38 V20 M41 20 V80 M66 20 Q80 36 66 56 V80'),
-  lineCone: (k) => splitCircle(k) + glyph(k, 'M36 48 L50 86 L64 48Z M33 48 A17 17 0 1 1 67 48Z M42 58 L50 72 L58 58') + circ(50, 18, 4.2, k.x),
-  /* bugs, same split-circle line art: Grubclub's cricket, grasshopper and mealworm, plus a beetle and an ant */
-  lineCricket: (k) => splitCircle(k) + glyph(k, ell(50, 58, 9, 21) + ell(50, 30, 7, 7) + 'M50 40 V76 M46 24 Q38 10 24 12 M54 24 Q62 10 76 12 M41 52 L28 48 L25 60 M59 52 L72 48 L75 60 M43 68 L32 74 L27 86 M57 68 L68 74 L73 86', .82),
-  lineGrasshopper: (k) => splitCircle(k) + glyph(k, ell(24, 44, 7, 6.5) + 'M31 44 Q42 38 60 40 L86 52 L60 54 Q42 56 31 50Z M40 41 L80 50 M20 39 Q17 27 8 22 M38 54 L34 70 M46 55 L44 72 M60 53 L74 66 L62 82 L72 84', 1.02),
-  lineBeetle: (k) => splitCircle(k) + glyph(k, ell(50, 58, 17, 22) + ell(50, 28, 8, 7) + 'M50 36 V80 M46 22 Q42 14 34 12 M54 22 Q58 14 66 12 M34 50 L22 44 M33 60 L20 60 M35 70 L24 78 M66 50 L78 44 M67 60 L80 60 M65 70 L76 78', .85),
-  lineAnt: (k) => splitCircle(k) + glyph(k, ell(50, 22, 7, 7) + ell(50, 42, 6, 8) + ell(50, 68, 10, 15) + 'M46 17 L41 9 L34 12 M54 17 L59 9 L66 12 M45 38 L32 29 L27 36 M44 43 L29 46 L25 55 M45 48 L34 60 L30 72 M55 38 L68 29 L73 36 M56 43 L71 46 L75 55 M55 48 L66 60 L70 72', .8),
   /* abstract grid fillers */
-  halfdisc: (k) => splitCircle(k, 46),
+  halfdisc: (k, v) => rot(v ? 90 : 0, 50, 50, splitCircle(k, 46)),
   rings: (k) => circ(50, 50, 44, k.a) + circ(50, 50, 32, k.bg) + circ(50, 50, 20, k.b) + circ(50, 50, 8, k.bg),
   quarters: (k) => `<path d="M0 0 H50 A50 50 0 0 1 0 50Z" fill="${k.a}"/><path d="M100 0 V50 A50 50 0 0 1 50 0Z" fill="${k.b}"/><path d="M0 100 V50 A50 50 0 0 1 50 100Z" fill="${k.b}"/><path d="M100 100 H50 A50 50 0 0 1 100 50Z" fill="${k.a}"/>`,
   dots: (k) => { let s = ''; for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) s += circ(18 + i * 32, 18 + j * 32, 13, (i + j) % 2 ? k.b : k.a); return s; },
@@ -190,9 +181,8 @@ const ICON = {
   stripesDiag: (k) => Array.from({ length: 9 }, (_, i) => `<path d="M${-20 + i * 20} 120 L${60 + i * 20} -20" stroke="${k.a}" stroke-width="9"/>`).join(''),
   wavyDiag: (k) => rot(-45, 50, 50, [-20, 0, 20, 40, 60, 80, 100, 120].map((y) => zig(-30, 130, y, 5, 8, k.a, 3.4)).join(''))
 };
-const LINES = ['lineBowl', 'lineCup', 'lineFork', 'lineCone', 'lineCricket', 'lineGrasshopper', 'lineBeetle', 'lineAnt'];
-/* 'line' stands for one of the split-circle line icons; the three exact geometric blocks are weighted up */
-const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'moon', 'scallop', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'line', 'line', 'line', 'line'];
+/* plain split circles (two half circles in varying colour pairs) and the three exact geometric blocks, weighted up */
+const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'moon', 'scallop', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'halfdisc', 'halfdisc', 'halfdisc', 'halfdisc'];
 const FILLERS = ['halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
 const BLEED = { tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1, elf: 1 };
 
@@ -280,7 +270,7 @@ function build(anim) {
   const cw = (W - gap * (cols + 1)) / cols, ch = (H - gap * (rows + 1)) / rows;
   const tiles = layout(cols, rows, r);
   let out = '', n = 0, last = '';
-  const nextIcon = (geo = true) => { let name, tries = 0; do { name = pick(r, ICONS_FULL); if (name === 'line') name = pick(r, LINES); tries++; } while ((name === last || usedRecent.slice(-3).includes(name) || (!geo && GEO[name])) && tries < 40); last = name; usedRecent.push(name); return name; };
+  const nextIcon = (geo = true) => { let name, tries = 0; do { name = pick(r, ICONS_FULL); tries++; } while ((name === last || usedRecent.slice(-3).includes(name) || (!geo && GEO[name])) && tries < 40); last = name; usedRecent.push(name); return name; };
   usedRecent = [];
   /* about half of the illustrations run tight to the tile edges (zoomed in, bleeding off), the rest keep a margin */
   const iconSvg = (name, k, x, y, w, h, pad) => { const sl = BLEED[name], tight = !sl && !GEO[name] && r() < .5; const p = sl || tight ? 0 : pad; const vb = tight ? '5 5 90 90' : '0 0 100 100'; return `<svg x="${f(x + p)}" y="${f(y + p)}" width="${f(w - p * 2)}" height="${f(h - p * 2)}" viewBox="${vb}" preserveAspectRatio="${sl ? 'xMidYMid slice' : 'xMidYMid meet'}" overflow="${sl || tight ? 'hidden' : 'visible'}">${ICON[name](k, r() < .5 ? 1 : 0)}</svg>`; };
@@ -292,13 +282,13 @@ function build(anim) {
     if (t.kind === 'word') {
       k = scheme(r, 'L'); k = { ...k, bg: C.L, a: C.D, b: C.M, x: C.M };
       const txt = (S.word || 'GRUBCLUB').toUpperCase();
-      const fs = Math.min(h * .4, (w - h * 2.4) / (txt.length * .74));
+      const fs = Math.min(h * .4, (w - h * 2.9) / (txt.length * .74));
       body = `<text x="${f(x + w / 2)}" y="${f(y + h / 2)}" text-anchor="middle" dominant-baseline="central" font-family="Poppins,'Helvetica Neue',Arial,sans-serif" font-weight="600" font-size="${f(fs)}" letter-spacing="${f(fs * .14)}" fill="${C.D}">${txt.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`;
-      /* a mealworm on either side of the wordmark, the right one mirrored */
-      const worm = `<g transform="rotate(-18 50 50)"><path d="M10 60 Q10 44 28 44 H74 Q92 44 92 60 Q92 76 74 76 H28 Q10 76 10 60Z" fill="${C.D}"/><path d="M26 45 Q30 60 26 75 M40 45 Q44 60 40 75 M54 45 Q58 60 54 75 M68 45 Q72 60 68 75" fill="none" stroke="${C.L}" stroke-width="2.6" stroke-linecap="round"/><path d="M28 76 L26 88 M50 76 L48 88 M72 76 L74 88 M88 50 L97 40" fill="none" stroke="${C.D}" stroke-width="3.4" stroke-linecap="round"/><circle cx="82" cy="58" r="3" fill="${C.L}"/></g>`;
-      const ws = h * .86;
-      body += `<svg x="${f(x + h * .18)}" y="${f(y + (h - ws) / 2)}" width="${f(ws)}" height="${f(ws)}" viewBox="0 0 100 100" overflow="visible">${worm}</svg>` +
-        `<svg x="${f(x + w - h * .18 - ws)}" y="${f(y + (h - ws) / 2)}" width="${f(ws)}" height="${f(ws)}" viewBox="0 0 100 100" overflow="visible"><g transform="translate(100 0) scale(-1 1)">${worm}</g></svg>`;
+      /* the Grubclub worm on either side of the wordmark, recoloured dark green */
+      const wh = h * .62, ww2 = wh * 131 / 112, wy = y + (h - wh) / 2;
+      body += `<filter id="wmf" x="0" y="0" width="1" height="1"><feFlood flood-color="${C.D}"/><feComposite in2="SourceAlpha" operator="in"/></filter>` +
+        `<image href="${WORM_PNG}" filter="url(#wmf)" x="${f(x + h * .3)}" y="${f(wy)}" width="${f(ww2)}" height="${f(wh)}"/>` +
+        `<image href="${WORM_PNG}" filter="url(#wmf)" x="${f(x + w - h * .3 - ww2)}" y="${f(wy)}" width="${f(ww2)}" height="${f(wh)}"/>`;
     } else if (t.kind === 'hero') {
       k = scheme(r, pick(r, ['W', 'M', 'D', 'L']));
       const nm = pick(r, ['ornament', 'wreath', 'snowman', 'reindeer', 'gift', 'bell', 'hat', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri']);
