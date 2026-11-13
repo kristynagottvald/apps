@@ -30,7 +30,7 @@ const APPS = {
     ready: 1500, q: 70,
     run: async (p) => {
       const t0 = Date.now();
-      await at(t0, 1300, () => p.evaluate(() => { fl.play({ from: 2, speed: 4.8, keep: true, loop: false }); }));
+      await at(t0, 1300, () => p.evaluate(() => { fl.play({ from: 2, speed: 5.8, keep: true, loop: false }); }));
       await sleep(5200);
     } },
   // ten full-screen styles, each looping on its own with random events; click through five of them with the numbered switcher, ending back near the first
