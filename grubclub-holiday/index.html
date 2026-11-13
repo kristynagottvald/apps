@@ -131,6 +131,8 @@ const splitCircle = (k, r = 46) => halfL(50, 50, r, k.a) + halfR(50, 50, r, k.b)
 /* chunky worm-line squiggle: arches of semicircles drawn with a thick round-capped stroke (bleeds off the tile) */
 const archWave = (x0, y, r, n, col, sw, flip) => { let d = `M${f(x0)} ${f(y)}`; for (let i = 0; i < n; i++) d += ` A${f(r)} ${f(r)} 0 0 ${(i + (flip ? 1 : 0)) % 2 ? 0 : 1} ${f(x0 + 2 * r * (i + 1))} ${f(y)}`; return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${f(sw)}" stroke-linecap="round"/>`; };
 const contrastOf = (c1, c2) => { const a = lum(c1), b = lum(c2); return (Math.max(a, b) + .05) / (Math.min(a, b) + .05); };
+/* the palette colour from pool that contrasts most with the surface a detail sits on */
+const bestOn = (surface, pool) => pool.filter((c) => c !== surface).sort((u, v) => contrastOf(v, surface) - contrastOf(u, surface))[0];
 const squigCols = (k) => [k.a, k.b, k.x].sort((u, v) => contrastOf(v, k.bg) - contrastOf(u, k.bg));
 
 const ICON = {
@@ -140,7 +142,7 @@ const ICON = {
       `<clipPath id="${id}"><circle cx="50" cy="61" r="38"/></clipPath>` + circ(50, 61, 38, k.a) + `<g clip-path="url(#${id})"><g transform="rotate(-40 50 61)">${[-10, 10, 30, 50, 70, 90].map((y) => zig(-20, 120, y + 20, 4, 8, k.bg, 2.6)).join('')}</g></g>`); },
   /* pentagon face, ring antlers, one round nose */
   reindeer: (k) => circ(14, 12, 20, 'none', `stroke="${k.b}" stroke-width="3.4"`) + circ(86, 12, 20, 'none', `stroke="${k.b}" stroke-width="3.4"`) +
-    poly([[10, 20], [90, 20], [90, 62], [50, 98], [10, 62]], k.a) + circ(50, 68, 11, k.x),
+    poly([[10, 20], [90, 20], [90, 62], [50, 98], [10, 62]], k.a) + circ(50, 68, 11, bestOn(k.a, [k.bg, k.b, k.x])),
   /* bell: big dome, wavy white band, round clapper below */
   bell: (k) => `<path d="M16 68 V50 Q16 8 50 8 Q84 8 84 50 V68Z" fill="${k.a}"/><rect x="6" y="66" width="88" height="16" fill="${k.b}"/>` + zig(6, 94, 74, 3.4, 8, k.bg, 2.4) + circ(50, 90, 11, k.x),
   hat: (k) => `<path d="M20 70 V58 Q20 22 50 22 Q80 22 80 58 V70Z" fill="${k.a}"/><rect x="10" y="68" width="80" height="18" rx="2" fill="${k.b}"/>` + zig(10, 90, 77, 3.4, 8, k.bg, 2.4) + circ(50, 14, 11, k.x),
@@ -154,9 +156,9 @@ const ICON = {
     `<rect x="10" y="30" width="80" height="62" fill="${k.a}"/><rect x="10" y="48" width="80" height="16" fill="${k.b}"/>` + circ(32, 56, 5.5, k.bg) + circ(68, 56, 5.5, k.bg) + '',
   /* snowman: two big circles, hat, a single accent nose */
   snowman: (k) => circ(50, 78, 36, k.a) + circ(50, 31, 21, k.b) + `<rect x="34" y="2" width="32" height="12" rx="1" fill="${k.a}"/><rect x="26" y="12" width="48" height="5" rx="2" fill="${k.a}"/>` +
-    poly([[50, 32], [72, 36], [50, 40]], k.x) + circ(50, 66, 3.4, k.bg) + circ(50, 78, 3.4, k.bg) + circ(50, 90, 3.4, k.bg),
+    poly([[50, 32], [72, 36], [50, 40]], bestOn(k.b, [k.bg, k.a, k.x])) + circ(50, 66, 3.4, bestOn(k.a, [k.bg, k.b, k.x])) + circ(50, 78, 3.4, bestOn(k.a, [k.bg, k.b, k.x])) + circ(50, 90, 3.4, bestOn(k.a, [k.bg, k.b, k.x])),
   ginger: (k) => circ(50, 22, 17, k.a) + `<rect x="8" y="40" width="84" height="20" rx="10" fill="${k.a}"/><rect x="28" y="40" width="44" height="40" rx="14" fill="${k.a}"/><rect x="30" y="64" width="16" height="34" rx="8" fill="${k.a}"/><rect x="54" y="64" width="16" height="34" rx="8" fill="${k.a}"/>` +
-    circ(50, 51, 3.6, k.x) + circ(50, 63, 3.6, k.x) + circ(50, 75, 3.6, k.x),
+    [51, 63, 75].map((y) => circ(50, y, 3.6, bestOn(k.a, [k.bg, k.b, k.x]))).join(''),
   treeC: (k) => circ(50, 24, 17, k.a) + circ(50, 50, 24, k.b) + circ(50, 80, 28, k.a) + circ(50, 6, 5.5, k.x) + circ(42, 52, 3.6, k.bg) + circ(60, 46, 3.6, k.bg) + circ(38, 82, 4, k.bg) + circ(58, 84, 4, k.bg) + circ(70, 76, 4, k.x),
   wreath: (k) => Array.from({ length: 12 }, (_, i) => { const an = i / 12 * Math.PI * 2; return circ(50 + Math.cos(an) * 34, 50 + Math.sin(an) * 34, 13, i % 2 ? k.b : k.a); }).join('') + circ(50, 50, 20, k.bg) +
     circ(40, 82, 4.5, k.x) + circ(50, 85, 4.5, k.x) + circ(60, 82, 4.5, k.x) + poly([[50, 84], [36, 96], [36, 74]], k.x) + poly([[50, 84], [64, 96], [64, 74]], k.x),
