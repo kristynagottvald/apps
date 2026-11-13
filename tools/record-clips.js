@@ -36,24 +36,15 @@ const APPS = {
       await at(t0, 5400, () => domClick(p, '#ratios .opt:nth-child(1)'));
     } },
   'flavor-all-stars': { vp: [1280, 769], crop: [0, 49, 1280, 720],
-    // the hero plays in on its own; then scroll down the top 10 timeline and back up to the hero
+    // the first design plays in on its own, then the selector clicks through the other three and back to the first
     ready: 1800,
     run: async (p) => {
-      const t0 = Date.now();
-      await at(t0, 1000, () => p.evaluate(() => fas.scroll(650, 1100)));
-      await at(t0, 2700, () => p.evaluate(() => fas.scroll(1250, 1300)));
-      await at(t0, 4400, () => p.evaluate(() => fas.scroll(0, 1500)));
+      const t0 = Date.now(), tab = (n) => domClick(p, '#picker button:nth-child(' + n + ')');
+      await at(t0, 900, () => tab(2));
+      await at(t0, 2000, () => tab(3));
+      await at(t0, 3100, () => tab(4));
+      await at(t0, 4200, () => tab(1));
     } },
-  // the hero pills run on a 8.2 s cycle on their own; wait until the circle has grown so the loop starts on the full composition
-  'clearco-attribution-guide': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#still-title', ready: 1400, run: async () => {} },
-  'clearco-logistics-guide': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async (p) => {
-    const t0 = Date.now();
-    const go = (id, d) => p.evaluate(([i, o]) => scrollTo(0, document.getElementById(i).offsetTop - 49 + o), [id, d]);
-    await at(t0, 900, () => go('stmt', 0));      // the grid with sliding squares
-    await at(t0, 3000, () => go('ch1', 40));     // chapter one, chart stuck to the top
-    await at(t0, 4300, () => go('ch1', 260));
-    await at(t0, 5200, () => p.evaluate(() => scrollTo(0, 0)));
-  } },
   'grubclub-order': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // park on the hero (collage already grown in), then play the order flow at 2.4x speed: click, pick four meals, email
     setup: async (p) => { await p.evaluate(() => gc.park()); },
@@ -179,7 +170,7 @@ async function record(name) {
    12 fps, 960x540, animated WebP that repeats forever. */
 function encode(name, src, start) {
   const A = APPS[name], [cx, cy, cw, ch] = A.crop, out = ROOT + name + '/thumb.webp';
-  const base = `[0:v]trim=start=${start.toFixed(3)}:duration=6.6,setpts=PTS-STARTPTS,fps=30,crop=${cw}:${ch}:${cx}:${cy},scale=960:540:flags=lanczos,format=yuv420p`;
+  const base = `[0:v]fps=30,trim=start=${start.toFixed(3)}:duration=6.6,setpts=PTS-STARTPTS,crop=${cw}:${ch}:${cx}:${cy},scale=960:540:flags=lanczos,format=yuv420p`;
   const fc = base + ',split=3[a0][b0][c0];[a0]trim=0.5:6.0,setpts=PTS-STARTPTS[a];[b0]trim=6.0:6.5,setpts=PTS-STARTPTS[b];[c0]trim=0:0.5,setpts=PTS-STARTPTS[c];[b][c]xfade=transition=fade:duration=0.5:offset=0[bc];[a][bc]concat=n=2:v=1,fps=12[v]';
   cp.execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', src, '-filter_complex', fc, '-map', '[v]', '-t', '6',
     '-c:v', 'libwebp_anim', '-q:v', '62', '-compression_level', '6', '-loop', '0', '-an', out]);
