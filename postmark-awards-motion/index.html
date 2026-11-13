@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Postmark Awards Motion Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Inter+Tight:wght@400;500;600&family=Lexend+Zetta:wght@800&family=Archivo+Black&family=Mr+Dafoe&family=Yellowtail&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0D0D2B; --navy:#15153A; --line:#2B2B60; --indigo:#4131f1; --lav:#b4aaff;
+  --text:#F3F2FF; --muted:#9E9BCB; --lime:#E4E890;
+  --font:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font:400 14px/1.4 var(--font);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+button,input{font:inherit;color:inherit}
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}}
+.app{flex:1;min-height:0;display:grid;grid-template-columns:340px 1fr}
+.panel{background:var(--navy);border-right:2px solid var(--line);overflow-y:auto;padding:20px}
+.panel h1{font-size:16px;font-weight:600;margin-bottom:2px}
+.panel p.sub{color:var(--muted);font-size:12px;margin-bottom:18px}
+.lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);margin:18px 0 8px}
+.styles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.styles button{background:var(--ink);border:2px solid var(--line);border-radius:8px;padding:10px 8px;cursor:pointer;font-weight:500;font-size:13px;color:var(--muted);min-height:40px}
+.styles button[aria-pressed=true]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.styles button:hover:not([aria-pressed=true]){color:var(--text)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:500}
+.field input[type=text]{width:100%;background:var(--ink);border:2px solid var(--line);border-radius:6px;padding:9px 11px;font-size:16px}
+.field input[type=text]:focus{outline:none;border-color:var(--lav)}
+.row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.row output{color:var(--text);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--lav)}
+.btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:18px}
+.btns button{background:none;border:2px solid var(--line);border-radius:8px;padding:9px 6px;cursor:pointer;font-weight:500;font-size:13px;min-height:40px}
+.btns button:hover{border-color:var(--lav)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.stage{position:relative;min-width:0;min-height:0;background:#000}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+@media (max-width:820px){
+  .app{grid-template-columns:1fr;grid-template-rows:56vh auto}
+  .stage{order:-1}
+  .panel{border-right:0;border-top:2px solid var(--line)}
+}
+</style>
+</head>
+<body>
+<nav class="back"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Postmark Awards Motion Engine</b></nav>
+<div class="app">
+  <aside class="panel">
+    <h1>Postmark Awards motion</h1>
+    <p class="sub">One engine, four award banner styles.</p>
+    <span class="lbl" style="margin-top:0">Style</span>
+    <div class="styles" id="styles"></div>
+    <span class="lbl">Text</span>
+    <div id="fields"></div>
+    <span class="lbl">Playback</span>
+    <div class="row"><span>Speed</span><output id="spOut">1.0x</output></div>
+    <input type="range" id="speed" min="0.25" max="2" step="0.05" value="1" aria-label="Speed">
+    <div class="btns">
+      <button id="replay">Replay</button>
+      <button id="pause" aria-pressed="false">Pause</button>
+      <button id="save">Save PNG</button>
+    </div>
+  </aside>
+  <main class="stage"><canvas id="cv"></canvas></main>
+</div>
+<script>
+(() => {
+'use strict';
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1;
+
+/* ---------- shared helpers ---------- */
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const fontOK = {};                       // font name -> loaded
+const loadFont = (spec, name) => document.fonts.load(spec, 'ABCabc').then(() => { fontOK[name] = true; }, () => { fontOK[name] = false; });
+function ready(names) { return names.every((n) => fontOK[n] !== undefined); }
+
+/* BBH Bartle is not on the Google Fonts CSS API, so load the file directly */
+try {
+  const ff = new FontFace('BBH Bartle', 'url(https://fonts.gstatic.com/s/bbhbartle/v1/zYXjKVYuMYMaN-IMqP3RSm4.ttf)');
+  ff.load().then((f) => { document.fonts.add(f); fontOK['BBH Bartle'] = true; bump(); }, () => { fontOK['BBH Bartle'] = false; bump(); });
+} catch (e) { fontOK['BBH Bartle'] = false; }
+loadFont('800 30px "Lexend Zetta"', 'Lexend Zetta').then(bump);
+loadFont('30px "Archivo Black"', 'Archivo Black').then(bump);
+Promise.all(['Mr Dafoe', 'Yellowtail', 'Great Vibes'].map((f) => loadFont(`46px "${f}"`, f))).then(bump);
+setTimeout(() => { for (const n of ['BBH Bartle', 'Lexend Zetta', 'Archivo Black', 'Mr Dafoe', 'Yellowtail', 'Great Vibes']) if (fontOK[n] === undefined) fontOK[n] = false; bump(); }, 4000);
+
+let version = 0;                          // bumped when fonts or text change, so caches rebuild
+function bump() { version++; }
+
+/* ======================================================================
+   STYLE 1: REPEATER
+   ====================================================================== */
+const Repeater = (() => {
+  const BG = '#4131f1', FG = '#b4aaff';
+  const FRAME_H = 162, MARGIN = 28, CENTER_X = 207.9, GROW = 1.3;
+  const BEAT_MS = 2600, PULSE = 0.07, RIPPLE_LAG = 0.07, RIPPLE_MAX_LAG = 0.5;
+  const MIDDLE_TOP = 53, MIDDLE_PITCH = 21, BASE_SIZE = 22.5, REF = 100;
+  const FAMILY = '"BBH Bartle", "Archivo Black", Impact, sans-serif';
+  const MIDDLE_CY = MIDDLE_TOP + (2 * MIDDLE_PITCH + 14) / 2;
+  const widths = new Map();
+  let fm = null, CAP = 0.7, mver = -1;
+
+  function metrics(c) {
+    if (mver === version && fm) return;
+    c.save(); c.font = `${REF}px ${FAMILY}`;
+    const m = c.measureText('H');
+    fm = { asc: (m.fontBoundingBoxAscent || REF * 0.9) / REF, desc: (m.fontBoundingBoxDescent || REF * 0.25) / REF };
+    CAP = m.actualBoundingBoxAscent > 0 ? m.actualBoundingBoxAscent / REF : 0.7;
+    widths.clear(); c.restore(); mver = version;
+  }
+  function wps(c, s) {
+    if (!widths.has(s)) { c.save(); c.font = `${REF}px ${FAMILY}`; widths.set(s, c.measureText(s).width / REF); c.restore(); }
+    return widths.get(s);
+  }
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  function phase(i, beat) {
+    const lag = Math.min(i * RIPPLE_LAG, RIPPLE_MAX_LAG);
+    return ease(clamp((beat - lag) / (1 - RIPPLE_MAX_LAG), 0, 1));
+  }
+  const ink = (size) => ((0.88 - fm.asc - fm.desc) / 2 + fm.asc - CAP) * size;
+  function figma(c, str, x, y, size) {
+    c.font = `${REF}px ${FAMILY}`; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+    const baseline = y + (0.88 * size - (fm.asc + fm.desc) * size) / 2 + fm.asc * size;
+    c.save(); c.translate(x, baseline); c.scale(size / REF, size / REF); c.fillText(str, 0, 0); c.restore();
+  }
+  function draw(c, w, h, t, v) {
+    c.fillStyle = BG; c.fillRect(0, 0, w, h);
+    metrics(c);
+    const mid = [v.l1, v.l2, v.l3].map((s) => s || ' ');
+    const widest = Math.max(...mid.map((s) => wps(c, s)));
+    const k = w / (widest * BASE_SIZE + 2 * MARGIN);
+    c.save();
+    c.translate(w / 2 - CENTER_X * k, (h - FRAME_H * k) / 2); c.scale(k, k);
+    const extra = Math.max(0, (h / k - FRAME_H) / 2);
+    const beat = (t / BEAT_MS) % 1;
+
+    // radiating lines
+    const GAP = MIDDLE_PITCH - CAP * BASE_SIZE, capB = CAP * BASE_SIZE;
+    const firstTop = MIDDLE_TOP + ink(BASE_SIZE), lastTop = firstTop + 2 * MIDDLE_PITCH;
+    c.fillStyle = FG;
+    let top = 0;
+    for (let i = 0; i < 80; i++) {
+      const p = phase(i, beat), size = BASE_SIZE * Math.pow(GROW, i + p);
+      top = i === 0 ? firstTop - (GAP + CAP * BASE_SIZE * GROW) * p : top - GAP - CAP * size;
+      figma(c, v.top || ' ', CENTER_X, top - ink(size), size);
+      if (top < -extra - 1) break;
+    }
+    let prevBottom = 0;
+    for (let i = 0; i < 80; i++) {
+      const p = phase(i, beat), size = BASE_SIZE * Math.pow(GROW, i + p);
+      top = i === 0 ? lastTop + (capB + GAP) * p : prevBottom + GAP;
+      prevBottom = top + CAP * size;
+      figma(c, v.bottom || ' ', CENTER_X, top - ink(size), size);
+      if (top > FRAME_H + extra + 1) break;
+    }
+
+    // middle block, swelling at the start of each beat
+    const sw = beat < 0.4 ? Math.sin(Math.PI * beat / 0.4) : 0;
+    c.translate(CENTER_X, MIDDLE_CY); c.scale(1 + PULSE * sw, 1 + PULSE * sw); c.translate(-CENTER_X, -MIDDLE_CY);
+    mid.forEach((s, i) => {
+      const y = MIDDLE_TOP + i * MIDDLE_PITCH, lw = wps(c, s) * BASE_SIZE;
+      c.fillStyle = BG; c.fillRect(CENTER_X - lw / 2, y - 0.1 * BASE_SIZE, lw, 1.1 * BASE_SIZE);
+    });
+    c.fillStyle = FG;
+    mid.forEach((s, i) => figma(c, s, CENTER_X, MIDDLE_TOP + i * MIDDLE_PITCH, BASE_SIZE));
+    c.restore();
+  }
+  return {
+    name: 'Repeater', fonts: ['BBH Bartle'], bg: BG,
+    fields: [
+      ['l1', 'Middle line 1', 'STANDOUT'], ['l2', 'Middle line 2', 'DESIGN'], ['l3', 'Middle line 3', 'AWARD'],
+      ['top', 'Repeats upward', 'STANDOUT'], ['bottom', 'Repeats downward', 'AWARD'],
+    ],
+    upper: true, draw,
+  };
+})();
+
+/* ======================================================================
+   STYLE 2: GROWTH
+   ====================================================================== */
+const Growth = (() => {
+  const DESIGN_W = 414, DESIGN_H = 162, BLUE = '#4131f1', LAV = '#b4aaff';
+  const CX = 198.71, LINE_Y = [66.9, 102.5], FONT_SIZE = 30, TARGET_W = 204;
+  const HALO = 7, EXTRUDE = 5, BORDER = 1.2;
+  const T_ENTER = 1100, T_HOLD = 600, T_DRIFT = 3400, T_EXIT = 900, T_GAP = 450;
+  const T_TOTAL = T_ENTER + T_HOLD + T_DRIFT + T_EXIT + T_GAP, DRIFT_AMP = 4.5;
+  const TILE = 120, TILE_OVL = 6;
+  let cache = null, key = '', LINES = [], spacing = -1;
+
+  function applyFont(c) {
+    c.font = `800 ${FONT_SIZE}px "Lexend Zetta", sans-serif`;
+    c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
+    try { c.letterSpacing = `${spacing}px`; } catch (e) {}
+  }
+  function fit(c) {
+    spacing = 0; applyFont(c);
+    const natural = c.measureText(LINES[0]).width;
+    spacing = LINES[0].length > 1 ? (TARGET_W - natural) / (LINES[0].length - 1) : 0;
+    applyFont(c);
+  }
+  function paint(c, colour, ox, oy, outline) {
+    c.fillStyle = colour; c.strokeStyle = colour; c.lineWidth = outline * 2;
+    LINES.forEach((s, i) => {
+      const x = CX + ox + spacing / 2, y = LINE_Y[i] + oy;
+      if (outline > 0) c.strokeText(s, x, y);
+      c.fillText(s, x, y);
+    });
+  }
+  function build(w, h, v) {
+    LINES = [v.l1 || ' ', v.l2 || ' '];
+    const s = Math.min(w / DESIGN_W, h / DESIGN_H), ox = (w - DESIGN_W * s) / 2, oy = (h - DESIGN_H * s) / 2;
+    const midY = (LINE_Y[0] + LINE_Y[1]) / 2, px = 1 / s;
+    const letters = document.createElement('canvas');
+    letters.width = Math.round(w * DPR); letters.height = Math.round(h * DPR);
+    let c = letters.getContext('2d');
+    c.setTransform(DPR, 0, 0, DPR, 0, 0); c.translate(ox, oy); c.scale(s, s); fit(c);
+    paint(c, LAV, 0, 0, HALO);
+    for (let e = EXTRUDE; e >= px; e -= px * 0.5) paint(c, BLUE, e, e, 0);
+    paint(c, BLUE, 0, 0, BORDER);
+    paint(c, LAV, 0, 0, 0);
+    const hw = (TARGET_W / 2 + HALO + EXTRUDE + 6) * s, hh = 42 * s;
+    const tw = Math.ceil(2 * hw + TILE + TILE_OVL), th = Math.ceil(2 * hh + TILE + TILE_OVL);
+    const tile = document.createElement('canvas');
+    tile.width = Math.round(tw * DPR); tile.height = Math.round(th * DPR);
+    c = tile.getContext('2d');
+    c.setTransform(DPR, 0, 0, DPR, 0, 0); c.translate(hw - CX * s, hh - midY * s); c.scale(s, s); fit(c);
+    for (let d = (TILE + TILE_OVL) / s; d >= 0; d -= 0.5 * px) paint(c, LAV, d, d, HALO);
+    cache = { letters, tile, hw, hh, tw, th, s, ox, oy };
+  }
+  const eOut = (t) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t)), eIn = (t) => t * t * t;
+  function timeline(tAll, enterDist, exitDist, s) {
+    let t = tAll;
+    if (t < T_ENTER) return (1 - eOut(t / T_ENTER)) * enterDist;
+    t -= T_ENTER; if (t < T_HOLD) return 0;
+    t -= T_HOLD;
+    if (t < T_DRIFT) { const u = t / T_DRIFT; return DRIFT_AMP * s * Math.pow(Math.sin(Math.PI * u), 2) * Math.sin(2 * Math.PI * u); }
+    t -= T_DRIFT; if (t < T_EXIT) return -eIn(t / T_EXIT) * exitDist;
+    return enterDist;
+  }
+  function draw(c, w, h, t, v) {
+    c.fillStyle = BLUE; c.fillRect(0, 0, w, h);
+    if (!ready(['Lexend Zetta'])) return;
+    const k = [w, h, version, v.l1, v.l2, DPR].join('|');
+    if (k !== key) { build(w, h, v); key = k; }
+    const { letters, tile, hw, hh, tw, th, s, ox, oy } = cache;
+    const cx = ox + CX * s, cy = oy + ((LINE_Y[0] + LINE_Y[1]) / 2) * s;
+    const L = Math.max(w, h) * 1.05, enterDist = Math.max(w, h) * 1.1;
+    const exitDist = Math.min(cx + L + hw, cy + L + hh) + 20;
+    const off = timeline(t % T_TOTAL, enterDist, exitDist, s);
+    const n = Math.ceil(L / TILE);
+    for (let i = 0; i < n; i++) {
+      const x = cx - hw + off + i * TILE, y = cy - hh + off + i * TILE;
+      if (x > w || y > h || x + tw < 0 || y + th < 0) continue;
+      c.drawImage(tile, x, y, tw, th);
+    }
+    c.drawImage(letters, off, off, w, h);
+  }
+  return { name: 'Growth', fonts: ['Lexend Zetta'], bg: BLUE, fields: [['l1', 'Line 1', 'GROWTH'], ['l2', 'Line 2', 'AWARD']], upper: true, draw };
+})();
+
+/* ======================================================================
+   STYLE 3: TICKER
+   ====================================================================== */
+const Ticker = (() => {
+  const DESIGN_W = 414, BG = '#b4aaff';
+  const GAP_SPACES = 1, FONT_SIZE = 33, LINE_HEIGHT = 30, WORD_SPACING = -3, TRACKING = 1.5;
+  const ROTATION = -32, SPEED_VARIANCE = 0.3, SPEED = 40, ROW_SPEED = 0.35, STAR_SPIN = 25, STROKE_W = 1;
+  const STACK = '"Archivo Black", "Arial Black", Impact, sans-serif';
+  const rr = (i, salt) => { const x = Math.sin(i * 127.1 + salt * 311.7) * 43758.5453; return x - Math.floor(x); };
+
+  function star(c, x, y, w, h, s, sec) {
+    c.save(); c.strokeStyle = '#fff'; c.lineWidth = STROKE_W * s; c.lineCap = 'round';
+    const r = Math.min(w, h) / 2;
+    c.translate(x + w / 2, y); c.rotate((STAR_SPIN * sec) * Math.PI / 180);
+    c.beginPath();
+    for (let k = 0; k < 4; k++) { const a = k * Math.PI / 4, dx = r * Math.cos(a), dy = r * Math.sin(a); c.moveTo(-dx, -dy); c.lineTo(dx, dy); }
+    c.stroke(); c.restore();
+  }
+  function draw(c, w, h, t, v) {
+    c.fillStyle = BG; c.fillRect(0, 0, w, h);
+    if (!ready(['Archivo Black'])) return;
+    const PHRASE = v.phrase || ' ';
+    const s = w / DESIGN_W, size = FONT_SIZE * s, lineH = LINE_HEIGHT * s, sec = t / 1000;
+    c.font = `${size}px ${STACK}`; c.textAlign = 'left'; c.textBaseline = 'middle'; c.lineJoin = 'round';
+    try { c.letterSpacing = `${TRACKING * s}px`; c.wordSpacing = '0px'; } catch (e) {}
+    const spaceW = c.measureText('A A').width - c.measureText('AA').width;
+    try { c.wordSpacing = `${WORD_SPACING * s}px`; } catch (e) {}
+    const phraseW = c.measureText(PHRASE).width, gapW = spaceW * GAP_SPACES;
+    const iconH = size * 0.85, iconW = iconH, iconGap = size * 0.3;
+    const plainUnit = phraseW + gapW, iconUnit = phraseW + iconGap * 2 + iconW;
+    const diag = Math.hypot(w, h), rows = Math.ceil(diag / lineH) + 2, mid = Math.floor(rows / 2);
+    c.save(); c.translate(w / 2, h / 2); c.rotate(ROTATION * Math.PI / 180);
+    for (let i = 0; i < rows; i++) {
+      const y = (i - mid) * lineH, dir = i % 2 === 0 ? -1 : 1;
+      const speed = SPEED * ROW_SPEED * (1 + (rr(i, 2) * 2 - 1) * SPEED_VARIANCE);
+      const filled = (i - mid) % 2 === 0, unitW = filled ? iconUnit : plainUnit;
+      const ph = rr(i, 1) * unitW + dir * speed * s * sec;
+      const offset = ((ph % unitW) + unitW) % unitW;
+      if (filled) c.fillStyle = '#fff'; else { c.strokeStyle = '#fff'; c.lineWidth = STROKE_W * s; }
+      for (let x = -diag / 2 - unitW + offset; x < diag / 2 + unitW; x += unitW) {
+        if (filled) c.fillText(PHRASE, x, y); else c.strokeText(PHRASE, x, y);
+        if (filled) star(c, x + phraseW + iconGap, y, iconW, iconH, s, sec);
+      }
+    }
+    c.restore();
+  }
+  return { name: 'Ticker', fonts: ['Archivo Black'], bg: BG, fields: [['phrase', 'Phrase', 'MAIL FOR GOOD AWARD']], upper: true, draw };
+})();
+
+/* ======================================================================
+   STYLE 4: PERSONALIZE
+   ====================================================================== */
+const Personalize = (() => {
+  const W = 414, H = 162, BG = '#1e2247', LILAC = '#b4aaff';
+  const SCRIPTS = ['Mr Dafoe', 'Yellowtail', 'Great Vibes'];
+  const SANS = '"Messina Sans", "Helvetica Neue", Helvetica, Arial, sans-serif';
+  const SWITCH_MS = 1000, FADE_MS = 250, HOLD_MS = 900, STAGGER = 70, DRAW_MS = 650, FILL_MS = 350, LINE2_DELAY = 900;
+
+  function write(c, str, x, baseline, t, delay, alpha) {
+    const L = 1000;
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i]; if (ch === ' ') continue;
+      const cx = x + c.measureText(str.slice(0, i)).width;
+      const local = t - delay - i * STAGGER; if (local <= 0) continue;
+      const p = clamp(local / DRAW_MS, 0, 1), f = clamp((local - DRAW_MS) / FILL_MS, 0, 1);
+      c.save(); c.strokeStyle = LILAC; c.fillStyle = LILAC; c.lineWidth = 0.6;
+      if (p < 1) { c.globalAlpha = alpha; c.setLineDash([L, L]); c.lineDashOffset = L * (1 - p); c.strokeText(ch, cx, baseline); }
+      else { c.globalAlpha = alpha * (1 - f); c.strokeText(ch, cx, baseline); c.globalAlpha = alpha * f; c.fillText(ch, cx, baseline); }
+      c.restore();
+    }
+  }
+  function headline(c, family, t, alpha, v) {
+    try { c.letterSpacing = '0px'; } catch (e) {}
+    c.textBaseline = 'alphabetic'; c.lineJoin = 'round'; c.lineCap = 'round'; c.textAlign = 'left';
+    const XH = 22;
+    c.font = `100px ${family}`;
+    const xh100 = c.measureText('acemnorsuvwxz').actualBoundingBoxAscent || 50;
+    const w100 = Math.max(c.measureText(v.a || ' ').width, c.measureText(v.b || ' ').width, 1);
+    const size = Math.min((XH / xh100) * 100, ((382 - 33) / w100) * 100);
+    c.font = `${size}px ${family}`;
+    write(c, v.a || '', 31, 74, t, 0, alpha);
+    write(c, v.b || '', 33, 117, t, LINE2_DELAY, alpha);
+  }
+  function draw(c, w, h, t, v) {
+    c.fillStyle = BG; c.fillRect(0, 0, w, h);
+    const sc = Math.min(w / W, h / H) * 0.9;
+    const padX = (w - W * sc) / 2 / sc, padY = (h - H * sc) / 2 / sc;
+    c.save(); c.translate((w - W * sc) / 2, (h - H * sc) / 2); c.scale(sc, sc);
+    c.strokeStyle = LILAC; c.lineWidth = 0.5;
+    c.beginPath(); for (const y of [52, 74, 95, 117]) { c.moveTo(-padX, y + 0.25); c.lineTo(W + padX, y + 0.25); } c.stroke();
+    c.setLineDash([2.025, 2.025]); c.beginPath();
+    for (const x of [33, 207, 382]) { c.moveTo(x + 0.25, -padY); c.lineTo(x + 0.25, H + padY); }
+    c.stroke(); c.setLineDash([]);
+    if (ready(SCRIPTS)) {
+      const n = Math.max((v.a || '').length, (v.b || '').length, 1);
+      const REVEAL = LINE2_DELAY + (n - 1) * STAGGER + DRAW_MS + FILL_MS;
+      const fam = (i) => `"${SCRIPTS[i % 3]}", cursive`, start = REVEAL + HOLD_MS, DONE = 1e9;
+      if (t < start) headline(c, fam(0), t, 1, v);
+      else {
+        const k = Math.floor((t - start) / SWITCH_MS), a = clamp(((t - start) - k * SWITCH_MS) / FADE_MS, 0, 1), e = a * a * (3 - 2 * a);
+        if (a >= 1) headline(c, fam(k + 1), DONE, 1, v);
+        else { headline(c, fam(k), DONE, 1 - e, v); headline(c, fam(k + 1), DONE, e, v); }
+      }
+      c.fillStyle = LILAC; c.textBaseline = 'top'; c.textAlign = 'left'; c.font = `600 11px ${SANS}`;
+      try { c.letterSpacing = '1.65px'; } catch (e) {}
+      c.fillText(v.t1 || '', 41, 31); c.fillText(v.t2 || '', 328, 122);
+      try { c.letterSpacing = '0px'; } catch (e) {}
+    }
+    c.restore();
+  }
+  return {
+    name: 'Personalize', fonts: SCRIPTS, bg: BG,
+    fields: [['a', 'Line 1', 'campaign'], ['b', 'Line 2', 'personalization'], ['t1', 'Label top left', 'BEST'], ['t2', 'Label bottom right', 'AWARD']],
+    upper: false, draw,
+  };
+})();
+
+/* ---------- engine ---------- */
+const STYLES = { repeater: Repeater, growth: Growth, ticker: Ticker, personalize: Personalize };
+const ORDER = ['repeater', 'growth', 'ticker', 'personalize'];
+const values = {};
+for (const id of ORDER) { values[id] = {}; for (const [k, , d] of STYLES[id].fields) values[id][k] = d; }
+let cur = 'repeater', clock = 0, last = performance.now(), speed = 1, paused = false;
+
+const $styles = document.getElementById('styles'), $fields = document.getElementById('fields');
+ORDER.forEach((id) => {
+  const b = document.createElement('button'); b.textContent = STYLES[id].name; b.dataset.id = id;
+  b.addEventListener('click', () => setStyle(id)); $styles.appendChild(b);
+});
+function buildFields() {
+  $fields.innerHTML = '';
+  const S = STYLES[cur];
+  for (const [k, label] of S.fields) {
+    const d = document.createElement('div'); d.className = 'field';
+    const l = document.createElement('label'); l.textContent = label; l.htmlFor = 'f_' + k;
+    const i = document.createElement('input'); i.type = 'text'; i.id = 'f_' + k; i.value = values[cur][k]; i.autocomplete = 'off'; i.spellcheck = false;
+    i.addEventListener('input', () => { const val = S.upper ? i.value.toUpperCase() : i.value; values[cur][k] = val; version++; if (!S.upper) clock = 0; });
+    d.append(l, i); $fields.appendChild(d);
+  }
+}
+function setStyle(id) {
+  cur = id; clock = 0; version++;
+  [...$styles.children].forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === id));
+  buildFields();
+}
+document.getElementById('speed').addEventListener('input', (e) => { speed = +e.target.value; document.getElementById('spOut').textContent = speed.toFixed(1) + 'x'; });
+document.getElementById('replay').addEventListener('click', () => { clock = 0; });
+const $pause = document.getElementById('pause');
+$pause.addEventListener('click', () => { paused = !paused; $pause.setAttribute('aria-pressed', paused); $pause.textContent = paused ? 'Play' : 'Pause'; });
+document.getElementById('save').addEventListener('click', () => {
+  cv.toBlob((b) => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `postmark-${cur}.png`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); });
+});
+
+function resize() {
+  const r = cv.getBoundingClientRect();
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+}
+new ResizeObserver(resize).observe(cv); resize();
+
+function frame(now) {
+  const dt = now - last; last = now;
+  if (!paused) clock += Math.min(dt, 100) * speed;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.clip();
+  STYLES[cur].draw(ctx, W, H, clock, values[cur]);
+  ctx.restore();
+  requestAnimationFrame(frame);
+}
+setStyle('repeater');
+requestAnimationFrame(frame);
+window.pm = { setStyle, replay: () => { clock = 0; }, seek: (ms) => { clock = ms; }, get style() { return cur; } };
+})();
+</script>
+</body>
+</html>
