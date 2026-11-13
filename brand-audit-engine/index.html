@@ -125,6 +125,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
 .decide{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;margin-top:auto}
 .decide .btn{margin:0}
 .decide .btn.ghost{padding:11px 8px}
+.res hr.div{border:0;border-top:1px solid var(--line);margin:0}
 .flist{display:none}
 
 .cursor{position:absolute;left:0;top:0;width:22px;height:22px;pointer-events:none;z-index:9;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));will-change:transform,opacity}
@@ -193,7 +194,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
             <div class="bl"><i class="g" id="barG"></i><span id="lblG"></span></div>
             <div class="bl"><i class="o" id="barO"></i><span id="lblO"></span></div>
           </div></div>
-        <div id="accBox"><h4>Accuracy</h4>
+        <hr class="div"><div id="accBox"><h4>Accuracy</h4>
           <div class="acc">
             <svg viewBox="0 0 104 104"><circle cx="52" cy="52" r="42" fill="none" stroke="#3b3b6b" stroke-width="12"/><circle id="ring" cx="52" cy="52" r="42" fill="none" stroke="#FF6F5B" stroke-width="12" stroke-dasharray="263.9" stroke-dashoffset="263.9"/></svg>
             <div><big id="accN">0%</big><p>A person makes the final call.</p></div>
