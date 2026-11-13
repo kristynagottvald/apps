@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clearco Logistics Hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--fg:#fff}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#000;color:var(--fg);overflow:hidden;font:600 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif}
+body{display:flex;flex-direction:column}
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}}
+main{flex:1;min-height:0;position:relative}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Clearco Logistics Hero</b></nav>
+<main><canvas id="c" role="img" aria-label="Clearco inventory logistics hero animation: outlined boxes, rays and floating stacks of fine lines behind the headlines, then the Clearco logo fades in"></canvas></main>
+<script>
+
+const BG=(()=>{
+  const BOXES=[[0,0,156,156],[288,180,168,216],[456,60,60,120],[156,396,132,120]];
+  const ST=[[156,116,80,56,12,.2,2],[100,484,64,56,12,1.4,2],[456,364,64,56,12,2.6,2],[381,133,194,28,16,.9,2],[180,390,120,28,12,2.1,2],[36,68,132,22,16,1.7,1]];
+  const STEP=36,TOP=-20,BOT=520;
+  const stacks=ST.map(s=>({x:s[0],y:s[1],base:s[1],h:s[2],w:s[3],n:s[4],start:s[5]*1000,range:s[6],mv:null,next:null}));
+  let k=1,ox=0,oy=0;
+  function resize(W,H){k=Math.min(W,H)/600; ox=W/2-288*k; oy=H/2-288*k;}
+  function off(st,i){const t=i/(st.n-1);return -st.h/2+st.h*(1-Math.pow(1-t,1.35));}
+  function step(st,now){
+    if(st.next===null) st.next=now+st.start;
+    if(st.mv){ if(now-st.mv.t0>=st.mv.dur){st.y=st.mv.y1;st.mv=null;st.next=now+450+Math.random()*1300;} return; }
+    if(now<st.next) return;
+    const lo=Math.max(st.base-st.range*STEP,TOP+st.h/2), hi=Math.min(st.base+st.range*STEP,BOT-st.h/2);
+    const ups=st.y-STEP>=lo, downs=st.y+STEP<=hi;
+    const dir=ups&&downs?(Math.random()<.5?-1:1):(ups?-1:1);
+    const room=dir<0?Math.floor((st.y-lo)/STEP):Math.floor((hi-st.y)/STEP);
+    const d=Math.min(room,Math.random()<.5?1:2);
+    st.mv={t0:now,dur:1500+d*650,y0:st.y,y1:st.y+dir*d*STEP,dir:Math.sign(dir*d)};
+  }
+  function draw(c,W,H,T,s,a){
+    const now=s*1000;
+    c.save(); c.globalAlpha=a; c.translate(ox,oy); c.scale(k,k);
+    c.lineWidth=1/k;
+    // rays breathe a little
+    const breathe=1+.06*Math.sin(s*.7);
+    for(let i=0;i<8;i++){
+      const an=i*Math.PI/4, len=250*breathe, x2=288+Math.cos(an)*len, y2=288+Math.sin(an)*len;
+      const g=c.createLinearGradient(288,288,x2,y2);
+      g.addColorStop(0,'rgba(255,255,255,.55)'); g.addColorStop(.5,'rgba(255,255,255,.45)'); g.addColorStop(1,'rgba(255,255,255,0)');
+      c.strokeStyle=g; c.beginPath(); c.moveTo(288,288); c.lineTo(x2,y2); c.stroke();
+    }
+    c.strokeStyle='rgba(255,255,255,.9)'; for(const b of BOXES) c.strokeRect(b[0],b[1],b[2],b[3]);
+    c.strokeStyle='#fff'; c.beginPath();
+    for(const st of stacks){
+      step(st,now);
+      let y0=st.y,y1=st.y,p=1,dir=0; const span=(st.n-1)*.03;
+      if(st.mv){p=clamp01((now-st.mv.t0)/st.mv.dur);y0=st.mv.y0;y1=st.mv.y1;dir=st.mv.dir;}
+      for(let i=0;i<st.n;i++){
+        const order=dir>0?st.n-1-i:i, pk=st.mv?easeSine((p-order*.03)/(1-span)):1;
+        const y=y0+(y1-y0)*pk+off(st,i);
+        c.moveTo(st.x,y); c.lineTo(st.x+st.w,y);
+      }
+    }
+    c.stroke(); c.restore();
+  }
+  return {resize,draw};
+})();
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TL = { s1In:[0.4,1.7], s1Fade:[3.6,4.6], s2In1:[4.9,5.9], s2In2:[6.1,7.1],
+  textDim:[9.0,9.6], textOut:[9.6,10.4], logoIn:[9.8,11.4], logoOut:[15.4,16.3], bgDim:[4.7,5.5],
+  bgOut:[9.4,10.8], bgIn:[16.2,17.0], loop:17.0 };
+const clamp01=v=>Math.min(1,Math.max(0,v));
+const prog=(T,r)=>clamp01((T-r[0])/(r[1]-r[0]));
+const easeOut=p=>1-Math.pow(1-p,3);
+const easeIO=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+const easeSine=p=>-(Math.cos(Math.PI*clamp01(p))-1)/2;
+const mix=(a,b,t)=>a+(b-a)*t;
+const FONT='"Instrument Sans","Helvetica Neue",Arial,sans-serif';
+const S1='Out-ship your competition.';
+const S2=['Plan your inventory logistics','before your next peak season.'];
+const LOGO_DOTS=[[-481.7,-13.1],[-481.7,14.1],[-468.7,-34.5],[-468.7,36.5],[-445.2,-47.1],[-445.2,47.6],[-419.1,-50.5],[-419.1,51],[-395.3,-45.6],[-395.3,46.7],[-374.7,-32.9],[-374.7,34.3],[-334.8,-47.6],[-334.8,-23.8],[-334.8,-0.4],[-334.8,23.7],[-334.8,46.7],[-310.3,47.6],[-286.6,47.6],[-263.5,47.6],[-239.7,47.6],[-206,-47.6],[-206,-23.8],[-206,-0.4],[-206,23.7],[-206,47.6],[-181.3,-47.6],[-181.3,-0.4],[-181.3,47.6],[-158,-47.6],[-158,-0.4],[-158,47.6],[-134.5,-47.6],[-134.5,-0.4],[-134.5,47.6],[-111.2,-47.6],[-111.2,47.6],[-76.2,49.9],[-63.7,28.1],[-52.1,7.7],[-40.1,-13.1],[-40.1,28.1],[-28.5,-32.9],[-17,-50.5],[-17,28.1],[-6.2,-32.9],[5.2,-13.1],[6.8,28.1],[16.9,7.7],[28.7,28.1],[40.6,47.6],[76.9,-47.1],[76.9,-23.8],[76.9,0.4],[76.9,23.7],[76.9,47.6],[101.3,-47.6],[101.3,-0.4],[124.8,-47.6],[124.8,-0.4],[148.2,-47.6],[148.2,-0.4],[163.6,23.7],[171,-45.6],[172.6,-2.5],[181.5,-23.8],[181.5,47.6],[218,-13.1],[218,14.1],[231.4,-34.5],[231.4,35.4],[254.8,-47.1],[254.8,47.6],[280.8,-50.5],[280.8,51],[304.4,-45.6],[304.4,46.7],[325.4,-32.9],[325.4,35.4],[362,-11.6],[362,14.1],[375.2,-32.9],[375.2,35.4],[398.8,-45.6],[398.8,46.7],[424.6,-47.6],[424.6,49.9],[448.3,-44],[448.3,46.7],[469,-31.9],[469,34.3],[481.8,-11.6],[481.8,14.1]];
+const LOGO_SPAN=963.5, LOGO_DOT_R=7.63;
+
+const cv=document.getElementById('c'), ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1,t0=performance.now(),ready=false,L={};
+function setFont(size){ctx.font='400 '+size+'px '+FONT; if('letterSpacing' in ctx) ctx.letterSpacing=(-size*.03)+'px';}
+function layout(){
+  const r=cv.getBoundingClientRect(); W=Math.round(r.width); H=Math.round(r.height);
+  DPR=Math.min(2,window.devicePixelRatio||1); cv.width=W*DPR; cv.height=H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  let s=Math.min(80,Math.max(20,W*.036)); setFont(s);
+  const w1=ctx.measureText(S1).width; if(w1>W*.9){s*=W*.9/w1; setFont(s);}
+  L.s1={size:s,y:H/2+s*.33};
+  let s2=Math.min(80,Math.max(20,W*.036)); setFont(s2);
+  let mw=Math.max(...S2.map(t=>ctx.measureText(t).width));
+  if(mw>W*.86){s2*=W*.86/mw; setFont(s2); mw=Math.max(...S2.map(t=>ctx.measureText(t).width));}
+  const lh=s2*1.22; L.s2={size:s2,lh,x:(W-mw)/2,y1:H/2-lh/2+s2*.3};
+  BG.resize(W,H);
+}
+function halo(text,x,y,size,align,alpha){
+  if(alpha<=.002) return;
+  ctx.save(); ctx.textAlign=align; ctx.textBaseline='alphabetic'; ctx.globalAlpha=alpha; ctx.fillStyle='#fff';
+  ctx.shadowColor='rgba(0,0,0,.9)'; ctx.shadowBlur=size*.6;  ctx.fillText(text,x,y);
+  ctx.shadowBlur=size*.25; ctx.fillText(text,x,y);
+  ctx.shadowColor='transparent'; ctx.fillText(text,x,y); ctx.restore();
+}
+function bgAlpha(T,loop){
+  let a=1;
+  if(T>=TL.bgOut[0]) a=1-easeIO(prog(T,TL.bgOut));
+  if(T>=TL.bgIn[0]) a=easeIO(prog(T,TL.bgIn));
+  if(loop===0&&T<1.2&&!START) a=easeIO(prog(T,[0,1.2]));
+  return a;
+}
+function drawLogo(a){
+  if(a<=.002) return;
+  const k=Math.min(W*(W<560?.8:.48),1100)/LOGO_SPAN, r=Math.max(2,LOGO_DOT_R*k);
+  ctx.save(); ctx.globalAlpha=a; ctx.fillStyle='#fff'; ctx.beginPath();
+  for(const [x,y] of LOGO_DOTS){ctx.moveTo(W/2+x*k+r,H/2+y*k); ctx.arc(W/2+x*k,H/2+y*k,r,0,Math.PI*2);}
+  ctx.fill(); ctx.restore();
+}
+function frame(now){
+  requestAnimationFrame(frame);
+  if(!ready) return;
+  const raw=reduce?0:(now-t0)/1000, loop=Math.floor(raw/TL.loop);
+  const T=reduce?8:raw%TL.loop;
+  ctx.setTransform(DPR,0,0,DPR,0,0); ctx.globalAlpha=1; ctx.shadowColor='transparent';
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+  // background dims behind the text in scene 2, then hides for the logo
+  const dim=T>=TL.bgDim[0]&&T<TL.bgOut[0]?mix(1,.55,easeIO(prog(T,TL.bgDim))):1;
+  const a=bgAlpha(T,loop)*(reduce?.7:dim);
+  BG.draw(ctx,W,H,T,now/1000,a);
+  setFont(L.s1.size);
+  if(T<TL.s1Fade[1]){
+    const pin=easeOut(prog(T,TL.s1In)), pout=easeIO(prog(T,TL.s1Fade));
+    halo(S1,W/2+80*(1-pin)-24*pout,L.s1.y,L.s1.size,'center',pin*(1-pout));
+  }
+  if(T>=TL.s2In1[0]&&T<TL.textOut[1]){
+    let f=1;
+    if(T>=TL.textDim[0]) f=T<TL.textOut[0]?mix(1,.28,easeIO(prog(T,TL.textDim))):.28*(1-prog(T,TL.textOut));
+    const p1=easeOut(prog(T,TL.s2In1)), p2=easeOut(prog(T,TL.s2In2));
+    setFont(L.s2.size);
+    halo(S2[0],L.s2.x+70*(1-p1),L.s2.y1,L.s2.size,'left',p1*f);
+    halo(S2[1],L.s2.x+70*(1-p2),L.s2.y1+L.s2.lh,L.s2.size,'left',p2*f);
+  }
+  // the logo simply fades in, holds, fades out
+  drawLogo(easeIO(prog(T,TL.logoIn))*(1-easeIO(prog(T,TL.logoOut))));
+}
+const link=document.createElement('link'); link.rel='stylesheet';
+link.href='https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400&display=swap'; document.head.appendChild(link);
+const START=+((location.hash.match(/t=([d.]+)/)||[])[1]||0);   // #t=4.6 starts the sequence part way in (used for the home page clip)
+const boot=()=>{layout();t0=performance.now()-START*1000;ready=true;};
+Promise.race([document.fonts.load('400 40px "Instrument Sans"'),new Promise(r=>setTimeout(r,1500))]).then(boot,boot);
+addEventListener('resize',()=>{if(ready)layout();});
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>

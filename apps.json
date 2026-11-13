@@ -1,5 +1,23 @@
 [
   {
+    "id": "clearco-logistics-lines",
+    "title": "Clearco Logistics Lines",
+    "category": "Motion",
+    "url": "clearco-logistics-lines/",
+    "thumbnail": "clearco-logistics-lines/thumb.png",
+    "preview": "clearco-logistics-lines/thumb.webp",
+    "alt": "Black screen of thin horizontal lines with stacks of fine white lines and small squares sliding, behind the headline 'Plan your inventory logistics before your next peak season.'"
+  },
+  {
+    "id": "clearco-logistics-hero",
+    "title": "Clearco Logistics Hero",
+    "category": "Motion",
+    "url": "clearco-logistics-hero/",
+    "thumbnail": "clearco-logistics-hero/thumb.png",
+    "preview": "clearco-logistics-hero/thumb.webp",
+    "alt": "Black screen with outlined boxes, thin rays from the centre and floating stacks of fine white lines, behind the headline 'Plan your inventory logistics before your next peak season.'"
+  },
+  {
     "id": "flavor-all-stars",
     "title": "Grubclub Flavor All Stars",
     "category": "Email",
