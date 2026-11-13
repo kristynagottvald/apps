@@ -139,8 +139,8 @@ const BG_LINES=(()=>{
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const TL = { s1In:[0.4,1.7], s1Fade:[3.6,4.6], s2In1:[4.9,5.9], s2In2:[6.1,7.1],
-  textDim:[9.0,9.6], textOut:[9.6,10.4], logoIn:[9.8,11.4], logoOut:[15.4,16.3], bgDim:[4.7,5.5],
-  bgOut:[9.4,10.8], bgIn:[16.2,17.0], loop:17.0 };
+  textOut:[9.0,10.6], logoIn:[10.4,12.0], logoOut:[15.4,16.3], bgDim:[4.7,5.5],
+  bgOut:[9.0,10.6], bgIn:[16.2,17.0], loop:17.0 };
 const clamp01=v=>Math.min(1,Math.max(0,v));
 const prog=(T,r)=>clamp01((T-r[0])/(r[1]-r[0]));
 const easeOut=p=>1-Math.pow(1-p,3);
@@ -209,8 +209,7 @@ function frame(now){
     halo(S1,W/2+80*(1-pin)-24*pout,L.s1.y,L.s1.size,'center',pin*(1-pout));
   }
   if(T>=TL.s2In1[0]&&T<TL.textOut[1]){
-    let f=1;
-    if(T>=TL.textDim[0]) f=T<TL.textOut[0]?mix(1,.28,easeIO(prog(T,TL.textDim))):.28*(1-prog(T,TL.textOut));
+    const f=1-easeIO(prog(T,TL.textOut));   // one smooth fade, no intermediate dim step
     const p1=easeOut(prog(T,TL.s2In1)), p2=easeOut(prog(T,TL.s2In2));
     setFont(L.s2.size);
     halo(S2[0],L.s2.x+70*(1-p1),L.s2.y1,L.s2.size,'left',p1*f);
