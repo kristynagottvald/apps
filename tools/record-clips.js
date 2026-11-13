@@ -25,6 +25,17 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  'workout-year-reels': { vp: [1280, 769], crop: [0, 49, 1280, 720],
+    // the cycle starts on the circles; step through the other five styles the way a visitor would with the switcher
+    ready: 1500,
+    run: async (p) => {
+      const t0 = Date.now(), st = (n) => domClick(p, '#sw button:nth-child(' + n + ')');
+      await at(t0, 1500, () => st(3));
+      await at(t0, 2600, () => st(4));
+      await at(t0, 3600, () => st(5));
+      await at(t0, 4600, () => st(6));
+      await at(t0, 5600, () => st(7));
+    } },
   'grubclub-holiday': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // the grid pops in on its own, then shuffle it and try the other shapes the way a visitor would
     ready: 1800,
