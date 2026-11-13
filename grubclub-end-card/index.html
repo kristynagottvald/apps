@@ -143,14 +143,14 @@ const WM_SRC="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIMAAABwCAYAAAA9m8PR
 /* ---------------- brand ---------------- */
 /* the only three colour combinations allowed (from the brand panels): the logo is a single colour, white on teal, kiwi on green, teal on kiwi */
 const THEMES=[
- {id:'teal', name:'teal and kiwi', bg:'#12525A', ink:'#FFFFFF', url:'#EEFB71', g:'#FFFFFF', c:'#FFFFFF', a:'#FFFFFF'},
- {id:'green',name:'green and kiwi',bg:'#23936B', ink:'#EEFB71', url:'#EEFB71', g:'#EEFB71', c:'#EEFB71', a:'#EEFB71'},
- {id:'kiwi', name:'kiwi and teal', bg:'#EEFB71', ink:'#12525A', url:'#12525A', g:'#12525A', c:'#12525A', a:'#12525A'}
+ {id:'teal', name:'teal and kiwi', bg:'#12525A', ink:'#FFFFFF', url:'#EEFB71', g:'#FFFFFF', c:'#FFFFFF', a:'#FFFFFF', ring:['#4D9060','#90BE70','#DBED80']},
+ {id:'green',name:'green and kiwi',bg:'#23936B', ink:'#EEFB71', url:'#EEFB71', g:'#EEFB71', c:'#EEFB71', a:'#EEFB71', ring:['#5E9D64','#A5CC74','#F0FB85']},
+ {id:'kiwi', name:'kiwi and teal', bg:'#EEFB71', ink:'#12525A', url:'#12525A', g:'#12525A', c:'#12525A', a:'#12525A', ring:['#F4FC9E','#FAFECF','#FFFFFB']}
 ];
 const RATIOS=[['16:9',1920,1080],['1:1',1080,1080],['4:5',1080,1350],['3:4',1080,1440],['9:16',1080,1920]];
 
 /* ---------------- state ---------------- */
-const S={theme:0,ratio:4,motion:0,mspeed:1,mscale:1,melas:2,mrings:5,text:'delicious starts here',prods:[],speed:1};
+const S={theme:0,ratio:4,motion:0,mspeed:1,mscale:1,melas:2,mrings:6,text:'delicious starts here',prods:[],speed:1};
 let frame=FR, playing=false, last=0, acc=0, exporting=false;
 const wm=new Image(); wm.src=WM_SRC;
 const wmCache={};
@@ -218,8 +218,8 @@ function drawMotion(c,f,T,z){
   }else if(S.motion===2){
     const n=S.mrings;
     for(let i=n;i>0;i--){
-      const a=sine((f-2-(n-i)*4)*sp/32), u=.5+.5*Math.sin(TAU*ph-i*.55), morph=1+Math.sin(TAU*2*ph+i*.3)*.05, R=i*z.s*(.62/n)*sc*morph*a;
-      if(R<=0) continue; c.fillStyle=mixc(T.bg,T.url,.14+.5*u); c.beginPath(); c.arc(0,0,R,0,TAU); c.fill();
+      const a=sine((f-2-(n-i)*4)*sp/32), u=.5+.5*Math.sin(TAU*ph-i*.55), morph=1+Math.sin(TAU*2*ph+i*.3)*.05, R=i*z.s*(.88/n)*sc*morph*a;
+      if(R<=0) continue; const q=u*(T.ring.length-1), k0=Math.min(T.ring.length-2,Math.floor(q)); c.fillStyle=mixc(T.ring[k0],T.ring[k0+1],q-k0); c.beginPath(); c.arc(0,0,R,0,TAU); c.fill();
     }
   }
   c.restore();
