@@ -25,6 +25,14 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  // park on the chat with the recommendations already shown (that is the first frame), then carry on from there at 4x: pick the item, size, Buy, Apple Pay, Face ID, order confirmed in the chat
+  'agentic-storefront': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '?park=1',
+    ready: 1500, q: 70,
+    run: async (p) => {
+      const t0 = Date.now();
+      await at(t0, 1300, () => p.evaluate(() => { fl.play({ from: 2, speed: 5.8, keep: true, loop: false }); }));
+      await sleep(5200);
+    } },
   // ten full-screen styles, each looping on its own with random events; click through five of them with the numbered switcher, ending back near the first
   'human-tech-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#c=1&t=2', ready: 1000, q: 38, run: async (p) => {
     const t0 = Date.now(), st = (n) => domClick(p, '#sw button:nth-child(' + n + ')');
