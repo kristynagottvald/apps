@@ -1,5 +1,14 @@
 [
   {
+    "id": "postmark-awards-motion",
+    "title": "Postmark Awards Motion Engine",
+    "category": "Interactive Engine",
+    "url": "postmark-awards-motion/",
+    "thumbnail": "postmark-awards-motion/thumb.png",
+    "preview": "postmark-awards-motion/thumb.webp",
+    "alt": "Motion graphic engine for the Postmark Awards that switches between four styles: a repeating STANDOUT DESIGN AWARD stack on indigo, a GROWTH AWARD headline with a long lavender shadow, a rotated ticker of MAIL FOR GOOD AWARD, and a handwritten 'campaign personalization' headline on guides"
+  },
+  {
     "id": "postmark-ribbon-engine",
     "title": "Postmark Awards Ribbon Engine",
     "category": "Interactive Engine",

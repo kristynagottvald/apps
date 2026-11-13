@@ -87,6 +87,20 @@ const APPS = {
     await at(t0, 4700, () => click(p, /Shuffle/));
     await at(t0, 5600, () => click(p, /^Indigo$/));
   } },
+  'postmark-awards-motion': { vp: [1280, 769], ready: 2500,
+    // crop the middle 16:9 of the stage, then play each style in turn from its start
+    setup: async (p) => {
+      const r = await p.evaluate(() => { const b = document.querySelector('#cv').getBoundingClientRect(); return [b.x, b.y, b.width, b.height]; });
+      const h = Math.round(r[2] * 9 / 16);
+      return [Math.round(r[0]), Math.round(r[1] + (r[3] - h) / 2), Math.round(r[2]), h];
+    },
+    run: async (p) => {
+      const t0 = Date.now();
+      await at(t0, 1500, () => click(p, /^Growth$/));
+      await at(t0, 3000, () => click(p, /^Ticker$/));
+      await at(t0, 4400, () => click(p, /^Personalize$/));
+      await at(t0, 5900, () => click(p, /^Repeater$/));
+    } },
   'postmark-ribbon-engine': { vp: [1280, 769], setup: cropOf('#cv'), ready: 800, run: async (p) => {
     const t0 = Date.now(), mode = (m) => p.evaluate((m) => rb.setMode(m), m), rand = () => p.evaluate(() => rb.randomize());
     await at(t0, 900, rand);
