@@ -146,7 +146,8 @@ const ICON = {
   hat: (k) => `<path d="M20 70 V58 Q20 22 50 22 Q80 22 80 58 V70Z" fill="${k.a}"/><rect x="10" y="68" width="80" height="18" rx="2" fill="${k.b}"/>` + zig(10, 90, 77, 3.4, 8, k.bg, 2.4) + circ(50, 14, 11, k.x),
   /* wrapped gift: full tile, ribbon cross, star bow */
   /* thick candy cane with diagonal stripes */
-  cane: (k) => { const id = 'cm' + (uid++), d = 'M32 104 V42 A21 21 0 0 1 74 42 V54', [cb, cs] = caneCols(k.bg); k = { ...k, a: cb, b: cs }; return `<mask id="${id}"><path d="${d}" stroke="#fff" stroke-width="26" fill="none"/></mask><path d="${d}" stroke="${k.a}" stroke-width="26" fill="none"/><g mask="url(#${id})">${Array.from({ length: 16 }, (_, i) => `<path d="M-10 ${i * 17 - 10} L110 ${i * 17 - 70}" stroke="${k.b}" stroke-width="7"/>`).join('')}</g>`; },
+  /* upright candy cane: the outer edges touch the top and both sides of the cell, the stem runs off the bottom; v flips it upside down */
+  cane: (k, v) => { const id = 'cm' + (uid++), d = 'M12 106 V50 A38 38 0 0 1 88 50 V66', [cb, cs] = caneCols(k.bg), g = `<mask id="${id}"><path d="${d}" stroke="#fff" stroke-width="24" fill="none"/></mask><path d="${d}" stroke="${cb}" stroke-width="24" fill="none"/><g mask="url(#${id})">${Array.from({ length: 16 }, (_, i) => `<path d="M-10 ${i * 17 - 10} L110 ${i * 17 - 70}" stroke="${cs}" stroke-width="5.5"/>`).join('')}</g>`; return v ? `<g transform="translate(0 100) scale(1 -1)">${g}</g>` : g; },
   /* two candles, a tall and a short: each flame sits in its own round backdrop, striped bodies, bleeding off the bottom */
   candle: (k) => { const c1 = 'cd' + (uid++), c2 = 'cd' + (uid++), st = (x0, y0, w2, h2, col, id, n) => `<clipPath id="${id}"><rect x="${x0}" y="${y0}" width="${w2}" height="${h2}"/></clipPath><g clip-path="url(#${id})">${Array.from({ length: n }, (_, i) => `<path d="M${x0 - h2 + 2 + i * 12} ${y0 + h2 + 2} L${x0 + 2 + i * 12} ${y0 - 2}" stroke="${col}" stroke-width="4.2"/>`).join('')}</g>`, fl = (cx, y0, hh, ww, col, sw) => `<path d="M${cx} ${y0} Q${cx + ww} ${y0 + hh / 2} ${cx} ${y0 + hh} Q${cx - ww} ${y0 + hh / 2} ${cx} ${y0}Z" fill="none" stroke="${col}" stroke-width="${sw}" stroke-linejoin="round"/>`;
     return circ(29, 34, 29, k.a) + circ(76, 56, 19, k.a) +
@@ -154,7 +155,8 @@ const ICON = {
       `<rect x="60" y="72" width="32" height="32" fill="${k.b}"/>` + st(60, 72, 32, 32, k.a, c2, 6) +
       fl(29, 10, 30, 13, k.b, 3) + `<path d="M29 40 V58" stroke="${k.b}" stroke-width="3" stroke-linecap="round"/>` +
       fl(76, 41, 20, 9, k.b, 2.8) + `<path d="M76 61 V72" stroke="${k.b}" stroke-width="2.8" stroke-linecap="round"/>`; },
-  stocking: (k) => `<path d="M30 22 H66 V60 H84 A16 16 0 0 1 84 92 H46 A16 16 0 0 1 30 76Z" fill="${k.a}"/><rect x="24" y="8" width="48" height="18" fill="${k.b}"/>` + zig(24, 72, 17, 3.4, 4, k.bg, 2.4) + circ(78, 76, 11, k.b),
+  /* stocking: cuff, leg and foot filling the cell, flush to the top, left, bottom and right edges, no toe dot */
+  stocking: (k) => `<path d="M4 20 H46 V60 H81 A20 20 0 0 1 81 100 H24 A20 20 0 0 1 4 80Z" fill="${k.a}"/><rect x="0" y="0" width="50" height="22" fill="${k.b}"/>` + zig(0, 50, 11, 3.4, 3, k.bg, 2.4),
   /* snowman: two big circles, hat, a single accent nose */
   snowman: (k) => circ(50, 78, 36, k.a) + circ(50, 31, 21, k.b) + `<rect x="34" y="2" width="32" height="12" rx="1" fill="${k.a}"/><rect x="26" y="12" width="48" height="5" rx="2" fill="${k.a}"/>` +
     poly([[50, 32], [72, 36], [50, 40]], bestOn(k.b, [k.bg, k.a, k.x])) + circ(50, 66, 3.4, bestOn(k.a, [k.bg, k.b, k.x])) + circ(50, 78, 3.4, bestOn(k.a, [k.bg, k.b, k.x])),
@@ -185,7 +187,7 @@ const ICON = {
     const motif = (d, o) => rot(d, 50, 50, `<g transform="translate(0 ${-o})"><g fill="${k.leaf}">${lv}</g><path d="M50 0 V${46 + o}" stroke="${k.bg}" stroke-width="2.6"/></g>`);
     const bs = [[50, 41.5], [40, 58.8], [60, 58.8]]; return motif(0, 0) + motif(135, off) + motif(225, off) + bs.map(([x, y]) => circ(x, y, 11.4, k.bg)).join('') + bs.map(([x, y]) => circ(x, y, 10, k.berry)).join(''); },
   /* abstract grid fillers */
-  squiggle: (k, v) => { const [c1, c2] = squigCols(k); return archWave(-14, 28, 14, 6, c1, 16, v) + archWave(-14, 72, 14, 6, c2, 16, !v); },
+  squiggle: (k, v) => { const [c1, c2] = squigCols(k); return archWave(-12, 24, 12, 7, c1, 14, v) + archWave(-24, 76, 12, 8, c2, 14, !v); },
   halfdisc: (k, v) => rot(v ? 90 : 0, 50, 50, splitCircle(k, 46)),
   rings: (k) => circ(50, 50, 44, k.a) + circ(50, 50, 32, k.bg) + circ(50, 50, 20, k.b) + circ(50, 50, 8, k.bg),
   quarters: (k) => `<path d="M0 0 H50 A50 50 0 0 1 0 50Z" fill="${k.a}"/><path d="M100 0 V50 A50 50 0 0 1 50 0Z" fill="${k.b}"/><path d="M0 100 V50 A50 50 0 0 1 50 100Z" fill="${k.b}"/><path d="M100 100 H50 A50 50 0 0 1 100 50Z" fill="${k.a}"/>`,
@@ -197,7 +199,7 @@ const ICON = {
 /* plain split circles (two half circles in varying colour pairs) and the three exact geometric blocks, weighted up */
 const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'snowman', 'ginger', 'wreath', 'doubleBauble', 'scallop', 'doubleBauble', 'gift', 'squiggle', 'squiggle', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'halfdisc', 'halfdisc', 'halfdisc', 'halfdisc'];
 const FILLERS = ['squiggle', 'halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
-const BLEED = { squiggle: 1, candle: 1, tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1 };
+const BLEED = { stocking: 1, squiggle: 1, candle: 1, tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1 };
 
 
 /* ---------- contrast: WCAG ratios, so the geometric blocks only use colour sets that read clearly ---------- */
@@ -235,17 +237,17 @@ const BANDS = {
       Array.from({ length: n }, (_, i) => { const x = (i + .5) * st; const y = h * .2 + h * .3 * (1 - Math.pow(2 * ((i + .5) % 1) - 1, 2)) * 0; return `<rect x="${f(x - h * .035)}" y="${f(h * .36)}" width="${f(h * .07)}" height="${f(h * .08)}" fill="${k.b === k.bg ? k.a : k.b}"/>` + circ(x, h * .6, Math.min(st * .3, h * .17), cols[i % 3]); }).join(''); },
   garland: (w, h, k) => { const R = h * .42, n = Math.ceil(w / (R * 1.5)); let s = ''; for (let i = 0; i <= n; i++) s += circ(i * w / n, h / 2, R, i % 2 ? (k.b === k.bg ? k.x : k.b) : k.a); for (let i = 0; i < n; i++) s += circ((i + .5) * w / n, h / 2, R * .2, k.x); return s; },
   stripes: (w, h, k) => { const st = Math.min(w, h) * .3; let s = ''; for (let x = -h; x < w + h; x += st * 2) s += `<path d="M${x} ${h} L${x + st} ${h} L${x + st + h} 0 L${x + h} 0Z" fill="${k.a}"/>`; return s; },
-  squiggle: (w, h, k) => { const tall = h > w, W = tall ? h : w, H = tall ? w : h, u = Math.min(W, H), r = u * .24, sw = u * .2, rows = Math.max(1, Math.round(H / (u * 1.05))), [c1, c2] = squigCols(k); let o = '';
+  squiggle: (w, h, k) => { const tall = h > w, W = tall ? h : w, H = tall ? w : h, u = Math.min(W, H), r = u * .24, sw = u * .2, rows = Math.max(1, Math.floor(H / (u * .95))), [c1, c2] = squigCols(k); let o = '';
     for (let i = 0; i < rows; i++) o += archWave(-2 * r + (i % 2 ? r : 0), H * (i + .5) / rows, r, Math.ceil(W / (2 * r)) + 3, i % 2 ? c2 : c1, sw, i % 2);
     return tall ? `<g transform="translate(${f(w)} 0) rotate(90)">${o}</g>` : o; },
   /* candy cane lying on its side in a long rectangle: striped stem bleeding off one edge, hook at the other */
-  caneSide: (w, h, k, r) => { const id = 'cs' + (uid++), sw = h * .27, rad = (h * .9 - sw) / 2, ys = h * .05 + sw / 2 + (h * .9 - 2 * rad - sw) / 2, flip = r() < .5, xe = w - h * .12 - rad - sw / 2, [c1, c2] = caneCols(k.bg), st = sw * .27, pitch = sw;
+  caneSide: (w, h, k, r) => { const id = 'cs' + (uid++), sw = h * .3, rad = (h - sw) / 2, ys = sw / 2, hflip = r() < .5, vflip = r() < .5, xe = w - rad - sw / 2, [c1, c2] = caneCols(k.bg), st = sw * .27, pitch = sw; /* outer edges flush with the top, bottom and hook-side edges of the cell */
     const d = `M${f(-sw)} ${f(ys)} H${f(xe)} A${f(rad)} ${f(rad)} 0 0 1 ${f(xe)} ${f(ys + 2 * rad)} H${f(xe - rad * .45)}`; let stripes = '';
     for (let x = -h * 2; x < w + h; x += pitch) stripes += `<path d="M${f(x)} ${f(h + sw)} L${f(x + h * 1.3)} ${f(-sw)}" stroke="${c2}" stroke-width="${f(st)}"/>`;
     const g = `<mask id="${id}"><path d="${d}" stroke="#fff" stroke-width="${f(sw)}" fill="none"/></mask><path d="${d}" stroke="${c1}" stroke-width="${f(sw)}" fill="none"/><g mask="url(#${id})">${stripes}</g>`;
-    return flip ? `<g transform="translate(${f(w)} 0) scale(-1 1)">${g}</g>` : g; },
+    return `<g transform="translate(${hflip ? f(w) : 0} ${vflip ? f(h) : 0}) scale(${hflip ? -1 : 1} ${vflip ? -1 : 1})">${g}</g>`; },
   /* two soft wave lines, evenly centred in the tile (a quarter in from each edge); on tall tiles they run vertically with four swiggles each */
-  zigzag: (w, h, k) => { const tall = h > w, W = tall ? h : w, H = tall ? w : h, m = Math.min(w, h), cols = Object.values(C).filter((c) => c !== k.bg).sort((u, v) => contrastOf(v, k.bg) - contrastOf(u, k.bg)).slice(0, 2), n = tall ? 4 : Math.max(3, Math.round(W / (m * .8))), amp = m * .34, sw = m * .09;
+  zigzag: (w, h, k) => { const tall = h > w, W = tall ? h : w, H = tall ? w : h, m = Math.min(w, h), cols = Object.values(C).filter((c) => c !== k.bg).sort((u, v) => contrastOf(v, k.bg) - contrastOf(u, k.bg)).slice(0, 2), n = tall ? 4 : Math.max(3, Math.round(W / (m * .8))), amp = m * .28, sw = m * .085;
     const o = [.25, .75].map((fr, i) => zig(0, W, H * fr, i ? -amp : amp, n, cols[i], sw)).join(''); return tall ? `<g transform="translate(${f(w)} 0) rotate(90)">${o}</g>` : o; },
   snow: (w, h, k, r) => { let s = ''; const n = Math.round(w * h / 1800); for (let i = 0; i < n; i++) s += circ(r() * w, r() * h, 2 + r() * 5, i % 5 ? k.a : k.x); return s; },
   hang: (w, h, k, r) => { const n = Math.max(2, Math.round(w / h * 6 + 1)); let s = ''; for (let i = 0; i < n; i++) { const x = (i + .5) * w / n, rad = Math.min(w / n * .36, h * .13), y = h * (.35 + r() * .5); s += `<line x1="${f(x)}" y1="0" x2="${f(x)}" y2="${f(y - rad)}" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="${f(rad * .12 + 1)}"/>` + circ(x, y, rad, [k.a, k.x, k.b === k.bg ? k.a : k.b][i % 3]); } return s; }
