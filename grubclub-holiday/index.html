@@ -143,8 +143,9 @@ const ICON = {
     (v ? halfL(50, 61, 38, k.a) + halfR(50, 61, 38, k.b) + zig(14, 86, 56, 5, 6, k.bg, 2.6) + zig(14, 86, 68, 5, 6, k.bg, 2.6) :
       `<clipPath id="${id}"><circle cx="50" cy="61" r="38"/></clipPath>` + circ(50, 61, 38, k.a) + `<g clip-path="url(#${id})"><g transform="rotate(-40 50 61)">${[-10, 10, 30, 50, 70, 90].map((y) => zig(-20, 120, y + 20, 4, 8, k.bg, 2.6)).join('')}</g></g>`); },
   /* pentagon face, ring antlers, one round nose */
-  reindeer: (k) => circ(14, 12, 20, 'none', `stroke="${k.b}" stroke-width="3.4"`) + circ(86, 12, 20, 'none', `stroke="${k.b}" stroke-width="3.4"`) +
-    poly([[10, 20], [90, 20], [90, 62], [50, 98], [10, 62]], k.a) + circ(50, 68, 11, bestOn(k.a, [k.bg, k.b, k.x])),
+  reindeer: (k) => { const ant = Object.values(C).filter((c) => c !== k.a && c !== k.bg).sort((u, v) => Math.min(contrastOf(v, k.bg), contrastOf(v, k.a)) - Math.min(contrastOf(u, k.bg), contrastOf(u, k.a)))[0]; /* antler rings: big, thick, bleeding off the top and side edges, in the colour that reads best on both the tile and the head */
+    return circ(7, 7, 25, 'none', `stroke="${ant}" stroke-width="5"`) + circ(93, 7, 25, 'none', `stroke="${ant}" stroke-width="5"`) +
+      poly([[10, 22], [90, 22], [90, 64], [50, 100], [10, 64]], k.a) + circ(50, 70, 11, bestOn(k.a, [k.bg, k.b, k.x])); },
   /* bell: big dome, wavy white band, round clapper below */
   bell: (k) => `<path d="M16 68 V50 Q16 8 50 8 Q84 8 84 50 V68Z" fill="${k.a}"/><rect x="6" y="66" width="88" height="16" fill="${k.b}"/>` + zig(6, 94, 74, 3.4, 8, k.bg, 2.4) + circ(50, 90, 11, k.x),
   hat: (k) => `<path d="M20 70 V58 Q20 22 50 22 Q80 22 80 58 V70Z" fill="${k.a}"/><rect x="10" y="68" width="80" height="18" rx="2" fill="${k.b}"/>` + zig(10, 90, 77, 3.4, 8, k.bg, 2.4) + circ(50, 14, 11, k.x),
@@ -169,7 +170,9 @@ const ICON = {
   treeC: (k) => circ(50, 24, 17, k.a) + circ(50, 50, 24, k.b) + circ(50, 80, 28, k.a) + circ(50, 6, 5.5, k.x) + circ(42, 52, 3.6, k.bg) + circ(60, 46, 3.6, k.bg) + circ(38, 82, 4, k.bg) + circ(58, 84, 4, k.bg) + circ(70, 76, 4, k.x),
   wreath: (k) => Array.from({ length: 12 }, (_, i) => { const an = i / 12 * Math.PI * 2; return circ(50 + Math.cos(an) * 34, 50 + Math.sin(an) * 34, 13, i % 2 ? k.b : k.a); }).join('') + circ(50, 50, 20, k.bg) +
     circ(40, 82, 4.5, k.x) + circ(50, 85, 4.5, k.x) + circ(60, 82, 4.5, k.x) + poly([[50, 84], [36, 96], [36, 74]], k.x) + poly([[50, 84], [64, 96], [64, 74]], k.x),
-  scallop: (k) => [0, 1, 2].map((i) => { const cx = 16.65 + i * 33.3; return `<path d="M${i * 33.3} 0 A16.65 16.65 0 0 0 ${(i + 1) * 33.3} 0Z" fill="${k.a}"/>` + line(`M${cx} 16 V40`, k.b, 2.4) + `<ellipse cx="${cx}" cy="58" rx="12" ry="17" fill="${i % 2 ? k.x : k.b}"/>` + circ(cx, 58, 4, k.bg); }).join(''),
+  /* scalloped garland with three round baubles (cap, loop, wavy band or split tone) hanging from it */
+  scallop: (k) => [0, 1, 2].map((i) => { const cx = 16.65 + i * 33.3, cy = 66, r = 14.5, col = i % 2 ? k.b : k.a, cap = i % 2 ? k.a : k.b; return `<path d="M${i * 33.3} 0 A16.65 16.65 0 0 0 ${(i + 1) * 33.3} 0Z" fill="${k.a}"/>` + line(`M${cx} 16 V${cy - r - 7}`, cap, 2.4) + line(`M${cx - 3} ${cy - r - 2} V${cy - r - 5} A3 3 0 1 1 ${cx + 3} ${cy - r - 5} V${cy - r - 2}`, cap, 2.2) + `<rect x="${cx - 5}" y="${cy - r - 3}" width="10" height="6" rx="1.2" fill="${cap}"/>` +
+    (i % 2 ? halfL(cx, cy, r, k.b) + halfR(cx, cy, r, k.a) : circ(cx, cy, r, col) + zig(cx - r, cx + r, cy, 3, 2, k.bg, 2.2)); }).join(''),
   /* two hanging baubles, different sizes: one split in two tones, one with wavy lines */
   doubleBauble: (k) => { const id = 'db' + (uid++); const bauble = (cx, cy, r, top, body) => `<path d="M${cx} ${top - 4} V${cy - r - 9}" stroke="${k.b}" stroke-width="2.2" fill="none"/>` + line(`M${cx - 3.4} ${cy - r - 1} V${cy - r - 5} A3.4 3.4 0 1 1 ${cx + 3.4} ${cy - r - 5} V${cy - r - 1}`, k.b, 2.4) + `<rect x="${cx - 7}" y="${cy - r - 5}" width="14" height="8" rx="1.5" fill="${k.b}"/>` + body;
     return bauble(28, 66, 27, 0, halfL(28, 66, 27, k.a) + halfR(28, 66, 27, k.b) + zig(3, 53, 60, 4, 4, k.bg, 2.3)) +
