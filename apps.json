@@ -1,5 +1,14 @@
 [
   {
+    "id": "agentic-storefront",
+    "title": "Agentic Storefront Walkthrough",
+    "category": "Motion",
+    "url": "agentic-storefront/",
+    "thumbnail": "agentic-storefront/thumb.png",
+    "preview": "agentic-storefront/thumb.webp",
+    "alt": "A phone showing a shopper asking an AI chat for a warm, floral fall scent, two Glossier perfume recommendations, choosing a size, paying with Apple Pay and Face ID, and the order confirmed back in the chat"
+  },
+  {
     "id": "human-tech-motion",
     "title": "Human / Tech Motion Loop",
     "category": "Motion",
@@ -7,8 +16,8 @@
     "thumbnail": "human-tech-motion/thumb.png",
     "preview": "human-tech-motion/thumb.webp",
     "alt": "Ten looping full-screen styles mixing duotone photography with vector curves, dot grids, halftone, pixel blocks, circles and pixel type, each in a palette of three to five colours, with a numbered switcher in the header"
-    },
-    {
+  },
+  {
     "id": "workout-year-reels",
     "title": "Workout Year in Review Reels",
     "category": "Motion",
