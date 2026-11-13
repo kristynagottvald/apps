@@ -107,12 +107,12 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .pbtn.pri{background:var(--kiwi);border-color:var(--kiwi);color:var(--bean)}
 /* shipped: all the text on the left, the map sits above the ripple on the right */
 #pkT,#pkS{transition:opacity .3s,color .6s}
-#pkMap{left:728px;top:314px;width:450px;height:320px;border-radius:34px;overflow:hidden;background:#dfe9e4;box-shadow:0 30px 60px -22px rgba(0,0,0,.55);opacity:0;transform:translateY(34px) scale(.96);transition:opacity calc(.7s*var(--k)),transform calc(.9s*var(--k)) cubic-bezier(.2,.8,.2,1);z-index:5}
+#pkMap{left:845px;top:230px;width:410px;height:300px;border-radius:34px;overflow:hidden;background:#dfe9e4;box-shadow:0 30px 60px -22px rgba(0,0,0,.55);opacity:0;transform:translateY(34px) scale(.96);transition:opacity calc(.7s*var(--k)),transform calc(.9s*var(--k)) cubic-bezier(.2,.8,.2,1);z-index:5}
 #pkMap.in{opacity:1;transform:none}
-#mapTiles{position:absolute;left:0;top:0;width:768px;height:768px;transform-origin:225px 160px;transform:scale(1.18);transition:transform calc(2.2s*var(--k)) cubic-bezier(.2,.7,.2,1)}
+#mapTiles{position:absolute;left:0;top:0;width:768px;height:768px;transform-origin:205px 150px;transform:scale(1.18);transition:transform calc(2.2s*var(--k)) cubic-bezier(.2,.7,.2,1)}
 #pkMap.in #mapTiles{transform:none}
 #mapTiles img{position:absolute;width:256px;height:256px;display:block}
-#mapPin{position:absolute;left:225px;top:160px;width:0;height:0}
+#mapPin{position:absolute;left:205px;top:150px;width:0;height:0}
 #mapPin i{position:absolute;left:-13px;top:-13px;width:26px;height:26px;border-radius:50%;background:var(--navy);border:5px solid var(--kiwi);box-shadow:0 4px 10px rgba(0,0,0,.35);opacity:0;transform:translateY(-40px)}
 #pkMap.in #mapPin i{animation:pinDrop calc(.7s*var(--k)) calc(1s*var(--k)) cubic-bezier(.3,1.5,.5,1) forwards}
 #mapPin b{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;opacity:0}
@@ -448,7 +448,7 @@ function getLoc(){return new Promise(res=>{if(!navigator.geolocation)return res(
   if(navigator.permissions&&navigator.permissions.query)navigator.permissions.query({name:'geolocation'}).then(r=>r.state==='denied'?res(HOME):ask()).catch(ask);else ask();
   setTimeout(()=>res(HOME),5500)})}
 function showMap(L){const z=15,n=2**z,xt=(L.lon+180)/360*n,la=L.lat*Math.PI/180,yt=(1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n,tx=Math.floor(xt),ty=Math.floor(yt);
-  const T=$('#mapTiles');T.style.left=(225-(1+xt-tx)*256)+'px';T.style.top=(160-(1+yt-ty)*256)+'px';
+  const T=$('#mapTiles');T.style.left=(205-(1+xt-tx)*256)+'px';T.style.top=(150-(1+yt-ty)*256)+'px';
   T.innerHTML=[0,1,2].map(r=>[0,1,2].map(c=>`<img alt="" style="left:${c*256}px;top:${r*256}px" src="https://tile.openstreetmap.org/${z}/${tx-1+c}/${ty-1+r}.png">`).join('')).join('')}
 const scenes=[
 async function hero_(g,o){
@@ -482,7 +482,7 @@ async function pack_(g,o){
   $('#pkBtn').classList.add('press');await curClick(g);await W(120,g);
   /* shipped: hold for a beat, then the map */
   cursor.style.opacity=0;$('#pkBtn').classList.remove('in');pack.out=pack.t;
-  const L=await loc;$('#pkT').textContent="It's on its way!";$('#pkS').innerHTML=L.here?'Shipping to<br>your location':'Shipping to<br>500 Prince Edward Drive, Etobicoke, ON';
+  const L=await loc;$('#pkT').textContent="It's on its way!";$('#pkS').innerHTML=L.here?'Shipping to<br>your location':'Shipping to 500 Prince Edward Drive,<br>Etobicoke, ON';
   await W(1300,g);showMap(L);$('#pkMap').classList.add('in');$('#pkCd').classList.add('in');$('#pkBtns').classList.add('in');pack.cd0=pack.t;await W(5200,g);
   return{x:640,y:360}}
 ];
