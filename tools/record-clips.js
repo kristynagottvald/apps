@@ -28,15 +28,15 @@ const APPS = {
   // loops on its own (12 s cycle, random events); start at 1 s so the clip spans a busy peak, a lull and the next peak
   'human-tech-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#t=1', ready: 1000, q: 38, run: async () => {} },
   'workout-year-reels': { vp: [1280, 769], crop: [0, 49, 1280, 720],
-    // the cycle starts on the circles; step through the new styles and one older one the way a visitor would with the switcher
+    // the cycle starts on the circles; step through the newest styles and one older one the way a visitor would with the switcher
     ready: 1500,
     run: async (p) => {
       const t0 = Date.now(), st = (n) => domClick(p, '#sw button:nth-child(' + n + ')');
-      await at(t0, 1500, () => st(8));
-      await at(t0, 2600, () => st(9));
-      await at(t0, 3600, () => st(10));
-      await at(t0, 4600, () => st(11));
-      await at(t0, 5600, () => st(4));
+      await at(t0, 1500, () => st(12));
+      await at(t0, 2600, () => st(13));
+      await at(t0, 3600, () => st(14));
+      await at(t0, 4600, () => st(15));
+      await at(t0, 5600, () => st(11));
     } },
   'grubclub-holiday': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // the grid pops in on its own, then shuffle it and try the other shapes the way a visitor would

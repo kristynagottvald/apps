@@ -22,7 +22,7 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 .sw button:hover{color:#fff}
 .sw button[aria-pressed=true]{background:#fff;color:#000}
 .sw button:focus-visible{outline:2px solid #fff;outline-offset:1px}
-@media (max-width:900px){nav.back>span:nth-of-type(2),nav.back>b{display:none}}
+@media (max-width:1500px){nav.back>span:nth-of-type(2),nav.back>b{display:none}}
 @media (max-width:640px){nav.back{padding:0 10px;gap:6px}nav.back>span:nth-of-type(1),nav.back>a{display:none}.sw{margin:0 auto}.sw button{padding:6px 8px;font-size:11px}}
 main{flex:1;min-height:0;display:grid;place-items:center;padding:16px}
 #cv{display:block;border-radius:30px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7)}
@@ -183,15 +183,79 @@ const STYLES=[
  { id:'streaks', name:'Streaks', bg:P.green, ink:P.ink, layout:'center',
    title:'Pace Setter', cap:'You moved fast and brought everyone along.',
    draw(c,p){
-     // rounded capsules on one diagonal that stretch and slide past each other
-     const u=[.34,-.94],tan='#DDD3C0';
-     const caps=[[390,700,230,40,P.pine,5],[110,715,200,52,P.ink,0],[170,690,250,44,P.blue,1.2],[250,725,330,72,tan,2.1],[335,715,400,92,P.cream,3],[420,690,220,48,P.orange,4]];
-     c.lineCap='round';
-     for(const [bx,by,len,w,col,ph] of caps){
-       const sh=26*Math.sin(p*TAU+ph),l=len*(1+.2*Math.sin(p*TAU+ph*1.7));
-       const x0=bx+u[0]*sh,y0=by+u[1]*sh;
-       c.strokeStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(x0,y0);c.lineTo(x0+u[0]*l,y0+u[1]*l);c.stroke();
+     // curved rounded capsules that stretch and slide along their swoosh
+     const tan='#DDD3C0';
+     const caps=[[[390,685],[385,520],[480,390],40,P.pine,5],[[90,715],[95,510],[195,370],52,P.ink,0],[[165,685],[170,500],[285,325],44,P.blue,1.2],
+       [[235,725],[250,510],[370,295],72,tan,2.1],[[325,725],[350,520],[480,260],92,P.cream,3],[[415,670],[430,510],[505,395],48,P.orange,4]];
+     c.lineCap='round';c.lineJoin='round';
+     for(const [A,B,C,w,col,ph] of caps){
+       const t0=.04+.1*Math.sin(p*TAU+ph),t1=.72+.2*Math.sin(p*TAU+ph*1.7+1);
+       c.strokeStyle=col;c.lineWidth=w;c.beginPath();
+       for(let t=t0;t<=t1+.001;t+=.02){
+         const u=1-t,x=u*u*A[0]+2*u*t*B[0]+t*t*C[0],y=u*u*A[1]+2*u*t*B[1]+t*t*C[1];
+         t===t0?c.moveTo(x,y):c.lineTo(x,y);
+       }
+       c.stroke();
      }
+   }},
+ { id:'loops', name:'Loops', bg:P.peach, ink:P.ink, layout:'center',
+   title:'Crew Magnet', cap:'You pulled friends into every workout and opened new doors.',
+   draw(c,p){
+     // a heart outline with a tilted loop turning through it and a ball running the loop
+     const cx=W/2,cy=565,sc=9.6*(1+.025*Math.sin(p*TAU*2));
+     c.lineJoin='round';c.lineCap='round';c.strokeStyle=P.ink;c.lineWidth=40;c.beginPath();
+     for(let t=0;t<=TAU+.05;t+=.05){
+       const x=16*Math.pow(Math.sin(t),3),y=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
+       t===0?c.moveTo(cx+x*sc,cy+y*sc):c.lineTo(cx+x*sc,cy+y*sc);
+     }
+     c.stroke();
+     c.save();c.translate(cx,cy+10);c.rotate(-Math.PI/4+p*TAU);
+     c.strokeStyle=P.blue;c.lineWidth=44;c.beginPath();c.ellipse(0,0,185,78,0,0,TAU);c.stroke();
+     const a=p*TAU*2;c.fillStyle=P.cream;c.beginPath();c.arc(Math.cos(a)*185,Math.sin(a)*78,30,0,TAU);c.fill();
+     c.restore();
+   }},
+ { id:'arches', name:'Arches', bg:P.blue, ink:P.white, layout:'center',
+   title:'Powerhouse', cap:'You brought the energy to every single session.',
+   draw(c,p){
+     // concentric arches keep rising from the ground, round the sun
+     const pal=[P.orange,P.ink,P.cream,P.pine,P.sky,P.peach],L=pal.length,cx=W/2,gy=770;
+     c.save();c.beginPath();c.rect(0,0,W,gy);c.clip();
+     rings(p*L,6,L,(pos,ci)=>{
+       const r=14+pos*280,a=clamp(1-(pos-.9)*10);
+       c.globalAlpha=a;c.beginPath();c.moveTo(cx-r,gy);c.lineTo(cx-r,gy-r*.9);c.arc(cx,gy-r*.9,r,Math.PI,0);c.lineTo(cx+r,gy);c.closePath();
+       c.fillStyle=pal[ci];c.fill();
+     });
+     c.restore();
+     c.fillStyle=P.navy;c.fillRect(0,gy,W,H-gy);
+   }},
+ { id:'counter', name:'Counter', bg:P.sky, ink:P.navy, layout:'none',
+   draw(c,p){
+     // a counter in a circle on a dome; ripples run out of it while the number climbs
+     const cx=W/2,cy=470,R=112;
+     c.fillStyle=P.blue;c.beginPath();c.arc(cx,cy+60,330,Math.PI,0);c.fill();
+     c.fillStyle='#EAF2FD';c.beginPath();c.arc(cx,H,420,Math.PI,0);c.fill();
+     c.lineWidth=5;
+     for(let k=0;k<3;k++){const u=mod(p*3+k/3,1);c.globalAlpha=1-u;c.strokeStyle=P.cream;c.beginPath();c.arc(cx,cy,R+u*170,0,TAU);c.stroke()}
+     c.globalAlpha=1;c.fillStyle=P.cream;c.beginPath();c.arc(cx,cy,R,0,TAU);c.fill();
+     const n=Math.round(9248*eio(clamp(p/.75)));
+     c.fillStyle=P.navy;c.textAlign='center';c.textBaseline='alphabetic';
+     c.font='700 64px Inter,Arial,sans-serif';c.fillText(String(n),cx,cy+14);
+     c.font='500 20px Inter,Arial,sans-serif';c.fillText('reps lifted',cx,cy+46);
+     c.font='500 24px Inter,Arial,sans-serif';c.textAlign='left';
+     c.fillStyle=P.navy;
+   }},
+ { id:'bowls', name:'Bowls', bg:P.sky, ink:P.navy, layout:'left',
+   kicker:'You stayed steady', big:'92%', sub:'of weeks in balance',
+   draw(c,p){
+     // nested bowls rock out of step, a ball rolls in the smallest one
+     const cx=W/2,cy=600,rs=[210,160,112,66],cols=[P.ink,P.orange,P.blue,P.cream];
+     rs.forEach((r,k)=>{
+       const th=.3*Math.sin(p*TAU-k*.7)*(k%2?-1:1);
+       c.save();c.translate(cx,cy+k*14);c.rotate(th);
+       c.fillStyle=cols[k];c.beginPath();c.arc(0,0,r,0,Math.PI);c.closePath();c.fill();
+       if(k===rs.length-1){const ph=Math.PI/2+.55*Math.sin(p*TAU*2+1);c.fillStyle=P.orange;c.beginPath();c.arc(Math.cos(ph)*(r-22),Math.sin(ph)*(r-22),22,0,TAU);c.fill()}
+       c.restore();
+     });
    }},
 ];
 
@@ -212,6 +276,7 @@ function wrap(c,s,max,size,weight){
 }
 function text(c,S,ts){
   const ink=S.ink;
+  if(S.layout==='none')return;
   if(S.layout==='left'){
     txt(c,S.kicker,36,168,25,500,'left',ink,.15,ts);
     txt(c,S.big,34,262,104,700,'left',ink,.3,ts,100);
