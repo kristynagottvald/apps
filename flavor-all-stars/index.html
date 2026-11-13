@@ -135,7 +135,7 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
 #e2 .badge{position:absolute;right:1.5cqw;top:3cqw;width:14cqw;height:14cqw}
 #e2 .badge strong{font-size:max(22px,5.2cqw)}
 #e2 .plate{position:absolute;right:0;top:9cqw;width:38cqw;filter:drop-shadow(0 2cqw 2.4cqw rgba(0,0,0,.4));z-index:3}
-#e2 .make{background:var(--egg);padding:6cqw 6cqw 5cqw}
+#e2 .make{background:#fff;padding:6cqw 6cqw 5cqw}
 #e2 .make p{margin:0;font-size:max(20px,4.6cqw);line-height:1.34;font-weight:400;color:var(--navy)}
 #e2 .make b{font-weight:700}
 .g2{display:grid;grid-template-columns:1fr 1fr}
@@ -143,7 +143,9 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
 .g2 .pic{background:var(--kiwi)}
 .g2 .pic img{display:block;max-width:92%;max-height:86%;object-fit:contain;filter:drop-shadow(0 1.2cqw 1.4cqw rgba(14,50,81,.3))}
 .g2 .pic img.box{max-height:96%}
-.g2 .tx2{background:var(--egg);flex-direction:column;align-items:flex-start;justify-content:center;gap:.8cqw}
+.g2 .pic.duo{gap:1.5cqw;padding:0 2.5cqw}.g2 .pic.duo img{max-width:48%;max-height:92%}
+.g2 .pic.bleed{padding:0;align-items:stretch;justify-content:flex-start}.g2 .pic.bleed img{max-width:none;max-height:none;width:100%;height:100%;object-fit:cover;object-position:left bottom;filter:none}
+.g2 .tx2{background:#fff;flex-direction:column;align-items:flex-start;justify-content:center;gap:.8cqw}
 .g2 h3{margin:0;font-weight:600;font-size:max(15px,3.5cqw);line-height:1.15;letter-spacing:-.01em}
 .g2 p{margin:0;font-size:max(11px,2.2cqw);line-height:1.4}
 .g2 .tx2:nth-child(odd){}
@@ -234,14 +236,14 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
   </section>
   <section class="make"><p>We make it easy<br>to eat what <b>you</b> love</p></section>
   <section class="g2">
-    <div class="pic rv"><img src="tile-ravioli.webp" alt="Mealworm ragù ravioli and seared buffalo worm steak plates"></div>
+    <div class="pic duo rv"><img src="plate-ravioli.webp" alt="Mealworm ragù ravioli"><img src="plate-row-b.webp" alt="Seared buffalo worm steak with salad and roasted potatoes"></div>
     <div class="tx2 rv"><h3>45+ weekly<br>menu choices</h3><p>so you&rsquo;ll always find<br>something delicious</p></div>
     <div class="tx2 rv"><h3>100+ grubclub<br>Pantry items</h3><p>to make your order<br>your own</p></div>
-    <div class="pic rv"><img src="tile-burger.webp" alt="Roasted cricket burger with potato wedges and a creamy bowl"></div>
+    <div class="pic rv"><img src="plate-burger.webp" alt="Roasted cricket burger with potato wedges"></div>
     <div class="pic rv"><img class="box" src="box.webp" alt="The grubclub entomo box"></div>
     <div class="tx2 rv"><h3>Flexible plans</h3><p>to suit your lifestyle&hellip;<br>and your whims</p></div>
     <div class="tx2 rv"><h3>Custom options</h3><p>so you can swap proteins<br>or sides on select meals</p></div>
-    <div class="pic rv"><img src="tile-flat.webp" alt="Cricket-crusted cutlet with a green salad and potato wedges on a navy plate"></div>
+    <div class="pic bleed rv"><img src="tile-flat.webp" alt="Cricket-crusted cutlet with a green salad and potato wedges on a navy plate"></div>
   </section>
   <section class="close">
     <p class="lead">Enjoy exclusive savings<br>when you join today and get</p>
