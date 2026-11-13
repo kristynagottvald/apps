@@ -50,12 +50,13 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px}
 .opt{flex:1;height:42px;border-radius:6px;border:1.5px solid transparent;background:rgba(0,0,0,.22);color:var(--egg);font:500 13px/1 Poppins,sans-serif;cursor:pointer;display:grid;place-items:center;transition:border-color .2s,background .2s}
 .opt:hover{background:rgba(0,0,0,.34)}
 .opt[aria-pressed=true]{border-color:#fff;background:rgba(0,0,0,.3);color:#fff}
-.opt:focus-visible,#txt:focus-visible,.tile:focus-visible,.mini:focus-visible,#exp:focus-visible,#pp:focus-visible{outline:2px solid var(--kiwi);outline-offset:2px}
+.opt:focus-visible,#txt:focus-visible,#sub:focus-visible,.tile:focus-visible,.mini:focus-visible,#exp:focus-visible,#pp:focus-visible{outline:2px solid var(--kiwi);outline-offset:2px}
 .sw{height:46px}
 .sw i{width:30px;height:30px;border-radius:4px;display:grid;place-items:center}
 .sw i::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--a)}
-#txt{width:100%;height:46px;border-radius:6px;border:0;background:rgba(0,0,0,.28);color:#fff;font:500 14px Poppins,sans-serif;padding:0 18px}
-#txt::placeholder{color:rgba(215,245,250,.4)}
+#txt,#sub{width:100%;height:46px;border-radius:6px;border:0;background:rgba(0,0,0,.28);color:#fff;font:500 14px Poppins,sans-serif;padding:0 18px}
+#sub{margin-top:8px;font-weight:400}
+#txt::placeholder,#sub::placeholder{color:rgba(215,245,250,.4)}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .cell{gap:8px}
 .cell{display:flex;flex-direction:column;align-items:center;gap:10px}
@@ -121,7 +122,8 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px}
       <div class="row" id="motions"></div>
       <div class="sl" id="msl"><label>speed<input id="mSpeed" type="range" min="0.5" max="2" step="0.05" value="1"></label><label>scale<input id="mScale" type="range" min="0.4" max="1.4" step="0.05" value="1"></label><label id="mThirdL" class="full"><span id="mThirdT">elasticity</span><input id="mThird" type="range" min="1" max="6" step="1" value="2"></label></div></div>
     <div class="sec"><h2>text <em id="cnt">21/30</em></h2>
-      <input id="txt" maxlength="30" value="delicious starts here" placeholder="your headline" aria-label="Headline text" autocomplete="off" spellcheck="false"></div>
+      <input id="txt" maxlength="30" value="delicious starts here" placeholder="your headline" aria-label="Headline text" autocomplete="off" spellcheck="false">
+      <input id="sub" maxlength="60" value="" placeholder="subheading (optional)" aria-label="Subheading text" autocomplete="off" spellcheck="false"></div>
     <div class="sec"><h2>add products</h2>
       <div class="row sets" id="sets"></div>
       <p>add up to 3 products, all transparent PNGs with aspect ratio of 1:1. you can manually adjust the size on the canvas of the end card.</p>
@@ -153,7 +155,7 @@ const THEMES=[
 const RATIOS=[['16:9',1920,1080],['1:1',1080,1080],['4:5',1080,1350],['3:4',1080,1440],['9:16',1080,1920]];
 
 /* ---------------- state ---------------- */
-const S={theme:0,ratio:4,motion:0,mspeed:1,mscale:1,melas:2,mrings:6,text:'delicious starts here',prods:[],speed:1};
+const S={theme:0,ratio:4,motion:0,sub:'',mspeed:1,mscale:1,melas:2,mrings:6,text:'delicious starts here',prods:[],speed:1};
 let frame=FR, playing=false, last=0, acc=0, exporting=false;
 const wm=new Image(); wm.src=WM_SRC;
 const wmCache={};
@@ -256,14 +258,21 @@ function scene(c,W,H,f,collect,th){
     c.save(); c.globalAlpha=o; c.translate(cx,cy+bob); c.rotate((1-a)*(i%2?.12:-.12)); c.drawImage(im,-dw/2,-dh/2,dw,dh); c.restore();
     if(collect) hits.push({i,x:cx-dw/2,y:cy-dh/2,w:dw,h:dh});
   });
-  /* headline */
-  const words=S.text.trim().split(/\s+/).filter(Boolean);
+  /* headline, with the optional subheading under it */
+  const words=S.text.trim().split(/\s+/).filter(Boolean), subTxt=S.sub.trim();
   if(words.length){
+    const sf0=L.tx.max*.42; let sfs=sf0, sLines=[];
+    if(subTxt){
+      for(let z=sf0;z>=14;z-=2){ sfs=z; c.font=`500 ${z}px Poppins,"Helvetica Neue",Arial,sans-serif`; c.letterSpacing='0px';
+        sLines=[]; let cur=''; for(const w of subTxt.split(/\s+/)){ const t=cur?cur+' '+w:w; if(cur&&c.measureText(t).width>L.tx.w){sLines.push(cur);cur=w}else cur=t; } sLines.push(cur);
+        if(sLines.length<=2&&sLines.every(l=>c.measureText(l).width<=L.tx.w)) break; }
+    }
+    const subH=sLines.length?sLines.length*sfs*1.35+sfs*.35:0;
     /* prefer two lines (so "starts here" stays together); use a third only if that would shrink the text below 60% */
-    const fit=(ml)=>{ for(let z=L.tx.max;z>12;z-=2){ const t=wrapText(words,z,L.tx.w,L.tx.exact); if(t.lines.length<=ml&&t.lines.length*z*1.04<=L.tx.h&&t.lines.every(l=>l[l.length-1].x+l[l.length-1].w<=L.tx.w)) return z; } return 12; };
+    const fit=(ml)=>{ for(let z=L.tx.max;z>12;z-=2){ const t=wrapText(words,z,L.tx.w,L.tx.exact); if(t.lines.length<=ml&&t.lines.length*z*1.04<=L.tx.h-subH&&t.lines.every(l=>l[l.length-1].x+l[l.length-1].w<=L.tx.w)) return z; } return 12; };
     let fs=L.tx.exact?fit(3):fit(2), W_; if(!L.tx.exact&&fs<L.tx.max*.6) fs=Math.max(fs,fit(3));
     W_=wrapText(words,fs,L.tx.w,L.tx.exact);
-    const lh=fs*1.04, top=L.tx.bot?L.tx.bot-W_.lines.length*lh:L.tx.y-(W_.lines.length*lh)/2; let wi=0;
+    const lh=fs*1.04, top=L.tx.bot?L.tx.bot-subH-W_.lines.length*lh:L.tx.y-(W_.lines.length*lh+subH)/2; let wi=0;
     c.fillStyle=T.ink; c.textBaseline='alphabetic'; c.textAlign='left';
     c.font=`700 ${fs}px Poppins,"Helvetica Neue",Arial,sans-serif`; c.letterSpacing=(-0.03*fs)+'px';
     W_.lines.forEach((ln,li)=>{
@@ -272,6 +281,11 @@ function scene(c,W,H,f,collect,th){
         c.save(); c.beginPath(); c.rect(x0+wd.x-fs*.1,base-fs*.9,wd.w+fs*.2,fs*1.3); c.clip();
         c.globalAlpha=clamp(t*2.2); c.fillText(wd.t,x0+wd.x,base+(1-a)*fs*.9); c.restore(); });
     });
+    if(sLines.length){
+      const a=eo((f-(44+wi*6+6))/20);
+      if(a>0){ c.save(); c.globalAlpha=a; c.fillStyle=T.url; c.font=`500 ${sfs}px Poppins,"Helvetica Neue",Arial,sans-serif`; c.letterSpacing='0px'; c.textAlign=L.tx.al==='center'?'center':'left';
+        sLines.forEach((l,i)=>c.fillText(l,L.tx.x,top+W_.lines.length*lh+sfs*.35+i*sfs*1.35+sfs*.95+(1-a)*sfs*.8)); c.restore(); }
+    }
   }
 }
 
@@ -319,6 +333,7 @@ $('#mScale').oninput=e=>{S.mscale=+e.target.value; render()};
 function press(box,i){ box.querySelectorAll('.opt').forEach((b,j)=>b.setAttribute('aria-pressed',j===i)); }
 $('#themes').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; S.theme=+b.dataset.i; press($('#themes'),S.theme); render()};
 $('#ratios').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; S.ratio=+b.dataset.i; press($('#ratios'),S.ratio); size(); render()};
+$('#sub').oninput=e=>{S.sub=e.target.value; render()};
 $('#txt').oninput=e=>{S.text=e.target.value; $('#cnt').textContent=S.text.length+'/30'; if(!playing&&frame<FR) {} render()};
 
 const ICON={add:'<svg viewBox="0 0 20 20"><path d="M10 14V4M6 8l4-4 4 4M4 16h12"/></svg>',del:'<svg viewBox="0 0 20 20"><path d="M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10"/></svg>',up:'<svg viewBox="0 0 20 20"><path d="M10 14V4M6 8l4-4 4 4M4 16h12"/></svg>'};
