@@ -183,8 +183,8 @@ function layout(W,H){
   const wide=W/H>1.1, m=W*.08;
   if(wide){ const hc=H*.05, uf=0, uy=H-H*.09, lf=H*.06, ly=H*.14, top=ly+lf*.75, bot=uy-uf*1.6;
     return {wide,m,hc,logo:{x:m,y:ly,f:lf,al:'left'},zone:{cx:W*.71,cy:H*.46,s:H*.62},tx:{x:m,y:(top+bot)/2,h:bot-top,w:W*.36,al:'left',max:H*.11,lines:3},url:{x:m,y:uy,f:uf,al:'left'}}; }
-  const hc=H*.045, uf=0, uy=H-H*.075, s=Math.min(W*.66,H*.38), cy=H*.4, top=cy+s*.58, bot=H*.865;
-  return {wide,m,hc,logo:{x:W/2,y:H*.09,f:W*.068,al:'center'},zone:{cx:W/2,cy,s},tx:{x:W/2,y:(top+bot)/2,h:bot-top,bot,w:W-2*m,al:'center',max:Math.min(W*.095,H*.06),lines:3},url:{x:W/2,y:uy,f:uf,al:'center'}};
+  const hc=H*.045, uf=0, uy=H-H*.075, s=Math.min(W*.66,H*.38), tk=clamp((H/W-1)/.78), cy=H*(.41+.04*tk), top=cy+s*.58, bot=H*(.865+.045*tk);   // taller cards push the visual and the headline further down
+  return {wide,m,hc,logo:{x:W/2,y:H*.09,f:W*.068,al:'center'},zone:{cx:W/2,cy,s},tx:{x:W/2,y:(top+bot)/2,h:bot-top,bot,w:W-2*m,al:'center',max:Math.min(W*.09,H*.058),lines:3},url:{x:W/2,y:uy,f:uf,al:'center'}};
 }
 function wrapText(words,f,w){
   ctx.font=`700 ${f}px Poppins,"Helvetica Neue",Arial,sans-serif`; ctx.letterSpacing=(-0.03*f)+'px';
