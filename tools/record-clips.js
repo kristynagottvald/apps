@@ -40,10 +40,10 @@ const APPS = {
     ready: 1800,
     run: async (p) => {
       const t0 = Date.now(), tab = (n) => domClick(p, '#picker button:nth-child(' + n + ')');
-      await at(t0, 900, () => tab(2));
-      await at(t0, 2000, () => tab(3));
-      await at(t0, 3100, () => tab(4));
-      await at(t0, 4200, () => tab(1));
+      await at(t0, 1400, () => tab(2));
+      await at(t0, 2500, () => tab(3));
+      await at(t0, 3600, () => tab(4));
+      await at(t0, 4700, () => tab(1));
     } },
   'grubclub-order': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // park on the hero (collage already grown in), then play the order flow at 2.4x speed: click, pick four meals, email
