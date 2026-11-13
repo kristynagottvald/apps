@@ -206,14 +206,17 @@ let ctx, hits=[];
 function layout(W,H){
   const wide=W/H>1.1, m=W*.08;
   if(wide){ const hc=H*.25, uf=H*.034, uy=H-hc-uf*.9, lf=H*.075, ly=H*.14, top=ly+lf*.75, bot=uy-uf*1.6;
-    return {wide,m,hc,logo:{x:m,y:ly,f:lf,al:'left'},zone:{cx:W*.71,cy:H*.46,s:H*.62},tx:{x:m,y:(top+bot)/2,h:bot-top,w:W*.38,al:'left',max:H*.14,lines:3},url:{x:m,y:uy,f:uf,al:'left'}}; }
+    return {wide,m,hc,logo:{x:m,y:ly,f:lf,al:'left'},zone:{cx:W*.71,cy:H*.46,s:H*.62},tx:{x:m,y:(top+bot)/2,h:bot-top,w:W*.36,al:'left',max:H*.14,lines:3},url:{x:m,y:uy,f:uf,al:'left'}}; }
   const hc=Math.min(H*.18,W*.36), uf=W*.03, uy=H-hc*.95-uf*.9, s=Math.min(W*.5,H*.33), cy=H*.365, top=cy+s*.58, bot=uy-uf*1.6;
   return {wide,m,hc,logo:{x:W/2,y:H*.105,f:W*.085,al:'center'},zone:{cx:W/2,cy,s},tx:{x:W/2,y:(top+bot)/2,h:bot-top,w:W-2*m,al:'center',max:Math.min(W*.12,H*.075),lines:3},url:{x:W/2,y:uy,f:uf,al:'center'}};
 }
 function wrapText(words,f,w){
   ctx.font=`700 ${f}px Poppins,"Helvetica Neue",Arial,sans-serif`; ctx.letterSpacing=(-0.03*f)+'px';
-  const sp=ctx.measureText(' ').width, lines=[[]], ws=[]; let cur=0;
-  for(const wd of words){ const wd_w=ctx.measureText(wd).width; if(cur>0&&cur+sp+wd_w>w){lines.push([]);cur=0} if(cur>0)cur+=sp; lines[lines.length-1].push({t:wd,w:wd_w,x:cur}); cur+=wd_w; }
+  const sp=ctx.measureText(' ').width, ww=words.map(t=>({t,w:ctx.measureText(t).width}));
+  const rows=[[]]; let cur=0;
+  for(const wd of ww){ if(cur>0&&cur+sp+wd.w>w){rows.push([]);cur=0} if(cur>0)cur+=sp; rows[rows.length-1].push(wd); cur+=wd.w; }
+  const n=rows.length; if(n>1&&rows[n-1].length===1&&rows[n-2].length>1) rows[n-1].unshift(rows[n-2].pop());   // never leave one word alone on the last line
+  const lines=rows.map(r=>{ let x=0; return r.map((wd,i)=>{ if(i) x+=sp; const o={t:wd.t,w:wd.w,x}; x+=wd.w; return o; }); });
   return {lines,sp};
 }
 function draw(c,W,H,f,k,collect){
@@ -246,8 +249,9 @@ function draw(c,W,H,f,k,collect){
   /* headline */
   const words=S.text.trim().split(/\s+/).filter(Boolean);
   if(words.length){
-    let fs=L.tx.max, W_;
-    for(;fs>12;fs-=2){ W_=wrapText(words,fs,L.tx.w); if(W_.lines.length<=L.tx.lines&&W_.lines.length*fs*1.04<=L.tx.h&&W_.lines.every(l=>l.length>1||l[0].w<=L.tx.w)) break; }
+    /* prefer two lines (so "starts here" stays together); use a third only if that would shrink the text below 60% */
+    const fit=(ml)=>{ for(let z=L.tx.max;z>12;z-=2){ const t=wrapText(words,z,L.tx.w); if(t.lines.length<=ml&&t.lines.length*z*1.04<=L.tx.h&&t.lines.every(l=>l[l.length-1].x+l[l.length-1].w<=L.tx.w)) return z; } return 12; };
+    let fs=fit(2), W_; if(fs<L.tx.max*.6) fs=Math.max(fs,fit(3));
     W_=wrapText(words,fs,L.tx.w);
     const lh=fs*1.04, top=L.tx.y-(W_.lines.length*lh)/2; let wi=0;
     c.fillStyle=T.ink; c.textBaseline='alphabetic'; c.textAlign='left';
