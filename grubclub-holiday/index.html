@@ -80,19 +80,12 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px}
         <button class="opt sw" data-g="lime" aria-pressed="false" aria-label="Lime"><i style="background:#EEFB71"></i></button>
         <button class="opt sw" data-g="dark" aria-pressed="false" aria-label="Dark green"><i style="background:#0F5A5C"></i></button>
       </div></div>
-    <div class="sec"><h2>ORANGE ACCENT</h2>
-      <div class="row" id="org">
-        <button class="opt" data-o="0" aria-pressed="false">None</button>
-        <button class="opt" data-o="1" aria-pressed="true">Some</button>
-        <button class="opt" data-o="2" aria-pressed="false">More</button>
-      </div></div>
     <div class="sec"><h2>PALETTE</h2>
       <div class="pal">
         <span><i style="background:#EEFB71"></i>Lime</span>
         <span><i style="background:#1C8859"></i>Medium</span>
         <span><i style="background:#0F5A5C"></i>Dark</span>
         <span><i style="background:#fff"></i>White</span>
-        <span><i style="background:#F2994A"></i>Orange</span>
       </div></div>
     <div class="sec" style="border:0">
       <button id="shuf">Shuffle the grid</button>
@@ -102,8 +95,8 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px}
 </main>
 <script>
 (() => {
-/* ---------- palette: Grubclub lime / kale / bean + white + the light orange accent ---------- */
-const C = { L: '#EEFB71', M: '#1C8859', D: '#0F5A5C', W: '#FFFFFF', O: '#F2994A' };
+/* ---------- palette: Grubclub lime / kale / bean + white ---------- */
+const C = { L: '#EEFB71', M: '#1C8859', D: '#0F5A5C', W: '#FFFFFF' };
 const SIZE = { '16:9': [1920, 1080], '9:16': [1080, 1920], '1:1': [1080, 1080], '3:4': [1080, 1440] };
 /* [cols, rows] per ratio and grid density (bold, modular, fine) */
 const GRID = {
@@ -112,7 +105,7 @@ const GRID = {
   '1:1':  [[8, 8], [12, 12], [16, 16]],
   '3:4':  [[6, 8], [9, 12], [12, 16]]
 };
-const S = { ratio: '16:9', dens: 1, gut: 'white', org: 1, word: 'GRUBCLUB', seed: 7 };
+const S = { ratio: '16:9', dens: 1, gut: 'white', word: 'GRUBCLUB', seed: 7 };
 
 /* ---------- seeded random ---------- */
 const rngOf = (s) => { let a = s >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
@@ -157,7 +150,7 @@ const ICON = {
   stocking: (k) => `<path d="M30 22 H66 V60 H84 A16 16 0 0 1 84 92 H46 A16 16 0 0 1 30 76Z" fill="${k.a}"/><rect x="24" y="8" width="48" height="18" fill="${k.b}"/>` + zig(24, 72, 17, 3.4, 4, k.bg, 2.4) + circ(78, 76, 11, k.b),
   elf: (k) => poly([[10, 10], [22, 24], [34, 10], [46, 24], [58, 10], [70, 24], [82, 10], [90, 24], [90, 32], [10, 32]], k.b) +
     `<rect x="10" y="30" width="80" height="62" fill="${k.a}"/><rect x="10" y="48" width="80" height="16" fill="${k.b}"/>` + circ(32, 56, 5.5, k.bg) + circ(68, 56, 5.5, k.bg) + '',
-  /* snowman: two big circles, hat, a single orange nose */
+  /* snowman: two big circles, hat, a single accent nose */
   snowman: (k) => circ(50, 78, 36, k.a) + circ(50, 31, 21, k.b) + `<rect x="34" y="2" width="32" height="12" rx="1" fill="${k.a}"/><rect x="26" y="12" width="48" height="5" rx="2" fill="${k.a}"/>` +
     poly([[50, 32], [72, 36], [50, 40]], k.x) + circ(50, 66, 3.4, k.bg) + circ(50, 78, 3.4, k.bg) + circ(50, 90, 3.4, k.bg),
   ginger: (k) => circ(50, 22, 17, k.a) + `<rect x="8" y="40" width="84" height="20" rx="10" fill="${k.a}"/><rect x="28" y="40" width="44" height="40" rx="14" fill="${k.a}"/><rect x="30" y="64" width="16" height="34" rx="8" fill="${k.a}"/><rect x="54" y="64" width="16" height="34" rx="8" fill="${k.a}"/>` +
@@ -186,7 +179,6 @@ const ICON = {
   /* bugs, same split-circle line art: Grubclub's cricket, grasshopper and mealworm, plus a beetle and an ant */
   lineCricket: (k) => splitCircle(k) + glyph(k, ell(50, 58, 9, 21) + ell(50, 30, 7, 7) + 'M50 40 V76 M46 24 Q38 10 24 12 M54 24 Q62 10 76 12 M41 52 L28 48 L25 60 M59 52 L72 48 L75 60 M43 68 L32 74 L27 86 M57 68 L68 74 L73 86', .82),
   lineGrasshopper: (k) => splitCircle(k) + glyph(k, ell(24, 44, 7, 6.5) + 'M31 44 Q42 38 60 40 L86 52 L60 54 Q42 56 31 50Z M40 41 L80 50 M20 39 Q17 27 8 22 M38 54 L34 70 M46 55 L44 72 M60 53 L74 66 L62 82 L72 84', 1.02),
-  lineMealworm: (k) => splitCircle(k) + `<g transform="rotate(-20 50 50)">` + glyph(k, 'M20 60 Q20 50 30 50 H72 Q84 50 84 60 Q84 70 72 70 H30 Q20 70 20 60Z M32 50 Q35 60 32 70 M43 50 Q46 60 43 70 M54 50 Q57 60 54 70 M65 50 Q68 60 65 70 M84 56 L90 50 M30 70 L28 78 M50 70 L48 78 M68 70 L70 78', 1.16) + `</g>`,
   lineBeetle: (k) => splitCircle(k) + glyph(k, ell(50, 58, 17, 22) + ell(50, 28, 8, 7) + 'M50 36 V80 M46 22 Q42 14 34 12 M54 22 Q58 14 66 12 M34 50 L22 44 M33 60 L20 60 M35 70 L24 78 M66 50 L78 44 M67 60 L80 60 M65 70 L76 78', .85),
   lineAnt: (k) => splitCircle(k) + glyph(k, ell(50, 22, 7, 7) + ell(50, 42, 6, 8) + ell(50, 68, 10, 15) + 'M46 17 L41 9 L34 12 M54 17 L59 9 L66 12 M45 38 L32 29 L27 36 M44 43 L29 46 L25 55 M45 48 L34 60 L30 72 M55 38 L68 29 L73 36 M56 43 L71 46 L75 55 M55 48 L66 60 L70 72', .8),
   /* abstract grid fillers */
@@ -198,7 +190,7 @@ const ICON = {
   stripesDiag: (k) => Array.from({ length: 9 }, (_, i) => `<path d="M${-20 + i * 20} 120 L${60 + i * 20} -20" stroke="${k.a}" stroke-width="9"/>`).join(''),
   wavyDiag: (k) => rot(-45, 50, 50, [-20, 0, 20, 40, 60, 80, 100, 120].map((y) => zig(-30, 130, y, 5, 8, k.a, 3.4)).join(''))
 };
-const LINES = ['lineBowl', 'lineCup', 'lineFork', 'lineCone', 'lineCricket', 'lineGrasshopper', 'lineMealworm', 'lineBeetle', 'lineAnt'];
+const LINES = ['lineBowl', 'lineCup', 'lineFork', 'lineCone', 'lineCricket', 'lineGrasshopper', 'lineBeetle', 'lineAnt'];
 /* 'line' stands for one of the split-circle line icons; the three exact geometric blocks are weighted up */
 const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'moon', 'scallop', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'line', 'line', 'line', 'line'];
 const FILLERS = ['halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
@@ -208,30 +200,24 @@ const BLEED = { tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scal
 /* ---------- contrast: WCAG ratios, so the geometric blocks only use colour sets that read clearly ---------- */
 const lum = (h) => { const c = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((v) => v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
 const cr = (a, b) => { const x = lum(C[a]), y = lum(C[b]); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
-/* [bg, arm 1, arm 2] for the pinwheel: every arm >= 3.5:1 on the bg except the orange-on-green pairs; orange sets give the best arm-to-arm contrast */
+/* [bg, arm 1, arm 2] for the pinwheel: white or lime arms against dark, dark arms against white or lime; every arm is 4:1 or better on its background, white/dark arms 8:1 */
 const GEO = {
-  pinwheel: (r) => { const hi = [['D', 'W', 'O'], ['W', 'D', 'O'], ['L', 'D', 'O'], ['D', 'L', 'O'], ['M', 'W', 'O']], lo = [['W', 'D', 'M'], ['L', 'D', 'M'], ['M', 'W', 'D'], ['M', 'L', 'D']];
-    const [bg, p, q] = pick(r, S.org && r() < (S.org === 2 ? .85 : .6) ? hi : lo); return { bg: C[bg], p: C[p], q: C[q] }; },
+  pinwheel: (r) => { const [bg, p, q] = pick(r, [['W', 'D', 'M'], ['L', 'D', 'M'], ['M', 'W', 'D'], ['M', 'L', 'D'], ['W', 'D', 'M'], ['M', 'W', 'D']]); return { bg: C[bg], p: C[p], q: C[q] }; },
   /* [pale, mid, dark]: pale triangles sit on dark (>=7:1) and on mid (>=4:1) */
   treeTri: (r) => { const [p, m, d] = pick(r, [['W', 'M', 'D'], ['L', 'M', 'D'], ['W', 'D', 'M'], ['L', 'D', 'M']]); return { bg: C[p], p: C[p], m: C[m], d: C[d] }; },
   /* [bg, leaf, berry]: leaf on bg >= 3.9:1, berries carry a ring of the bg colour so they stay crisp on the leaves */
-  holly: (r) => { const [bg, leaf, berry] = pick(r, [['W', 'M', 'D'], ['L', 'M', 'D'], ['M', 'W', 'D'], ['M', 'L', 'D'], ['D', 'W', 'O'], ['D', 'L', 'O']]); return { bg: C[bg], leaf: C[leaf], berry: C[berry] }; }
+  holly: (r) => { const [bg, leaf, berry] = pick(r, [['W', 'M', 'D'], ['L', 'M', 'D'], ['M', 'W', 'D'], ['M', 'L', 'D'], ['D', 'W', 'L'], ['D', 'L', 'W']]); return { bg: C[bg], leaf: C[leaf], berry: C[berry] }; }
 };
 
 /* ---------- colour schemes per tile ---------- */
-const orangeBias = () => [0, .09, .22][S.org];
 function scheme(r, force) {
-  const o = S.org && r() < orangeBias();
-  let bg = force || (o ? 'O' : pick(r, ['W', 'W', 'W', 'M', 'M', 'D', 'D', 'L', 'L']));
+  const bg = force || pick(r, ['W', 'W', 'W', 'M', 'M', 'D', 'D', 'L', 'L']);
   /* tone-on-tone pairs, like the references: a shape and its second half share a family */
-  const pairs = { W: [['M', 'D'], ['D', 'M'], ['M', 'L'], ['D', 'L']], L: [['D', 'M'], ['M', 'D']], M: [['D', 'L'], ['L', 'D'], ['W', 'D'], ['D', 'W']], D: [['M', 'L'], ['L', 'M'], ['W', 'M'], ['M', 'W']], O: [['D', 'W'], ['M', 'D']] };
+  const pairs = { W: [['M', 'D'], ['D', 'M'], ['M', 'L'], ['D', 'L']], L: [['D', 'M'], ['M', 'D']], M: [['D', 'L'], ['L', 'D'], ['W', 'D'], ['D', 'W']], D: [['M', 'L'], ['L', 'M'], ['W', 'M'], ['M', 'W']] };
   const [a, b] = pick(r, pairs[bg]);
-  let x = bg === 'W' || bg === 'L' ? 'O' : bg === 'M' ? 'O' : 'O';
-  if (!S.org) x = bg === 'W' || bg === 'L' ? 'D' : 'L';
-  else if (S.org === 1 && r() < .35) x = bg === 'W' || bg === 'L' ? 'M' : 'W';
-  if (bg === 'O') x = 'D';
-  if (x === bg || x === a || x === b) x = bg === 'O' ? 'D' : 'O';
-  if (!S.org && x === 'O') x = bg === 'W' || bg === 'L' ? 'D' : 'L';
+  /* accent: the palette colour that reads best against both the shape and the background (never the shape colour itself) */
+  const cand = ['W', 'L', 'M', 'D'].filter((c) => c !== a && c !== bg).map((c) => [c, Math.min(cr(c, a), cr(c, bg))]).sort((u, v) => v[1] - u[1]);
+  const x = cand[0][0];
   return { bg: C[bg], a: C[a], b: C[b], x: C[x], bgk: bg };
 }
 
@@ -296,18 +282,23 @@ function build(anim) {
   let out = '', n = 0, last = '';
   const nextIcon = (geo = true) => { let name, tries = 0; do { name = pick(r, ICONS_FULL); if (name === 'line') name = pick(r, LINES); tries++; } while ((name === last || usedRecent.slice(-3).includes(name) || (!geo && GEO[name])) && tries < 40); last = name; usedRecent.push(name); return name; };
   usedRecent = [];
-  const iconSvg = (name, k, x, y, w, h, pad) => { const sl = BLEED[name]; const p = sl ? 0 : pad; return `<svg x="${f(x + p)}" y="${f(y + p)}" width="${f(w - p * 2)}" height="${f(h - p * 2)}" viewBox="0 0 100 100" preserveAspectRatio="${sl ? 'xMidYMid slice' : 'xMidYMid meet'}" overflow="${sl ? 'hidden' : 'visible'}">${ICON[name](k, r() < .5 ? 1 : 0)}</svg>`; };
+  /* about half of the illustrations run tight to the tile edges (zoomed in, bleeding off), the rest keep a margin */
+  const iconSvg = (name, k, x, y, w, h, pad) => { const sl = BLEED[name], tight = !sl && !GEO[name] && r() < .5; const p = sl || tight ? 0 : pad; const vb = tight ? '5 5 90 90' : '0 0 100 100'; return `<svg x="${f(x + p)}" y="${f(y + p)}" width="${f(w - p * 2)}" height="${f(h - p * 2)}" viewBox="${vb}" preserveAspectRatio="${sl ? 'xMidYMid slice' : 'xMidYMid meet'}" overflow="${sl || tight ? 'hidden' : 'visible'}">${ICON[name](k, r() < .5 ? 1 : 0)}</svg>`; };
   const clipId = (i) => `c${i}`;
   tiles.forEach((t, i) => {
     const x = gap + t.x * (cw + gap), y = gap + t.y * (ch + gap), w = t.w * cw + (t.w - 1) * gap, h = t.h * ch + (t.h - 1) * gap;
     const mn = Math.min(w, h);
     let body = '', k;
     if (t.kind === 'word') {
-      k = scheme(r, 'L'); k = { ...k, bg: C.L, a: C.D, b: C.M, x: C.O };
+      k = scheme(r, 'L'); k = { ...k, bg: C.L, a: C.D, b: C.M, x: C.M };
       const txt = (S.word || 'GRUBCLUB').toUpperCase();
-      const fs = Math.min(h * .4, (w * .86) / (txt.length * .74));
+      const fs = Math.min(h * .4, (w - h * 2.4) / (txt.length * .74));
       body = `<text x="${f(x + w / 2)}" y="${f(y + h / 2)}" text-anchor="middle" dominant-baseline="central" font-family="Poppins,'Helvetica Neue',Arial,sans-serif" font-weight="600" font-size="${f(fs)}" letter-spacing="${f(fs * .14)}" fill="${C.D}">${txt.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`;
-      if (w > h * 3) { const rr = h * .1; body += circ(x + h * .5, y + h / 2, rr, C.O) + circ(x + w - h * .5, y + h / 2, rr, C.O); }
+      /* a mealworm on either side of the wordmark, the right one mirrored */
+      const worm = `<g transform="rotate(-18 50 50)"><path d="M10 60 Q10 44 28 44 H74 Q92 44 92 60 Q92 76 74 76 H28 Q10 76 10 60Z" fill="${C.D}"/><path d="M26 45 Q30 60 26 75 M40 45 Q44 60 40 75 M54 45 Q58 60 54 75 M68 45 Q72 60 68 75" fill="none" stroke="${C.L}" stroke-width="2.6" stroke-linecap="round"/><path d="M28 76 L26 88 M50 76 L48 88 M72 76 L74 88 M88 50 L97 40" fill="none" stroke="${C.D}" stroke-width="3.4" stroke-linecap="round"/><circle cx="82" cy="58" r="3" fill="${C.L}"/></g>`;
+      const ws = h * .86;
+      body += `<svg x="${f(x + h * .18)}" y="${f(y + (h - ws) / 2)}" width="${f(ws)}" height="${f(ws)}" viewBox="0 0 100 100" overflow="visible">${worm}</svg>` +
+        `<svg x="${f(x + w - h * .18 - ws)}" y="${f(y + (h - ws) / 2)}" width="${f(ws)}" height="${f(ws)}" viewBox="0 0 100 100" overflow="visible"><g transform="translate(100 0) scale(-1 1)">${worm}</g></svg>`;
     } else if (t.kind === 'hero') {
       k = scheme(r, pick(r, ['W', 'M', 'D', 'L']));
       const nm = pick(r, ['ornament', 'wreath', 'snowman', 'reindeer', 'gift', 'bell', 'hat', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri']);
@@ -361,7 +352,7 @@ const group = (id, key, parse = (v) => v) => document.getElementById(id).addEven
   document.querySelectorAll('#' + id + ' .opt').forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
   draw(key !== 'gut');
 });
-group('ratios', 'ratio'); group('dens', 'dens', Number); group('gut', 'gut'); group('org', 'org', Number);
+group('ratios', 'ratio'); group('dens', 'dens', Number); group('gut', 'gut');
 document.getElementById('txt').addEventListener('input', (e) => { S.word = e.target.value; draw(false); });
 document.getElementById('shuf').addEventListener('click', () => { S.seed = Math.floor(Math.random() * 1e6); draw(true); });
 
