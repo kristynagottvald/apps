@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brand Audit Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0D0D2B; --navy:#15153A; --panel:#1B1B4A; --line:#2B2B60; --indigo:#3F30F2; --magenta:#E85DF4;
+  --lime:#E6EA9C; --lav:#A18BFF; --coral:#FF6F5B; --text:#F3F2FF; --muted:#9E9BCB;
+  --font:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font:400 14px/1.4 var(--font);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}}
+
+.app{flex:1;min-height:0;display:flex;flex-direction:column}
+.bar{flex:none;display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:var(--navy);border-bottom:2px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;white-space:nowrap}
+.brand i{width:20px;height:20px;background:var(--magenta);position:relative;display:block}
+.brand i::after{content:"";position:absolute;right:0;bottom:0;width:10px;height:10px;background:var(--lime)}
+.tabs{display:flex;gap:4px;margin-left:8px}
+.tabs button{background:none;border:0;border-radius:6px;padding:7px 12px;font-size:13px;font-weight:500;color:var(--muted)}
+.tabs button.on{background:var(--indigo);color:#fff}
+.tabs button:hover:not(.on){color:var(--text)}
+.sp{flex:1}
+.scrub{width:min(300px,28vw);accent-color:var(--lime)}
+.pp{width:34px;height:34px;border-radius:8px;border:2px solid var(--line);background:var(--ink);display:grid;place-items:center}
+.pp:hover{border-color:var(--lav)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+
+.stage{flex:1;min-height:0;position:relative;overflow:hidden;background:var(--ink)}
+.scene{position:absolute;inset:0;display:flex;will-change:opacity,transform}
+
+/* ---------- library ---------- */
+#lib{flex-direction:column}
+.libtop{flex:none;display:flex;align-items:center;gap:14px;height:54px;padding:0 20px;border-bottom:1px solid var(--line);background:#101035}
+.crumb{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--text);font-weight:600}
+.search{margin-left:auto;width:220px;height:32px;border-radius:16px;background:var(--navy);border:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;align-items:center;padding:0 14px}
+.avs{display:flex}
+.avs i{width:28px;height:28px;border-radius:50%;margin-left:-6px;border:2px solid #101035;display:grid;place-items:center;font:600 10px var(--font);font-style:normal;color:var(--ink)}
+.libbody{flex:1;min-height:0;display:flex}
+.libmain{flex:1;min-width:0;display:flex;flex-direction:column}
+.chips{flex:none;display:flex;gap:8px;padding:14px 20px 12px;overflow:hidden}
+.chip{white-space:nowrap;border-radius:16px;padding:6px 13px;font-size:12.5px;font-weight:500;background:var(--navy);color:var(--muted);border:1px solid var(--line)}
+.chip.on{background:#fff;color:var(--ink);border-color:#fff}
+.chip em{font-style:normal;font-variant-numeric:tabular-nums;margin-left:5px;opacity:.9}
+.grid{flex:1;min-height:0;overflow:hidden;padding:2px 20px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;align-content:start;grid-auto-rows:max-content}
+.card{background:var(--navy);border:2px solid transparent;border-radius:10px;overflow:hidden;position:relative;will-change:transform,opacity}
+.card.sel{border-color:var(--coral);box-shadow:0 0 0 4px rgba(255,111,91,.18)}
+.media{height:0;padding-bottom:100%;background:#08081f;position:relative}
+.media img,.media canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.tag{position:absolute;top:7px;left:7px;font:500 10px var(--mono);background:rgba(0,0,0,.72);padding:2px 5px;border-radius:3px;color:#fff}
+.ver{left:auto;right:7px}
+.meta{padding:9px 10px 10px}
+.nm{font:500 11px var(--mono);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-flex;align-items:center;gap:6px;margin-top:7px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:10px;background:color-mix(in srgb,var(--c) 17%,transparent);color:var(--c)}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c)}
+.pill.spin::before{animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:8px}
+.steps i{height:3px;border-radius:2px;background:var(--line)}
+.steps i.f{background:var(--c)}
+.detail{flex:none;width:300px;border-left:1px solid var(--line);background:#101035;padding:20px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.detail .empty{margin:auto;text-align:center;color:var(--muted);font-size:13px;max-width:200px}
+.dthumb{aspect-ratio:1/1;border-radius:8px;overflow:hidden;background:#08081f;display:grid;place-items:center}
+.dthumb{position:relative}.dthumb canvas{position:absolute;inset:0;width:100%;height:100%}
+.dname{font:600 13px var(--mono);word-break:break-all}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12.5px}
+.kv dt{color:var(--muted)} .kv dd{text-align:right;margin:0}
+.pipe{display:grid;gap:9px}
+.pipe div{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)}
+.pipe b{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:10px;flex:none;font-weight:700}
+.pipe .done{color:var(--text)} .pipe .done b{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+.pipe .cur{color:var(--text);font-weight:600} .pipe .cur b{border-color:var(--c);color:var(--c)}
+.pipe small{margin-left:auto;font-weight:400;color:var(--c)}
+.btn{background:var(--lime);color:var(--ink);border:0;border-radius:8px;padding:11px 14px;font-weight:600;font-size:13px;margin-top:auto;transition:transform .12s,background .2s}
+.btn.press{transform:scale(.95);background:#fff}
+.btn.ghost{background:var(--navy);color:var(--text);border:2px solid var(--line)}
+
+/* ---------- audit ---------- */
+#aud{flex-direction:row}
+.eng{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--panel)}
+.ehead{flex:none;display:flex;justify-content:space-between;gap:12px;padding:16px 22px 0;font:400 13px var(--mono);color:#C9C6F2}
+.ehead span:last-child{color:var(--lime)}
+.imgarea{flex:1;min-height:0;position:relative}
+.imgwrap{position:absolute;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.imgwrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.lines *{fill:none;stroke:var(--coral);stroke-width:3;vector-effect:non-scaling-stroke}
+.fcard{position:absolute;width:190px;background:#fff;color:var(--ink);border-radius:6px;padding:9px 11px 9px 40px;box-shadow:0 8px 24px rgba(0,0,0,.35);will-change:opacity,transform}
+.fcard b{position:absolute;left:10px;top:11px;width:21px;height:21px;border-radius:50%;background:var(--coral);color:#fff;font-size:12px;display:grid;place-items:center}
+.fcard strong{display:block;font-size:14px;font-weight:600;line-height:1.2}
+.fcard small{display:block;font-size:12px;color:#5b5a80;margin-top:1px}
+.nb{position:absolute;width:20px;height:20px;border-radius:50%;background:var(--coral);color:#fff;font-size:11px;font-weight:700;display:none;place-items:center;transform:translate(-50%,-50%)}
+.ebar{flex:none;height:54px;background:#08081f;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:15px;font-weight:500}
+.ebar span:last-child{font:400 13px var(--mono);color:#C9C6F2}
+.res{flex:none;width:340px;background:var(--ink);border-left:2px solid var(--line);padding:22px 28px;display:flex;flex-direction:column;gap:18px;overflow:hidden}
+.res h3{font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--coral);text-transform:uppercase;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.res h4{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.ticks{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-bottom:8px}
+.ticks i{height:18px;background:var(--line);border-radius:2px}
+.ticks i.p{background:var(--lav)} .ticks i.x{background:var(--coral)}
+.crow{display:flex;justify-content:space-between;font:400 12px var(--mono);color:#C9C6F2}
+.bars{display:grid;gap:8px}
+.bl{display:flex;align-items:center;gap:14px;height:38px}
+.bl i{display:block;height:100%;transform-origin:left}
+.bl .g{background:#3b3b6b;width:78%} .bl .o{background:var(--coral);width:5.2%}
+.bl span{font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.acc{display:flex;align-items:center;gap:18px}
+.acc svg{width:104px;height:104px;flex:none;transform:rotate(-90deg)}
+.acc big{display:block;font-size:46px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.acc p{font-size:13px;color:#C9C6F2;margin-top:6px;line-height:1.3}
+.decide{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;margin-top:auto}
+.decide .btn{margin:0}
+.decide .btn.ghost{padding:11px 8px}
+.res hr.div{border:0;border-top:1px solid var(--line);margin:0}
+.flist{display:none}
+
+.cursor{position:absolute;left:0;top:0;width:22px;height:22px;pointer-events:none;z-index:9;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));will-change:transform,opacity}
+.cursor svg{display:block;transition:transform .1s}
+.cursor.dn svg{transform:scale(.82)}
+
+@media (max-width:1100px){.detail{display:none}.res{width:290px;padding:18px 20px}}
+@media (max-width:860px){
+  .bar{gap:10px;padding:0 12px}.brand span{display:none}.scrub{display:none}.sp{display:none}.tabs{margin-left:0;flex:1}.pp{margin-left:auto}
+  .libtop .avs,.search{display:none}
+  .grid{grid-template-columns:repeat(2,1fr);padding:2px 14px 14px;gap:10px}.chips{padding:12px 14px 10px}
+  #aud{flex-direction:column}
+  .res{width:auto;border-left:0;border-top:2px solid var(--line);padding:14px 16px;gap:12px;flex:none}
+  .res .chk{display:none}
+  .bl{height:28px}.bl span{font-size:18px}.acc svg{width:70px;height:70px}.acc big{font-size:34px}
+  .decide{margin-top:0}
+  .ehead{padding:12px 14px 0;font-size:11px}.ebar{height:44px;padding:0 14px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Brand Audit Engine</b></nav>
+<div class="app">
+  <div class="bar">
+    <div class="brand"><i></i><span>Brand Audit Engine</span></div>
+    <div class="tabs" role="tablist">
+      <button class="on" data-go="0">Library</button><button data-go="9000">Audit</button><button data-go="14600">Decision</button>
+    </div>
+    <div class="sp"></div>
+    <input class="scrub" id="scrub" type="range" min="0" max="21000" step="10" value="0" aria-label="Timeline">
+    <button class="pp" id="pp" aria-label="Play or pause"></button>
+  </div>
+  <div class="stage" id="stage">
+    <!-- LIBRARY -->
+    <section class="scene" id="lib" aria-label="Asset library">
+      <div class="libtop">
+        <div class="crumb">Lob / No-code design suite / <b>Launch posts</b></div>
+        <div class="search" id="searchTxt">Search 24 assets</div>
+        <div class="avs"><i style="background:#FF6F5B">AK</i><i style="background:#A18BFF">TR</i><i style="background:#E6EA9C">+6</i></div>
+      </div>
+      <div class="libbody">
+        <div class="libmain">
+          <div class="chips" id="chips"></div>
+          <div class="grid" id="grid"></div>
+        </div>
+        <aside class="detail" id="detail"></aside>
+      </div>
+    </section>
+    <!-- AUDIT -->
+    <section class="scene" id="aud" aria-label="Audit engine">
+      <div class="eng">
+        <div class="ehead"><span>lob-nocode_1x1_v2.png</span><span id="estatus">Scanning</span></div>
+        <div class="imgarea" id="imgarea">
+          <div class="imgwrap" id="imgwrap"><canvas id="post"></canvas><canvas id="fx"></canvas></div>
+          <svg class="lines" id="lines"></svg>
+        </div>
+        <div class="ebar"><span id="eleft">Scanning</span><span id="eright">0 flags to review</span></div>
+      </div>
+      <aside class="res">
+        <h3>Result</h3>
+        <div class="chk"><h4>Checks run</h4>
+          <div class="ticks" id="ticks"></div>
+          <div class="crow"><span id="cn">0 / 14</span><span id="cf">0 flagged</span></div></div>
+        <div><h4>Check time per asset</h4>
+          <div class="bars">
+            <div class="bl"><i class="g" id="barG"></i><span id="lblG"></span></div>
+            <div class="bl"><i class="o" id="barO"></i><span id="lblO"></span></div>
+          </div></div>
+        <hr class="div"><div id="accBox"><h4>Accuracy</h4>
+          <div class="acc">
+            <svg viewBox="0 0 104 104"><circle cx="52" cy="52" r="42" fill="none" stroke="#3b3b6b" stroke-width="12"/><circle id="ring" cx="52" cy="52" r="42" fill="none" stroke="#FF6F5B" stroke-width="12" stroke-dasharray="263.9" stroke-dashoffset="263.9"/></svg>
+            <div><big id="accN">0%</big><p>A person makes the final call.</p></div>
+          </div></div>
+        <div class="decide" id="decide"><button class="btn ghost" id="bApprove">Approve</button><button class="btn" id="bChanges">Request changes</button></div>
+      </aside>
+    </section>
+    <div class="cursor" id="cursor"><svg width="22" height="22" viewBox="0 0 22 22"><path d="M3 2l15 8.5-6.6 1.6L8.2 19z" fill="#fff" stroke="#0D0D2B" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   BRAND AUDIT ENGINE
+   One timeline, LOOP ms long. render(t) is a pure function of the time, so the
+   scrubber, the tabs and the home page clip all just call seek(t).
+   Scenes: library (0-6.1s) -> audit scan + flags + result (5.4-17.1s) -> library again,
+   with the audited asset moved from "Needs review" to "Changes".
+   ===================================================================== */
+const LOOP = 21000;
+const REF = 1293, CELL = 213;
+const $ = s => document.querySelector(s);
+const clamp01 = x => Math.min(1, Math.max(0, x));
+const prog = (t, a, b) => clamp01((t - a) / (b - a));
+const ease = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+const lerp = (a, b, x) => a + (b - a) * x;
+
+/* ---------- campaign post (ported from the no-code campaign p5 sketch, final frame) ---------- */
+const C = {coral:'#FF6F5B', pink:'#E85DF4', yellow:'#E6EA9C', lavender:'#A18BFF', blue:'#3F30F2', navy:'#3F30F2', ink:'#1B1670', white:'#FFFFFF', offbrand:'#FFA23F'};
+const BAYER = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+const STATICS = [
+  {t:'dither',x:426,y:0,w:213,h:213,bg:C.lavender,fg:C.yellow,dir:'L',top:0,res:13.3},
+  {t:'rect',x:958,y:0,w:107,h:108,bg:C.pink},
+  {t:'rect',x:852,y:108,w:213,h:105,bg:C.pink},
+  {t:'dither',x:0,y:240,w:213,h:186,bg:C.navy,fg:C.lavender,dir:'BL',top:0,res:13.3},
+  {t:'rect',x:213,y:213,w:107,h:426,bg:C.pink},
+  {t:'rect',x:320,y:426,w:106,h:107,bg:C.coral},
+  {t:'rect',x:426,y:213,w:213,h:213,bg:C.yellow},
+  {t:'dither',x:639,y:213,w:213,h:213,bg:C.coral,fg:C.blue,dir:'L',top:.19,res:13.3},
+  {t:'rect',x:533,y:426,w:106,h:107,bg:C.coral},
+  {t:'rect',x:639,y:533,w:107,h:106,bg:C.offbrand},   // the off-palette block the audit catches
+  {t:'dither',x:1065,y:213,w:107,h:107,bg:C.coral,fg:C.yellow,dir:'L',top:0,res:13.3},
+  {t:'rect',x:1065,y:746,w:107,h:107,bg:C.lavender},
+  {t:'rect',x:1172,y:639,w:107,h:107,bg:C.yellow},
+  {t:'dither',x:108,y:970,w:106,h:106,bg:C.lavender,fg:C.blue,dir:'L',top:0,res:13.3},
+  {t:'rect',x:213,y:1171,w:107,h:107,bg:C.yellow}
+];
+const TILES = [
+  {x:0,y:426,bg:C.lavender,fg:C.blue,text:'Aa',font:'Arial',style:'normal',weight:'bold',fs:.95,align:'left'},
+  {x:852,y:426,bg:C.yellow,fg:C.blue,text:'Aa',font:'Georgia',style:'italic',weight:'normal',fs:.72},
+  {x:0,y:0,bg:C.coral,fg:C.blue,text:'{{{}}}',font:'Georgia',style:'italic',weight:'normal',fs:.78},
+  {x:213,y:0,bg:C.pink,fg:C.yellow,text:'{{}}',font:'Arial',style:'normal',weight:'bold',fs:.8},
+  {x:213,y:213,bg:C.lavender,fg:C.blue,text:'{{}}',font:'Georgia',style:'italic',weight:'normal',fs:.95},
+  {x:1065,y:426,bg:C.yellow,fg:C.blue,text:'{{}}',font:'Georgia',style:'italic',weight:'normal',fs:.78},
+  {x:0,y:1065,bg:C.pink,fg:C.blue,text:'{{}}',font:'Arial',style:'normal',weight:'bold',fs:.95}
+];
+function dither(ctx, s){
+  ctx.fillStyle = s.bg; ctx.fillRect(s.x, s.y, s.w, s.h); ctx.fillStyle = s.fg;
+  const res = s.res, cols = Math.ceil(s.w / res), rows = Math.ceil(s.h / res);
+  for(let r = 0; r < rows; r++) for(let c = 0; c < cols; c++){
+    const u = c / cols, v = r / rows; if(v < s.top) continue;
+    const fade = s.dir === 'L' ? 1 - u * 1.05 : s.dir === 'BL' ? (1 - u) * .55 + v * .55 : (u + v) / 2;
+    if(fade > BAYER[r % 4][c % 4] / 16 + .04){
+      const px = s.x + c * res, py = s.y + r * res;
+      ctx.fillRect(px, py, Math.min(res, s.x + s.w - px), Math.min(res, s.y + s.h - py));
+    }
+  }
+}
+function tile(ctx, sp, s = CELL){
+  const {x, y} = sp;
+  ctx.fillStyle = sp.bg; ctx.fillRect(x, y, s, s);
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, s, s); ctx.clip();
+  const fam = sp.font === 'Georgia' ? "Georgia,'Times New Roman',serif" : "Arial,Helvetica,sans-serif";
+  ctx.font = `${sp.style} ${sp.weight} ${s * sp.fs}px ${fam}`;
+  ctx.fillStyle = sp.fg; ctx.textBaseline = 'alphabetic';
+  let tx = x + s / 2; ctx.textAlign = 'center';
+  if(sp.align === 'left'){ ctx.textAlign = 'left'; tx = x + 4; }
+  const brace = sp.text.indexOf('{') >= 0;
+  ctx.fillText(sp.text, tx, brace ? y + s * .5 + s * sp.fs * .3 : y + s * .5 + s * sp.fs * .35);
+  ctx.restore();
+}
+function drawPost(cv, px){
+  cv.width = cv.height = px;
+  const ctx = cv.getContext('2d'); ctx.setTransform(px / REF, 0, 0, px / REF, 0, 0);
+  ctx.fillStyle = C.navy; ctx.fillRect(0, 0, REF, REF);
+  for(const s of STATICS){ if(s.t === 'rect'){ ctx.fillStyle = s.bg; ctx.fillRect(s.x, s.y, s.w, s.h); } else dither(ctx, s); }
+  ctx.fillStyle = C.white; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.font = "300 123px 'Helvetica Neue',Helvetica,Arial,sans-serif";
+  ctx.fillText('Dynamic', 368, 940); ctx.fillText('Field Mapping', 368, 1076);
+  ctx.font = "500 29px 'Helvetica Neue',Helvetica,Arial,sans-serif";
+  if('letterSpacing' in ctx) ctx.letterSpacing = '3px';
+  ctx.fillText('NO-CODE DESIGN SUITE', 680, 1178);
+  if('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+  dither(ctx, {x:638, y:1155, w:24, h:24, bg:C.pink, fg:C.yellow, dir:'BL', top:0, res:4});
+  for(const t of TILES) tile(ctx, t);
+}
+
+/* ---------- contrast (real maths, so the flag is true) ---------- */
+const lum = h => { const n = parseInt(h.slice(1), 16), f = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }; return .2126 * f(n >> 16 & 255) + .7152 * f(n >> 8 & 255) + .0722 * f(n & 255); };
+const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+const CR = ratio(C.yellow, C.pink).toFixed(1);
+
+/* ---------- flags (REF coordinates) ---------- */
+const FLAGS = [
+  {n:1, title:'Logo missing',        sub:'Brand rule 2.1',          cx:1180, cy:106,  rx:98,  ry:98,  side:'R', slot:.12},
+  {n:2, title:'Low contrast',        sub:`${CR}:1, minimum 3:1`,    cx:320,  cy:106,  rx:112, ry:112, side:'L', slot:.14},
+  {n:3, title:'Colour not on brand', sub:'Brand palette',           cx:692,  cy:586,  rx:78,  ry:78,  side:'L', slot:.5}
+];
+const SCAN_A = 6900, SCAN_B = 11400;
+FLAGS.forEach(f => f.t = SCAN_A + (SCAN_B - SCAN_A) * clamp01((f.cy - f.ry * .5) / REF));
+
+/* ---------- library data ---------- */
+const FILES = [];
+for(let i = 1; i <= 23; i++) FILES.push(i);
+const ST = {
+  queued:  {label:'Queued',       step:1, c:'#9E9BCB'},
+  scanning:{label:'Scanning',     step:2, c:'#A18BFF', spin:1},
+  needs:   {label:'Needs review', step:3, c:'#F58CFB'},
+  changes: {label:'Changes',      step:3, c:'#FF6F5B'},
+  approved:{label:'Approved',     step:4, c:'#E6EA9C'}
+};
+const STATUS = ['approved','approved','needs','approved','approved','changes','approved','approved','scanning','approved','needs','approved',
+                'POST','approved','approved','needs','approved','changes','approved','queued','approved','approved','needs','approved'];
+const FLAGN = {approved:0, needs:3, changes:5, scanning:0, queued:0};
+const TARGET = 12;
+const items = [];
+{ let fi = 0;
+  const ver = [3,2,1,3,4,2,3,1,2,3,1,2,2,4,3,1,3,2,1,1,4,3,2,3];
+  const camp = ['Launch','Merge fields','Direct mail','Field mapping'];
+  for(let i = 0; i < 24; i++){
+    const post = i === TARGET;
+    const k = post ? 0 : ++fi;
+    const asp = post ? '1x1' : (['a01','a02','a03','a04','a05','a06','a07','a08','a09','a10','a11','a12','a13','a14','a15','a16','a17','a18','a19','a20','a21','a22','a23'][k - 1], k === 2 || k === 5 || k === 8 || k === 10 || k === 12 || k === 14 || k === 16 || k === 18 || k === 20 || k === 22 ? '9x16' : '1x1');
+    items.push({
+      post, asp, file: post ? null : 'assets/a' + String(k).padStart(2, '0') + '-' + asp + '.webp',
+      status: post ? 'needs' : STATUS[i], ver: ver[i], camp: camp[i % 4],
+      name: post ? 'LOB_NoCode_1x1_v2.png' : `LOB_${['Hero','Post','Story','Mail'][i % 4]}_${asp}_v${ver[i]}.png`
+    });
+  }
+}
+const statusAt = (it, t) => it.post && t >= 15800 ? 'changes' : it.status;
+const countsAt = t => { const c = {all:items.length, scan:0, needs:0, changes:0, approved:0}; items.forEach(it => { const s = statusAt(it, t); if(s === 'queued' || s === 'scanning') c.scan++; else c[s]++; }); return c; };
+
+/* ---------- build library DOM ---------- */
+const grid = $('#grid'), cards = []; let postCv;
+items.forEach((it, i) => {
+  const el = document.createElement('div'); el.className = 'card';
+  el.innerHTML = `<div class="media"></div><div class="meta"><div class="nm">${it.name}</div><span class="pill"></span><div class="steps"><i></i><i></i><i></i><i></i></div></div>`;
+  const media = el.firstChild;
+  let node;
+  if(it.post){ node = document.createElement('canvas'); drawPost(node, 400); postCv = node; }
+  else { node = document.createElement('img'); node.src = it.file; node.alt = ''; node.loading = 'eager'; }
+  media.appendChild(node);
+  media.insertAdjacentHTML('beforeend', `<span class="tag">${it.asp.replace('x', ':')}</span><span class="tag ver">V${it.ver}</span>`);
+  grid.appendChild(el); cards.push({el, it, pill: el.querySelector('.pill'), segs: el.querySelectorAll('.steps i'), key: ''});
+});
+const CHIPS = [['all','All'],['scan','In audit'],['needs','Needs review'],['changes','Changes'],['approved','Approved']];
+$('#chips').innerHTML = CHIPS.map(([k, l], i) => `<span class="chip${i ? '' : ' on'}">${l}<em data-c="${k}"></em></span>`).join('');
+const chipEm = {}; document.querySelectorAll('[data-c]').forEach(e => chipEm[e.dataset.c] = e);
+
+/* ---------- build audit DOM ---------- */
+const ticks = $('#ticks'); for(let i = 0; i < 14; i++) ticks.appendChild(document.createElement('i'));
+const tickEls = [...ticks.children];
+const linesSvg = $('#lines'), imgarea = $('#imgarea'), imgwrap = $('#imgwrap'), post = $('#post'), fx = $('#fx');
+const NS = 'http://www.w3.org/2000/svg';
+FLAGS.forEach(f => {
+  f.ell = document.createElementNS(NS, 'ellipse'); f.ell.setAttribute('pathLength', 1); f.ell.style.strokeDasharray = '1 1';
+  f.ln = document.createElementNS(NS, 'path'); f.ln.setAttribute('pathLength', 1); f.ln.style.strokeDasharray = '1 1';
+  linesSvg.append(f.ell, f.ln);
+  f.card = document.createElement('div'); f.card.className = 'fcard';
+  f.card.innerHTML = `<b>${f.n}</b><strong>${f.title}</strong><small>${f.sub}</small>`;
+  f.nb = document.createElement('div'); f.nb.className = 'nb'; f.nb.textContent = f.n;
+  imgarea.append(f.card, f.nb);
+});
+const L = {s: 400, ix: 0, iy: 0, cards: true, W: 0, H: 0};
+function layoutAudit(){
+  const W = imgarea.clientWidth, H = imgarea.clientHeight; if(!W || !H) return;
+  const cw = 190, gap = 34;
+  const cards = W >= 3 * 0 + 820 && H > 300;
+  let s = cards ? Math.min(H - 28, W - 2 * (cw + gap) - 20) : Math.min(H - 20, W - 24);
+  s = Math.max(140, Math.floor(s));
+  const ix = Math.round((W - s) / 2), iy = Math.round((H - s) / 2);
+  Object.assign(L, {s, ix, iy, cards, W, H});
+  imgwrap.style.cssText = `left:${ix}px;top:${iy}px;width:${s}px;height:${s}px`;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  drawPost(post, Math.round(s * dpr)); fx.width = fx.height = Math.round(s * dpr);
+  const k = s / REF;
+  FLAGS.forEach(f => {
+    const cx = ix + f.cx * k, cy = iy + f.cy * k, rx = f.rx * k, ry = f.ry * k;
+    f.ell.setAttribute('cx', cx); f.ell.setAttribute('cy', cy); f.ell.setAttribute('rx', rx); f.ell.setAttribute('ry', ry);
+    f.card.style.display = cards ? '' : 'none';
+    f.nb.style.display = cards ? 'none' : 'grid';
+    f.nb.style.left = (cx - rx * .7) + 'px'; f.nb.style.top = (cy - ry * .7) + 'px';
+        if(cards){
+      const ch = 56, x = f.side === 'L' ? ix - gap - cw : ix + s + gap;
+      const y = Math.min(H - ch - 4, Math.max(4, iy + f.slot * s - ch / 2));
+      f.card.style.left = x + 'px'; f.card.style.top = y + 'px';
+      const ax = f.side === 'L' ? x + cw : x, ay = y + ch / 2;
+      const dx = ax - cx, dy = ay - cy, m = Math.hypot(dx / rx, dy / ry) || 1;
+      const sx = cx + dx / m, sy = cy + dy / m;
+      f.ln.setAttribute('d', `M${sx} ${sy} L${ax} ${ay}`);
+    }
+  });
+}
+new ResizeObserver(() => { layoutAudit(); layoutLib(); }).observe($('#stage'));
+
+/* ---------- detail panel ---------- */
+const detail = $('#detail'); let detailKey = '';
+const tcv = document.createElement('canvas'); drawPost(tcv, 300);
+function renderDetail(t){
+  const it = items[TARGET], st = statusAt(it, t), sel = t >= 3800 && true;
+  const key = sel ? st : 'none'; if(key === detailKey) return; detailKey = key;
+  if(!sel){ detail.innerHTML = '<div class="empty">Select an asset to see where it is in review.</div>'; return; }
+  const S = ST[st], steps = ['Uploaded','Auto-audit','Human review','Approved'];
+  const pipe = steps.map((n, i) => `<div class="${i + 1 < S.step ? 'done' : i + 1 === S.step ? 'cur' : ''}" style="--c:${S.c}"><b>${i + 1 < S.step ? '✓' : i + 1}</b>${n}${i + 1 === S.step ? `<small>${st === 'changes' ? 'Back to designer' : 'In progress'}</small>` : ''}</div>`).join('');
+  detail.innerHTML = `<div class="dthumb"></div><div class="dname">${it.name}</div>
+    <dl class="kv"><dt>Status</dt><dd><span class="pill" style="--c:${S.c};margin:0">${S.label}</span></dd><dt>Format</dt><dd>1:1 · 1293 px</dd><dt>Campaign</dt><dd>No-code launch</dd><dt>Flags</dt><dd>${st === 'changes' ? '3 open' : 'Not audited'}</dd></dl>
+    <div class="pipe">${pipe}</div><button class="btn${st === 'changes' ? ' ghost' : ''}" id="runBtn">${st === 'changes' ? 'View report' : 'Run audit'}</button>`;
+  const c = document.createElement('canvas'); c.width = c.height = 300; c.getContext('2d').drawImage(tcv, 0, 0); detail.querySelector('.dthumb').appendChild(c);
+}
+
+/* ---------- layout helpers for the library ---------- */
+let scrollMax = 0, scrollTarget = 0;
+function layoutLib(){
+  scrollMax = Math.max(0, grid.scrollHeight - grid.clientHeight);
+  scrollTarget = Math.min(scrollMax, Math.max(0, cards[TARGET].el.offsetTop - 80));
+}
+const stageEl = $('#stage');
+function centerOf(el){ const s = stageEl.getBoundingClientRect(), r = el.getBoundingClientRect(); return r.width ? {x: r.left - s.left + r.width / 2, y: r.top - s.top + r.height / 2} : null; }
+
+/* ---------- cursor ---------- */
+const cursor = $('#cursor');
+function updateCursor(t){
+  let p = null, down = false, o = 0;
+  const sr = stageEl.getBoundingClientRect(), W = sr.width, H = sr.height;
+  const seg = (t0, t1, a, b, e = ease) => ({x: lerp(a.x, b.x, e(prog(t, t0, t1))), y: lerp(a.y, b.y, e(prog(t, t0, t1)))});
+  if(t > 2200 && t < 5700){
+    const cc = centerOf(cards[TARGET].el) || {x: W / 2, y: H / 2};
+    const rb = $('#runBtn') && centerOf($('#runBtn')) || {x: cc.x + 20, y: cc.y + 20};
+    const start = {x: W * .72, y: H * .86};
+    if(t < 3800) p = seg(2400, 3700, start, {x: cc.x + 10, y: cc.y + 10});
+    else if(t < 4300) p = {x: cc.x + 10, y: cc.y + 10};
+    else p = seg(4300, 5200, {x: cc.x + 10, y: cc.y + 10}, rb);
+    down = (t > 3750 && t < 3900) || (t > 5250 && t < 5400);
+    o = Math.min(prog(t, 2200, 2500), 1 - prog(t, 5450, 5700));
+  } else if(t > 14300 && t < 16500){
+    const b = centerOf($('#bChanges')) || {x: W * .8, y: H * .8};
+    p = seg(14400, 15700, {x: b.x - 120, y: b.y - 170}, b);
+    down = t > 15750 && t < 15900;
+    o = Math.min(prog(t, 14300, 14600), 1 - prog(t, 16100, 16400));
+  }
+  cursor.style.opacity = p ? o : 0;
+  if(p) cursor.style.transform = `translate(${p.x - 3}px,${p.y - 2}px)`;
+  cursor.classList.toggle('dn', down);
+}
+
+/* ---------- fx overlay: beam, dither trail, cell grid ---------- */
+function drawFx(t){
+  const ctx = fx.getContext('2d'), P = fx.width, k = P / REF;
+  ctx.clearRect(0, 0, P, P);
+  const sp = prog(t, SCAN_A, SCAN_B), a = prog(t, SCAN_A - 200, SCAN_A) * (1 - prog(t, SCAN_B, SCAN_B + 500));
+  if(a <= 0) return;
+  const y = sp * P;
+  // cells already crossed flash coral and fade
+  const cs = CELL * k;
+  for(let r = 0; r < 6; r++){ const cy = (r + .5) * cs, age = (y - cy) / P * (SCAN_B - SCAN_A);
+    if(age > 0) for(let c = 0; c < 6; c++){ const wob = (c % 3) * 40, al = Math.max(0, 1 - (age - wob) / 700) * .35;
+      if(al > 0 && age > wob){ ctx.fillStyle = `rgba(255,111,91,${al * a})`; ctx.fillRect(c * cs + 1, r * cs + 1, cs - 2, cs - 2); } } }
+  // dithered trail behind the beam
+  const res = Math.max(4, Math.round(P / 70)), trail = P * .12;
+  ctx.fillStyle = '#FF6F5B'; ctx.globalAlpha = a;
+  for(let r = Math.max(0, Math.floor((y - trail) / res)); r <= Math.floor(y / res); r++){
+    const fade = 1 - (y - r * res) / trail; if(fade <= 0) continue;
+    for(let c = 0; c < P / res; c++) if(fade * .9 > BAYER[r % 4][c % 4] / 16 + .05) ctx.fillRect(c * res, r * res, res, res);
+  }
+  ctx.globalAlpha = 1;
+  const g = ctx.createLinearGradient(0, y - 14, 0, y + 2); g.addColorStop(0, 'rgba(255,111,91,0)'); g.addColorStop(1, `rgba(255,111,91,${.55 * a})`);
+  ctx.fillStyle = g; ctx.fillRect(0, y - 14, P, 16);
+  ctx.fillStyle = `rgba(255,255,255,${a})`; ctx.fillRect(0, y, P, Math.max(2, P / 300));
+}
+
+/* ---------- main render ---------- */
+const sceneLib = $('#lib'), sceneAud = $('#aud');
+const SCAN_LABELS = [[0, 'palette'], [.18, 'typography'], [.32, 'logo zone'], [.64, 'contrast'], [.82, 'brand colours']];
+const cache = {};
+const setTxt = (id, el, v) => { if(cache[id] !== v){ cache[id] = v; el.textContent = v; } };
+const el = {estatus: $('#estatus'), eleft: $('#eleft'), eright: $('#eright'), cn: $('#cn'), cf: $('#cf'), lblG: $('#lblG'), lblO: $('#lblO'), accN: $('#accN'), barG: $('#barG'), barO: $('#barO'), ring: $('#ring'), decide: $('#decide'), bC: $('#bChanges'), bA: $('#bApprove'), accBox: $('#accBox')};
+
+function render(t){
+  t = ((t % LOOP) + LOOP) % LOOP;
+  stageEl.style.opacity = 1 - prog(t, 19900, 20900);
+
+  /* scene visibility */
+  const toAud = ease(prog(t, 5400, 6100)), toLib = ease(prog(t, 16400, 17100));
+  const libV = t < 5400 ? 1 : t < 6100 ? 1 - toAud : t < 16400 ? 0 : toLib;
+  const audV = t < 5400 ? 0 : t < 6100 ? toAud : t < 16400 ? 1 : 1 - toLib;
+  sceneLib.style.opacity = libV; sceneLib.style.visibility = libV > 0 ? 'visible' : 'hidden';
+  sceneLib.style.transform = `translateX(${(t < 10000 ? -toAud : -1 + toLib) * 36 * (t < 10000 ? 1 : 1)}px)`;
+  sceneAud.style.opacity = audV; sceneAud.style.visibility = audV > 0 ? 'visible' : 'hidden';
+  sceneAud.style.transform = `translateX(${t < 10000 ? (1 - toAud) * 36 : toLib * 36}px)`;
+
+  /* library */
+  if(libV > 0){
+    const cnt = countsAt(t), grow = easeOut(prog(t, 200, 1300));
+    for(const [k] of CHIPS){ const v = k === 'all' ? Math.round(cnt.all * grow) : Math.round(cnt[k] * grow); setTxt('c' + k, chipEm[k], v); }
+    setTxt('srch', $('#searchTxt'), `Search ${cnt.all} assets`);
+    cards.forEach((c, i) => {
+      const p = easeOut(prog(t, 150 + i * 42, 600 + i * 42));
+      const st = statusAt(c.it, t), sel = c.it.post && t >= 3800;
+      const key = st + sel;
+      c.el.style.opacity = p; c.el.style.transform = `translateY(${(1 - p) * 16}px) scale(${.96 + .04 * p})`;
+      if(c.key !== key){
+        c.key = key; const S = ST[st];
+        c.el.classList.toggle('sel', sel); c.el.style.setProperty('--c', S.c);
+        c.pill.style.setProperty('--c', S.c); c.pill.textContent = S.label; c.pill.classList.toggle('spin', !!S.spin);
+        c.segs.forEach((s, j) => s.classList.toggle('f', j < S.step)); c.el.querySelector('.steps').style.setProperty('--c', S.c);
+      }
+    });
+    grid.scrollTop = scrollTarget * ease(prog(t, 1500, 2600));
+    renderDetail(t);
+    const rb = $('#runBtn'); if(rb) rb.classList.toggle('press', t > 5250 && t < 5420);
+  }
+
+  /* audit */
+  if(audV > 0){
+    const sp = prog(t, SCAN_A, SCAN_B), reveal = easeOut(prog(t, 6100, 6900));
+    imgwrap.style.opacity = reveal; imgwrap.style.transform = `scale(${.94 + .06 * reveal})`;
+    drawFx(t);
+    let lab = 'palette'; for(const [q, n] of SCAN_LABELS) if(sp >= q) lab = n;
+    const scanning = t >= SCAN_A && t < SCAN_B + 300, done = t >= SCAN_B + 300;
+    let started = 0; FLAGS.forEach(f => { if(t >= f.t) started++; });
+    const decided = t >= 15800;
+    setTxt('es', el.estatus, decided ? 'Changes requested' : done ? 'Sent to reviewer' : t < SCAN_A ? 'Loading' : 'Scanning');
+    setTxt('el', el.eleft, done ? 'Reviewer decides' : t < SCAN_A ? 'Preparing' : `Scanning · ${lab} · ${Math.round(sp * 100)}%`);
+    setTxt('er', el.eright, `${started} flag${started === 1 ? '' : 's'} to review`);
+    const n = Math.round(14 * sp);
+    tickEls.forEach((e, i) => { const fl = [3, 5, 8].indexOf(i) >= 0 && i < n && FLAGS[[3, 5, 8].indexOf(i)].t <= t; e.className = i < n ? (fl ? 'x' : 'p') : ''; });
+    setTxt('cn', el.cn, `${n} / 14`); setTxt('cf', el.cf, `${started} flagged`);
+    FLAGS.forEach(f => {
+      const c = easeOut(prog(t, f.t, f.t + 450)), l = easeOut(prog(t, f.t + 380, f.t + 750)), k = easeOut(prog(t, f.t + 600, f.t + 950));
+      f.ell.style.strokeDashoffset = (1 - c).toFixed(3); f.ln.style.strokeDashoffset = (1 - l).toFixed(3);
+      f.card.style.opacity = k; f.card.style.transform = `translateX(${(1 - k) * (f.side === 'L' ? -14 : 14)}px)`;
+      f.nb.style.opacity = c;
+    });
+    /* results */
+    const g = easeOut(prog(t, 11800, 12600)), o = easeOut(prog(t, 12600, 13200)), a = easeOut(prog(t, 13200, 14400));
+    el.barG.style.transform = `scaleX(${g})`; el.barO.style.transform = `scaleX(${o})`;
+    setTxt('lg', el.lblG, g > .55 ? '5 min' : ''); setTxt('lo', el.lblO, o > .55 ? '20 sec' : '');
+    el.ring.style.strokeDashoffset = (263.9 * (1 - .91 * a)).toFixed(1);
+    setTxt('an', el.accN, Math.round(91 * a) + '%');
+    el.accBox.style.opacity = prog(t, 13100, 13500);
+    const dv = easeOut(prog(t, 14300, 14800)); el.decide.style.opacity = dv; el.decide.style.transform = `translateY(${(1 - dv) * 10}px)`;
+    el.bC.classList.toggle('press', t > 15750 && t < 15900);
+    setTxt('bc', el.bC, decided ? '✓ Changes requested' : 'Request changes');
+  }
+  updateCursor(t);
+}
+
+/* ---------- clock ---------- */
+const scrub = $('#scrub'), pp = $('#pp');
+let T = 0, playing = true, speed = 1, looping = true, last = 0, userDrag = false;
+const ICON = {pause: '<svg width="14" height="14" viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12" fill="#fff"/><rect x="8.5" y="1" width="3.5" height="12" fill="#fff"/></svg>', play: '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1l10 6-10 6z" fill="#fff"/></svg>'};
+function sync(){ pp.innerHTML = playing ? ICON.pause : ICON.play; }
+function seek(ms){ T = ms; render(T); if(!userDrag) scrub.value = T; tabsSync(); }
+function tabsSync(){ document.querySelectorAll('.tabs button').forEach((b, i) => b.classList.toggle('on', i === (T >= 14300 && T < 16400 ? 2 : T >= 5400 && T < 16400 ? 1 : 0))); }
+function frame(now){
+  if(playing){
+    T += (now - last) * speed;
+    if(T >= LOOP){ if(looping) T %= LOOP; else { T = LOOP - 1; playing = false; sync(); } }
+    seek(T);
+  }
+  last = now; requestAnimationFrame(frame);
+}
+pp.onclick = () => { playing = !playing; sync(); };
+scrub.addEventListener('input', () => { userDrag = true; playing = false; sync(); T = +scrub.value; render(T); tabsSync(); userDrag = false; });
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { playing = false; sync(); seek(+b.dataset.go); });
+window.ba = {
+  seek: ms => { playing = false; sync(); seek(ms); },
+  play: (o = {}) => { if(o.from != null) T = o.from; speed = o.speed || 1; looping = o.loop !== false; playing = true; sync(); },
+  pause: () => { playing = false; sync(); }
+};
+
+function boot(){
+  layoutAudit(); layoutLib(); sync();
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ playing = false; sync(); seek(14900); }
+  requestAnimationFrame(t => { last = t; frame(t); });
+}
+const imgs = [...grid.querySelectorAll('img')];
+Promise.all([document.fonts.ready, ...imgs.map(i => i.decode().catch(() => {}))]).then(() => { drawPost(tcv, 300); drawPost(postCv, 400); boot(); });
+</script>
+</body>
+</html>
