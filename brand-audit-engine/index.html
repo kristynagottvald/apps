@@ -111,7 +111,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
 .res h4{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .ticks{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-bottom:8px}
 .ticks i{height:18px;background:var(--line);border-radius:2px}
-.ticks i.p{background:var(--lav)} .ticks i.x{background:var(--coral)}
+.ticks i.p{background:#5A4DB5} .ticks i.x{background:var(--coral)}
 .crow{display:flex;justify-content:space-between;font:400 12px var(--mono);color:#C9C6F2}
 .bars{display:grid;gap:8px}
 .bl{display:flex;align-items:center;gap:14px;height:38px}
@@ -302,7 +302,8 @@ const CR = ratio(C.yellow, C.pink).toFixed(1);
 const FLAGS = [
   {n:1, title:'Logo missing',        sub:'Brand rule 2.1',          cx:1180, cy:106,  rx:98,  ry:98,  side:'R', slot:.12},
   {n:2, title:'Low contrast',        sub:`${CR}:1, minimum 3:1`,    cx:320,  cy:106,  rx:112, ry:112, side:'L', slot:.14},
-  {n:3, title:'Colour not on brand', sub:'Brand palette',           cx:692,  cy:586,  rx:78,  ry:78,  side:'L', slot:.5}
+  {n:3, title:'Uneven edge gap',      sub:'Grid rule 3.1, 13 px',    cx:1281, cy:585,  rx:34,  ry:172, side:'R', slot:.5},
+  {n:4, title:'Colour not on brand', sub:'Brand palette',           cx:692,  cy:586,  rx:78,  ry:78,  side:'L', slot:.5}
 ];
 const SCAN_A = 6900, SCAN_B = 11400;
 FLAGS.forEach(f => f.t = SCAN_A + (SCAN_B - SCAN_A) * clamp01((f.cy - f.ry * .5) / REF));
@@ -412,7 +413,7 @@ function renderDetail(t){
   const S = ST[st], steps = ['Uploaded','Auto-audit','Human review','Approved'];
   const pipe = steps.map((n, i) => `<div class="${i + 1 < S.step ? 'done' : i + 1 === S.step ? 'cur' : ''}" style="--c:${S.c}"><b>${i + 1 < S.step ? '✓' : i + 1}</b>${n}${i + 1 === S.step ? `<small>${st === 'changes' ? 'Back to designer' : 'In progress'}</small>` : ''}</div>`).join('');
   detail.innerHTML = `<div class="dthumb"></div><div class="dname">${it.name}</div>
-    <dl class="kv"><dt>Status</dt><dd><span class="pill" style="--c:${S.c};margin:0">${S.label}</span></dd><dt>Format</dt><dd>1:1 · 1293 px</dd><dt>Campaign</dt><dd>No-code launch</dd><dt>Flags</dt><dd>${st === 'changes' ? '3 open' : 'Not audited'}</dd></dl>
+    <dl class="kv"><dt>Status</dt><dd><span class="pill" style="--c:${S.c};margin:0">${S.label}</span></dd><dt>Format</dt><dd>1:1 · 1293 px</dd><dt>Campaign</dt><dd>No-code launch</dd><dt>Flags</dt><dd>${st === 'changes' ? '4 open' : 'Not audited'}</dd></dl>
     <div class="pipe">${pipe}</div><button class="btn${st === 'changes' ? ' ghost' : ''}" id="runBtn">${st === 'changes' ? 'View report' : 'Run audit'}</button>`;
   const c = document.createElement('canvas'); c.width = c.height = 300; c.getContext('2d').drawImage(tcv, 0, 0); detail.querySelector('.dthumb').appendChild(c);
 }
@@ -532,7 +533,7 @@ function render(t){
     setTxt('el', el.eleft, done ? 'Reviewer decides' : t < SCAN_A ? 'Preparing' : `Scanning · ${lab} · ${Math.round(sp * 100)}%`);
     setTxt('er', el.eright, `${started} flag${started === 1 ? '' : 's'} to review`);
     const n = Math.round(14 * sp);
-    tickEls.forEach((e, i) => { const fl = [3, 5, 8].indexOf(i) >= 0 && i < n && FLAGS[[3, 5, 8].indexOf(i)].t <= t; e.className = i < n ? (fl ? 'x' : 'p') : ''; });
+    tickEls.forEach((e, i) => { const fl = [3, 5, 8, 11].indexOf(i) >= 0 && i < n && FLAGS[[3, 5, 8, 11].indexOf(i)].t <= t; e.className = i < n ? (fl ? 'x' : 'p') : ''; });
     setTxt('cn', el.cn, `${n} / 14`); setTxt('cf', el.cf, `${started} flagged`);
     FLAGS.forEach(f => {
       const c = easeOut(prog(t, f.t, f.t + 450)), l = easeOut(prog(t, f.t + 380, f.t + 750)), k = easeOut(prog(t, f.t + 600, f.t + 950));
