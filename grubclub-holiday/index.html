@@ -126,8 +126,6 @@ const poly = (pts, fill) => `<polygon points="${pts.map((p) => p.map(f).join(','
 /* faceted star built from kites: long points N/E/S/W, short points on the diagonals, each point split into two tones */
 const star8 = (cx, cy, R, c1, c2, longK = 1, shortK = .74) => { let s = ''; for (let i = 0; i < 8; i++) { const an = (i * 45 - 90) * Math.PI / 180, ln = R * (i % 2 ? shortK : longK), vr = R * .4, a1 = an - Math.PI / 8, a2 = an + Math.PI / 8; const P = (a, r) => [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; s += poly([[cx, cy], P(a1, vr), P(an, ln)], c1) + poly([[cx, cy], P(an, ln), P(a2, vr)], c2); } return s; };
 const splitCircle = (k, r = 46) => halfL(50, 50, r, k.a) + halfR(50, 50, r, k.b);
-const glyph = (k, d, sc = 1.1) => `<g transform="translate(50 50) scale(${sc}) translate(-50 -50)">${line(d, k.bg, 2.5)}</g>`;
-const ell = (cx, cy, rx, ry) => `M${cx - rx} ${cy} A${rx} ${ry} 0 1 1 ${cx + rx} ${cy} A${rx} ${ry} 0 1 1 ${cx - rx} ${cy}Z`;
 
 const ICON = {
   /* thin cap and loop, big round bauble, split tone or wavy diagonal lines */
@@ -171,18 +169,8 @@ const ICON = {
   holly: (k) => { const lv = '<path d="M25 0 A25 25 0 0 0 75 0Z"/><path d="M25 25 A25 25 0 0 0 75 25Z"/>'; const off = 20.7 /* outer half-disc sits in the tile corner on the diagonals */;
     const motif = (d, o) => rot(d, 50, 50, `<g transform="translate(0 ${-o})"><g fill="${k.leaf}">${lv}</g><path d="M50 0 V${46 + o}" stroke="${k.bg}" stroke-width="2.6"/></g>`);
     const bs = [[50, 41.5], [40, 58.8], [60, 58.8]]; return motif(0, 0) + motif(135, off) + motif(225, off) + bs.map(([x, y]) => circ(x, y, 11.4, k.bg)).join('') + bs.map(([x, y]) => circ(x, y, 10, k.berry)).join(''); },
-  /* split circles with thin line-art food, like the burger / fries / shake / cone circles */
-  lineBowl: (k) => splitCircle(k) + glyph(k, 'M24 50 H76 Q76 76 50 76 Q24 76 24 50Z M38 42 Q34 35 38 28 M50 42 Q46 34 50 25 M62 42 Q58 35 62 28 M40 84 H60'),
-  lineCup: (k) => splitCircle(k) + glyph(k, 'M35 36 L38.5 77 Q39 80 42 80 H58 Q61 80 61.5 77 L65 36 M30 36 H70 M53 36 L57 14 H69 M37 53 Q43.5 46 50 53 T63 53'),
-  lineFork: (k) => splitCircle(k) + glyph(k, 'M32 20 V38 Q32 48 41 48 Q50 48 50 38 V20 M41 20 V80 M66 20 Q80 36 66 56 V80'),
-  lineCone: (k) => splitCircle(k) + glyph(k, 'M36 48 L50 86 L64 48Z M33 48 A17 17 0 1 1 67 48Z M42 58 L50 72 L58 58') + circ(50, 18, 4.2, k.x),
-  /* bugs, same split-circle line art: Grubclub's cricket, grasshopper and mealworm, plus a beetle and an ant */
-  lineCricket: (k) => splitCircle(k) + glyph(k, ell(50, 58, 9, 21) + ell(50, 30, 7, 7) + 'M50 40 V76 M46 24 Q38 10 24 12 M54 24 Q62 10 76 12 M41 52 L28 48 L25 60 M59 52 L72 48 L75 60 M43 68 L32 74 L27 86 M57 68 L68 74 L73 86', .82),
-  lineGrasshopper: (k) => splitCircle(k) + glyph(k, ell(24, 44, 7, 6.5) + 'M31 44 Q42 38 60 40 L86 52 L60 54 Q42 56 31 50Z M40 41 L80 50 M20 39 Q17 27 8 22 M38 54 L34 70 M46 55 L44 72 M60 53 L74 66 L62 82 L72 84', 1.02),
-  lineBeetle: (k) => splitCircle(k) + glyph(k, ell(50, 58, 17, 22) + ell(50, 28, 8, 7) + 'M50 36 V80 M46 22 Q42 14 34 12 M54 22 Q58 14 66 12 M34 50 L22 44 M33 60 L20 60 M35 70 L24 78 M66 50 L78 44 M67 60 L80 60 M65 70 L76 78', .85),
-  lineAnt: (k) => splitCircle(k) + glyph(k, ell(50, 22, 7, 7) + ell(50, 42, 6, 8) + ell(50, 68, 10, 15) + 'M46 17 L41 9 L34 12 M54 17 L59 9 L66 12 M45 38 L32 29 L27 36 M44 43 L29 46 L25 55 M45 48 L34 60 L30 72 M55 38 L68 29 L73 36 M56 43 L71 46 L75 55 M55 48 L66 60 L70 72', .8),
   /* abstract grid fillers */
-  halfdisc: (k) => splitCircle(k, 46),
+  halfdisc: (k, v) => rot(v ? 90 : 0, 50, 50, splitCircle(k, 46)),
   rings: (k) => circ(50, 50, 44, k.a) + circ(50, 50, 32, k.bg) + circ(50, 50, 20, k.b) + circ(50, 50, 8, k.bg),
   quarters: (k) => `<path d="M0 0 H50 A50 50 0 0 1 0 50Z" fill="${k.a}"/><path d="M100 0 V50 A50 50 0 0 1 50 0Z" fill="${k.b}"/><path d="M0 100 V50 A50 50 0 0 1 50 100Z" fill="${k.b}"/><path d="M100 100 H50 A50 50 0 0 1 100 50Z" fill="${k.a}"/>`,
   dots: (k) => { let s = ''; for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) s += circ(18 + i * 32, 18 + j * 32, 13, (i + j) % 2 ? k.b : k.a); return s; },
@@ -190,9 +178,8 @@ const ICON = {
   stripesDiag: (k) => Array.from({ length: 9 }, (_, i) => `<path d="M${-20 + i * 20} 120 L${60 + i * 20} -20" stroke="${k.a}" stroke-width="9"/>`).join(''),
   wavyDiag: (k) => rot(-45, 50, 50, [-20, 0, 20, 40, 60, 80, 100, 120].map((y) => zig(-30, 130, y, 5, 8, k.a, 3.4)).join(''))
 };
-const LINES = ['lineBowl', 'lineCup', 'lineFork', 'lineCone', 'lineCricket', 'lineGrasshopper', 'lineBeetle', 'lineAnt'];
-/* 'line' stands for one of the split-circle line icons; the three exact geometric blocks are weighted up */
-const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'moon', 'scallop', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'line', 'line', 'line', 'line'];
+/* plain split circles (two half circles in varying colour pairs) and the three exact geometric blocks, weighted up */
+const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'moon', 'scallop', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'halfdisc', 'halfdisc', 'halfdisc', 'halfdisc'];
 const FILLERS = ['halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
 const BLEED = { tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1, elf: 1 };
 
@@ -280,7 +267,7 @@ function build(anim) {
   const cw = (W - gap * (cols + 1)) / cols, ch = (H - gap * (rows + 1)) / rows;
   const tiles = layout(cols, rows, r);
   let out = '', n = 0, last = '';
-  const nextIcon = (geo = true) => { let name, tries = 0; do { name = pick(r, ICONS_FULL); if (name === 'line') name = pick(r, LINES); tries++; } while ((name === last || usedRecent.slice(-3).includes(name) || (!geo && GEO[name])) && tries < 40); last = name; usedRecent.push(name); return name; };
+  const nextIcon = (geo = true) => { let name, tries = 0; do { name = pick(r, ICONS_FULL); tries++; } while ((name === last || usedRecent.slice(-3).includes(name) || (!geo && GEO[name])) && tries < 40); last = name; usedRecent.push(name); return name; };
   usedRecent = [];
   /* about half of the illustrations run tight to the tile edges (zoomed in, bleeding off), the rest keep a margin */
   const iconSvg = (name, k, x, y, w, h, pad) => { const sl = BLEED[name], tight = !sl && !GEO[name] && r() < .5; const p = sl || tight ? 0 : pad; const vb = tight ? '5 5 90 90' : '0 0 100 100'; return `<svg x="${f(x + p)}" y="${f(y + p)}" width="${f(w - p * 2)}" height="${f(h - p * 2)}" viewBox="${vb}" preserveAspectRatio="${sl ? 'xMidYMid slice' : 'xMidYMid meet'}" overflow="${sl || tight ? 'hidden' : 'visible'}">${ICON[name](k, r() < .5 ? 1 : 0)}</svg>`; };
