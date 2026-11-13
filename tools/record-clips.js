@@ -34,7 +34,7 @@ const APPS = {
       const t0 = Date.now(), st = (n) => domClick(p, '#sw button:nth-child(' + n + ')');
       await at(t0, 1500, () => st(12));
       await at(t0, 2600, () => st(13));
-      await at(t0, 3600, () => st(14));
+      await at(t0, 4600, () => st(15));
       await at(t0, 5600, () => st(11));
       await at(t0, 4600, () => st(15));
     } },
