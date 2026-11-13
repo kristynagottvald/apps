@@ -38,9 +38,10 @@ p{margin-top:clamp(14px,1.8vw,30px);max-width:31em;font:400 clamp(14px,1.55vw,28
 <canvas id="c" role="img" aria-label="A globe made of white pixels with glowing arcs of orders flying between warehouses and customers on every continent. Drag to turn it."></canvas>
 <div class="copy">
   <svg class="logo" viewBox="4 0 92 100" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="miter" role="img" aria-label="ILG">
-    <polygon transform="matrix(38 22 -38 22 50 6)" points="0.030 0.030 0.970 0.030 0.970 0.274 0.660 0.274 0.660 0.726 0.970 0.726 0.970 0.970 0.030 0.970 0.030 0.726 0.340 0.726 0.340 0.274 0.030 0.274" vector-effect="non-scaling-stroke"/>
-    <polygon transform="matrix(38 22 0 44 12 28)" points="0.030 0.030 0.368 0.030 0.368 0.669 0.970 0.669 0.970 0.970 0.030 0.970" vector-effect="non-scaling-stroke"/>
-    <polygon transform="matrix(38 -22 0 44 50 50)" points="0.030 0.030 0.970 0.030 0.970 0.312 0.368 0.312 0.368 0.688 0.632 0.688 0.632 0.500 0.970 0.500 0.970 0.970 0.030 0.970" vector-effect="non-scaling-stroke"/>
+    <defs><clipPath id="cl-top"><polygon points="0.030 0.030 0.368 0.030 0.368 0.669 0.970 0.669 0.970 0.970 0.030 0.970"/></clipPath><clipPath id="cl-left"><polygon points="0.030 0.030 0.970 0.030 0.970 0.274 0.660 0.274 0.660 0.726 0.970 0.726 0.970 0.970 0.030 0.970 0.030 0.726 0.340 0.726 0.340 0.274 0.030 0.274"/></clipPath><clipPath id="cl-right"><polygon points="0.030 0.030 0.970 0.030 0.970 0.312 0.368 0.312 0.368 0.688 0.632 0.688 0.632 0.500 0.970 0.500 0.970 0.970 0.030 0.970"/></clipPath></defs>
+    <g transform="matrix(38 22 -38 22 50 6)"><rect width="1" height="1" fill="#050505" clip-path="url(#cl-top)" stroke="none"/><g id="tx-top" clip-path="url(#cl-top)" stroke="none"></g><polygon points="0.030 0.030 0.368 0.030 0.368 0.669 0.970 0.669 0.970 0.970 0.030 0.970" vector-effect="non-scaling-stroke"/></g>
+    <g transform="matrix(38 22 0 44 12 28)"><rect width="1" height="1" fill="#050505" clip-path="url(#cl-left)" stroke="none"/><g id="tx-left" clip-path="url(#cl-left)" stroke="none"></g><polygon points="0.030 0.030 0.970 0.030 0.970 0.274 0.660 0.274 0.660 0.726 0.970 0.726 0.970 0.970 0.030 0.970 0.030 0.726 0.340 0.726 0.340 0.274 0.030 0.274" vector-effect="non-scaling-stroke"/></g>
+    <g transform="matrix(38 -22 0 44 50 50)"><rect width="1" height="1" fill="#050505" clip-path="url(#cl-right)" stroke="none"/><g id="tx-right" clip-path="url(#cl-right)" stroke="none"></g><polygon points="0.030 0.030 0.970 0.030 0.970 0.312 0.368 0.312 0.368 0.688 0.632 0.688 0.632 0.500 0.970 0.500 0.970 0.970 0.030 0.970" vector-effect="non-scaling-stroke"/></g>
   </svg>
   <h1>Get the guide navigating the<br>world’s inventory logistics</h1>
   <p>The Inventory Logistics Guide is a resource for founders that keeps your stock right-sized: forecast demand, replenish before the next shipment lands, and avoid overstocking and understocking.</p>
@@ -203,6 +204,21 @@ const up=()=>{drag=null;cv.classList.remove('drag')};
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 
 
+
+/* the world wrapped around the cube (cube-sphere projection), shown through the letter shapes */
+(()=>{
+  const NS='http://www.w3.org/2000/svg',N=26,SH=-75;
+  const F={top:{O:[-1,1,-1],U:[2,0,0],V:[0,0,2]},left:{O:[-1,1,1],U:[2,0,0],V:[0,-2,0]},right:{O:[1,1,1],U:[0,0,-2],V:[0,-2,0]}};
+  for(const n in F){
+    const f=F[n],g=document.getElementById('tx-'+n);let h='';
+    for(let j=0;j<N;j++)for(let i=0;i<N;i++){
+      const u=(i+.5)/N,v=(j+.5)/N,x=f.O[0]+f.U[0]*u+f.V[0]*v,y=f.O[1]+f.U[1]*u+f.V[1]*v,z=f.O[2]+f.U[2]*u+f.V[2]*v,m=Math.hypot(x,y,z);
+      const ld=land(Math.asin(y/m)/D,Math.atan2(x,z)/D+SH),s=ld?.84:.46,o=(1-s)/2/N;
+      h+='<rect x="'+((i+(1-s)/2)/N).toFixed(4)+'" y="'+((j+(1-s)/2)/N).toFixed(4)+'" width="'+(s/N).toFixed(4)+'" height="'+(s/N).toFixed(4)+'" fill="#fff" fill-opacity="'+(ld?.95:.16)+'"/>';
+    }
+    g.innerHTML=h;
+  }
+})();
 
 resize();setView();
 for(let i=0;i<150;i++){step(1/30);lon0-=SPEED/30}        /* start with orders already in flight */
