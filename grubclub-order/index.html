@@ -167,7 +167,6 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
   <svg class="bg" viewBox="0 0 1280 720"><g id="pkRings"></g></svg>
   <div class="abs logo" id="kLogo">grub<i>club</i><span class="wm" style="color:var(--kiwi)"></span></div>
   <div class="abs" id="pkT">packing your box</div><div class="abs" id="pkS">4 meals · 1 entomo box</div>
-  <div class="abs" id="pkBox"></div>
   <div class="abs" id="pkBtn" role="button">place order</div>
 </section>
 
@@ -287,7 +286,6 @@ function mini(m,i){const P=PACK[i],j=(i%3-1)*5,id='k'+(uid++),back='';
 $('#grid').innerHTML=MEALS.map((m,i)=>`<div class="card" style="--i:${i}" data-i="${i}"><div class="il">${mini(m,i)}</div><h4>${m.n}</h4><div class="rw"><small>${m.g}</small><div class="add">+ add</div></div></div>`).join('');
 $('#slots').innerHTML=[0,1,2,3].map(()=>`<div class="slot"><i></i><span>choose a meal</span></div>`).join('');
 $('#pbox').innerHTML='<img src="box.webp" alt="">';
-$('#pkBox').innerHTML='<img id="pkImg" src="box.webp" alt="The grubclub box">';
 $('#eThumb').innerHTML='<img src="box.webp" alt="">';
 
 /* hero collage */
@@ -304,7 +302,8 @@ const FRONT=[[430,790,-30,400,110,-26,1],[540,800,-8,330,96,22,6],[600,800,12,30
 const hero={t:0,L:[]};
 function buildLeaves(sel,arr,from){const g=$(sel);g.innerHTML=LF(arr);[...g.querySelectorAll('.lf')].forEach((el,i)=>{const a=arr[i];hero.L.push({el,x:a[0],y:a[1],r:a[2],d:.15+(from+i)*.05,ph:i*1.7,amp:1.6+(i%3)*.7,sp:.8+(i%4)*.18})})}
 buildLeaves('#hBack',BACK,0);buildLeaves('#hFront',FRONT,BACK.length);
-$('#pkRings').innerHTML=`<circle cx="1110" cy="395" r="430" fill="#0F5A5C"/><circle cx="1110" cy="395" r="360" fill="#1C8859" opacity=".3"/><circle cx="1110" cy="395" r="290" fill="none" stroke="#EEFB71" stroke-opacity=".25" stroke-width="2"/>`;
+const PR={n:6,R:520,cx:1050,cy:380,r:260,col:['#9ED27A','#CDE67C','#F0FB85']};   // end card "green and kiwi" Evolve rings
+$('#pkRings').innerHTML=Array.from({length:PR.n},()=>`<circle cx="${PR.cx}" cy="${PR.cy}" r="0"/>`).join('')+`<clipPath id="pkClip"><circle id="pkClipC" cx="${PR.cx}" cy="${PR.cy}" r="0"/></clipPath><g clip-path="url(#pkClip)"><image id="pkPhoto" href="box-photo.webp" x="${PR.cx-359}" y="${PR.cy-274}" width="720" height="551" preserveAspectRatio="none"/></g>`;
 
 /* ============ per-frame drawing ============ */
 const pack={t:0,col:-1};
@@ -314,8 +313,12 @@ function drawHero(){const t=hero.t;
   $('#hTxt').setAttribute('transform',`rotate(${-9+Math.sin(t*.9)*1.3})`);
   $$('.hl').forEach((e,i)=>{const p=clamp((t-(.9+i*.14))/.5);e.setAttribute('opacity',p);e.setAttribute('dy',(1-p)*14)});
 }
-function drawPack(){const t=pack.t,r=$('#pkRings').children;r[0].setAttribute('r',430+Math.sin(t*1.5)*8);r[1].setAttribute('r',360+Math.sin(t*1.5+.6)*10);
-  $('#pkImg').style.transform=`translateY(${Math.sin(t*1.8)*6}px) rotate(${Math.sin(t*.9)*1.2}deg)`}
+const hexc=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),mixc=(a,b,u)=>{const A=hexc(a),B=hexc(b);return 'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*u)).join(',')+')'};
+const ease=x=>{x=clamp(x);return .5-.5*Math.cos(Math.PI*x)};
+function drawPack(){const t=pack.t,TAU=Math.PI*2,ph=t*.25;
+  $$('#pkRings > circle').forEach((c,idx)=>{const i=PR.n-idx,a=ease((t-.07-(PR.n-i)*.133)/1.07),u=.5+.5*Math.sin(TAU*ph-i*.55),morph=1+Math.sin(TAU*2*ph+i*.3)*.05,q=u*(PR.col.length-1),k0=Math.min(PR.col.length-2,Math.floor(q));
+    c.setAttribute('r',Math.max(0,i*(PR.R/PR.n)*morph*a));c.setAttribute('fill',mixc(PR.col[k0],PR.col[k0+1],q-k0))});
+  $('#pkClipC').setAttribute('r',Math.max(0,PR.r*eob((t-.55)/.8)*(1+.012*Math.sin(t*1.5))))}
 let lastT=performance.now();
 function frame(now){const dt=Math.min(.05,(now-lastT)/1000);lastT=now;if(!paused){hero.t+=dt;pack.t+=dt}
   if($('#s0').classList.contains('on'))drawHero();if($('#s2').classList.contains('on'))drawPack();requestAnimationFrame(frame)}
@@ -364,9 +367,9 @@ async function pick_(g,o){
   const b=cen($('#cont'));curGo(b.x,b.y,800);await W(900,g);await curClick(g);await W(120,g);return{x:b.x,y:b.y}},
 
 async function pack_(g,o){
-  pack.t=0;show(2);const box=$('#pkBox');box.classList.remove('in');
+  pack.t=0;show(2);
   $('#pkBtn').classList.remove('in','press');$('#pkT').textContent='packing your box';$('#pkS').textContent='4 meals · 1 entomo box';
-  await W(250,g);box.classList.add('in');await W(2600,g);
+  await W(250,g);await W(2600,g);
   $('#pkT').textContent='all packed!';$('#pkS').textContent='ships to 330 university ave';$('#pkBtn').classList.add('in');await W(900,g);
   const c=cen($('#pkBtn'));curSet(c.x+380,c.y+150);showCursor();await W(50,g);curGo(c.x,c.y+4,850);await W(950,g);
   $('#pkBtn').classList.add('press');await curClick(g);await W(120,g);return{x:c.x,y:c.y}},
