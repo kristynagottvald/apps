@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grubclub Holiday Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0E3251;--deep:#082440;--egg:#D7F5FA;--kiwi:#EEFB71;--line:rgba(215,245,250,.16)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000}
+body{display:flex;flex-direction:column;font-family:Poppins,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;color:var(--egg)}
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:640px){nav.back{padding:0 16px}}
+
+main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px}
+.left{position:relative;background:var(--deep);display:flex;flex-direction:column;min-height:0;padding:0 40px 24px}
+.view{flex:1;min-height:0;position:relative;margin:24px 0 0}
+#stage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 30px 60px -28px rgba(0,0,0,.6);line-height:0}
+#stage svg{display:block;width:100%;height:100%}
+.panel{background:var(--navy);padding:0 26px 22px;overflow-y:auto;min-height:0;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:#2b5575 transparent}
+.sec{padding:10px 0 11px;border-bottom:1px solid var(--line)}
+.sec h2{margin:0 0 10px;font-size:12.5px;font-weight:600;letter-spacing:.08em;color:#fff;display:flex;justify-content:space-between;align-items:baseline}
+.sec h2 em{font-style:normal;font-weight:500;color:var(--egg);opacity:.7;letter-spacing:0;font-size:12px}
+.sec p{margin:0 0 10px;font-size:11.5px;line-height:1.5;color:rgba(215,245,250,.7)}
+.row{display:flex;gap:8px}
+.opt{flex:1;height:38px;border-radius:6px;border:1.5px solid transparent;background:rgba(0,0,0,.22);color:var(--egg);font:500 13px/1 Poppins,sans-serif;cursor:pointer;display:grid;place-items:center;transition:background .2s}
+.opt:hover{background:rgba(0,0,0,.34)}
+.opt[aria-pressed=true]{border-color:#fff;background:rgba(0,0,0,.3);color:#fff}
+.opt:focus-visible,#txt:focus-visible,#shuf:focus-visible,.dl:focus-visible{outline:2px solid var(--kiwi);outline-offset:2px}
+.sw{height:40px}
+.sw i{width:30px;height:30px;border-radius:4px;display:block;border:1px solid rgba(255,255,255,.25)}
+#txt{width:100%;height:40px;border-radius:6px;border:0;background:rgba(0,0,0,.28);color:#fff;font:500 14px Poppins,sans-serif;padding:0 18px;letter-spacing:.06em}
+#txt::placeholder{color:rgba(215,245,250,.4)}
+#shuf{width:100%;height:44px;border-radius:24px;border:0;background:var(--kiwi);color:#0E3251;font:600 14px Poppins,sans-serif;cursor:pointer;transition:transform .2s}
+#shuf:hover{transform:scale(1.02)}
+.dl{flex:1;height:40px;border-radius:22px;border:1.5px solid var(--egg);background:none;color:var(--egg);font:600 13px Poppins,sans-serif;cursor:pointer;transition:background .2s,color .2s}
+.dl:hover{background:var(--egg);color:var(--navy)}
+.pal{display:flex;gap:8px;margin-top:2px}
+.pal span{flex:1;font-size:10.5px;text-align:center;color:rgba(215,245,250,.6)}
+.pal i{display:block;height:26px;border-radius:50%;width:26px;margin:0 auto 5px;border:1px solid rgba(255,255,255,.2)}
+.t{transform-box:fill-box;transform-origin:center;animation:pop .6s cubic-bezier(.2,.9,.3,1.2) both;animation-delay:var(--d,0s)}
+@keyframes pop{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:none}}
+@media (max-width:900px){main{grid-template-columns:1fr;grid-template-rows:minmax(320px,55vh) auto}.left{padding:0 16px 16px}.panel{overflow:visible}}
+@media (prefers-reduced-motion:reduce){.t{animation:none}}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Grubclub Holiday Grid</b></nav>
+<main>
+  <section class="left" aria-label="Preview">
+    <div class="view" id="view"><div id="stage" role="img" aria-label="Holiday modular grid design"></div></div>
+  </section>
+  <aside class="panel">
+    <div class="sec"><h2>SHAPE</h2>
+      <div class="row" id="ratios">
+        <button class="opt" data-r="16:9" aria-pressed="true">16:9</button>
+        <button class="opt" data-r="9:16" aria-pressed="false">9:16</button>
+        <button class="opt" data-r="1:1" aria-pressed="false">1×1</button>
+        <button class="opt" data-r="3:4" aria-pressed="false">3:4</button>
+      </div></div>
+    <div class="sec"><h2>GRID <em id="gridNote"></em></h2>
+      <div class="row" id="dens">
+        <button class="opt" data-d="0" aria-pressed="false">Bold</button>
+        <button class="opt" data-d="1" aria-pressed="true">Modular</button>
+        <button class="opt" data-d="2" aria-pressed="false">Fine</button>
+      </div></div>
+    <div class="sec"><h2>WORDMARK</h2>
+      <input id="txt" value="GRUBCLUB" maxlength="14" aria-label="Wordmark text" placeholder="GRUBCLUB"></div>
+    <div class="sec"><h2>BORDER &amp; GUTTERS</h2>
+      <div class="row" id="gut">
+        <button class="opt sw" data-g="white" aria-pressed="true" aria-label="White"><i style="background:#fff"></i></button>
+        <button class="opt sw" data-g="lime" aria-pressed="false" aria-label="Lime"><i style="background:#EEFB71"></i></button>
+        <button class="opt sw" data-g="dark" aria-pressed="false" aria-label="Dark green"><i style="background:#0F5A5C"></i></button>
+      </div></div>
+    <div class="sec"><h2>ORANGE ACCENT</h2>
+      <div class="row" id="org">
+        <button class="opt" data-o="0" aria-pressed="false">None</button>
+        <button class="opt" data-o="1" aria-pressed="true">Some</button>
+        <button class="opt" data-o="2" aria-pressed="false">More</button>
+      </div></div>
+    <div class="sec"><h2>PALETTE</h2>
+      <div class="pal">
+        <span><i style="background:#EEFB71"></i>Lime</span>
+        <span><i style="background:#1C8859"></i>Medium</span>
+        <span><i style="background:#0F5A5C"></i>Dark</span>
+        <span><i style="background:#fff"></i>White</span>
+        <span><i style="background:#FFB878"></i>Orange</span>
+      </div></div>
+    <div class="sec" style="border:0">
+      <button id="shuf">Shuffle the grid</button>
+      <div class="row" style="margin-top:10px"><button class="dl" id="dPng">Download PNG</button><button class="dl" id="dSvg">Download SVG</button></div>
+    </div>
+  </aside>
+</main>
+<script>
+(() => {
+/* ---------- palette: Grubclub lime / kale / bean + white + the light orange accent ---------- */
+const C = { L: '#EEFB71', M: '#1C8859', D: '#0F5A5C', W: '#FFFFFF', O: '#FFB878' };
+const SIZE = { '16:9': [1920, 1080], '9:16': [1080, 1920], '1:1': [1080, 1080], '3:4': [1080, 1440] };
+/* [cols, rows] per ratio and grid density (bold, modular, fine) */
+const GRID = {
+  '16:9': [[12, 7], [16, 9], [20, 11]],
+  '9:16': [[7, 12], [9, 16], [11, 20]],
+  '1:1':  [[8, 8], [12, 12], [16, 16]],
+  '3:4':  [[6, 8], [9, 12], [12, 16]]
+};
+const S = { ratio: '16:9', dens: 1, gut: 'white', org: 1, word: 'GRUBCLUB', seed: 7 };
+
+/* ---------- seeded random ---------- */
+const rngOf = (s) => { let a = s >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+const pick = (r, a) => a[Math.floor(r() * a.length)];
+const f = (n) => +n.toFixed(2);
+
+/* ---------- icons, drawn in a 100x100 box. k = {bg, a (main), b (second), x (accent)} ---------- */
+const circ = (cx, cy, r, fill, extra = '') => `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="${fill}" ${extra}/>`;
+const zig = (x0, x1, y, amp, n, col, w) => { let d = `M${x0} ${y}`; const st = (x1 - x0) / n; for (let i = 0; i < n; i++) d += ` L${f(x0 + st * (i + .5))} ${y - amp} L${f(x0 + st * (i + 1))} ${y}`; return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`; };
+const rot = (deg, cx, cy, s) => `<g transform="rotate(${deg} ${cx} ${cy})">${s}</g>`;
+const leaf = (cx, cy, len, wid, deg, fill) => rot(deg, cx, cy, `<path d="M${cx} ${cy} Q${cx + len * .5} ${cy - wid} ${cx + len} ${cy} Q${cx + len * .5} ${cy + wid} ${cx} ${cy}Z" fill="${fill}"/>`);
+const halfL = (cx, cy, r, fill) => `<path d="M${cx} ${cy - r} A${r} ${r} 0 0 0 ${cx} ${cy + r}Z" fill="${fill}"/>`;
+const halfR = (cx, cy, r, fill) => `<path d="M${cx} ${cy - r} A${r} ${r} 0 0 1 ${cx} ${cy + r}Z" fill="${fill}"/>`;
+
+const ICON = {
+  ornament: (k, v) => circ(50, 58, 34, k.a) + (v ? halfR(50, 58, 34, k.b) : '') + zig(18, 82, 58, 5, 8, k.bg, 3) +
+    `<rect x="41" y="14" width="18" height="10" rx="2" fill="${k.b === k.bg ? k.a : k.b}"/><circle cx="50" cy="10" r="5" fill="none" stroke="${k.x}" stroke-width="3"/>`,
+  snowman: (k) => circ(50, 80, 19, k.a) + circ(50, 53, 15, k.a) + circ(50, 29, 11, k.a) +
+    `<rect x="37" y="10" width="26" height="11" fill="${k.b}"/><rect x="31" y="19" width="38" height="4" rx="2" fill="${k.b}"/>` +
+    `<path d="M50 29 L66 32 L50 35Z" fill="${k.x}"/>` + circ(46, 27, 1.8, k.bg) + circ(54, 27, 1.8, k.bg) + circ(50, 50, 2.6, k.bg) + circ(50, 58, 2.6, k.bg) + circ(50, 76, 2.6, k.bg) +
+    `<rect x="38" y="38" width="24" height="5" rx="2.5" fill="${k.x}"/>`,
+  wreath: (k) => Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI * 2; return circ(50 + Math.cos(a) * 31, 52 + Math.sin(a) * 31, 10.5, i % 2 ? k.b : k.a); }).join('') +
+    circ(50, 52, 17, k.bg) + [0, 1, 2].map((i) => circ(30 + i * 7 + (i === 1 ? 14 : 0), 70 + (i === 1 ? 4 : 0) - 0, 4.5, k.x)).join('') +
+    circ(40, 21, 8, 'none', `stroke="${k.x}" stroke-width="5"`) + circ(60, 21, 8, 'none', `stroke="${k.x}" stroke-width="5"`) + circ(50, 22, 4.5, k.x),
+  holly: (k) => leaf(50, 52, 42, 15, -32, k.a) + leaf(50, 52, 42, 15, 212, k.b) + leaf(50, 52, 42, 15, 32 + 180 + 36, k.a) + leaf(50, 52, 42, 15, -32 - 36 - 180 + 360, k.b) + circ(43, 48, 8, k.x) + circ(58, 48, 8, k.x) + circ(50, 61, 8, k.x),
+  snowflake: (k, v) => { const n = v ? 6 : 8; let s = ''; for (let i = 0; i < n; i++) { const d = i * 360 / n; s += rot(d, 50, 50, `<rect x="47" y="10" width="6" height="30" rx="3" fill="${k.a}"/>${circ(50, 12, 6.5, k.x)}<rect x="40" y="26" width="20" height="5" rx="2.5" fill="${k.b === k.bg ? k.a : k.b}"/>`); } return s + circ(50, 50, 10, k.a) + circ(50, 50, 4.5, k.bg); },
+  gift: (k) => `<rect x="18" y="38" width="64" height="48" fill="${k.a}"/><rect x="13" y="30" width="74" height="14" fill="${k.b === k.bg ? k.a : k.b}"/><rect x="45" y="30" width="10" height="56" fill="${k.x}"/>` +
+    circ(39, 20, 10, 'none', `stroke="${k.x}" stroke-width="6"`) + circ(61, 20, 10, 'none', `stroke="${k.x}" stroke-width="6"`) + circ(50, 28, 5.5, k.x),
+  treeC: (k) => circ(50, 28, 15, k.a) + circ(50, 52, 21, k.a) + circ(50, 79, 25, k.a) + circ(50, 9, 6, k.x) +
+    circ(42, 50, 3.6, k.bg) + circ(60, 56, 3.6, k.x) + circ(34, 78, 4, k.x) + circ(52, 80, 4, k.bg) + circ(68, 76, 4, k.b === k.bg ? k.x : k.b),
+  treeT: (k) => [[10, 40, 18], [26, 54, 28], [44, 70, 40]].map(([y, w, hh], i) => `<path d="M50 ${y} L${50 + w / 2 + 6} ${y + hh} L${50 - w / 2 - 6} ${y + hh}Z" fill="${i % 2 ? k.b === k.bg ? k.a : k.b : k.a}"/>`).join('') +
+    `<rect x="44" y="84" width="12" height="10" fill="${k.x}"/>` + circ(50, 8, 5.5, k.x),
+  candle: (k) => `<rect x="36" y="46" width="28" height="44" fill="${k.a}"/><path d="M36 46 A14 9 0 0 1 64 46Z" fill="${k.a}"/>` +
+    zig(36, 64, 66, 5, 4, k.bg, 3) + `<path d="M50 8 Q66 28 50 42 Q34 28 50 8Z" fill="${k.x}"/><rect x="48.5" y="40" width="3" height="10" fill="${k.b === k.bg ? k.a : k.b}"/>` + `<rect x="24" y="88" width="52" height="7" rx="3.5" fill="${k.b === k.bg ? k.a : k.b}"/>`,
+  reindeer: (k) => `<path d="M32 34 C18 26 12 14 18 4 M24 20 L10 18 M68 34 C82 26 88 14 82 4 M76 20 L90 18" fill="none" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="5" stroke-linecap="round"/>` +
+    `<path d="M20 32 L80 32 L80 62 L50 92 L20 62Z" fill="${k.a}"/>` + circ(50, 68, 10, k.x) + circ(36, 50, 3.4, k.bg) + circ(64, 50, 3.4, k.bg),
+  bell: (k) => `<path d="M20 64 A30 32 0 0 1 80 64Z" fill="${k.a}"/><rect x="14" y="62" width="72" height="14" fill="${k.b === k.bg ? k.a : k.b}"/>` + zig(14, 86, 69, 3, 9, k.bg, 2) + circ(50, 86, 8, k.x) + circ(50, 24, 4, k.a),
+  hat: (k) => `<path d="M20 74 A30 40 0 0 1 80 74Z" fill="${k.a}"/><rect x="13" y="70" width="74" height="16" rx="3" fill="${k.b === k.bg ? k.x : k.b}"/>` + zig(16, 84, 78, 3, 10, k.bg, 2) + circ(50, 28, 10, k.x),
+  mug: (k) => `<path d="M22 38 H68 V70 A14 14 0 0 1 54 84 H36 A14 14 0 0 1 22 70Z" fill="${k.a}"/>` + circ(72, 56, 11, 'none', `stroke="${k.a}" stroke-width="6"`) +
+    circ(35, 34, 7, k.x) + circ(49, 31, 8, k.x) + circ(62, 35, 6, k.x) + `<path d="M36 20 Q42 14 36 8 M52 18 Q58 12 52 6" fill="none" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="3.5" stroke-linecap="round"/>` + zig(22, 68, 62, 4, 6, k.bg, 3),
+  plate: (k) => circ(50, 50, 40, k.a) + circ(50, 50, 29, k.b === k.bg ? k.x : k.b) + circ(50, 50, 18, k.bg === k.x ? k.a : k.bg) + circ(50, 50, 8, k.x),
+  moon: (k) => circ(46, 52, 34, k.a) + circ(62, 42, 28, k.bg) + circ(78, 22, 5, k.x) + circ(80, 74, 3.5, k.a) + circ(26, 18, 3.5, k.a) + circ(86, 48, 2.6, k.x),
+  ginger: (k) => circ(50, 22, 14, k.a) + circ(50, 58, 20, k.a) + circ(22, 52, 9, k.a) + circ(78, 52, 9, k.a) + circ(38, 86, 10, k.a) + circ(62, 86, 10, k.a) +
+    circ(45, 20, 2.4, k.bg) + circ(55, 20, 2.4, k.bg) + circ(50, 50, 3.4, k.x) + circ(50, 61, 3.4, k.x) + circ(50, 72, 3.4, k.x) + `<path d="M43 27 Q50 32 57 27" fill="none" stroke="${k.bg}" stroke-width="2.4" stroke-linecap="round"/>`,
+  cane: (k) => `<path d="M32 94 V38 A18 18 0 0 1 68 38" fill="none" stroke="${k.a}" stroke-width="16"/><path d="M32 94 V38 A18 18 0 0 1 68 38" fill="none" stroke="${k.x === k.a ? k.b : k.bg}" stroke-width="16" stroke-dasharray="6 9" opacity=".95"/>`,
+  star: (k) => `<path d="M50 6 Q54 46 94 50 Q54 54 50 94 Q46 54 6 50 Q46 46 50 6Z" fill="${k.a}"/>` + circ(50, 50, 9, k.x) + circ(22, 24, 4, k.b === k.bg ? k.a : k.b) + circ(80, 78, 4, k.b === k.bg ? k.a : k.b),
+  penguin: (k) => circ(50, 56, 34, k.a) + `<path d="M50 30 A22 28 0 0 0 50 92 A22 28 0 0 0 50 30Z" fill="${k.b === k.bg ? k.bg : k.b}"/>` + circ(41, 46, 3, k.a) + circ(59, 46, 3, k.a) + `<path d="M44 53 L56 53 L50 61Z" fill="${k.x}"/>` + circ(34, 90, 6, k.x) + circ(66, 90, 6, k.x),
+  mitten: (k) => circ(48, 62, 28, k.a) + circ(80, 56, 11, k.a) + `<rect x="26" y="18" width="44" height="22" rx="4" fill="${k.b === k.bg ? k.x : k.b}"/>` + zig(26, 70, 29, 4, 6, k.bg, 2.4) + circ(48, 66, 9, k.x),
+  /* abstract grid fillers */
+  halfdisc: (k) => halfL(50, 50, 40, k.a) + halfR(50, 50, 40, k.b === k.bg ? k.x : k.b),
+  rings: (k) => circ(50, 50, 42, k.a) + circ(50, 50, 31, k.bg) + circ(50, 50, 20, k.b === k.bg ? k.x : k.b) + circ(50, 50, 9, k.bg),
+  quarters: (k) => `<path d="M8 8 H50 A42 42 0 0 1 8 50Z" fill="${k.a}"/><path d="M92 8 V50 A42 42 0 0 1 50 8Z" fill="${k.b === k.bg ? k.x : k.b}"/><path d="M8 92 V50 A42 42 0 0 1 50 92Z" fill="${k.b === k.bg ? k.x : k.b}"/><path d="M92 92 H50 A42 42 0 0 1 92 50Z" fill="${k.a}"/>`,
+  dots: (k) => { let s = ''; for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) s += circ(20 + i * 30, 20 + j * 30, 11, (i + j) % 2 ? k.b === k.bg ? k.a : k.b : k.a); return s + circ(50, 50, 5, k.x); },
+  leaves: (k) => leaf(10, 90, 105, 22, -45, k.a) + leaf(10, 62, 70, 15, -45, k.b === k.bg ? k.x : k.b) + circ(70, 30, 8, k.x),
+  tris: (k) => { let s = ''; for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) { const x = c * 25, y = r * 25; s += `<path d="${(r + c) % 2 ? `M${x} ${y + 25} L${x + 12.5} ${y} L${x + 25} ${y + 25}Z` : `M${x} ${y} L${x + 25} ${y} L${x + 12.5} ${y + 25}Z`}" fill="${(r + c) % 3 ? k.a : k.b === k.bg ? k.x : k.b}"/>`; } return s; }
+};
+const ICONS_FULL = ['ornament', 'snowman', 'wreath', 'holly', 'snowflake', 'gift', 'treeC', 'treeT', 'candle', 'reindeer', 'bell', 'hat', 'mug', 'plate', 'moon', 'ginger', 'cane', 'star', 'penguin', 'mitten'];
+const FILLERS = ['halfdisc', 'rings', 'quarters', 'dots', 'leaves', 'tris'];
+const BLEED = { tris: 1, leaves: 1, quarters: 1 };
+
+/* ---------- colour schemes per tile ---------- */
+const orangeBias = () => [0, .09, .22][S.org];
+function scheme(r, force) {
+  const o = r() < orangeBias();
+  const bgs = ['W', 'W', 'L', 'M', 'D', 'D', 'M', 'L'];
+  let bg = force || pick(r, bgs);
+  if (!force && o && S.org) bg = 'O';
+  const t = {
+    W: { a: 'M', b: 'D', x: 'O' }, L: { a: 'D', b: 'M', x: 'W' }, M: { a: 'L', b: 'W', x: 'O' },
+    D: { a: 'L', b: 'M', x: 'O' }, O: { a: 'D', b: 'W', x: 'M' }
+  }[bg];
+  /* vary which tone leads so neighbours differ */
+  let { a, b, x } = t;
+  if (r() < .25 && bg === 'W') { a = 'D'; b = 'M'; }
+  if (r() < .2 && bg === 'D') { a = 'W'; b = 'L'; }
+  if (r() < .2 && bg === 'M') { a = 'W'; b = 'D'; }
+  if (!S.org && x === 'O') x = bg === 'W' || bg === 'L' ? 'D' : 'L';
+  if (S.org === 2 && r() < .45 && bg !== 'O') x = 'O';
+  if (x === bg) x = a;
+  return { bg: C[bg], a: C[a], b: C[b], x: C[x], bgk: bg };
+}
+
+/* ---------- wide and tall band tiles, drawn in pixel space (w,h) ---------- */
+const BANDS = {
+  lights: (w, h, k, r) => { const n = Math.max(3, Math.round(w / h * 2.2)); const st = w / n; let d = `M0 ${h * .3}`, s = ''; const cols = [k.x, k.a, k.b === k.bg ? k.a : k.b];
+    for (let i = 0; i <= n; i++) { const x = i * st, y = i % 2 ? h * .42 : h * .22; d += ` Q${f(x - st / 2)} ${f(h * .52)} ${f(x)} ${f(y)}`; }
+    for (let i = 0; i < n; i++) { const x = (i + .5) * st; s += circ(x, h * .66, Math.min(st, h) * .17, cols[i % 3]); }
+    return `<path d="M0 ${h * .2} Q${st / 2} ${h * .55} ${st} ${h * .2} ${Array.from({ length: n - 1 }, (_, i) => `T${st * (i + 2)} ${h * .2}`).join(' ')}" fill="none" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="${h * .035}"/>` +
+      Array.from({ length: n }, (_, i) => { const x = (i + .5) * st; const y = h * .2 + h * .3 * (1 - Math.pow(2 * ((i + .5) % 1) - 1, 2)) * 0; return `<rect x="${f(x - h * .035)}" y="${f(h * .36)}" width="${f(h * .07)}" height="${f(h * .08)}" fill="${k.b === k.bg ? k.a : k.b}"/>` + circ(x, h * .6, Math.min(st * .3, h * .17), cols[i % 3]); }).join(''); },
+  garland: (w, h, k) => { const R = h * .42, n = Math.ceil(w / (R * 1.5)); let s = ''; for (let i = 0; i <= n; i++) s += circ(i * w / n, h / 2, R, i % 2 ? (k.b === k.bg ? k.x : k.b) : k.a); for (let i = 0; i < n; i++) s += circ((i + .5) * w / n, h / 2, R * .2, k.x); return s; },
+  stripes: (w, h, k) => { const st = Math.min(w, h) * .3; let s = ''; for (let x = -h; x < w + h; x += st * 2) s += `<path d="M${x} ${h} L${x + st} ${h} L${x + st + h} 0 L${x + h} 0Z" fill="${k.a}"/>`; return s; },
+  zigzag: (w, h, k) => { const u = Math.min(w, h) * .5; let s = ''; for (let y = h * .25; y < h; y += h * .5) s += zig(0, w, y + u * .25, u * .5, Math.max(2, Math.round(w / u)), y < h * .5 ? k.a : k.b === k.bg ? k.x : k.b, u * .12); return s; },
+  snow: (w, h, k, r) => { let s = ''; const n = Math.round(w * h / 1800); for (let i = 0; i < n; i++) s += circ(r() * w, r() * h, 2 + r() * 5, i % 5 ? k.a : k.x); return s; },
+  hang: (w, h, k, r) => { const n = Math.max(2, Math.round(w / h * 6 + 1)); let s = ''; for (let i = 0; i < n; i++) { const x = (i + .5) * w / n, rad = Math.min(w / n * .36, h * .13), y = h * (.35 + r() * .5); s += `<line x1="${f(x)}" y1="0" x2="${f(x)}" y2="${f(y - rad)}" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="${f(rad * .12 + 1)}"/>` + circ(x, y, rad, [k.a, k.x, k.b === k.bg ? k.a : k.b][i % 3]); } return s; }
+};
+const WIDE = ['lights', 'garland', 'stripes', 'zigzag', 'snow', 'hang'];
+
+/* ---------- layout: pack a grid of 1x1 / 2x1 / 1x2 / 2x2 / 3x3 tiles around the wordmark and hero ---------- */
+function layout(cols, rows, r) {
+  const occ = Array.from({ length: rows }, () => Array(cols).fill(0));
+  const tiles = [];
+  const fits = (x, y, w, h) => { if (x + w > cols || y + h > rows) return false; for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) if (occ[j][i]) return false; return true; };
+  const put = (x, y, w, h, kind) => { for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) occ[j][i] = 1; tiles.push({ x, y, w, h, kind }); };
+  /* wordmark band */
+  const portrait = rows > cols;
+  const ww = Math.min(cols, Math.max(4, Math.round(cols * (portrait ? 1 : .55))));
+  const wx = portrait || ww >= cols ? 0 : Math.floor(r() * (cols - ww + 1));
+  const wy = Math.max(0, Math.min(rows - 1, Math.round(rows * (.3 + r() * .35))));
+  put(wx, wy, ww, 1, 'word');
+  /* hero: big square tile */
+  const hs = Math.max(2, Math.min(Math.floor(Math.min(cols, rows) * (S.dens === 2 ? .3 : .38)), 5));
+  for (let t = 0; t < 80; t++) { const x = Math.floor(r() * (cols - hs + 1)), y = Math.floor(r() * (rows - hs + 1)); if (fits(x, y, hs, hs)) { put(x, y, hs, hs, 'hero'); break; } }
+  /* a few more big squares on bigger grids */
+  const big = Math.max(0, Math.floor(Math.min(cols, rows) / 6));
+  for (let b = 0; b < big; b++) { const s = hs > 3 ? hs - 1 : 2; for (let t = 0; t < 60; t++) { const x = Math.floor(r() * (cols - s + 1)), y = Math.floor(r() * (rows - s + 1)); if (fits(x, y, s, s)) { put(x, y, s, s, 'icon'); break; } } }
+  /* fill the rest in reading order */
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+    if (occ[y][x]) continue;
+    const roll = r();
+    const opts = [];
+    if (roll < .16) opts.push([2, 2]);
+    if (roll < .34) opts.push([2, 1], [1, 2]);
+    if (roll > .94) opts.push([3, 1], [1, 3]);
+    const sh = opts.find(([w, h]) => fits(x, y, w, h));
+    const [w, h] = sh || [1, 1];
+    put(x, y, w, h, w === 1 && h === 1 ? (r() < .3 ? 'filler' : 'icon') : (w !== h ? (r() < .55 ? 'band' : 'multi') : 'icon'));
+  }
+  return tiles;
+}
+
+/* ---------- render ---------- */
+let usedRecent = [];
+function build(anim) {
+  const [W, H] = SIZE[S.ratio];
+  const [cols, rows] = GRID[S.ratio][S.dens];
+  const r = rngOf(S.seed * 9301 + cols * 17 + rows);
+  const gap = Math.round(Math.min(W / cols, H / rows) * .07 * (S.dens === 2 ? .8 : 1));
+  const gutC = { white: C.W, lime: C.L, dark: C.D }[S.gut];
+  const cw = (W - gap * (cols + 1)) / cols, ch = (H - gap * (rows + 1)) / rows;
+  const tiles = layout(cols, rows, r);
+  let out = '', n = 0, last = '';
+  const nextIcon = () => { let name, tries = 0; do { name = pick(r, ICONS_FULL); tries++; } while ((name === last || usedRecent.slice(-3).includes(name)) && tries < 12); last = name; usedRecent.push(name); return name; };
+  usedRecent = [];
+  const iconSvg = (name, k, x, y, w, h, pad) => { const sl = BLEED[name]; const p = sl ? 0 : pad; return `<svg x="${f(x + p)}" y="${f(y + p)}" width="${f(w - p * 2)}" height="${f(h - p * 2)}" viewBox="0 0 100 100" preserveAspectRatio="${sl ? 'xMidYMid slice' : 'xMidYMid meet'}" overflow="${sl ? 'hidden' : 'visible'}">${ICON[name](k, r() < .5 ? 1 : 0)}</svg>`; };
+  const clipId = (i) => `c${i}`;
+  tiles.forEach((t, i) => {
+    const x = gap + t.x * (cw + gap), y = gap + t.y * (ch + gap), w = t.w * cw + (t.w - 1) * gap, h = t.h * ch + (t.h - 1) * gap;
+    const mn = Math.min(w, h);
+    let body = '', k;
+    if (t.kind === 'word') {
+      k = scheme(r, 'L'); k = { ...k, bg: C.L, a: C.D, b: C.M, x: C.O };
+      const txt = (S.word || 'GRUBCLUB').toUpperCase();
+      const fs = Math.min(h * .4, (w * .86) / (txt.length * .74));
+      body = `<text x="${f(x + w / 2)}" y="${f(y + h / 2)}" text-anchor="middle" dominant-baseline="central" font-family="Poppins,'Helvetica Neue',Arial,sans-serif" font-weight="600" font-size="${f(fs)}" letter-spacing="${f(fs * .14)}" fill="${C.D}">${txt.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`;
+      if (w > h * 3) { const rr = h * .1; body += circ(x + h * .5, y + h / 2, rr, C.O) + circ(x + w - h * .5, y + h / 2, rr, C.O); }
+    } else if (t.kind === 'hero') {
+      k = scheme(r, pick(r, ['W', 'M', 'D', 'L']));
+      const nm = pick(r, ['ornament', 'wreath', 'snowman', 'reindeer', 'treeC', 'gift', 'plate']);
+      usedRecent.push(nm);
+      body = iconSvg(nm, k, x, y, w, h, mn * .09);
+    } else if (t.kind === 'band' && (t.w !== t.h)) {
+      k = scheme(r);
+      const name = pick(r, t.w > t.h ? WIDE : ['hang', 'stripes', 'snow', 'zigzag']);
+      body = `<g transform="translate(${f(x)} ${f(y)})">${BANDS[name](w, h, k, r)}</g>`;
+    } else if (t.kind === 'multi') {
+      k = scheme(r);
+      const m = Math.round(Math.max(t.w, t.h) / Math.min(t.w, t.h));
+      for (let j = 0; j < m; j++) {
+        const kk = j ? { ...k, a: k.b === k.bg ? k.a : k.b, b: k.a } : k;
+        const nm = nextIcon();
+        body += t.w > t.h ? iconSvg(nm, kk, x + j * w / m, y, w / m, h, mn * .1) : iconSvg(nm, kk, x, y + j * h / m, w, h / m, mn * .1);
+      }
+    } else if (t.kind === 'filler') {
+      k = scheme(r);
+      body = iconSvg(pick(r, FILLERS), k, x, y, w, h, mn * .12);
+    } else {
+      k = scheme(r);
+      body = iconSvg(nextIcon(), k, x, y, w, h, mn * .1);
+    }
+    const dly = f(((t.x / cols + t.y / rows) * .9 + r() * .15));
+    out += `<g ${anim ? `class="t" style="--d:${dly}s"` : ''}><clipPath id="${clipId(i)}"><rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}"/></clipPath><rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" fill="${k.bg}"/><g clip-path="url(#${clipId(i)})">${body}</g></g>`;
+    n++;
+  });
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="${gutC}"/>${out}</svg>`;
+}
+
+/* ---------- UI ---------- */
+const stage = document.getElementById('stage'), view = document.getElementById('view');
+function draw(anim = true) {
+  stage.innerHTML = build(anim);
+  document.getElementById('gridNote').textContent = GRID[S.ratio][S.dens].join(' × ') + ' modules';
+  fit();
+}
+function fit() {
+  const [W, H] = SIZE[S.ratio];
+  const bw = view.clientWidth, bh = view.clientHeight;
+  const sc = Math.min(bw / W, bh / H);
+  stage.style.width = Math.floor(W * sc) + 'px'; stage.style.height = Math.floor(H * sc) + 'px';
+}
+addEventListener('resize', fit);
+if (window.ResizeObserver) new ResizeObserver(fit).observe(view);
+const group = (id, key, parse = (v) => v) => document.getElementById(id).addEventListener('click', (e) => {
+  const b = e.target.closest('.opt'); if (!b) return;
+  S[key] = parse(b.dataset[Object.keys(b.dataset)[0]]);
+  document.querySelectorAll('#' + id + ' .opt').forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
+  draw(key !== 'gut');
+});
+group('ratios', 'ratio'); group('dens', 'dens', Number); group('gut', 'gut'); group('org', 'org', Number);
+document.getElementById('txt').addEventListener('input', (e) => { S.word = e.target.value; draw(false); });
+document.getElementById('shuf').addEventListener('click', () => { S.seed = Math.floor(Math.random() * 1e6); draw(true); });
+
+const saveBlob = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
+const fname = () => `grubclub-holiday-${S.ratio.replace(':', 'x')}`;
+document.getElementById('dSvg').addEventListener('click', () => saveBlob(new Blob([build(false)], { type: 'image/svg+xml' }), fname() + '.svg'));
+document.getElementById('dPng').addEventListener('click', () => {
+  const [W, H] = SIZE[S.ratio];
+  const img = new Image();
+  img.onload = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(img, 0, 0, W, H); c.toBlob((b) => saveBlob(b, fname() + '.png'), 'image/png'); };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(build(false));
+});
+
+/* hooks for the home page clip recorder */
+window.hg = { set(o) { Object.assign(S, o); draw(true); } };
+draw(true);
+})();
+</script>
+</body>
+</html>

@@ -1,5 +1,14 @@
 [
   {
+    "id": "grubclub-holiday",
+    "title": "Grubclub Holiday Grid",
+    "category": "Interactive Engine",
+    "url": "grubclub-holiday/",
+    "thumbnail": "grubclub-holiday/thumb.png",
+    "preview": "grubclub-holiday/thumb.webp",
+    "alt": "Grubclub holiday design: a heavy modular grid of flat geometric tiles in lime, medium and dark green, white and light orange, with ornaments, snowmen, wreaths, reindeer and candy canes built from circles around a lime GRUBCLUB wordmark band"
+  },
+  {
     "id": "clearco-logistics-lines",
     "title": "Clearco Logistics Lines",
     "category": "Motion",
