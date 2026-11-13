@@ -157,7 +157,7 @@ const THEMES=[
 const RATIOS=[['16:9',1920,1080],['1:1',1080,1080],['4:5',1080,1350],['3:4',1080,1440],['9:16',1080,1920]];
 
 /* ---------------- state ---------------- */
-const S={theme:0,ratio:4,style:0,motion:0,sub:'',mspeed:1,mscale:1,melas:2,mrings:6,text:'delicious starts here',prods:[],speed:1};
+const S={theme:0,ratio:4,style:0,motion:1,sub:'',mspeed:1,mscale:1,melas:2,mrings:6,text:'delicious starts here',prods:[],speed:1};
 let frame=FR, playing=false, last=0, acc=0, exporting=false;
 const wm=new Image(); wm.src=WM_SRC;
 const wmCache={};
@@ -173,10 +173,10 @@ const SETS=[
  {n:'2 boxes',  p:[['boxes.webp','entomo boxes']]},
  {n:'2 pouches',p:[['pouch-green.webp','honey roasted buffalo worms'],['pouch-blue.webp','lightly salted dehydrated grasshoppers']]},
  {n:'box + pouch',p:[['box.webp','entomo box'],['pouch-green.webp','honey roasted buffalo worms']]},
- {n:'plate',p:[['plate.webp','plate']]}];
+ {n:'plate',p:[['plate.webp','plate',true]]}];
 const IMGS={};
 function pic(src){ if(!IMGS[src]){ const im=new Image(); im.onload=()=>{render();tiles()}; im.src=src; IMGS[src]=im; } return IMGS[src]; }
-function loadSet(i){ S.set=i; S.prods=SETS[i].p.map(([src,name])=>({img:pic(src),name,dx:0,dy:0,sc:1})); tiles(); render(); }
+function loadSet(i){ S.set=i; S.prods=SETS[i].p.map(([src,name,spin])=>({img:pic(src),name,spin,dx:0,dy:0,sc:1})); tiles(); render(); }
 S.prods=[]; S.set=2;
 
 /* ---------------- drawing ---------------- */
@@ -258,11 +258,16 @@ function scene(c,W,H,f,collect,th){
   const n=S.prods.length, sl=slots(n), z=L.zone, order=sl.map((s,i)=>i).sort((a,b)=>sl[a][2]-sl[b][2]);
   if(collect) hits=[];
   order.forEach((i,ri)=>{
-    const p=S.prods[i], [sx,sy,ss]=sl[i], sz=z.s*ss*p.sc, a=eob((f-(16+ri*8))/26), o=eo((f-(16+ri*8))/10);
+    const p=S.prods[i], [sx,sy,ss]=sl[i], sz=z.s*ss*p.sc, rv=sine((f-(16+ri*8))/38), a=p.spin?1:eob((f-(16+ri*8))/26), o=p.spin?(rv>0?1:0):eo((f-(16+ri*8))/10);
     if(o<=0) return;
     const bob=f>=FR-1?0:0; const cx=z.cx+sx*z.s+p.dx*W, cy=z.cy+sy*z.s+p.dy*H+(1-a)*z.s*.35;
     const im=p.img, iw=im.naturalWidth||im.width, ih=im.naturalHeight||im.height; if(!iw) return;
     const r=Math.min(sz/iw,sz/ih), dw=iw*r, dh=ih*r;
+    if(p.spin){   // the plate is revealed by a circle expanding from its centre, then turns slowly and subtly (about 26 degrees across the card)
+      c.save(); c.translate(cx,cy); c.rotate(f/FR*.45);
+      if(S.style===1){ c.save(); c.shadowColor='rgba(10,45,35,.3)'; c.shadowBlur=70*curK; c.shadowOffsetY=22*curK; c.fillStyle='#fff'; c.beginPath(); c.arc(0,0,dw/2*.985*rv,0,Math.PI*2); c.fill(); c.restore(); }
+      c.beginPath(); c.arc(0,0,dw/2*rv,0,Math.PI*2); c.clip(); c.drawImage(im,-dw/2,-dh/2,dw,dh); c.restore();
+      if(collect) hits.push({i,x:cx-dw/2,y:cy-dh/2,w:dw,h:dh}); return; }
     c.save(); c.globalAlpha=o; if(S.style===1){ c.shadowColor='rgba(10,45,35,.3)'; c.shadowBlur=70*curK; c.shadowOffsetY=22*curK; } c.translate(cx,cy+bob); c.rotate((1-a)*(i%2?.12:-.12)); c.drawImage(im,-dw/2,-dh/2,dw,dh); c.restore();
     if(collect) hits.push({i,x:cx-dw/2,y:cy-dh/2,w:dw,h:dh});
   });
@@ -331,9 +336,9 @@ const STYLES=['classic','circle'];
 $('#styles').innerHTML=STYLES.map((m,i)=>`<button class="opt" data-i="${i}" aria-pressed="${i===S.style}">${m}</button>`).join('');
 $('#styles').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; S.style=+b.dataset.i; press($('#styles'),S.style);
   if(S.style===1&&S.set!==3){ loadSet(3); press($('#sets'),3); } else if(S.style===0&&S.set===3){ loadSet(2); press($('#sets'),2); } else render(); };
-const MOTIONS=['off','grow','evolve','macro'];
-$('#motions').innerHTML=MOTIONS.map((m,i)=>`<button class="opt" data-i="${i}" aria-pressed="${i===S.motion}">${m}</button>`).join('');
-$('#motions').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; S.motion=+b.dataset.i; press($('#motions'),S.motion); thirdUI(); render()};
+const MOTIONS=['grow','evolve','macro'];   // motion is always on: S.motion is 1 grow, 2 evolve, 3 macro
+$('#motions').innerHTML=MOTIONS.map((m,i)=>`<button class="opt" data-i="${i+1}" aria-pressed="${i+1===S.motion}">${m}</button>`).join('');
+$('#motions').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; S.motion=+b.dataset.i; press($('#motions'),S.motion-1); thirdUI(); render()};
 function thirdUI(){
   const t=$('#mThird'), m=S.motion; $('#msl').classList.toggle('on',m>0); $('#mThirdL').hidden=!(m===1||m===2);
   if(m===1){ $('#mThirdT').textContent='elasticity'; t.min=1; t.max=6; t.step=1; t.value=S.melas; }
@@ -405,7 +410,7 @@ $('#exp').onclick=async()=>{
 };
 
 /* ---------------- start ---------------- */
-size(); setPP(); loadSet(2); press($('#sets'),2); requestAnimationFrame(tick);
+thirdUI(); size(); setPP(); loadSet(2); press($('#sets'),2); requestAnimationFrame(tick);
 (document.fonts&&document.fonts.load?Promise.all(['400','500','600','700'].map(w=>document.fonts.load(w+' 40px Poppins'))):Promise.resolve()).then(()=>{ Object.keys(wmCache).forEach(k=>delete wmCache[k]); render(); setTimeout(()=>{ if(!touched) play(); },250); }).catch(()=>{ if(!touched) play(); });
 window.ec={play:o=>play(o),seek,pause,get frame(){return frame}};
 </script>

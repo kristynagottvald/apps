@@ -61,7 +61,7 @@ const APPS = {
     run: async (p) => {
       const t0 = Date.now();
       await at(t0, 1400, () => p.evaluate(() => ec.play({ speed: 3, loop: false })));
-      await at(t0, 3200, () => domClick(p, '#motions .opt:nth-child(3)'));
+      await at(t0, 3200, () => domClick(p, '#motions .opt:nth-child(2)'));
       await at(t0, 4200, () => domClick(p, '#styles .opt:nth-child(2)'));
       await at(t0, 5000, () => domClick(p, '#themes .opt:nth-child(3)'));
       await at(t0, 5700, () => domClick(p, '#ratios .opt:nth-child(2)'));
