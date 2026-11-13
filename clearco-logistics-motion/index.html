@@ -40,7 +40,7 @@ const BG_HERO=(()=>{
   const STEP=36,TOP=-20,BOT=520;
   const stacks=ST.map(s=>({x:s[0],y:s[1],base:s[1],h:s[2],w:s[3],n:s[4],start:s[5]*1000,range:s[6],mv:null,next:null}));
   let k=1,ox=0,oy=0;
-  function resize(W,H){k=Math.min(W,H)/600; ox=W/2-288*k; oy=H/2-288*k;}
+  function resize(W,H){k=Math.min(W,H)/560; ox=W/2-258*k; oy=H/2-258*k;}   /* centre the boxes' bounding box (0..516), not the ray origin */
   function off(st,i){const t=i/(st.n-1);return -st.h/2+st.h*(1-Math.pow(1-t,1.35));}
   function step(st,now){
     if(st.next===null) st.next=now+st.start;
@@ -221,7 +221,7 @@ function frame(now){
 }
 const link=document.createElement('link'); link.rel='stylesheet';
 link.href='https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400&display=swap'; document.head.appendChild(link);
-const START=+((location.hash.match(/t=([d.]+)/)||[])[1]||0);   // #t=4.6 starts the sequence part way in (used for the home page clip)
+const START=+((location.hash.match(/t=([0-9.]+)/)||[])[1]||0);   // #t=4.6 starts the sequence part way in (used for the home page clip)
 const boot=()=>{layout();t0=performance.now()-START*1000;ready=true;};
 Promise.race([document.fonts.load('400 40px "Instrument Sans"'),new Promise(r=>setTimeout(r,1500))]).then(boot,boot);
 function setVariant(v,restart){
@@ -231,7 +231,7 @@ function setVariant(v,restart){
   if(ready){BG.resize(W,H); if(restart) t0=performance.now();}
 }
 document.querySelectorAll('.sw button').forEach(b=>b.addEventListener('click',()=>setVariant(b.dataset.v,true)));
-let initV='hero'; try{initV=(location.hash.match(/v=(w+)/)||[])[1]||localStorage.getItem('logisticsMotionVariant')||'hero';}catch(e){}
+let initV='hero'; try{initV=(location.hash.match(/v=([a-z]+)/)||[])[1]||localStorage.getItem('logisticsMotionVariant')||'hero';}catch(e){}
 setVariant(initV,false);
 addEventListener('resize',()=>{if(ready)layout();});
 requestAnimationFrame(frame);
