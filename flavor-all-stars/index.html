@@ -339,19 +339,26 @@ const SYM={
 };
 /* type: symbol, weight, radius at scale 1 (for spacing), max tilt in degrees, scale multiplier. Mostly upright, like the reference */
 const KIND=[['carrot',3,58,12],['parsnip',2,58,12],['carrotKale',1.6,70,8,.8],['parsnipLettuce',1.6,70,8,.8],['beet',2,50,40],['chard',1.2,48,14],['berry',1.4,40,16],['avo',1,56,18],['apple',1,48,18],['lettuce',2,56,12],['kale',2,66,12],['arugula',1.2,48,14],['ovalLeaf',2,46,18],['lance',2,48,22],['heartLeaf',1,48,16],['chili',.8,44,30],['sprig',2.4,52,12],['flower',1.1,44,14],['hopper',2.4,56,35],['hopperR',.8,56,35]];
+const SHAPE={};
 const SMALL=[['drop',3,14,180],['drop2',2,14,180],['dot',3,6,0]];
-(function(){const d=document.createElementNS('http://www.w3.org/2000/svg','svg');d.setAttribute('width',0);d.setAttribute('height',0);d.setAttribute('aria-hidden','true');d.style.cssText='position:absolute;left:-9999px';
-  d.innerHTML='<defs>'+Object.keys(SYM).map(k=>`<g id="v-${k}">${SYM[k]}</g>`).join('')+'</defs>';document.body.prepend(d)})();
-function art(host,seed){const W=1000,H=+host.dataset.h||600,g=host.dataset.grad?host.dataset.grad.split(',').map(Number):null,R=rng(seed);
+(function(){const d=document.createElementNS('http://www.w3.org/2000/svg','svg');d.setAttribute('width',10);d.setAttribute('height',10);d.setAttribute('aria-hidden','true');d.style.cssText='position:absolute;left:-9999px;top:0';
+  d.innerHTML='<defs>'+Object.keys(SYM).map(k=>`<g id="v-${k}">${SYM[k]}</g>`).join('')+'</defs>'+Object.keys(SYM).map(k=>`<g id="m-${k}">${SYM[k]}</g>`).join('');document.body.prepend(d);
+  /* measure every piece, then describe it as a chain of circles along its long axis so spacing follows the real outline */
+  for(const k of Object.keys(SYM)){const b=d.querySelector('#m-'+k).getBBox(),pad=3,w=b.width+pad*2,h=b.height+pad*2,cx=b.x+b.width/2,cy=b.y+b.height/2,vert=h>=w,r=Math.max(2,Math.min(w,h)/2),L=(vert?h:w)-2*r,n=Math.max(1,Math.ceil(L/(r*1.1))+1),C=[];
+    for(let i=0;i<n;i++){const t=n===1?0:(i/(n-1)-.5)*L;C.push(vert?[cx,cy+t,r]:[cx+t,cy,r])}
+    SHAPE[k]=C}})();
+function art(host,seed){const W=1000,H=+host.dataset.h||600,g=host.dataset.grad?host.dataset.grad.split(',').map(Number):null,R=rng(seed),GAP=10;
   const dens=y=>{if(!g)return 1;const t=clamp((y/H-g[0])/(g[1]-g[0]));return t*t*(3-2*t)};   // 0 at the top, 1 at the bottom: fewer pieces, never a fade
   const pick=L=>{let r=R()*L.reduce((a,k)=>a+k[1],0);for(const k of L){if((r-=k[1])<0)return k}return L[0]};
   const out=[],placed=[];
-  const tryPlace=(L,tries,sMin,sMax,gap,ydens)=>{for(let n=0;n<tries;n++){const k=pick(L),sc=(sMin+R()*(sMax-sMin))*(k[4]||1),x=-20+R()*(W+40),y=-20+R()*(H+40),r=k[2]*sc;
-      if(R()>ydens(y-r*.85))continue;
-      if(placed.some(p=>Math.hypot(p[0]-x,p[1]-y)<(p[2]+r)*gap))continue;
-      placed.push([x,y,r]);out.push(`<use href="#v-${k[0]}" transform="translate(${f1(x)} ${f1(y)}) rotate(${f1((R()*2-1)*k[3])}) scale(${f1(sc)})"/>`)}};
-  tryPlace(KIND,2600,1.15,1.75,.72,dens);                              // the vegetables and grasshoppers
-  tryPlace(SMALL,1600,.9,1.5,1.0,y=>dens(y)*.9);                         // drops and dots in the gaps
+  const tryPlace=(L,tries,sMin,sMax,gap,ydens)=>{for(let n=0;n<tries;n++){const k=pick(L),sc=(sMin+R()*(sMax-sMin))*(k[4]||1),x=-10+R()*(W+20),y=-10+R()*(H+20),rot=(R()*2-1)*k[3],cs=Math.cos(rot*Math.PI/180),sn=Math.sin(rot*Math.PI/180);
+      const C=SHAPE[k[0]].map(c=>{const px=c[0]*sc,py=c[1]*sc;return[x+px*cs-py*sn,y+px*sn+py*cs,c[2]*sc]});
+      let top=1e9,bot=-1e9;for(const c of C){top=Math.min(top,c[1]-c[2]);bot=Math.max(bot,c[1]+c[2])}
+      if(R()>ydens(top+(bot-top)*.35))continue;
+      if(placed.some(p=>C.some(c=>Math.hypot(p[0]-c[0],p[1]-c[1])<p[2]+c[2]+gap)))continue;
+      C.forEach(c=>placed.push(c));out.push(`<use href="#v-${k[0]}" transform="translate(${f1(x)} ${f1(y)}) rotate(${f1(rot)}) scale(${f1(sc)})"/>`)}};
+  tryPlace(KIND,9000,1.0,1.6,GAP,dens);                                  // the vegetables and grasshoppers, evenly spaced
+  tryPlace(SMALL,500,.9,1.3,GAP*.7,y=>dens(y)*.9);                      // drops and dots in the gaps
   host.insertAdjacentHTML('afterbegin',`<svg class="art" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${out.join('')}</svg>`)}
 $$('.pat').forEach((h,i)=>art(h,17+i*31));
 
