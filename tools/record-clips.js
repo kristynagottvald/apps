@@ -101,6 +101,15 @@ const APPS = {
       await at(t0, 4400, () => click(p, /^Personalize$/));
       await at(t0, 5900, () => click(p, /^Repeater$/));
     } },
+  'postmark-ribbon-engine': { vp: [1280, 769], setup: cropOf('#cv'), ready: 800, run: async (p) => {
+    const t0 = Date.now(), mode = (m) => p.evaluate((m) => rb.setMode(m), m), rand = () => p.evaluate(() => rb.randomize());
+    await at(t0, 900, rand);
+    await at(t0, 1900, rand);
+    await at(t0, 2900, () => mode('chaos'));
+    await at(t0, 3900, rand);
+    await at(t0, 4700, () => mode('loop'));
+    await at(t0, 5500, rand);
+  } },
   'ab-testing': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async (p) => {
     const t0 = Date.now();
     const row = (i) => p.evaluate((i) => { const r = document.querySelectorAll('#rows tr'); (r[i] || r[0]).click(); }, i);
