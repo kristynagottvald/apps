@@ -90,7 +90,7 @@ const BG_LINES=(()=>{
     stacks=[]; const want=Math.round(NC*NR*.4), used=new Set();
     const spots=[]; for(let i=0;i<NC;i++)for(let j=1;j<NR-1;j++) spots.push([i,j]);
     for(let i=spots.length-1;i>0;i--){const r=Math.floor(Math.random()*(i+1));[spots[i],spots[r]]=[spots[r],spots[i]];}
-    for(const [i,j] of spots.slice(0,want)) stacks.push({i,j,mv:null,next:Math.random()*2500,wide:Math.random()<.25?2:1});
+    for(const [i,j] of spots.slice(0,want)) stacks.push({i,j,mv:null,next:Math.random()*4000,wide:Math.random()<.25?2:1});
     sq=[]; for(let n=0;n<Math.round(NC*NR*.08);n++) sq.push({i:Math.floor(Math.random()*NC),j:Math.floor(Math.random()*NR),mv:null,next:Math.random()*3000});
   }
   function move(it,now,axis){
@@ -98,23 +98,22 @@ const BG_LINES=(()=>{
     let i1=it.i+(axis==='x'?dir*d:0), j1=it.j+(axis==='y'?dir*d:0);
     if(i1<0||i1>=NC||j1<(axis==='y'?1:0)||j1>=NR-(axis==='y'?1:0)){ i1=it.i-(axis==='x'?dir*d:0); j1=it.j-(axis==='y'?dir*d:0); }
     if(i1<0||i1>=NC||j1<0||j1>=NR){it.next=now+500;return;}
-    it.mv={t0:now,dur:(axis==='y'?1000:700)+d*420,i0:it.i,j0:it.j,i1,j1,dir:Math.sign(j1-it.j)};
+    it.mv={t0:now,dur:(axis==='y'?2400:1500)+d*(axis==='y'?1000:700),i0:it.i,j0:it.j,i1,j1,dir:Math.sign(j1-it.j)};
   }
   function draw(c,W,H,T,s,a){
     const now=s*1000;
     c.save(); c.globalAlpha=a;
     // thin black bands with white edge lines, plus faint verticals that pulse
-    c.lineWidth=1; c.strokeStyle='rgba(255,255,255,.9)'; c.beginPath();
+    c.lineWidth=1; c.strokeStyle='rgba(255,255,255,.3)'; c.beginPath();
     for(let j=0;j<NR;j++){const y=Math.round(OY+j*P)+.5; c.moveTo(0,y-B/2);c.lineTo(W,y-B/2);c.moveTo(0,y+B/2);c.lineTo(W,y+B/2);}
     c.stroke();
     // a scanning sweep: a bright band travels across the grid
     const sx=((s*160)%(W+400))-200, g=c.createLinearGradient(sx-200,0,sx+200,0);
-    g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(.5,'rgba(255,255,255,.16)'); g.addColorStop(1,'rgba(0,0,0,0)');
+    g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(.5,'rgba(255,255,255,.08)'); g.addColorStop(1,'rgba(0,0,0,0)');
     c.fillStyle=g; for(let j=0;j<NR;j++) c.fillRect(sx-200,OY+j*P-B/2,400,B);
-    c.fillStyle='#000';
-    c.fillStyle='#fff';
+    c.fillStyle='rgba(255,255,255,.45)';
     for(const it of stacks){
-      if(it.mv){ if(now-it.mv.t0>=it.mv.dur){it.i=it.mv.i1;it.j=it.mv.j1;it.mv=null;it.next=now+250+Math.random()*900;} }
+      if(it.mv){ if(now-it.mv.t0>=it.mv.dur){it.i=it.mv.i1;it.j=it.mv.j1;it.mv=null;it.next=now+600+Math.random()*2200;} }
       else if(now>=it.next) move(it,now,'y');
       const x=OX+it.i*P; let y0=OY+it.j*P,y1=y0,p=1,dir=0;
       if(it.mv){p=clamp01((now-it.mv.t0)/it.mv.dur);y0=OY+it.mv.j0*P;y1=OY+it.mv.j1*P;dir=it.mv.dir;}
@@ -127,11 +126,11 @@ const BG_LINES=(()=>{
     }
     // small squares slide along the bands horizontally and vertically
     for(const q of sq){
-      if(q.mv){ if(now-q.mv.t0>=q.mv.dur){q.i=q.mv.i1;q.j=q.mv.j1;q.mv=null;q.next=now+200+Math.random()*700;} }
+      if(q.mv){ if(now-q.mv.t0>=q.mv.dur){q.i=q.mv.i1;q.j=q.mv.j1;q.mv=null;q.next=now+500+Math.random()*1800;} }
       else if(now>=q.next) move(q,now,Math.random()<.5?'x':'y');
       let x=OX+q.i*P,y=OY+q.j*P;
       if(q.mv){const e=easeIO(clamp01((now-q.mv.t0)/q.mv.dur)); x=OX+(q.mv.i0+(q.mv.i1-q.mv.i0)*e)*P; y=OY+(q.mv.j0+(q.mv.j1-q.mv.j0)*e)*P;}
-      c.fillRect(Math.round(x-3),Math.round(y-3),6,6);
+      c.fillStyle='rgba(255,255,255,.6)'; c.fillRect(Math.round(x-3),Math.round(y-3),6,6);
     }
     c.restore();
   }
