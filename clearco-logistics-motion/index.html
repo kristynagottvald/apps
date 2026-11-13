@@ -134,7 +134,7 @@ const BG_LINES=(()=>{
     }
     c.restore();
   }
-  return {resize,draw};
+  return {resize,draw,noDim:true};
 })();
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -200,7 +200,7 @@ function frame(now){
   ctx.setTransform(DPR,0,0,DPR,0,0); ctx.globalAlpha=1; ctx.shadowColor='transparent';
   ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
   // background dims behind the text in scene 2, then hides for the logo
-  const dim=T>=TL.bgDim[0]&&T<TL.bgOut[0]?mix(1,.55,easeIO(prog(T,TL.bgDim))):1;
+  const dim=!BG.noDim&&T>=TL.bgDim[0]&&T<TL.bgOut[0]?mix(1,.55,easeIO(prog(T,TL.bgDim))):1;
   const a=bgAlpha(T,loop)*(reduce?.7:dim);
   BG.draw(ctx,W,H,T,now/1000,a);
   setFont(L.s1.size);
