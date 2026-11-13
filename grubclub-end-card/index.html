@@ -182,16 +182,22 @@ let ctx, hits=[];
 function layout(W,H){
   const wide=W/H>1.1, m=W*.08;
   if(wide){ const hc=H*.05, uf=0, uy=H-H*.09, lf=H*.06, ly=H*.14, top=ly+lf*.75, bot=uy-uf*1.6;
-    return {wide,m,hc,logo:{x:m,y:ly,f:lf,al:'left'},zone:{cx:W*.71,cy:H*.46,s:H*.62},tx:{x:m,y:(top+bot)/2,h:bot-top,w:W*.36,al:'left',max:H*.11,lines:3},url:{x:m,y:uy,f:uf,al:'left'}}; }
+    return {wide,m,hc,logo:{x:m,y:ly,f:lf,al:'left'},zone:{cx:W*.71,cy:H*.46,s:H*.62},tx:{x:m,y:(top+bot)/2,h:bot-top,w:W*.36,al:'left',max:H*.11,lines:3,exact:3},url:{x:m,y:uy,f:uf,al:'left'}}; }
   const hc=H*.045, uf=0, uy=H-H*.075, s=Math.min(W*.66,H*.38), tk=clamp((H/W-1)/.78), cy=H*(.41+.04*tk), top=cy+s*.58, bot=H*(.865+.045*tk);   // taller cards push the visual and the headline further down
   return {wide,m,hc,logo:{x:W/2,y:H*.09,f:W*.068,al:'center'},zone:{cx:W/2,cy,s},tx:{x:W/2,y:(top+bot)/2,h:bot-top,bot,w:W-2*m,al:'center',max:Math.min(W*.09,H*.058),lines:3},url:{x:W/2,y:uy,f:uf,al:'center'}};
 }
-function wrapText(words,f,w){
+function wrapText(words,f,w,exact){
   ctx.font=`700 ${f}px Poppins,"Helvetica Neue",Arial,sans-serif`; ctx.letterSpacing=(-0.03*f)+'px';
   const sp=ctx.measureText(' ').width, ww=words.map(t=>({t,w:ctx.measureText(t).width}));
-  const rows=[[]]; let cur=0;
+  let rows=[[]], cur=0;
+  if(exact&&ww.length>=exact){   // split into exactly `exact` lines, as even as the words allow
+    const cost=(i,j)=>ww.slice(i,j).reduce((a,x)=>a+x.w,0)+sp*(j-i-1), n=ww.length, INF=1e9;
+    const dp=Array.from({length:exact+1},()=>Array(n+1).fill(INF)), cut=Array.from({length:exact+1},()=>Array(n+1).fill(0)); dp[0][0]=0;
+    for(let g=1;g<=exact;g++) for(let j=g;j<=n;j++) for(let i=g-1;i<j;i++){ const v=Math.max(dp[g-1][i],cost(i,j)); if(v<dp[g][j]){dp[g][j]=v;cut[g][j]=i;} }
+    rows=[]; let j=n; for(let g=exact;g>=1;g--){ const i=cut[g][j]; rows.unshift(ww.slice(i,j)); j=i; }
+  } else
   for(const wd of ww){ if(cur>0&&cur+sp+wd.w>w){rows.push([]);cur=0} if(cur>0)cur+=sp; rows[rows.length-1].push(wd); cur+=wd.w; }
-  const n=rows.length; if(n>1&&rows[n-1].length===1&&rows[n-2].length>1) rows[n-1].unshift(rows[n-2].pop());   // never leave one word alone on the last line
+  const n=rows.length; if(!exact&&n>1&&rows[n-1].length===1&&rows[n-2].length>1) rows[n-1].unshift(rows[n-2].pop());   // never leave one word alone on the last line
   const lines=rows.map(r=>{ let x=0; return r.map((wd,i)=>{ if(i) x+=sp; const o={t:wd.t,w:wd.w,x}; x+=wd.w; return o; }); });
   return {lines,sp};
 }
@@ -254,9 +260,9 @@ function scene(c,W,H,f,collect,th){
   const words=S.text.trim().split(/\s+/).filter(Boolean);
   if(words.length){
     /* prefer two lines (so "starts here" stays together); use a third only if that would shrink the text below 60% */
-    const fit=(ml)=>{ for(let z=L.tx.max;z>12;z-=2){ const t=wrapText(words,z,L.tx.w); if(t.lines.length<=ml&&t.lines.length*z*1.04<=L.tx.h&&t.lines.every(l=>l[l.length-1].x+l[l.length-1].w<=L.tx.w)) return z; } return 12; };
-    let fs=fit(2), W_; if(fs<L.tx.max*.6) fs=Math.max(fs,fit(3));
-    W_=wrapText(words,fs,L.tx.w);
+    const fit=(ml)=>{ for(let z=L.tx.max;z>12;z-=2){ const t=wrapText(words,z,L.tx.w,L.tx.exact); if(t.lines.length<=ml&&t.lines.length*z*1.04<=L.tx.h&&t.lines.every(l=>l[l.length-1].x+l[l.length-1].w<=L.tx.w)) return z; } return 12; };
+    let fs=L.tx.exact?fit(3):fit(2), W_; if(!L.tx.exact&&fs<L.tx.max*.6) fs=Math.max(fs,fit(3));
+    W_=wrapText(words,fs,L.tx.w,L.tx.exact);
     const lh=fs*1.04, top=L.tx.bot?L.tx.bot-W_.lines.length*lh:L.tx.y-(W_.lines.length*lh)/2; let wi=0;
     c.fillStyle=T.ink; c.textBaseline='alphabetic'; c.textAlign='left';
     c.font=`700 ${fs}px Poppins,"Helvetica Neue",Arial,sans-serif`; c.letterSpacing=(-0.03*fs)+'px';
