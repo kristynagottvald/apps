@@ -66,12 +66,6 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px}
         <button class="opt" data-r="1:1" aria-pressed="false">1×1</button>
         <button class="opt" data-r="3:4" aria-pressed="false">3:4</button>
       </div></div>
-    <div class="sec"><h2>GRID <em id="gridNote"></em></h2>
-      <div class="row" id="dens">
-        <button class="opt" data-d="0" aria-pressed="false">Bold</button>
-        <button class="opt" data-d="1" aria-pressed="true">Modular</button>
-        <button class="opt" data-d="2" aria-pressed="false">Fine</button>
-      </div></div>
     <div class="sec"><h2>WORDMARK</h2>
       <input id="txt" value="GRUBCLUB" maxlength="14" aria-label="Wordmark text" placeholder="GRUBCLUB"></div>
     <div class="sec"><h2>BORDER &amp; GUTTERS</h2>
@@ -106,7 +100,7 @@ const GRID = {
   '1:1':  [[8, 8], [12, 12], [16, 16]],
   '3:4':  [[6, 8], [9, 12], [12, 16]]
 };
-const S = { ratio: '16:9', dens: 1, gut: 'white', word: 'GRUBCLUB', seed: 7, cseed: 1 };
+const S = { ratio: '16:9', dens: 0, gut: 'white', word: 'GRUBCLUB', seed: 7, cseed: 1 };
 
 /* the Grubclub logo worm (same PNG the other Grubclub apps use as the logo mark), 131x112 */
 const WORM_PNG = 'data:image/png;base64,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';
@@ -144,9 +138,9 @@ const ICON = {
     (v ? halfL(50, 61, 38, k.a) + halfR(50, 61, 38, k.b) + zig(14, 86, 56, 5, 6, k.bg, 2.6) + zig(14, 86, 68, 5, 6, k.bg, 2.6) :
       `<clipPath id="${id}"><circle cx="50" cy="61" r="38"/></clipPath>` + circ(50, 61, 38, k.a) + `<g clip-path="url(#${id})"><g transform="rotate(-40 50 61)">${[-10, 10, 30, 50, 70, 90].map((y) => zig(-20, 120, y + 20, 4, 8, k.bg, 2.6)).join('')}</g></g>`); },
   /* pentagon face, ring antlers, one round nose */
-  reindeer: (k) => { const ant = Object.values(C).filter((c) => c !== k.a && c !== k.bg).sort((u, v) => Math.min(contrastOf(v, k.bg), contrastOf(v, k.a)) - Math.min(contrastOf(u, k.bg), contrastOf(u, k.a)))[0]; /* antler rings: big, thick, bleeding off the top and side edges, in the colour that reads best on both the tile and the head */
-    return circ(7, 7, 25, 'none', `stroke="${ant}" stroke-width="5"`) + circ(93, 7, 25, 'none', `stroke="${ant}" stroke-width="5"`) +
-      poly([[10, 22], [90, 22], [90, 64], [50, 100], [10, 64]], k.a) + circ(50, 70, 11, bestOn(k.a, [k.bg, k.b, k.x])); },
+  /* reindeer: exactly three equal circles, two antlers on top and the head below, overlapping one another (edged in the tile colour so each reads) */
+  reindeer: (k) => { const ant = Object.values(C).filter((c) => c !== k.a && c !== k.bg).sort((u, v) => Math.min(contrastOf(v, k.bg), contrastOf(v, k.a)) - Math.min(contrastOf(u, k.bg), contrastOf(u, k.a)))[0], edge = `stroke="${k.bg}" stroke-width="3"`;
+    return circ(30, 32, 30, ant, edge) + circ(70, 32, 30, ant, edge) + circ(50, 68, 30, k.a, edge); },
   /* bell: big dome, wavy white band, round clapper below */
   bell: (k) => `<path d="M16 68 V50 Q16 8 50 8 Q84 8 84 50 V68Z" fill="${k.a}"/><rect x="6" y="66" width="88" height="16" fill="${k.b}"/>` + zig(6, 94, 74, 3.4, 8, k.bg, 2.4) + circ(50, 90, 11, k.x),
   hat: (k) => `<path d="M20 70 V58 Q20 22 50 22 Q80 22 80 58 V70Z" fill="${k.a}"/><rect x="10" y="68" width="80" height="18" rx="2" fill="${k.b}"/>` + zig(10, 90, 77, 3.4, 8, k.bg, 2.4) + circ(50, 14, 11, k.x),
@@ -167,8 +161,7 @@ const ICON = {
   ginger: (k) => circ(50, 22, 17, k.a) + `<rect x="8" y="40" width="84" height="20" rx="10" fill="${k.a}"/><rect x="28" y="40" width="44" height="40" rx="14" fill="${k.a}"/><rect x="30" y="64" width="16" height="34" rx="8" fill="${k.a}"/><rect x="54" y="64" width="16" height="34" rx="8" fill="${k.a}"/>` +
     [51, 63].map((y) => circ(50, y, 3.6, bestOn(k.a, [k.bg, k.b, k.x]))).join(''),
   treeC: (k) => circ(50, 24, 17, k.a) + circ(50, 50, 24, k.b) + circ(50, 80, 28, k.a) + circ(50, 6, 5.5, k.x) + circ(42, 52, 3.6, k.bg) + circ(60, 46, 3.6, k.bg) + circ(38, 82, 4, k.bg) + circ(58, 84, 4, k.bg) + circ(70, 76, 4, k.x),
-  wreath: (k) => Array.from({ length: 12 }, (_, i) => { const an = i / 12 * Math.PI * 2; return circ(50 + Math.cos(an) * 34, 50 + Math.sin(an) * 34, 13, i % 2 ? k.b : k.a); }).join('') + circ(50, 50, 20, k.bg) +
-    circ(40, 82, 4.5, k.x) + circ(50, 85, 4.5, k.x) + circ(60, 82, 4.5, k.x) + poly([[50, 84], [36, 96], [36, 74]], k.x) + poly([[50, 84], [64, 96], [64, 74]], k.x),
+  wreath: (k) => Array.from({ length: 12 }, (_, i) => { const an = i / 12 * Math.PI * 2; return circ(50 + Math.cos(an) * 34, 50 + Math.sin(an) * 34, 13, i % 2 ? k.b : k.a); }).join('') + circ(50, 50, 20, k.bg),
   /* scalloped garland with three round baubles (cap, loop, wavy band or split tone) hanging from it */
   scallop: (k) => [0, 1, 2].map((i) => { const cx = 16.65 + i * 33.3, cy = 66, r = 14.5, col = i % 2 ? k.b : k.a, cap = i % 2 ? k.a : k.b; return `<path d="M${i * 33.3} 0 A16.65 16.65 0 0 0 ${(i + 1) * 33.3} 0Z" fill="${k.a}"/>` + line(`M${cx} 16 V${cy - r - 7}`, cap, 2.4) + line(`M${cx - 3} ${cy - r - 2} V${cy - r - 5} A3 3 0 1 1 ${cx + 3} ${cy - r - 5} V${cy - r - 2}`, cap, 2.2) + `<rect x="${cx - 5}" y="${cy - r - 3}" width="10" height="6" rx="1.2" fill="${cap}"/>` +
     (i % 2 ? halfL(cx, cy, r, k.b) + halfR(cx, cy, r, k.a) : circ(cx, cy, r, col) + zig(cx - r, cx + r, cy, 3, 2, k.bg, 2.2)); }).join(''),
@@ -363,7 +356,6 @@ function build(anim) {
 const stage = document.getElementById('stage'), view = document.getElementById('view');
 function draw(anim = true) {
   stage.innerHTML = build(anim);
-  document.getElementById('gridNote').textContent = GRID[S.ratio][S.dens].join(' × ') + ' modules';
   fit();
 }
 function fit() {
@@ -380,7 +372,7 @@ const group = (id, key, parse = (v) => v) => document.getElementById(id).addEven
   document.querySelectorAll('#' + id + ' .opt').forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
   draw(key !== 'gut');
 });
-group('ratios', 'ratio'); group('dens', 'dens', Number); group('gut', 'gut');
+group('ratios', 'ratio'); group('gut', 'gut');
 document.getElementById('txt').addEventListener('input', (e) => { S.word = e.target.value; draw(false); });
 document.getElementById('shuf').addEventListener('click', () => { S.seed = Math.floor(Math.random() * 1e6); draw(true); });
 /* same layout and illustrations, new colours */
