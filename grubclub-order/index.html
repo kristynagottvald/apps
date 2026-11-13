@@ -52,9 +52,9 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 #pLogo i{color:var(--bean)}
 #pStep{right:56px;top:40px;font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--bean);display:flex;gap:18px}
 #pStep em{font-style:normal;opacity:.4}#pStep em.a{opacity:1}
-#pHead{left:56px;top:116px}
-#pHead h1{margin:0;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:-.01em}
-#pHead p{margin:8px 0 0;font-size:17px;color:#3d6f74}
+#pHead{left:169px;top:138px}
+#pHead h1{margin:0;font-size:31px;line-height:1.1;font-weight:700;letter-spacing:-.01em}
+#pHead p{margin:6px 0 0;font-size:14px;color:#3d6f74}
 #grid{left:56px;top:216px;width:744px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .card{background:#fff;border-radius:22px;padding:14px;height:226px;box-shadow:0 10px 24px -14px rgba(14,50,81,.35);opacity:0;transform:translateY(26px);transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),box-shadow .3s,outline-color .3s;outline:3px solid transparent;outline-offset:-1px}
 #s1.in .card{opacity:1;transform:none;transition-delay:calc(var(--i)*70ms*var(--k))}
@@ -67,17 +67,16 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .card.sel .add{background:var(--navy);color:var(--kiwi)}
 .bx{left:836px;top:106px;width:388px;height:584px;border-radius:28px;background:var(--navy);color:#fff;opacity:0;transform:translateX(30px);transition:opacity calc(.6s*var(--k)),transform calc(.7s*var(--k)) cubic-bezier(.2,.8,.2,1)}
 #s1.in .bx{opacity:1;transform:none}
-.bx h3{position:absolute;left:28px;top:24px;margin:0;font-size:22px;font-weight:600}
+.bx h3{position:absolute;left:22px;top:20px;margin:0;font-size:19px;font-weight:600}
 .bx .cn{position:absolute;right:28px;top:16px;font-size:30px;font-weight:700;color:var(--kiwi);line-height:1.2}
 .bx .cn small{font-size:16px;color:var(--egg);font-weight:500}
 #pbox{position:absolute;left:109px;top:68px;width:170px}
 #slots{position:absolute;left:28px;right:28px;top:284px;display:grid;gap:8px}
 .slot{height:46px;border-radius:14px;border:1.5px dashed rgba(215,245,250,.28);display:flex;align-items:center;gap:12px;padding:0 14px;font-size:13.5px;font-weight:500;color:rgba(215,245,250,.45);transition:background .3s,border-color .3s,color .3s}
-.slot i{width:22px;height:22px;border-radius:50%;background:rgba(215,245,250,.12);flex:none;transition:background .3s}
+.slot i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(215,245,250,.12);flex:none;font:600 10.5px/1 Poppins,sans-serif;font-style:normal;color:rgba(215,245,250,.55);transition:background .3s,color .3s}
+.slot.on i{color:var(--navy)}
 .slot span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .slot.on{border:1.5px solid transparent;background:rgba(215,245,250,.1);color:#fff}
-#cont{position:absolute;left:28px;right:28px;bottom:26px;height:52px;border-radius:999px;background:rgba(215,245,250,.12);color:rgba(215,245,250,.4);font:600 17px/52px Poppins,sans-serif;text-align:center;transition:background .3s,color .3s}
-#cont.ready{background:var(--kiwi);color:var(--bean)}
 @keyframes glow{50%{box-shadow:0 0 0 8px rgba(238,251,113,.25)}}
 
 /* ===== 3 pack ===== */
@@ -94,7 +93,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 #pkBtn.in{opacity:1;transform:none}
 #pkBtn.press{transform:scale(.96)}
 
-#pbox img,#pkBox img,#eThumb img{display:block;width:100%;height:auto}
+#pbox img{display:block;width:100%;height:auto}
 #pbox{transition:transform calc(.35s*var(--k)) cubic-bezier(.3,1.6,.5,1)}
 #pbox.bump{transform:scale(1.07) rotate(-2deg)}
 .slot.on i{animation:pop calc(.45s*var(--k)) cubic-bezier(.3,1.7,.5,1)}
@@ -137,60 +136,103 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 
 
 /* pick: roomier cards with product photos */
-#grid{left:56px;top:226px;width:744px;grid-template-columns:repeat(2,1fr);gap:32px}
-.card{display:flex;gap:20px;padding:20px;height:216px;border-radius:26px;outline:none;transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),background .3s}
+#grid{left:169px;top:222px;width:600px;grid-template-columns:repeat(2,1fr);gap:24px}
+.card{display:flex;gap:14px;padding:14px;height:186px;border-radius:20px;outline:none;transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),background .3s}
 #s1.in .card.sel{transform:translateY(-3px);outline:none;background:var(--kiwi)}
-.card .il{flex:none;width:140px;height:176px;border-radius:16px;overflow:hidden;background:#d4ea70}
+.card .il{flex:none;width:108px;height:158px;border-radius:14px;overflow:hidden;background:#d4ea70}
 .card .il img{display:block;width:100%;height:100%;object-fit:cover}
 .card .tx{display:flex;flex-direction:column;flex:1;min-width:0}
-.card .tx h4{margin:4px 0 0;height:auto;font-size:16px;line-height:1.3;font-weight:600}
+.card .tx h4{margin:2px 0 0;height:auto;font-size:14px;line-height:1.3;font-weight:600}
 .card .tx .rw{margin-top:auto}
 .card.sel .add{background:var(--navy);color:var(--kiwi)}
 .card.sel .rw small{color:var(--navy)}
-.bx{top:116px;height:574px}
-#pbox{left:84px;top:62px;width:220px}
-#slots{top:282px;gap:10px}
-.slot{height:50px}
+.bx{left:800px;top:140px;width:323px;height:476px;border-radius:22px}
+#pbox{left:70px;top:58px;width:184px}
+#slots{top:262px;left:22px;right:22px;gap:8px}
+.slot{height:44px}
 
-/* ===== 4 email ===== */
-#s3{background:var(--mint)}
-#esc{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none}
-#esc::-webkit-scrollbar{display:none}
-#esz{position:relative;width:1280px;height:1071px;overflow:hidden}
-#eim{position:absolute;left:0;top:0;width:2000px;height:1673px;transform:scale(.64);transform-origin:0 0}
-#email{position:absolute;left:330px;top:115px;width:1340px;height:1443px;background:var(--paper);color:#0F5F5E;font-size:23.4px}
-#email>*{position:absolute}
-#email .hero{left:0;top:0;width:1340px;height:840px;background:#0E3C65}
-#email .band{left:0;top:0;width:1340px;height:163px;background:#0B375C}
-#email .rv{opacity:0;transform:translateY(34px);transition:opacity calc(.7s*var(--k)),transform calc(.8s*var(--k)) cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--d)*1ms*var(--k))}
-#email.in .rv{opacity:1;transform:none}
-#eLogo{left:167px;top:52px;font-size:39px;color:#fff;line-height:56px}
-#eLogo i{color:var(--kiwi)}
-#eHdrR{right:167px;top:52px;height:56px;display:flex;align-items:center;gap:36px;font-size:17px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#fff;line-height:1;white-space:nowrap}
-#eHdrR .elog{padding:14px 26px;border:2px solid #fff;border-radius:11px;font-weight:700;font-size:16.5px}
-#eTitle{left:262px;top:249px;margin:0;font-size:50px;font-weight:700;letter-spacing:-.005em;line-height:78px;color:#fff;white-space:nowrap}
-#eHi{left:262px;top:371px;margin:0;font-size:23.4px;line-height:29px;color:#fff;white-space:nowrap}
-#eAdr{left:262px;top:455px;margin:0;font-size:22px;line-height:34px;letter-spacing:.14em;color:#fff;white-space:nowrap}
-#eBtn{left:262px;top:544px;width:291px;height:66px;border-radius:7px;background:#EFFB7A;color:var(--bean);font-weight:600;font-size:18.6px;line-height:66px;text-align:center}
-#eCard{left:168px;top:713px;width:1005px;height:600px;background:#fff;border-radius:26px}
-#eCard>*{position:absolute}
-#eSum{left:94px;top:60px;margin:0;font-size:26.6px;font-weight:600;line-height:42px;color:#0B5456;white-space:nowrap}
-#eItem{left:94px;top:148px;width:819px;height:76px;background:#E2F5F3}
-#eThumb{position:absolute;left:0;top:0;width:80px;height:76px;background:#EEF17A;border-radius:8px 0 0 8px;overflow:hidden}
-#eThumb img{position:absolute;left:8px;top:7px;width:64px}
-#eName{position:absolute;left:104px;top:0;line-height:76px;font-weight:600;color:#0C6663;white-space:nowrap}
-#eName s{display:inline-block;width:2px;height:20px;background:#0C6663;margin:0 14px 0 14px;vertical-align:-3px;text-decoration:none}
-#eName span{font-weight:400}
-#ePrice{position:absolute;right:29px;top:0;line-height:76px;color:#0F6561}
-.trow{left:550px;width:363px;height:76px;display:flex;justify-content:space-between;padding:3px 29px 0 0;align-items:center;line-height:1;color:#0F6561}
-.trow.ln{border-bottom:2px solid #8DD3C6;height:78px}
-.trow.tot{font-weight:600;color:#0B5456}
-#eFoot{left:0;top:1380px;width:1340px;text-align:center;font-size:19px;color:#4a8a88}
+
+/* ===== checkout flow pages (layout after the supplied references) ===== */
+.logo.dk{color:#0A5033}.logo.dk i{color:#0A5033}.logo.dk .wm{color:#B9E22E}
+.flow,#s1{background:var(--paper);color:#0A2F25}
+.fh{position:absolute;left:0;top:0;width:1280px;height:62px}
+.fh .logo{position:absolute;left:157px;top:14px;font-size:26px}
+.fh .bk{position:absolute;left:316px;top:20px;width:22px;height:22px;color:#0A2F25}
+.fh .pg{position:absolute;left:370px;top:0;width:753px;height:62px;font:500 11.5px/1 Poppins,sans-serif;color:#5b6f69}
+.pg .d{position:absolute;top:12px;width:8px;height:8px;border-radius:50%;background:#8a8f8d}
+.pg .d.on{background:#0F5A5C}
+.pg .bar{position:absolute;top:14px;height:4px;border-radius:2px;background:#bfc4c2;overflow:hidden}
+.pg .bar i{display:block;height:100%;width:0;background:#0F5A5C;transition:width calc(1.1s*var(--k)) ease}
+.pg .d1{left:0}.pg .b1{left:14px;width:296px}.pg .d2{left:318px}.pg .b2{left:332px;width:407px}.pg .d3{left:745px}
+.pg em{position:absolute;top:32px;font-style:normal}
+.pg .l1{left:0}.pg .l2{left:318px;transform:translateX(-30%)}.pg .l3{right:0}
+.pg em.on{color:#0F5A5C;font-weight:600}
+.fb{position:absolute;left:0;top:62px;width:1280px;height:55px;background:#D6F3E0;display:flex;align-items:center;justify-content:center;gap:12px;font:400 13px/1 Poppins,sans-serif;color:#0A2F25}
+.fb svg{width:18px;height:18px;flex:none}.fb .x{position:absolute;right:16px;top:19px;width:18px;height:18px}
+.fbar{position:absolute;left:0;top:640px;width:1280px;height:80px;border-top:1px solid #dcdfdd;background:var(--paper)}
+.fbar .bkb{position:absolute;left:421px;top:14px;width:72px;height:41px;border:1.5px solid #0A2F25;border-radius:8px;font:600 14px/38px Poppins,sans-serif;text-align:center}
+.fbar .nx{position:absolute;left:509px;top:14px;width:360px;height:41px;border-radius:8px;background:var(--navy);color:#fff;font:600 14px/41px Poppins,sans-serif;text-align:center;transition:transform .15s,opacity .3s}
+.fbar .nx.press{transform:scale(.97)}
+#cont{opacity:.4}#cont.ready{opacity:1}
+.pcol{position:absolute;left:169px;top:140px;width:460px;height:480px}
+.pcol.wide{width:954px}
+.ph{margin:0;font:700 31px/1.15 Poppins,sans-serif;letter-spacing:-.025em;color:#0A2F25}
+.pimg{position:absolute;left:658px;top:134px;width:462px;height:490px;border-radius:26px;overflow:hidden;background:#d4ea70}
+.pimg img{display:block;width:100%;height:100%;object-fit:cover}
+.flow .pc,.flow .pcol>*,.flow .pimg,.flow .sum{opacity:0;transform:translateY(16px);transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1)}
+.flow.in .pcol>*,.flow.in .pimg,.flow.in .sum{opacity:1;transform:none}
+.flow.in .pcol>*:nth-child(2){transition-delay:calc(.08s*var(--k))}.flow.in .pcol>*:nth-child(3){transition-delay:calc(.16s*var(--k))}.flow.in .pcol>*:nth-child(4){transition-delay:calc(.24s*var(--k))}
+/* address */
+.okd{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#B9E22E;color:#0A3A2B;opacity:0;transition:opacity .4s}
+.okd svg{width:16px;height:16px}
+.gn{margin:14px 0 0;font:600 17px/1 Poppins,sans-serif;color:#0F5A5C;opacity:0;transition:opacity .4s}
+#gn2{margin-top:8px;color:#0F5A5C;opacity:0;transition:opacity .4s}
+.fld{position:absolute;left:0;top:176px;width:446px;height:42px;border:1.5px solid #0F5A5C;border-radius:6px;font:500 14px/42px Poppins,sans-serif;padding:0 14px;color:#0A2F25}
+.fld label{position:absolute;left:10px;top:-8px;padding:0 5px;background:var(--paper);font:400 11px/14px Poppins,sans-serif;color:#0F5A5C}
+.fld .tick{position:absolute;right:14px;top:10px;width:20px;height:20px;opacity:0;transition:opacity .3s}.fld .tick svg{width:20px;height:20px}
+#s4.done .okd,#s4.done .gn,#s4.done #gn2,#s4.done .tick{opacity:1}
+#s4.in .pcol>.okd,#s4 .pcol>.okd{transform:none}
+/* options */
+.opts{position:absolute;left:0;top:66px;width:460px;display:grid;grid-template-columns:1fr 1fr;gap:20px 20px}
+.opt{height:50px;border-radius:10px;background:#EFEDE6;font:600 14px/50px Poppins,sans-serif;padding:0 20px;transition:background .3s}
+.opt.sel{background:var(--kiwi)}
+.note{position:absolute;left:0;width:446px;height:70px;border-radius:8px;background:#E1F4E1;display:flex;align-items:center;gap:14px;padding:0 16px}
+.note b{display:block;font:600 13px/1.3 Poppins,sans-serif;color:#0A2F25}.note span{display:block;margin-top:3px;font:400 12px/1.4 Poppins,sans-serif;color:#33524a}
+.note .ni{flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;display:grid;place-items:center;background:#fff}.note .ni svg{width:24px;height:24px}.note .ni img{width:100%;height:100%;object-fit:cover}
+.note.mid{left:247px;top:418px;width:450px;height:68px}
+/* flavours */
+.flv{position:absolute;left:12px;top:70px;display:grid;grid-template-columns:repeat(3,190px);gap:30px 12px}
+.fv{height:136px}
+.fv .ic{width:46px;height:46px}
+.fv .nm{margin-top:10px;font:600 14px/1 Poppins,sans-serif}
+.fv .th{margin-top:18px;display:flex;gap:12px}
+.th b{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#EFEDE6;transition:background .3s,color .3s}.th b svg{width:20px;height:20px}
+.th b.up.sel{background:var(--kiwi)}.th b.dn.sel{background:#0E3251;color:#fff}
+/* cooking */
+.cooks{position:absolute;left:114px;top:66px;display:flex;gap:26px}
+.ck{width:220px;height:210px;border-radius:10px;overflow:hidden;background:#EFEDE6;text-align:center;transition:background .3s}
+.ck .im{height:130px;background:#d4ea70}.ck .im img{display:block;width:100%;height:100%;object-fit:cover}
+.ck b{display:block;margin-top:12px;font:600 14px/1 Poppins,sans-serif}.ck span{display:block;margin:8px 16px 0;font:400 11.5px/1.4 Poppins,sans-serif;color:#33524a}
+.ck.sel{background:var(--kiwi)}
+/* plan */
+.lead{position:absolute;left:0;top:64px;margin:0;width:470px;font:400 13.5px/1.55 Poppins,sans-serif;color:#1e3a33}
+.lbl{position:absolute;left:0;font:600 13.5px/1 Poppins,sans-serif}
+.seg{position:absolute;left:0;width:461px;height:36px;display:flex;border:1.5px solid #0A2F25;border-radius:8px;overflow:hidden}
+.seg span{flex:1;font:600 13.5px/33px Poppins,sans-serif;text-align:center;border-left:1.5px solid #0A2F25;transition:background .3s,color .3s}
+.seg span:first-child{border-left:0}.seg span.sel{background:#0A2F25;color:#fff}
+.sum{position:absolute;left:658px;top:130px;width:462px;height:486px;border-radius:14px;background:#E9EFEA;padding:22px 20px}
+.sum h3{margin:0 0 14px;font:700 20px/1.2 Poppins,sans-serif;letter-spacing:-.02em}
+.sum .sh{display:block;font:600 14.5px/1.3 Poppins,sans-serif;margin-top:6px}
+.sum p{margin:6px 0 0;font:400 13px/1.4 Poppins,sans-serif}.sum s,.sum .row s{color:#6e7b76}.sum em{font-style:normal;color:#0F5A5C;font-weight:600}
+.free{position:relative;margin:12px 0 10px;padding:9px 12px;border-radius:6px;background:#C9F0D3}.free b{font:500 13.5px/1.3 Poppins,sans-serif}.free i{position:absolute;right:12px;top:9px;font:700 13.5px/1.3 Poppins,sans-serif;font-style:normal}.free span{display:block;margin-top:3px;font:400 11.5px/1.4 Poppins,sans-serif;color:#33524a}
+.sum .row{display:flex;justify-content:space-between;padding:9px 0;font:400 13.5px/1.2 Poppins,sans-serif}.sum .row.ln{border-bottom:1px solid #c9d2cd}.sum .row:first-of-type{border-top:1px solid #c9d2cd}
+.sum .tot{font:700 15px/1.2 Poppins,sans-serif;padding-top:12px}
+
 </style>
 </head>
 <body>
 <nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Grubclub Order</b>
-  <div class="ctl" role="group" aria-label="Scenes"><button data-s="0">Hero</button><button data-s="1">Pick</button><button data-s="2">Pack</button><button data-s="3">Email</button><button class="pp" id="pp" aria-label="Pause"></button></div>
+  <div class="ctl" role="group" aria-label="Scenes"><button data-s="0">Hero</button><button data-s="4">Address</button><button data-s="5">Days</button><button data-s="6">Flavours</button><button data-s="7">Cooking</button><button data-s="8">Plan</button><button data-s="1">Pick</button><button data-s="2">Pack</button><button class="pp" id="pp" aria-label="Pause"></button></div>
 </nav>
 <main id="wrap"><div id="stage">
 
@@ -210,11 +252,9 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 
 <!-- 2 pick -->
 <section class="scene" id="s1" aria-label="Pick your meals">
-  <div class="abs logo" id="pLogo">grub<i>club</i><span class="wm" style="color:var(--bean)"></span></div>
-<div class="abs snav" id="pNav"><a>Our plans</a><a>How it works<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our recipes<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our meal kits<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="sp"></span><span class="lang"><svg class="g" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.5"/><ellipse cx="12" cy="12" rx="4.2" ry="9.5"/><path d="M2.5 12h19M4 7h16M4 17h16"/></svg>English<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="login">Log in</span></div>
   <div class="abs" id="pHead"><h1>Pick your meals</h1><p>Choose 3 you like for your entomo box</p></div>
   <div class="abs" id="grid"></div>
-  <div class="abs bx"><h3>Your box</h3><div class="cn"><b id="cnt">0</b><small> / 3</small></div><div id="pbox"></div><div id="slots"></div><div id="cont">Continue</div></div>
+  <div class="abs bx"><h3>Your box</h3><div class="cn"><b id="cnt">0</b><small> / 3</small></div><div id="pbox"></div><div id="slots"></div></div>
 </section>
 
 <!-- 3 pack -->
@@ -228,26 +268,43 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
   <div class="abs" id="pkBtn" role="button">Place order</div>
 </section>
 
-<!-- 4 email -->
-<section class="scene" id="s3" aria-label="Order email">
- <div id="esc"><div id="esz"><div id="eim"><div id="email">
-  <div class="hero"></div><div class="band"></div>
-  <div class="logo rv" id="eLogo" style="--d:0">grub<i>club</i><span class="wm" style="color:var(--kiwi)"></span></div>
-  <div class="rv" id="eHdrR" style="--d:80"><span>Read online</span><span class="elog">Log in</span></div>
-  <h2 class="rv" id="eTitle" style="--d:200">Your order has arrived!</h2>
-  <p class="rv" id="eHi" style="--d:320">Hi Kristyna,<br>Thanks for shopping with grubclub. Your package was delivered to:</p>
-  <p class="rv" id="eAdr" style="--d:420">330 UNIVERSITY AVE, TORONTO, ON M5G 1R8</p>
-  <div class="rv" id="eBtn" style="--d:520">View your order</div>
-  <div class="rv" id="eCard" style="--d:620">
-    <h3 id="eSum">Order summary</h3>
-    <div id="eItem"><div id="eThumb"></div><div id="eName">Entomo box<s></s><span>x1</span></div><div id="ePrice">$100.00</div></div>
-    <div class="trow ln" style="top:241px"><span>Subtotal</span><span>$90.00</span></div>
-    <div class="trow ln" style="top:317px"><span>Shipping</span><span>$27.55</span></div>
-    <div class="trow" style="top:393px"><span>HST</span><span>$27.55</span></div>
-    <div class="trow tot" style="top:469px"><span>Total</span><span>$145.10</span></div>
-  </div>
-  <div class="rv" id="eFoot" style="--d:760">Questions about your order? Just reply to this email.</div>
- </div></div></div></div>
+
+
+
+<!-- flow: address -->
+<section class="scene flow" id="s4" aria-label="Delivery address">
+  <div class="pcol" style="top:156px"><span class="okd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.500"/></svg></span><p class="gn" id="gn1">Good news!</p><h1 class="ph" id="gn2">We deliver to your area!</h1>
+    <div class="fld" id="fld"><label>Enter delivery address</label><span id="typed"></span><i class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.500"/></svg></i></div></div>
+  <div class="pimg"><img src="box-photo.webp" alt="" style="object-position:48% 52%"></div>
+</section>
+<!-- flow: days per week -->
+<section class="scene flow" id="s5" aria-label="How often">
+  <div class="pcol"><h1 class="ph">How often should we handle dinner?</h1>
+    <div class="opts" id="optsDays"><div class="opt">1-2 days per week</div><div class="opt">3-4 days per week</div><div class="opt">5-6 days per week</div><div class="opt">All week</div></div>
+    <div class="note" style="top:392px"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#0F5A5C" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2.500"/><path d="M4 10h16M8 3v4M16 3v4"/></svg></span><div><b>Flexible, no lock-in plans</b><span>Skip or pause flexibly</span></div></div></div>
+  <div class="pimg"><img src="flow-boxes.webp" alt="" style="object-position:50% 40%"></div>
+</section>
+<!-- flow: flavours -->
+<section class="scene flow" id="s6" aria-label="Favourite flavours">
+  <div class="pcol wide"><h1 class="ph">Any favourite flavours?</h1><div class="flv" id="flv"></div></div>
+</section>
+<!-- flow: how do you like to cook -->
+<section class="scene flow" id="s7" aria-label="How do you like to cook">
+  <div class="pcol wide"><h1 class="ph">How do you like to cook?</h1>
+    <div class="cooks" id="cooks"></div>
+    <div class="note mid"><span class="ni"><img src="meal-mealworm.webp" alt=""></span><div><b>Help us personalize your menu</b><span>With so many meals to choose from, your answers help us serve up the ones you'll love most.</span></div></div></div>
+</section>
+<!-- flow: plan summary -->
+<section class="scene flow" id="s8" aria-label="Your plan">
+  <div class="pcol" style="width:470px"><h1 class="ph">Dinner's sorted, your way.</h1>
+    <p class="lead">Based on what you've told us, we recommend this box size. Perfect for solo cooks and duos, you'll never be short on delicious bug-powered variety and meal options!</p>
+    <div class="lbl" style="top:238px">Servings per dinner</div><div class="seg" id="segA" style="top:262px"><span>2</span><span>4</span><span>6</span></div>
+    <div class="lbl" style="top:318px">Dinners per week</div><div class="seg" id="segB" style="top:342px"><span>3</span><span>4</span><span>5</span></div></div>
+  <div class="sum"><h3>Your summary</h3><b class="sh">Preferences</b><p>Crunchy and savoury</p><b class="sh" style="margin-top:26px">Order summary</b>
+    <p>3 meals for 2 people per week</p><p>6 servings at <s>$16.67</s> <em>$15.00</em> per serving</p>
+    <div class="free"><b>Free spice kit - for life!</b><i>FREE</i><span>Choose 1 free item per box with an active subscription.</span></div>
+    <div class="row"><span>Box price</span><span><s>$100.00</s> <em>$90.00</em></span></div><div class="row"><span>Shipping</span><span>$27.55</span></div><div class="row ln"><span>HST</span><span>$27.55</span></div>
+    <div class="row tot"><span>First box total</span><span>$145.10</span></div></div>
 </section>
 
 <div id="w1" class="abs" style="inset:0;display:none;z-index:60"></div>
@@ -314,9 +371,8 @@ const PICKS=[0,1,3];
 
 /* ============ build static DOM ============ */
 $('#grid').innerHTML=MEALS.map((m,i)=>`<div class="card" style="--i:${i}" data-i="${i}"><div class="il"><img src="${m.img}" alt="${m.n}"></div><div class="tx"><h4>${m.n}</h4><div class="rw"><small>${m.g}</small><div class="add">+ Add</div></div></div></div>`).join('');
-$('#slots').innerHTML=PICKS.map(()=>`<div class="slot"><i></i><span>Choose a meal</span></div>`).join('');
+$('#slots').innerHTML=PICKS.map((_,n)=>`<div class="slot"><i>${n+1}</i><span>Choose a meal</span></div>`).join('');
 $('#pbox').innerHTML='<img src="box.webp" alt="">';
-$('#eThumb').innerHTML='<img src="box.webp" alt="">';
 
 /* hero collage */
 const HB=[[300,610,62,'#EEF6A8'],[200,600,90,'#A8C7DA'],[1000,590,84,'#BFE3DF'],[900,640,40,'#EEF6A8']];
@@ -338,7 +394,7 @@ $('#pkRings').innerHTML=Array.from({length:PR.n},()=>`<circle cx="${PR.cx}" cy="
 /* ============ per-frame drawing ============ */
 const pack={t:0,out:null};
 function drawHero(){const t=hero.t;
-  for(const l of hero.L){const p=eob((t-l.d)/.95),sw=Math.sin(t*l.sp+l.ph)*l.amp;l.el.setAttribute('transform',`translate(${l.x} ${l.y}) rotate(${l.r+sw+(1-p)*-22*Math.sign(l.r||1)}) scale(${Math.max(p,.0001)})`)}
+  for(const l of hero.L){const p=1,sw=Math.sin(t*l.sp+l.ph)*l.amp;l.el.setAttribute('transform',`translate(${l.x} ${l.y}) rotate(${l.r+sw+(1-p)*-22*Math.sign(l.r||1)}) scale(${Math.max(p,.0001)})`)}
   const s=eob((t-.15)/.95)*(1+.022*Math.sin(t*1.7));$('#hc').setAttribute('transform',`translate(640 362) scale(${Math.max(s*1.14,.0001)})`);
   $('#hTxt').setAttribute('transform',`rotate(${-9+Math.sin(t*.9)*1.3})`);
   $$('.hl').forEach((e,i)=>{const p=clamp((t-(.9+i*.14))/.5);e.setAttribute('opacity',p);e.setAttribute('dy',(1-p)*14)});
@@ -359,7 +415,8 @@ function curSet(x,y){cursor.style.transition='none';cursor.style.transform=`tran
 function curGo(x,y,ms){cursor.style.transition=`transform ${ms*K}ms cubic-bezier(.45,0,.2,1)`;cursor.style.transform=`translate(${x}px,${y}px)`}
 async function curClick(g){cursor.classList.remove('down');void cursor.offsetWidth;cursor.classList.add('down');await W(160,g)}
 const cen=el=>{const r=rc(el);return{x:r.x+r.w/2,y:r.y+r.h/2}};
-const BG=['#0E3251','#F7F6FA','#0E3251','#A3DAC5'];
+const BG=['#0E3251','#F7F6FA','#0E3251','#0E3251','#F7F6FA','#F7F6FA','#F7F6FA','#F7F6FA','#F7F6FA'];
+const ORDER=[0,4,5,6,7,8,1,2],ORDER_CLIP=[0,1];
 function clearWipe(){['#w1','#w2'].forEach(x=>{const e=$(x);e.getAnimations().forEach(a=>a.cancel());e.style.display='none';e.style.opacity=''})}
 /* scene change: a calm dissolve through the next scene's background colour */
 async function wipe(g,x,y,col){const w=$('#w2');$('#w1').style.display='none';w.style.background=col;w.style.opacity=0;w.style.display='block';
@@ -367,7 +424,7 @@ async function wipe(g,x,y,col){const w=$('#w2');$('#w1').style.display='none';w.
 function unwipe(){const w=$('#w2');$('#w1').style.display='none';w.getAnimations().forEach(a=>a.cancel());
   if(w.style.display!=='block'){return}w.style.opacity=1;
   w.animate([{opacity:1},{opacity:0}],{duration:600*K,easing:'ease-out'}).finished.then(()=>{w.style.display='none';w.style.opacity=''}).catch(()=>{})}
-function show(i){$$('.scene').forEach((s,j)=>s.classList.toggle('on',j===i));$$('.ctl [data-s]').forEach(b=>b.classList.toggle('on',+b.dataset.s===i));unwipe();cursor.style.opacity=0}
+function show(i){$$('.scene').forEach(s=>s.classList.toggle('on',s.id==='s'+i));$$('.ctl [data-s]').forEach(b=>b.classList.toggle('on',+b.dataset.s===i));unwipe();cursor.style.opacity=0}
 function showCursor(){cursor.style.opacity=1}
 
 /* ============ scenes ============ */
@@ -416,17 +473,59 @@ async function pack_(g,o){
   cursor.style.opacity=0;$('#pkBtn').classList.remove('in');pack.out=pack.t;
   const L=await loc;$('#pkT').classList.add('ship');$('#pkS').classList.add('ship');$('#pkT').textContent="It's on its way!";$('#pkS').textContent=L.here?'Shipping to your location':'Shipping to 500 Prince Edward Drive';
   await W(1300,g);showMap(L);$('#pkMap').classList.add('in');await W(4200,g);
-  return{x:640,y:360}},
-
-async function email_(g,o){
-  show(3);const em=$('#email'),sc=$('#esc');em.classList.remove('in');sc.scrollTop=0;
-  await W(250,g);em.classList.add('in');await W(o.clip?9000:2600,g);
-  if(!o.clip){const max=sc.scrollHeight-sc.clientHeight;await tween(2600,g,p=>{sc.scrollTop=max*eio(p)});await W(2600,g);await tween(1200,g,p=>{sc.scrollTop=max*(1-eio(p))});await W(600,g)}
   return{x:640,y:360}}
 ];
 
+
+/* ============ checkout shell (header, progress, banner, bottom bar) ============ */
+const ICO={tag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.500" cy="8" r="1.200"/></svg>',x:'<svg class="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9.500"/><path d="M8.500 8.500l7 7M15.500 8.500l-7 7"/></svg>',
+ back:'<svg class="bk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>'};
+const WORM='<span class="wm"></span>';
+function shell(id,step,b1,b2,nxId){return `<div class="fh"><div class="logo dk">grub<i>club</i>${WORM}</div>${ICO.back}<div class="pg"><b class="d d1 on"></b><span class="bar b1"><i data-w="${b1}"></i></span><b class="d d2${step>1?' on':''}"></b><span class="bar b2"><i data-w="${b2}"></i></span><b class="d d3${step>2?' on':''}"></b><em class="l1${step==1?' on':''}">About you</em><em class="l2${step==2?' on':''}">Checkout</em><em class="l3${step==3?' on':''}">Select meals</em></div></div>
+<div class="fb">${ICO.tag}<span>Discount successfully applied! + Up to 20 free meals (see terms &amp; conditions)</span>${ICO.x}</div>
+<div class="fbar"><div class="bkb">Back</div><div class="nx"${nxId?` id="${nxId}"`:''}>Next</div></div>`}
+[[4,1,10,0],[5,1,30,0],[6,1,52,0],[7,2,78,0],[8,2,100,18]].forEach(([i,st,b1,b2])=>$('#s'+i).insertAdjacentHTML('afterbegin',shell(i,st,b1,b2)));
+$('#s1').insertAdjacentHTML('afterbegin',shell(1,3,100,72,'cont'));
+const fillBars=sc=>$$('.bar i',sc).forEach(e=>{e.style.transition='none';e.style.width='0';void e.offsetWidth;e.style.transition='';setTimeout(()=>e.style.width=e.dataset.w+'%',350)});
+/* flavours */
+const FLV=[['Salty','<svg class="ic" viewBox="0 0 48 48"><rect x="14" y="14" width="20" height="26" rx="5" fill="#D7F5FA"/><rect x="16" y="8" width="16" height="9" rx="4" fill="#3FA0BE"/><circle cx="21" cy="11.500" r="1.200" fill="#fff"/><circle cx="27" cy="11.500" r="1.200" fill="#fff"/><rect x="14" y="24" width="20" height="8" fill="#9EC878"/></svg>'],
+ ['Smoky','<svg class="ic" viewBox="0 0 48 48"><path d="M14 38c-6-4 2-8-2-12s4-8 0-12M26 38c-6-4 2-8-2-12s4-8 0-12M38 38c-6-4 2-8-2-12s4-8 0-12" fill="none" stroke="#0F5A5C" stroke-width="3.500" stroke-linecap="round"/></svg>'],
+ ['Spicy','<svg class="ic" viewBox="0 0 48 48"><path d="M30 8c8 6 12 20 2 30-8 6-22 2-22-10 0-8 6-8 6-16 4 2 6 6 6 10 4-4 4-10 8-14z" fill="#1C8859"/><path d="M26 34c0-6 6-8 6-14" stroke="#8CE39B" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'],
+ ['Herby','<svg class="ic" viewBox="0 0 48 48"><path d="M24 42V20M24 30c-8 0-12-6-12-12 8 0 12 4 12 12zM24 24c8 0 12-6 12-12-8 0-12 4-12 12z" fill="#9EC878" stroke="#1C8859" stroke-width="2.500" stroke-linejoin="round"/></svg>'],
+ ['Sweet','<svg class="ic" viewBox="0 0 48 48"><path d="M24 6c8 10 12 16 12 22a12 12 0 0 1-24 0c0-6 4-12 12-22z" fill="#EEFB71" stroke="#B9E22E" stroke-width="2.500" stroke-linejoin="round"/></svg>']];
+const UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 11v9H4v-9zM7 11l4-8c2 0 3 1 3 3v3h5.500a1.500 1.500 0 0 1 1.500 1.800l-1.500 7A2 2 0 0 1 17.500 20H7"/></svg>';
+const DN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" style="transform:scaleY(-1)"><path d="M7 11v9H4v-9zM7 11l4-8c2 0 3 1 3 3v3h5.500a1.500 1.500 0 0 1 1.500 1.800l-1.500 7A2 2 0 0 1 17.500 20H7"/></svg>';
+$('#flv').innerHTML=FLV.map(f=>`<div class="fv">${f[1]}<div class="nm">${f[0]}</div><div class="th"><b class="up">${UP}</b><b class="dn">${DN}</b></div></div>`).join('');
+const COOK=[['Quick recipes','I want dinner on the table in 20 minutes or less.','meal-grasshoppers.webp'],['Chef-style recipes','I like restaurant-quality meals in 20-40 minutes.','meal-mealworm.webp'],['Family-style recipes','We cook for everyone. Kid-loved, adult-approved.','meal-buffalo.webp']];
+$('#cooks').innerHTML=COOK.map(c=>`<div class="ck"><div class="im"><img src="${c[2]}" alt="" style="object-position:50% 35%"></div><b>${c[0]}</b><span>${c[1]}</span></div>`).join('');
+
+/* ============ flow page animations ============ */
+async function tap(g,el,fn,dur=750){const c=cen(el);curGo(c.x,c.y,dur);await W(dur+150,g);await curClick(g);if(fn)fn();await W(380,g)}
+async function flowIn(g,id,reset){show(id);const sc=$('#s'+id);sc.classList.remove('in','done');reset&&reset(sc);fillBars(sc);await W(150,g);sc.classList.add('in');await W(900,g);return sc}
+async function flowNext(g,sc){const nx=$('.nx',sc),c=cen(nx);curGo(c.x,c.y,800);await W(900,g);nx.classList.add('press');await curClick(g);await W(120,g);nx.classList.remove('press');cursor.style.opacity=0;return{x:c.x,y:c.y}}
+const startCur=(el)=>{const c=cen(el);curSet(c.x+240,c.y+90);showCursor()};
+scenes[4]=async function address_(g,o){
+  const sc=await flowIn(g,4,()=>{$('#typed').textContent=''});
+  const f=$('#fld'),c=cen(f);curSet(c.x+260,c.y+120);showCursor();curGo(c.x-120,c.y,700);await W(850,g);await curClick(g);
+  const T='500 Prince Edward Drive, Etobicoke, ON';for(let i=1;i<=T.length;i++){$('#typed').textContent=T.slice(0,i);await W(38,g)}
+  await W(350,g);sc.classList.add('done');await W(1100,g);return await flowNext(g,sc)};
+scenes[5]=async function days_(g,o){
+  const sc=await flowIn(g,5,sc=>$$('.opt',sc).forEach(e=>e.classList.remove('sel')));
+  const o2=$$('.opt',sc)[1];startCur(o2);await tap(g,o2,()=>o2.classList.add('sel'));await W(700,g);return await flowNext(g,sc)};
+scenes[6]=async function flavours_(g,o){
+  const sc=await flowIn(g,6,sc=>$$('.th b',sc).forEach(e=>e.classList.remove('sel')));
+  const fv=$$('.fv',sc);startCur(fv[0]);
+  await tap(g,$('.up',fv[0]),()=>$('.up',fv[0]).classList.add('sel'));await tap(g,$('.up',fv[2]),()=>$('.up',fv[2]).classList.add('sel'),600);await tap(g,$('.dn',fv[4]),()=>$('.dn',fv[4]).classList.add('sel'),600);
+  await W(500,g);return await flowNext(g,sc)};
+scenes[7]=async function cook_(g,o){
+  const sc=await flowIn(g,7,sc=>$$('.ck',sc).forEach(e=>e.classList.remove('sel')));
+  const ck=$$('.ck',sc)[0];startCur(ck);await tap(g,ck,()=>ck.classList.add('sel'));await W(900,g);return await flowNext(g,sc)};
+scenes[8]=async function plan_(g,o){
+  const sc=await flowIn(g,8,sc=>$$('.seg span',sc).forEach(e=>e.classList.remove('sel')));
+  const a=$$('#segA span')[0],b=$$('#segB span')[0];startCur(a);await tap(g,a,()=>a.classList.add('sel'));await tap(g,b,()=>b.classList.add('sel'),650);await W(1200,g);return await flowNext(g,sc)};
+
 /* ============ story ============ */
-async function run(i,g,o){let first=true;for(;;){if(!first||o.wipeFirst){}first=false;const org=await scenes[i](g,o);let n=(i+1)%4;if(o.clip&&n===2)n=3;if(n===0)o.clip=false;await wipe(g,org.x,org.y,BG[n]);i=n}}
+async function run(i,g,o){let first=true;for(;;){if(!first||o.wipeFirst){}first=false;const org=await scenes[i](g,o);const ord=o.clip?ORDER_CLIP:ORDER;let n=ord[(ord.indexOf(i)+1)%ord.length];if(n===0)o.clip=false;await wipe(g,org.x,org.y,BG[n]);i=n}}
 function play(o={}){K=1/(o.speed||1);document.documentElement.style.setProperty('--k',K);const g=++gen;paused=false;syncPP();run(o.from||0,g,o).catch(e=>{if(e!==CANCEL)console.error(e)})}
 
 const PAUSE='<svg viewBox="0 0 12 12"><rect x="1.500" y="1" width="3" height="10" rx=".8"/><rect x="7.500" y="1" width="3" height="10" rx=".8"/></svg>',PLAY='<svg viewBox="0 0 12 12"><path d="M2.500 1.200v9.600L10.500 6z"/></svg>';
