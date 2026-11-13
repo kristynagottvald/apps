@@ -27,16 +27,16 @@ nav.back .ctl .pp svg{width:12px;height:12px;fill:currentColor}
 nav.back b{flex:none;white-space:nowrap}
 nav.back .ctl button{white-space:nowrap}
 
-/* design selector */
-#picker{flex:none;display:flex;justify-content:center;gap:8px;padding:14px 20px 0;background:var(--mint);overflow-x:auto;scrollbar-width:none}
-#picker::-webkit-scrollbar{display:none}
-#picker button{flex:none;font:600 13px/1 Poppins,sans-serif;letter-spacing:.01em;color:var(--navy);background:transparent;border:1.5px solid rgba(14,50,81,.28);border-radius:999px;padding:10px 16px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s,border-color .2s}
-#picker button i{font-style:normal;opacity:.55;margin-right:7px}
-#picker button:hover{border-color:var(--navy)}
-#picker button[aria-selected=true]{background:var(--navy);color:var(--kiwi);border-color:var(--navy)}
-#picker button:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+/* design selector, in the header next to Desktop / Mobile */
+nav.back b{flex:0 1 auto;min-width:0}
+nav.back .ctl{min-width:0;overflow-x:auto;scrollbar-width:none}
+nav.back .ctl::-webkit-scrollbar{display:none}
+nav.back .ctl>div{display:flex;align-items:center;gap:4px}
+nav.back .ctl .sep{flex:none;width:1px;height:18px;background:#333;margin:0 10px}
+nav.back .ctl button{flex:none}
+@media (max-width:900px){nav.back .ctl .sep,nav.back .ctl>div[role=group]{display:none}}
 
-#scroller{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;background:var(--mint);scrollbar-width:thin;padding:16px 20px 64px}
+#scroller{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;background:var(--mint);scrollbar-width:thin;padding:28px 20px 64px}
 #frame{width:min(1000px,100%);margin:0 auto;transition:width .5s cubic-bezier(.2,.8,.2,1)}
 #frame.mobile{width:min(390px,100%)}
 .email{container-type:inline-size;position:relative;background:var(--navy);color:var(--navy);overflow:hidden;box-shadow:0 30px 60px -28px rgba(14,50,81,.55)}
@@ -188,14 +188,8 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
 </head>
 <body>
 <nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Grubclub Offer Emails</b>
-  <div class="ctl" role="group" aria-label="Preview size"><button data-v="desktop" class="on">Desktop</button><button data-v="mobile">Mobile</button></div>
+  <div class="ctl"><div id="picker" role="tablist" aria-label="Email design"><button role="tab" aria-selected="true" data-i="0" class="on">Flavor All Stars</button><button role="tab" aria-selected="false" data-i="1">You. Do. You.</button><button role="tab" aria-selected="false" data-i="2">Last Day</button><button role="tab" aria-selected="false" data-i="3">Last Chance</button></div><span class="sep"></span><div role="group" aria-label="Preview size"><button data-v="desktop" class="on">Desktop</button><button data-v="mobile">Mobile</button></div></div>
 </nav>
-<div id="picker" role="tablist" aria-label="Email design">
-  <button role="tab" aria-selected="true" data-i="0"><i>1</i>Flavor All Stars</button>
-  <button role="tab" aria-selected="false" data-i="1"><i>2</i>You. Do. You.</button>
-  <button role="tab" aria-selected="false" data-i="2"><i>3</i>Last Day</button>
-  <button role="tab" aria-selected="false" data-i="3"><i>4</i>Last Chance</button>
-</div>
 <main id="scroller"><div id="frame">
 
 <!-- 1 Flavor All Stars -->
@@ -378,7 +372,7 @@ $$('.rv').forEach(r=>io.observe(r));
 /* design selector */
 const mails=$$('.email'),tabs=$$('#picker button');
 function pick(i,fromHash,first){mails.forEach((m,j)=>{m.hidden=j!==i;m.classList.remove('go')});
-  tabs.forEach((b,j)=>b.setAttribute('aria-selected',j===i));$('#scroller').scrollTop=0;
+  tabs.forEach((b,j)=>{b.setAttribute('aria-selected',j===i);b.classList.toggle('on',j===i)});$('#scroller').scrollTop=0;
   if(first){mails[i].classList.add('nt','go');requestAnimationFrame(()=>requestAnimationFrame(()=>mails[i].classList.remove('nt')))}
   else requestAnimationFrame(()=>requestAnimationFrame(()=>mails[i].classList.add('go')));
   try{if(!fromHash)history.replaceState(null,'','#'+(i+1))}catch(e){}}
