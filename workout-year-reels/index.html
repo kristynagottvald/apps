@@ -17,7 +17,7 @@ nav.back a{color:#8d8d8d;text-decoration:none}
 nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
 nav.back span{color:#6e6e6e}
 nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
-.sw{margin-left:auto;display:flex;border:1px solid #333;border-radius:999px;padding:2px;flex:none}
+.sw{margin-left:auto;max-width:100%;overflow-x:auto;scrollbar-width:none;display:flex;border:1px solid #333;border-radius:999px;padding:2px;flex:none}
 .sw button{font:500 12px/1 "Inter","Helvetica Neue",Arial,sans-serif;color:#8d8d8d;background:none;border:0;border-radius:999px;padding:6px 11px;cursor:pointer}
 .sw button:hover{color:#fff}
 .sw button[aria-pressed=true]{background:#fff;color:#000}
@@ -135,6 +135,63 @@ const STYLES=[
      const b=pt(a);
      c.fillStyle=P.cream;c.beginPath();c.arc(b[0],b[1],34,0,TAU);c.fill();
      c.fillStyle=P.orange;c.beginPath();c.arc(b[0],b[1],24,0,TAU);c.fill();
+   }},
+ { id:'amplify', name:'Amplify', bg:P.cream, ink:P.ink, layout:'center',
+   title:'Amplifier', cap:'You cheered on every set and kept the crew going.',
+   draw(c,p){
+     // nested drops that share one tail point and keep growing out of the smallest
+     const pal=[P.blue,P.green,P.ink,P.orange,P.pine],L=pal.length,cx=W/2,ay=735,k=1.5;
+     rings(p*L,5,L,(pos,ci)=>{
+       const r=12+pos*172,cy=ay-k*r,ph=Math.acos(1/k),a=clamp(1-(pos-.88)*8);
+       c.save();c.globalAlpha=a;c.beginPath();c.moveTo(cx,ay);
+       c.lineTo(cx+Math.cos(Math.PI/2+ph)*r,cy+Math.sin(Math.PI/2+ph)*r);
+       c.arc(cx,cy,r,Math.PI/2+ph,Math.PI/2-ph+TAU);c.closePath();
+       c.fillStyle=pal[ci];c.fill();c.restore();
+     });
+   }},
+ { id:'builder', name:'Builder', bg:P.green, ink:P.pine, layout:'center',
+   title:'Rep Builder', cap:'You kept training, growing and levelling up one rep at a time.',
+   draw(c,p){
+     // a drop bobs over layered bands; each band lifts into a pinch under it, one after the other
+     const cx=W/2,cols=[P.cream,P.sky,P.blue,P.pine],base=[560,612,664,722],bot=790;
+     const pk=cols.map((_,k)=>(.5+.5*Math.sin(p*TAU-k*.7))*(70-k*10));
+     for(let k=0;k<4;k++){
+       c.beginPath();c.moveTo(0,bot);
+       for(let x=0;x<=W;x+=5){const d=Math.abs(x-cx);c.lineTo(x,base[k]-pk[k]*Math.exp(-d/46)-pk[k]*.15*Math.exp(-d/150))}
+       c.lineTo(W,bot);c.closePath();c.fillStyle=cols[k];c.fill();
+     }
+     const top=base[0]-pk[0]*1.15,by=430-48*(.5+.5*Math.sin(p*TAU));
+     c.strokeStyle=P.cream;c.lineWidth=3;c.beginPath();c.moveTo(cx,by);c.lineTo(cx,top);c.stroke();
+     c.fillStyle=P.cream;c.beginPath();c.arc(cx,by,28,0,TAU);c.fill();
+   }},
+ { id:'tide', name:'Tide', bg:P.sky, ink:P.navy, layout:'left',
+   kicker:'You hit the water', big:'212', sub:'sunrise swims',
+   draw(c,p){
+     // thick wave lines roll under a sun that sits in the dip
+     c.fillStyle=P.orange;c.beginPath();c.arc(W/2,545+12*Math.sin(p*TAU),86,0,TAU);c.fill();
+     c.strokeStyle=P.blue;c.lineWidth=27;c.lineCap='butt';
+     for(let i=0;i<7;i++){
+       c.beginPath();
+       for(let x=-10;x<=W+10;x+=8){
+         const dip=Math.cos((x-W/2)/W*TAU)*(.5+.5*Math.cos(p*TAU+i*.5));
+         const y=590+i*50+8*Math.sin(p*TAU+i*.8)+78*dip*(1-i*.06);
+         x===-10?c.moveTo(x,y):c.lineTo(x,y);
+       }
+       c.stroke();
+     }
+   }},
+ { id:'streaks', name:'Streaks', bg:P.green, ink:P.ink, layout:'center',
+   title:'Pace Setter', cap:'You moved fast and brought everyone along.',
+   draw(c,p){
+     // rounded capsules on one diagonal that stretch and slide past each other
+     const u=[.34,-.94],tan='#DDD3C0';
+     const caps=[[390,700,230,40,P.pine,5],[110,715,200,52,P.ink,0],[170,690,250,44,P.blue,1.2],[250,725,330,72,tan,2.1],[335,715,400,92,P.cream,3],[420,690,220,48,P.orange,4]];
+     c.lineCap='round';
+     for(const [bx,by,len,w,col,ph] of caps){
+       const sh=26*Math.sin(p*TAU+ph),l=len*(1+.2*Math.sin(p*TAU+ph*1.7));
+       const x0=bx+u[0]*sh,y0=by+u[1]*sh;
+       c.strokeStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(x0,y0);c.lineTo(x0+u[0]*l,y0+u[1]*l);c.stroke();
+     }
    }},
 ];
 
