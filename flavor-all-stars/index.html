@@ -90,8 +90,8 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
 .badge.blue span{font-size:max(12px,2.7cqw);letter-spacing:-.01em;text-transform:none;font-weight:800;line-height:1.05;margin:0}
 
 /* ===== 1 flavor all stars ===== */
-#e1 .hero{position:relative;background:var(--veg);padding:0 0 20cqw;isolation:isolate}
-#e1 .hero .pat{position:absolute;inset:0;z-index:-1}
+#e1 .hero{position:relative;background:var(--navy);padding:0 0 20cqw;isolation:isolate}
+#e1 .hero .pat{position:absolute;inset:0;z-index:-1;background:var(--navy)}
 #e1 h1{margin:3.2cqw 5cqw 0;text-align:center;font-size:max(30px,7.4cqw);color:var(--egg)}
 #e1 .panel{margin-top:3.4cqw}
 #e1 .badge{right:-6cqw;top:50%;margin-top:-8.5cqw}
@@ -307,27 +307,38 @@ $$('[data-ftr]').forEach(e=>{const t=e.dataset.ftr;e.outerHTML='<footer>'+LOGO+'
 const f1=n=>Math.round(n*10)/10;
 function leafPath(h,w,lobes,amp){const N=64,Lp=[],Rp=[];for(let i=0;i<=N;i++){const t=i/N,y=-h/2+h*t,base=Math.pow(Math.sin(Math.PI*Math.pow(t,.85)),.7)*w/2,k=1+amp*Math.sin(t*lobes*2*Math.PI);Lp.push(f1(-base*k)+' '+f1(y));Rp.push(f1(base*k)+' '+f1(y))}return 'M'+Lp.join('L')+'L'+Rp.reverse().join('L')+'Z'}
 const GR={lt:'#9ED04B',md:'#5BB343',dk:'#2E8B3C',kale:'#3D9F3E'};
+const CARROT='<path d="M-17 -44C-19 -50 19 -50 17 -44 16 -10 8 40 0 66-8 40-16 -10-17 -44Z" fill="#F2A04A"/><path d="M-11 -28h9M2 -14h10M-12 2h9M0 18h8M-6 34h6" stroke="#D98438" stroke-width="3" stroke-linecap="round"/>';
+const PARSNIP='<path d="M-15 -46C-17 -50 17 -50 15 -46 13 -10 5 40 0 70-5 40-13 -10-15 -46Z" fill="#F3E9CE"/><path d="M-8 -28h7M2 -12h8M-6 6h7M1 24h6M-3 42h5" stroke="#E3A35C" stroke-width="2.6" stroke-linecap="round"/>';
+const KALEL=`<path d="${leafPath(156,60,7,.22)}" fill="${GR.kale}"/><path d="M0 -74V78" stroke="#1F6F2B" stroke-width="3.4" stroke-linecap="round"/>`;
+const LETL=`<path d="${leafPath(148,64,5,.16)}" fill="${GR.lt}"/><path d="M0 -70V74M0 -24Q-14 -34 -22 -44M0 4Q14 -6 22 -16M0 32Q-14 22 -22 12" fill="none" stroke="${GR.md}" stroke-width="3" stroke-linecap="round"/>`;
+const HOP=(c,w)=>`<g fill="none" stroke="${c}" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"><path d="M-20 8L-27 24L-36 38M2 10L-2 28L-10 42M16 6L36 -22L58 24L68 38"/><path d="M-40 -8Q-52 -36 -66 -46M-37 -10Q-40 -42 -48 -58"/></g><path d="M-38 2Q-20 -22 20 -16Q48 -8 56 8Q26 24 -12 20Q-32 16 -38 2Z" fill="${c}"/><path d="M-6 -12V12M6 -11V13M18 -9V10" stroke="${w}" stroke-width="2" opacity=".55"/><path d="M-24 -6Q16 -34 70 8Q18 -2 -24 -6Z" fill="${w}"/><ellipse cx="-38" cy="-4" rx="11" ry="10" fill="${c}"/><circle cx="-42" cy="-7" r="2.4" fill="#0A2A3D"/>`;
 const SYM={
- carrot:`<path d="M0 -44 C-20 -44 -20 0 -4 62 Q0 68 4 62 C20 0 20 -44 0 -44Z" fill="#F0922F"/><path d="M-11 -24h9M3 -8h9M-9 10h8M2 28h6" stroke="#C8691E" stroke-width="3" stroke-linecap="round"/><path d="M0 -44C-12 -62 -10 -84 -20 -104 -2 -92 3 -68 0 -44ZM0 -44C12 -62 12 -80 24 -98 8 -84 2 -64 0 -44Z" fill="${GR.md}"/><path d="M0 -44C-3 -70 -3 -90 0 -108 4 -90 4 -70 0 -44Z" fill="${GR.dk}"/>`,
- parsnip:`<path d="M0 -46 C-14 -46 -13 0 -3 66 Q0 72 3 66 C13 0 14 -46 0 -46Z" fill="#F4E8C8"/><path d="M-8 -26h7M2 -10h8M-7 8h7M1 26h6" stroke="#E7A35B" stroke-width="2.6" stroke-linecap="round"/><path d="M0 -46C-8 -70 -4 -92 -8 -112 4 -94 6 -70 0 -46Z" fill="${GR.md}"/><path d="M0 -46C8 -64 16 -78 26 -88 14 -62 8 -52 0 -46Z" fill="${GR.dk}"/>`,
- beet:`<path d="M-8 -34C-44 -36 -50 8 -26 30 -14 40 -6 44 -4 56 -2 68 6 78 22 84 14 70 10 58 12 46 40 36 50 6 36 -18 24 -34 8 -40 -8 -34Z" fill="#D95A43"/><path d="M-30 -8Q-6 -2 -14 24M-6 -24Q22 -14 14 12M16 -20Q34 -8 30 6" fill="none" stroke="#A8412E" stroke-width="3.4" stroke-linecap="round"/><path d="M-6 -34C-14 -56 -28 -66 -44 -64 -36 -48 -22 -38 -6 -34Z" fill="${GR.md}"/><path d="M-4 -36C0 -58 8 -72 22 -78 18 -58 10 -44 -4 -36Z" fill="${GR.dk}"/>`,
- radish:`<path d="M0 -30C-26 -30 -34 4 -16 26 -8 36 -2 44 0 66 2 44 8 36 16 26 34 4 26 -30 0 -30Z" fill="#E98A84"/><path d="M-4 -30C-10 -52 -22 -62 -38 -60 -30 -44 -18 -34 -4 -30ZM4 -30C10 -52 22 -62 38 -60 30 -44 18 -34 4 -30Z" fill="${GR.md}"/>`,
- berry:`<path d="M0 36C-34 14 -34 -24 -16 -28 -8 -26 -4 -22 0 -22 4 -22 8 -26 16 -28 34 -24 34 14 0 36Z" fill="#E04A3F"/><g fill="#F5C65A"><ellipse cx="-12" cy="-8" rx="2.4" ry="3.6"/><ellipse cx="6" cy="-12" rx="2.4" ry="3.6"/><ellipse cx="18" cy="0" rx="2.4" ry="3.6"/><ellipse cx="-2" cy="4" rx="2.4" ry="3.6"/><ellipse cx="-18" cy="8" rx="2.4" ry="3.6"/><ellipse cx="10" cy="16" rx="2.4" ry="3.6"/><ellipse cx="-4" cy="22" rx="2.4" ry="3.6"/></g><path d="M-20 -26 -10 -38 0 -28 10 -38 20 -26 8 -22 0 -16 -8 -22Z" fill="${GR.md}"/><path d="M0 -28V-44" stroke="${GR.dk}" stroke-width="4" stroke-linecap="round"/>`,
- avo:`<path d="M0 -62C32 -62 48 -24 48 8 48 42 26 62 0 62-26 62-48 42-48 8-48-24-32-62 0-62Z" fill="#5FAE3A"/><path d="M0 -50C24 -50 38 -20 38 8 38 34 20 50 0 50-20 50-38 34-38 8-38-20-24-50 0-50Z" fill="#B3DB5E"/><circle cx="0" cy="14" r="20" fill="#B8652E"/>`,
- apple:`<path d="M0 -34C-12 -44 -44 -36 -44 0 -44 36 -22 50 0 44 22 50 44 36 44 0 44 -36 12 -44 0 -34Z" fill="#8CC63F"/><path d="M0 -26C-10 -34 -36 -28 -36 0 -36 30 -18 42 0 37 18 42 36 30 36 0 36 -28 10 -34 0 -26Z" fill="#F3E4B8"/><ellipse cx="0" cy="2" rx="12" ry="15" fill="#E8D29C"/><ellipse cx="-3" cy="2" rx="2.2" ry="4" fill="#B5652E"/><ellipse cx="3" cy="2" rx="2.2" ry="4" fill="#B5652E"/><path d="M0 -30V-48" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/>`,
- lettuce:`<path d="${leafPath(132,68,5,.16)}" fill="${GR.lt}"/><path d="M0 -62V66M0 -20Q-14 -30 -22 -40M0 6Q14 -4 22 -14M0 30Q-14 20 -22 10" fill="none" stroke="${GR.md}" stroke-width="3" stroke-linecap="round"/><path d="M0 66V96" stroke="#7A8F3A" stroke-width="6" stroke-linecap="round"/>`,
- kale:`<path d="${leafPath(156,60,7,.22)}" fill="${GR.kale}"/><path d="M0 -74V78" stroke="#1F6F2B" stroke-width="3.4" stroke-linecap="round"/><path d="M0 78V104" stroke="${GR.kale}" stroke-width="6" stroke-linecap="round"/>`,
+ carrot:`${CARROT}<path d="M-3 -46C-12 -70 -10 -94 -18 -118 -4 -96 2 -70 2 -46ZM3 -46C8 -70 16 -86 28 -100 14 -76 10 -62 5 -46Z" fill="${GR.md}"/><path d="M0 -46C-2 -72 -2 -92 2 -112 5 -92 4 -72 0 -46Z" fill="${GR.dk}"/>`,
+ parsnip:`${PARSNIP}<path d="M0 -48C-8 -72 -4 -94 -8 -114 4 -96 6 -72 0 -48Z" fill="${GR.md}"/><path d="M0 -48C8 -66 16 -80 26 -90 14 -64 8 -54 0 -48Z" fill="${GR.dk}"/>`,
+ carrotKale:`<g transform="translate(0 -168) scale(.85)">${KALEL}</g><path d="M0 -104V-44" stroke="${GR.kale}" stroke-width="5" stroke-linecap="round"/>${CARROT}`,
+ parsnipLettuce:`<g transform="translate(0 -170) scale(.8)">${LETL}</g><path d="M0 -112V-46" stroke="#7FB04A" stroke-width="5" stroke-linecap="round"/>${PARSNIP}`,
+ beet:`<path d="M0 -46C30 -46 52 -22 46 6 42 28 22 36 10 42 6 50 12 62 26 68 30 70 34 70 38 68 24 82 0 70 0 48-24 44-46 26-46 0-46 -26-24 -46 0 -46Z" fill="#C9573F"/><path d="M-26 -24l16 8M-4 -34l16 8M-32 -2l16 8M0 -10l16 8M22 6l14 7M-12 18l14 7" stroke="#A23F30" stroke-width="3.6" stroke-linecap="round"/>`,
+ chard:`<path d="M0 -66C16 -50 22 -8 10 40L0 70-6 40C-18 -8-14 -50 0 -66Z" fill="#E39080"/><path d="M0 -56L-2 54" stroke="#B56A4F" stroke-width="3" stroke-linecap="round"/>`,
+ berry:`<path d="M0 38C-40 18-42 -20-16 -26Q0 -20 16 -26C42 -20 40 18 0 38Z" fill="#DE4A40"/><g fill="#F2B245"><ellipse cx="-14" cy="-8" rx="2.5" ry="3.8"/><ellipse cx="6" cy="-12" rx="2.5" ry="3.8"/><ellipse cx="22" cy="-2" rx="2.5" ry="3.8"/><ellipse cx="-3" cy="5" rx="2.5" ry="3.8"/><ellipse cx="-22" cy="8" rx="2.5" ry="3.8"/><ellipse cx="12" cy="17" rx="2.5" ry="3.8"/><ellipse cx="-6" cy="23" rx="2.5" ry="3.8"/></g><path d="M-28 -24L-14 -34 -9 -46 0 -32 9 -46 14 -34 28 -24 11 -19 0 -12-11 -19Z" fill="${GR.md}"/><path d="M0 -30V-46" stroke="${GR.dk}" stroke-width="4" stroke-linecap="round"/>`,
+ avo:`<path d="M0 -62C32 -62 48 -24 48 8 48 42 26 62 0 62-26 62-48 42-48 8-48-24-32-62 0-62Z" fill="#6DB23C"/><path d="M0 -50C24 -50 38 -20 38 8 38 34 20 50 0 50-20 50-38 34-38 8-38-20-24-50 0-50Z" fill="#B3DB5E"/><circle cx="0" cy="14" r="20" fill="#B8652E"/>`,
+ apple:`<path d="M0 -34C-12 -44-44 -36-44 0-44 36-22 50 0 44 22 50 44 36 44 0 44 -36 12 -44 0 -34Z" fill="#8CC63F"/><path d="M0 -26C-10 -34-36 -28-36 0-36 30-18 42 0 37 18 42 36 30 36 0 36 -28 10 -34 0 -26Z" fill="#F3E4B8"/><ellipse cx="0" cy="2" rx="12" ry="15" fill="#E8D29C"/><ellipse cx="-3" cy="2" rx="2.2" ry="4" fill="#B5652E"/><ellipse cx="3" cy="2" rx="2.2" ry="4" fill="#B5652E"/><path d="M0 -30V-48" stroke="#8B5A2B" stroke-width="4" stroke-linecap="round"/>`,
+ lettuce:`${LETL}<path d="M0 74V100" stroke="#7A8F3A" stroke-width="6" stroke-linecap="round"/>`,
+ kale:`${KALEL}<path d="M0 78V104" stroke="${GR.kale}" stroke-width="6" stroke-linecap="round"/>`,
  arugula:`<path d="${leafPath(120,42,4,.32)}" fill="${GR.md}"/><path d="M0 -56V58" stroke="${GR.dk}" stroke-width="3" stroke-linecap="round"/><path d="M0 58V84" stroke="${GR.md}" stroke-width="5" stroke-linecap="round"/>`,
+ ovalLeaf:`<path d="M0 -50C26 -34 30 20 0 56-30 20-26 -34 0 -50Z" fill="#5DAA3E"/><path d="M2 -44Q-3 0-4 48" fill="none" stroke="#2E7D32" stroke-width="3.4" stroke-linecap="round"/>`,
+ lance:`<path d="M0 -60C14 -30 14 20 0 62-14 20-14 -30 0 -60Z" fill="#2E8B3C"/>`,
+ heartLeaf:`<path d="M0 58C-36 30-46 -20-26 -36-12 -46-2 -32 0 -22 2 -32 12 -46 26 -36 46 -20 36 30 0 58Z" fill="#C95A3F"/><path d="M0 50V-14M-4 24L-20 4M4 24L20 4" fill="none" stroke="#9C3F2D" stroke-width="3" stroke-linecap="round"/>`,
+ chili:`<path d="M-32 -40C-4 -50 26 -20 20 20 18 38 28 52 44 56 18 72-8 58-8 24-8 -2-14 -24-32 -40Z" fill="#E8737A"/>`,
  sprig:`<path d="M0 70C-4 20 4 -20 0 -70" fill="none" stroke="#3E9A47" stroke-width="4" stroke-linecap="round"/><g fill="${GR.md}"><ellipse cx="-16" cy="-52" rx="13" ry="10" transform="rotate(-20 -16 -52)"/><ellipse cx="15" cy="-34" rx="13" ry="10" transform="rotate(20 15 -34)"/><ellipse cx="-17" cy="-12" rx="14" ry="11" transform="rotate(-20 -17 -12)"/><ellipse cx="16" cy="10" rx="14" ry="11" transform="rotate(20 16 10)"/><ellipse cx="-14" cy="32" rx="12" ry="9" transform="rotate(-20 -14 32)"/><ellipse cx="0" cy="-74" rx="10" ry="12"/></g>`,
- flower:`<path d="M0 0V84M0 44Q-16 32 -22 12M0 60Q16 48 22 28" fill="none" stroke="#E9A23B" stroke-width="4" stroke-linecap="round"/><path d="${(()=>{let d='';for(let i=0;i<28;i++){const a=i/28*Math.PI*2,r=i%2?15:30;d+=(i?'L':'M')+f1(Math.cos(a)*r)+' '+f1(Math.sin(a)*r)}return d+'Z'})()}" fill="#F2B33D"/><circle r="9" fill="#F7CD6B"/>`,
+ flower:`<path d="M0 0V84M0 44Q-16 32-22 12M0 60Q16 48 22 28" fill="none" stroke="#E9A23B" stroke-width="4" stroke-linecap="round"/><path d="${(()=>{let d='';for(let i=0;i<28;i++){const a=i/28*Math.PI*2,r=i%2?15:30;d+=(i?'L':'M')+f1(Math.cos(a)*r)+' '+f1(Math.sin(a)*r)}return d+'Z'})()}" fill="#F2B33D"/><circle r="9" fill="#F7CD6B"/>`,
  drop:`<path d="M0 -20C14 0 14 16 0 18-14 16-14 0 0 -20Z" fill="#E0553F"/>`,
  drop2:`<path d="M0 -20C14 0 14 16 0 18-14 16-14 0 0 -20Z" fill="#EF8E86"/>`,
  dot:`<circle r="5" fill="#F3B33E"/>`,
- hopper:`<g fill="none" stroke="#62B64E" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"><path d="M-22 8L-28 24L-36 38M0 10L-4 28L-12 42M14 6L36 -22L58 24L66 38"/><path d="M-40 -8Q-54 -34 -70 -44M-38 -10Q-44 -40 -52 -56"/></g><path d="M-34 0Q-14 -14 22 -8Q42 -4 46 8Q22 14 -12 12Q-30 10 -34 0Z" fill="#62B64E"/><path d="M-26 -4Q14 -26 62 8Q16 -2 -26 -4Z" fill="#46973A"/><ellipse cx="-38" cy="-3" rx="10" ry="9" fill="#62B64E"/><circle cx="-41" cy="-6" r="2.2" fill="#0A4B3D"/>`,
- hopperR:`<g fill="none" stroke="#C4543A" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"><path d="M-22 8L-28 24L-36 38M0 10L-4 28L-12 42M14 6L36 -22L58 24L66 38"/><path d="M-40 -8Q-54 -34 -70 -44M-38 -10Q-44 -40 -52 -56"/></g><path d="M-34 0Q-14 -14 22 -8Q42 -4 46 8Q22 14 -12 12Q-30 10 -34 0Z" fill="#C4543A"/><path d="M-26 -4Q14 -26 62 8Q16 -2 -26 -4Z" fill="#A23F2B"/><ellipse cx="-38" cy="-3" rx="10" ry="9" fill="#C4543A"/><circle cx="-41" cy="-6" r="2.2" fill="#0A4B3D"/>`
+ hopper:HOP('#62B64E','#46973A'),
+ hopperR:HOP('#C4543A','#A23F2B')
 };
-/* type: symbol, weight, radius at scale 1 (for spacing), max tilt in degrees */
-const KIND=[['carrot',3,58,26],['parsnip',3,58,26],['beet',2,48,50],['radish',1,40,30],['berry',1.4,38,30],['avo',1,56,30],['apple',1,48,30],['lettuce',3,56,22],['kale',2.4,66,22],['arugula',1.6,48,26],['sprig',2.6,52,18],['flower',1.1,44,18],['hopper',2.4,52,40],['hopperR',.6,52,40]];
+/* type: symbol, weight, radius at scale 1 (for spacing), max tilt in degrees, scale multiplier. Mostly upright, like the reference */
+const KIND=[['carrot',3,58,12],['parsnip',2,58,12],['carrotKale',1.6,70,8,.8],['parsnipLettuce',1.6,70,8,.8],['beet',2,50,40],['chard',1.2,48,14],['berry',1.4,40,16],['avo',1,56,18],['apple',1,48,18],['lettuce',2,56,12],['kale',2,66,12],['arugula',1.2,48,14],['ovalLeaf',2,46,18],['lance',2,48,22],['heartLeaf',1,48,16],['chili',.8,44,30],['sprig',2.4,52,12],['flower',1.1,44,14],['hopper',2.4,56,35],['hopperR',.8,56,35]];
 const SMALL=[['drop',3,14,180],['drop2',2,14,180],['dot',3,6,0]];
 (function(){const d=document.createElementNS('http://www.w3.org/2000/svg','svg');d.setAttribute('width',0);d.setAttribute('height',0);d.setAttribute('aria-hidden','true');d.style.cssText='position:absolute;left:-9999px';
   d.innerHTML='<defs>'+Object.keys(SYM).map(k=>`<g id="v-${k}">${SYM[k]}</g>`).join('')+'</defs>';document.body.prepend(d)})();
@@ -335,7 +346,7 @@ function art(host,seed){const W=1000,H=+host.dataset.h||600,g=host.dataset.grad?
   const dens=y=>{if(!g)return 1;const t=clamp((y/H-g[0])/(g[1]-g[0]));return t*t*(3-2*t)};   // 0 at the top, 1 at the bottom: fewer pieces, never a fade
   const pick=L=>{let r=R()*L.reduce((a,k)=>a+k[1],0);for(const k of L){if((r-=k[1])<0)return k}return L[0]};
   const out=[],placed=[];
-  const tryPlace=(L,tries,sMin,sMax,gap,ydens)=>{for(let n=0;n<tries;n++){const k=pick(L),sc=sMin+R()*(sMax-sMin),x=-20+R()*(W+40),y=-20+R()*(H+40),r=k[2]*sc;
+  const tryPlace=(L,tries,sMin,sMax,gap,ydens)=>{for(let n=0;n<tries;n++){const k=pick(L),sc=(sMin+R()*(sMax-sMin))*(k[4]||1),x=-20+R()*(W+40),y=-20+R()*(H+40),r=k[2]*sc;
       if(R()>ydens(y-r*.85))continue;
       if(placed.some(p=>Math.hypot(p[0]-x,p[1]-y)<(p[2]+r)*gap))continue;
       placed.push([x,y,r]);out.push(`<use href="#v-${k[0]}" transform="translate(${f1(x)} ${f1(y)}) rotate(${f1((R()*2-1)*k[3])}) scale(${f1(sc)})"/>`)}};
