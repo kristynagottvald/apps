@@ -186,6 +186,12 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .flow .pc,.flow .pcol>*,.flow .pimg,.flow .sum{opacity:0;transform:translateY(16px);transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1)}
 .flow.in .pcol>*,.flow.in .pimg,.flow.in .sum{opacity:1;transform:none}
 .flow.in .pcol>*:nth-child(2){transition-delay:calc(.08s*var(--k))}.flow.in .pcol>*:nth-child(3){transition-delay:calc(.16s*var(--k))}.flow.in .pcol>*:nth-child(4){transition-delay:calc(.24s*var(--k))}
+/* days page: green card, big lime circle, the plate masked into it */
+.pimg.mc{background:#4A9070}
+.pimg.mc .lc{position:absolute;left:50%;top:50%;width:540px;height:540px;margin:-270px 0 0 -270px;border-radius:50%;background:#F0FD8B;transform:scale(.55);transition:transform calc(1.1s*var(--k)) cubic-bezier(.2,.8,.2,1)}
+.pimg.mc .plate{position:absolute;left:50%;top:50%;width:340px;height:340px;margin:-170px 0 0 -170px;object-fit:contain;filter:drop-shadow(0 16px 22px rgba(14,50,81,.28));transform:scale(.7);opacity:0;transition:transform calc(1s*var(--k)) calc(.25s*var(--k)) cubic-bezier(.2,.8,.2,1),opacity calc(.6s*var(--k)) calc(.25s*var(--k))}
+.flow.in .pimg.mc .lc{transform:scale(1)}
+.flow.in .pimg.mc .plate{transform:none;opacity:1}
 /* address */
 .okd{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#B9E22E;color:#0A3A2B;opacity:0;transition:opacity .4s}
 .okd svg{width:16px;height:16px}
@@ -288,7 +294,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
   <div class="pcol"><h1 class="ph">How often should we handle dinner?</h1>
     <div class="opts" id="optsDays"><div class="opt">1-2 days per week</div><div class="opt">3-4 days per week</div><div class="opt">5-6 days per week</div><div class="opt">All week</div></div>
     <div class="note" style="top:372px"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#0F5A5C" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2.500"/><path d="M4 10h16M8 3v4M16 3v4"/></svg></span><div><b>Flexible, no lock-in plans</b><span>Skip or pause flexibly</span></div></div></div>
-  <div class="pimg"><img src="flow-boxes.webp" alt="" style="object-position:50% 40%"></div>
+  <div class="pimg mc"><i class="lc"></i><img class="plate" src="flow-plate.webp" alt="A plate of food"></div>
 </section>
 <!-- flow: flavours -->
 <section class="scene flow" id="s6" aria-label="Favourite flavours">
