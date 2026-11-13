@@ -83,9 +83,9 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
 .cta:focus-visible{outline:3px solid var(--egg);outline-offset:3px}
 .badge{position:absolute;width:17cqw;height:17cqw;transform:rotate(-9deg);z-index:3}
 .badge b{position:absolute;inset:0;border-radius:50%;opacity:0;animation:rip 3.6s ease-out infinite}
-.badge b:nth-child(1){background:var(--avo)}.badge b:nth-child(2){background:#CDE67C;animation-delay:1.2s}.badge b:nth-child(3){background:var(--matcha);animation-delay:2.4s}
-@keyframes rip{0%{opacity:.75;transform:scale(1)}100%{opacity:0;transform:scale(1.7)}}
-.badge div{position:absolute;inset:0;border-radius:50%;background:var(--egg);color:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 1.6cqw 3cqw -1.4cqw rgba(0,0,0,.5)}
+.badge b{background:var(--kale)}.badge.blue b{background:var(--blue)}.badge b:nth-child(2){animation-delay:1.2s}.badge b:nth-child(3){animation-delay:2.4s}
+@keyframes rip{0%{opacity:0;transform:scale(1)}14%{opacity:.5;transform:scale(1.2)}100%{opacity:0;transform:scale(1.8)}}
+.badge div{position:absolute;inset:0;border-radius:50%;background:var(--kale);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 1.6cqw 3cqw -1.4cqw rgba(0,0,0,.5)}
 .badge strong{font-weight:800;font-size:max(26px,6.4cqw);line-height:1;letter-spacing:-.03em}
 .badge span{font-weight:700;font-size:max(9px,1.75cqw);line-height:1.15;letter-spacing:.07em;text-transform:uppercase;margin-top:.4cqw}
 .go .badge{animation:pop .7s cubic-bezier(.3,1.6,.5,1) both}
@@ -133,7 +133,6 @@ footer p{margin:1.8cqw 0 0;max-width:62cqw;font-size:max(8.5px,1.05cqw);line-hei
 #e2 .panel{--w:66cqw;padding:3cqw 16cqw 3.4cqw 6cqw;margin:0}
 #e2 .amt{font-size:max(36px,8.6cqw);line-height:.98}
 #e2 .badge{position:absolute;right:1.5cqw;top:3cqw;width:14cqw;height:14cqw}
-#e2 .badge div{background:transparent;border:.3cqw solid var(--navy);box-shadow:none}
 #e2 .badge strong{font-size:max(22px,5.2cqw)}
 #e2 .plate{position:absolute;right:0;top:9cqw;width:38cqw;filter:drop-shadow(0 2cqw 2.4cqw rgba(0,0,0,.4));z-index:3}
 #e2 .make{background:var(--egg);padding:6cqw 6cqw 5cqw}
