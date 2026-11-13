@@ -1,5 +1,14 @@
 [
   {
+    "id": "human-tech-motion",
+    "title": "Human / Tech Motion Loop",
+    "category": "Motion",
+    "url": "human-tech-motion/",
+    "thumbnail": "human-tech-motion/thumb.png",
+    "preview": "human-tech-motion/thumb.webp",
+    "alt": "Looping collage of flower, butterfly and portrait photography with vibrant gradients, halftone dots, yellow pixel blocks, black circles, pixel type and thin vector curves over a minimal dot grid"
+  },
+  {
     "id": "clearco-logistics-motion",
     "title": "Clearco Logistics Motion",
     "category": "Motion",
