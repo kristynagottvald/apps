@@ -156,6 +156,9 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .slot{height:44px}
 
 
+/* typography: no widows or orphans */
+.ph,.ck b,#pHead h1,#pkT,.sum h3,.card .tx h4{text-wrap:balance}
+.lead,.note span,.ck span,#pHead p,.sum p,.free span,.gn{text-wrap:pretty}
 /* ===== checkout flow pages (layout after the supplied references) ===== */
 .logo.dk{color:#0A5033}.logo.dk i{color:#0A5033}.logo.dk .wm{color:#9DCB2B}
 .flow,#s1{background:var(--paper);color:#0A2F25}
@@ -233,7 +236,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .ck b{display:block;margin-top:26px;font:600 14px/1 Poppins,sans-serif}.ck span{display:block;margin:8px 16px 0;font:400 11.5px/1.4 Poppins,sans-serif;color:#33524a}
 .ck.sel{background:var(--kiwi)}
 /* plan */
-.lead{position:absolute;left:0;top:64px;margin:0;width:470px;font:400 13.5px/1.55 Poppins,sans-serif;color:#1e3a33}
+.lead{position:absolute;left:0;top:64px;margin:0;width:420px;font:400 13.5px/1.55 Poppins,sans-serif;color:#1e3a33}
 .lbl{position:absolute;left:0;font:600 13.5px/1 Poppins,sans-serif}
 .seg{position:absolute;left:0;width:461px;height:36px;display:flex;border:1.5px solid #0A2F25;border-radius:8px;overflow:hidden}
 .seg span{flex:1;font:600 13.5px/33px Poppins,sans-serif;text-align:center;border-left:1.5px solid #0A2F25;transition:background .3s,color .3s}
@@ -279,7 +282,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 <section class="scene" id="s2" aria-label="Packing the box">
   <svg class="bg" viewBox="0 0 1280 720"><g id="pkRings"></g></svg>
   <div class="abs" id="kBar"></div>
-  <div class="abs snav" id="kNav"><a>Our plans</a><a>How it works<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our recipes<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our meal kits<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="sp"></span><span class="lang"><svg class="g" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.5"/><ellipse cx="12" cy="12" rx="4.2" ry="9.5"/><path d="M2.5 12h19M4 7h16M4 17h16"/></svg>English<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="login">Log in</span></div>
+  <div class="abs snav" id="kNav"><a>Our plans</a><a>How it works<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our recipes<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our meal kits<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="sp"></span><span class="lang"><svg class="g" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.5"/><ellipse cx="12" cy="12" rx="4.2" ry="9.5"/><path d="M2.5 12h19M4 7h16M4 17h16"/></svg>English<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="login">My orders</span></div>
   <div class="abs logo" id="kLogo">grub<i>club</i><span class="wm" style="color:var(--kiwi)"></span></div>
   <div class="abs" id="pkT">Packing<br>your box</div><div class="abs" id="pkS">4 meals · 1 entomo box</div>
   <div class="abs" id="pkMap"><div id="mapTiles"></div><div id="mapPin"><b></b><b></b><i></i></div><span id="mapAttr">© OpenStreetMap contributors</span></div>
@@ -293,31 +296,31 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 
 <!-- flow: address -->
 <section class="scene flow" id="s4" aria-label="Delivery address">
-  <div class="pcol" style="top:196px"><span class="okd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.500"/></svg></span><h1 class="ph" id="gn0">Bring the flavor home</h1><p class="gn" id="gn1">Good news!</p><h1 class="ph" id="gn2">We deliver to your area!</h1>
+  <div class="pcol" style="top:196px"><span class="okd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.500"/></svg></span><h1 class="ph" id="gn0">Bring the flavor&nbsp;home</h1><p class="gn" id="gn1">Good news!</p><h1 class="ph" id="gn2">We deliver to your&nbsp;area!</h1>
     <div class="fld" id="fld"><label>Enter delivery address</label><span id="typed"></span><i class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.500"/></svg></i></div></div>
   <div class="pimg"><img src="box-photo.webp" alt="" style="object-position:48% 52%"></div>
 </section>
 <!-- flow: days per week -->
 <section class="scene flow" id="s5" aria-label="How often">
-  <div class="pcol"><h1 class="ph">How often should we handle dinner?</h1>
+  <div class="pcol"><h1 class="ph">How often should we handle&nbsp;dinner?</h1>
     <div class="opts" id="optsDays"><div class="opt">1-2 days per week</div><div class="opt">3-4 days per week</div><div class="opt">5-6 days per week</div><div class="opt">All week</div></div>
     <div class="note" style="top:360px"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#0F5A5C" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2.500"/><path d="M4 10h16M8 3v4M16 3v4"/></svg></span><div><b>Flexible, no lock-in plans</b><span>Skip or pause flexibly</span></div></div></div>
   <div class="pimg mc"><i class="lc"></i><img class="plate" src="flow-plate.webp" alt="A plate of food"></div>
 </section>
 <!-- flow: flavours -->
 <section class="scene flow" id="s6" aria-label="Favourite flavours">
-  <div class="pcol wide"><h1 class="ph">Any favourite flavours?</h1><div class="flv" id="flv"></div></div>
+  <div class="pcol wide"><h1 class="ph">Any favourite&nbsp;flavours?</h1><div class="flv" id="flv"></div></div>
 </section>
 <!-- flow: how do you like to cook -->
 <section class="scene flow" id="s7" aria-label="How do you like to cook">
-  <div class="pcol wide"><h1 class="ph">How do you like to cook?</h1>
+  <div class="pcol wide"><h1 class="ph">How do you like to&nbsp;cook?</h1>
     <div class="cooks" id="cooks"></div>
     <div class="note mid"><span class="ni"><img src="meal-mealworm.webp" alt=""></span><div><b>Help us personalize your menu</b><span>With so many meals to choose from, your answers help us serve up the ones you'll love most.</span></div></div></div>
 </section>
 <!-- flow: plan summary -->
 <section class="scene flow" id="s8" aria-label="Your plan">
-  <div class="pcol" style="width:470px"><h1 class="ph">Dinner's sorted, your way.</h1>
-    <p class="lead">Based on what you've told us, we recommend this box size. Perfect for solo cooks and duos, you'll never be short on delicious bug-powered variety and meal options!</p>
+  <div class="pcol" style="width:470px"><h1 class="ph">Dinner's sorted, your&nbsp;way.</h1>
+    <p class="lead">Based on your answers, we recommend this box size. Perfect for solo cooks and duos.</p>
     <div class="lbl" style="top:238px">Servings per dinner</div><div class="seg" id="segA" style="top:262px"><span>2</span><span>4</span><span>6</span></div>
     <div class="lbl" style="top:318px">Dinners per week</div><div class="seg" id="segB" style="top:342px"><span>3</span><span>4</span><span>5</span></div></div>
   <div class="sum"><h3>Your summary</h3><b class="sh">Preferences</b><p>Crunchy and savoury</p><b class="sh" style="margin-top:26px">Order summary</b>
