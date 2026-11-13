@@ -167,7 +167,6 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
   <svg class="bg" viewBox="0 0 1280 720"><g id="pkRings"></g></svg>
   <div class="abs logo" id="kLogo">grub<i>club</i><span class="wm" style="color:var(--kiwi)"></span></div>
   <div class="abs" id="pkT">packing your box</div><div class="abs" id="pkS">4 meals · 1 entomo box</div>
-  <div class="abs" id="pkBox"></div>
   <div class="abs" id="pkBtn" role="button">place order</div>
 </section>
 
@@ -224,16 +223,16 @@ function tween(ms,g,fn){return new Promise((res,rej)=>{let el=0,last=performance
 /* flat leaf illustration (after the supplied reference): organic mismatched shapes, plain / striped / banded.
    f fill, g colour of the other half, v vein colour, v2 vein colour on the other half, t type: p plain | s striped | b banded */
 const LS=[
- {f:'#8CBC6A',g:'#8CBC6A',v:'#4F9E9B',t:'p'},                       //0 sage
- {f:'#A6C858',g:'#6FA040',v:'#86B34A',v2:'#BEDB72',m:'#0E3B5B',t:'s'}, //1 two-tone striped
- {f:'#B4DADA',g:'#B4DADA',v:'#5B9AA6',t:'p'},                       //2 pale mint
- {f:'#2C7A47',g:'#25693E',v:'#14513A',t:'p'},                       //3 forest
- {f:'#2A7E92',g:'#1E6682',v:'#175670',t:'p'},                       //4 teal blue
- {f:'#86B3A6',g:'#86B3A6',v:'#E8F4F0',t:'b'},                       //5 grey sage, white bands
- {f:'#EFD974',g:'#EFD974',v:'#D9BE4F',t:'p'},                       //6 yellow
- {f:'#58A646',g:'#4A9440',v:'#2F7A46',t:'p'},                       //7 mid green
- {f:'#B5D060',g:'#9DC050',v:'#7FAE46',m:'#6FA040',t:'s'},           //8 lime striped
- {f:'#6FB4C0',g:'#5FA5B3',v:'#E4F4F6',t:'b'}];                      //9 turquoise, white bands
+ {f:'#9EC878',g:'#8DBA68',v:'#1C8859',t:'p'},                          //0 avocado
+ {f:'#9EC878',g:'#1C8859',v:'#7FB45F',v2:'#8CE39B',m:'#0E3251',t:'s'},  //1 two-tone striped (avocado / kale)
+ {f:'#D7F5FA',g:'#BFE8EF',v:'#3FA0BE',t:'p'},                          //2 robin's egg
+ {f:'#1C8859',g:'#167249',v:'#8CE39B',t:'p'},                          //3 kale
+ {f:'#3FA0BE',g:'#2F86A3',v:'#D7F5FA',t:'p'},                          //4 blueberry
+ {f:'#8CE39B',g:'#8CE39B',v:'#D7F5FA',t:'b'},                          //5 matcha, light bands
+ {f:'#0F5A5C',g:'#0C4A4D',v:'#3FA0BE',t:'p'},                          //6 green bean
+ {f:'#8CE39B',g:'#6FD184',v:'#1C8859',t:'p'},                          //7 matcha
+ {f:'#9EC878',g:'#8BB968',v:'#1C8859',m:'#1C8859',t:'s'},              //8 avocado striped
+ {f:'#3FA0BE',g:'#3FA0BE',v:'#D7F5FA',t:'b'}];                         //9 blueberry, light bands
 function leafG(o){const L=o.L,W_=o.W,b=o.b||0,S=LS[o.s],id='c'+(uid++),k=((Math.round(o.x*7+o.y*3+o.r*5)%5)+5)%5,Wl=W_*(.62+k*.1),Wr=W_,pp=.38+((k*3)%4)*.07;
   const d=`M0 0C${Wr*1.15} ${-L*pp*.4} ${Wr*1.1+b*.4} ${-L*(pp+.3)} ${b} ${-L}C${-Wl*1.1+b*.4} ${-L*(pp+.3)} ${-Wl*1.15} ${-L*pp*.4} 0 0Z`;
   const sl=S.t==='b'?.55:.7,step=S.t==='b'?L/13:L/15,sw=S.t==='b'?Math.max(3,L/55):Math.max(2,L/95);
@@ -266,40 +265,45 @@ const PACK=[
  {k:'t',body:'#2F9A74',ink:'#fff',nm:['brownie','mix'],lv:[0,1]},
  {k:'p',body:'#A9D8CF',ink:'#0E3251',cir:'#fff',nm:['matcha','bar'],lv:[6,4]}];
 function mini(m,i){const P=PACK[i],j=(i%3-1)*5,id='k'+(uid++),back='';
-  const tub='M77 24H133L130 80Q129 88 121 88H89Q81 88 80 80Z',pouch='M77 8H133L135 86Q105 94 75 86Z';
+  const tub='M62 24H148L144 80Q143 88 135 88H75Q67 88 66 80Z',pouch='M77 8H133L135 86Q105 94 75 86Z';
   const spr='';
   let g;
   if(P.k==='t'){
     g=`<clipPath id="${id}"><path d="${tub}"/></clipPath><path d="${tub}" fill="${P.body}"/>
     <g clip-path="url(#${id})">${spr}</g>
-    <path d="M70 24V15Q70 12 73 12H76L79 5H131L134 12H137Q140 12 140 15V24Z" fill="#165B63"/>
-    <text x="84" y="38" font-family="Poppins,sans-serif" font-weight="700" font-size="6.5" fill="${P.ink}">grubclub</text>
-    <text font-family="Poppins,sans-serif" font-weight="700" font-size="10.5" letter-spacing="-.3" fill="${P.ink}"><tspan x="84" y="52">${P.nm[0]}</tspan><tspan x="84" y="63">${P.nm[1]}</tspan></text>`}
+    <path d="M55 24V15Q55 12 58 12H62L66 5H144L148 12H152Q155 12 155 15V24Z" fill="#165B63"/>
+    <text x="74" y="38" font-family="Poppins,sans-serif" font-weight="700" font-size="7" fill="${P.ink}">grubclub</text>
+    <text font-family="Poppins,sans-serif" font-weight="700" font-size="12" letter-spacing="-.3" fill="${P.ink}"><tspan x="74" y="54">${P.nm[0]}</tspan><tspan x="74" y="68">${P.nm[1]}</tspan></text>`}
   else{
     g=`<clipPath id="${id}"><path d="${pouch}"/></clipPath><path d="${pouch}" fill="${P.body}"/>
     <g clip-path="url(#${id})">${spr}<rect x="70" y="8" width="70" height="8" fill="#000" opacity=".2"/><path d="M80 12H130" stroke="#fff" stroke-opacity=".35" stroke-width="1" stroke-dasharray="2 2"/></g>
     <text x="105" y="29" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="6.5" fill="${P.ink}">grubclub</text>
-    <circle cx="105" cy="55" r="21" fill="${P.cir}"/>
-    <text text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="8.5" letter-spacing="-.2" fill="#14396B"><tspan x="105" y="53">${P.nm[0]}</tspan><tspan x="105" y="63">${P.nm[1]}</tspan></text>`}
+    <circle cx="105" cy="56" r="24" fill="${P.cir}"/>
+    <text text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="7.4" fill="#14396B"><tspan x="105" y="54">${P.nm[0]}</tspan><tspan x="105" y="64">${P.nm[1]}</tspan></text>`}
   return `<svg viewBox="0 0 210 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">${back}<g class="cc" transform="translate(105 61) scale(1.2) translate(-105 -48)">${g}</g></svg>`}
 
 /* ============ build static DOM ============ */
 $('#grid').innerHTML=MEALS.map((m,i)=>`<div class="card" style="--i:${i}" data-i="${i}"><div class="il">${mini(m,i)}</div><h4>${m.n}</h4><div class="rw"><small>${m.g}</small><div class="add">+ add</div></div></div>`).join('');
 $('#slots').innerHTML=[0,1,2,3].map(()=>`<div class="slot"><i></i><span>choose a meal</span></div>`).join('');
 $('#pbox').innerHTML='<img src="box.webp" alt="">';
-$('#pkBox').innerHTML='<img id="pkImg" src="box.webp" alt="The grubclub box">';
 $('#eThumb').innerHTML='<img src="box.webp" alt="">';
 
 /* hero collage */
 const HB=[[300,610,62,'#EEF6A8'],[200,600,90,'#A8C7DA'],[1000,590,84,'#BFE3DF'],[900,640,40,'#EEF6A8']];
-const BACK=[[60,790,-8,520,120,-30,3],[190,800,12,480,110,26,4],[330,790,-20,420,100,-24,0],[120,790,26,380,96,20,2],[470,800,4,380,92,18,7],
- [1210,790,8,520,120,30,3],[1090,800,-12,480,110,-26,4],[950,790,20,420,100,24,0],[1160,790,-26,380,96,-20,2],[810,800,-4,380,92,-18,7]];
+/* the leaf bed: many smaller leaves grown from the bottom edge, placed with a seeded random so it is always the same */
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function bed(n,seed,Lr,styles,yr){const R=rng(seed),o=[];for(let i=0;i<n;i++){const x=-20+1320*(i+R()*.9)/n,L=Lr[0]+R()*(Lr[1]-Lr[0]),r=(x-640)/640*38+(R()-.5)*54,st=R()<.16?110:0,y=yr[0]+R()*(yr[1]-yr[0])-(st?90:0);
+  o.push([Math.round(x),Math.round(y),Math.round(r),Math.round(L),Math.round(L*(.2+R()*.1)),Math.round((R()-.5)*L*.22),styles[Math.floor(R()*styles.length)],st])}return o}
+const SMALL=bed(40,7,[140,260],[3,6,4,0,2,7],[700,770]);   // many smaller leaves, drawn first so they sit behind
+const BACK=SMALL.concat([[60,790,-8,520,120,-30,3],[190,800,12,480,110,26,4],[330,790,-20,420,100,-24,0],[120,790,26,380,96,20,2],[470,800,4,380,92,18,7],
+ [1210,790,8,520,120,30,3],[1090,800,-12,480,110,-26,4],[950,790,20,420,100,24,0],[1160,790,-26,380,96,-20,2],[810,800,-4,380,92,-18,7]]);
 const FRONT=[[430,790,-30,400,110,-26,1],[540,800,-8,330,96,22,6],[600,800,12,300,86,-18,5],[700,800,-12,330,92,20,8],[780,800,24,380,108,-24,9],[880,790,40,360,100,26,1],
  [330,800,-52,360,96,18,5],[240,800,-34,300,84,-14,8],[1000,800,38,320,90,20,7],[100,800,-50,300,80,14,6],[350,690,-14,300,92,16,8,140],[1030,700,12,280,88,-14,1,130]];
 const hero={t:0,L:[]};
 function buildLeaves(sel,arr,from){const g=$(sel);g.innerHTML=LF(arr);[...g.querySelectorAll('.lf')].forEach((el,i)=>{const a=arr[i];hero.L.push({el,x:a[0],y:a[1],r:a[2],d:.15+(from+i)*.05,ph:i*1.7,amp:1.6+(i%3)*.7,sp:.8+(i%4)*.18})})}
 buildLeaves('#hBack',BACK,0);buildLeaves('#hFront',FRONT,BACK.length);
-$('#pkRings').innerHTML=`<circle cx="1110" cy="395" r="430" fill="#0F5A5C"/><circle cx="1110" cy="395" r="360" fill="#1C8859" opacity=".3"/><circle cx="1110" cy="395" r="290" fill="none" stroke="#EEFB71" stroke-opacity=".25" stroke-width="2"/>`;
+const PR={n:6,R:520,cx:1050,cy:380,r:260,col:['#9ED27A','#CDE67C','#F0FB85']};   // end card "green and kiwi" Evolve rings
+$('#pkRings').innerHTML=Array.from({length:PR.n},()=>`<circle cx="${PR.cx}" cy="${PR.cy}" r="0"/>`).join('')+`<clipPath id="pkClip"><circle id="pkClipC" cx="${PR.cx}" cy="${PR.cy}" r="0"/></clipPath><g clip-path="url(#pkClip)"><image id="pkPhoto" href="box-photo.webp" x="${PR.cx-359}" y="${PR.cy-274}" width="720" height="551" preserveAspectRatio="none"/></g>`;
 
 /* ============ per-frame drawing ============ */
 const pack={t:0,col:-1};
@@ -309,8 +313,12 @@ function drawHero(){const t=hero.t;
   $('#hTxt').setAttribute('transform',`rotate(${-9+Math.sin(t*.9)*1.3})`);
   $$('.hl').forEach((e,i)=>{const p=clamp((t-(.9+i*.14))/.5);e.setAttribute('opacity',p);e.setAttribute('dy',(1-p)*14)});
 }
-function drawPack(){const t=pack.t,r=$('#pkRings').children;r[0].setAttribute('r',430+Math.sin(t*1.5)*8);r[1].setAttribute('r',360+Math.sin(t*1.5+.6)*10);
-  $('#pkImg').style.transform=`translateY(${Math.sin(t*1.8)*6}px) rotate(${Math.sin(t*.9)*1.2}deg)`}
+const hexc=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),mixc=(a,b,u)=>{const A=hexc(a),B=hexc(b);return 'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*u)).join(',')+')'};
+const ease=x=>{x=clamp(x);return .5-.5*Math.cos(Math.PI*x)};
+function drawPack(){const t=pack.t,TAU=Math.PI*2,ph=t*.25;
+  $$('#pkRings > circle').forEach((c,idx)=>{const i=PR.n-idx,a=ease((t-.07-(PR.n-i)*.133)/1.07),u=.5+.5*Math.sin(TAU*ph-i*.55),morph=1+Math.sin(TAU*2*ph+i*.3)*.05,q=u*(PR.col.length-1),k0=Math.min(PR.col.length-2,Math.floor(q));
+    c.setAttribute('r',Math.max(0,i*(PR.R/PR.n)*morph*a));c.setAttribute('fill',mixc(PR.col[k0],PR.col[k0+1],q-k0))});
+  $('#pkClipC').setAttribute('r',Math.max(0,PR.r*eob((t-.55)/.8)*(1+.012*Math.sin(t*1.5))))}
 let lastT=performance.now();
 function frame(now){const dt=Math.min(.05,(now-lastT)/1000);lastT=now;if(!paused){hero.t+=dt;pack.t+=dt}
   if($('#s0').classList.contains('on'))drawHero();if($('#s2').classList.contains('on'))drawPack();requestAnimationFrame(frame)}
@@ -359,9 +367,9 @@ async function pick_(g,o){
   const b=cen($('#cont'));curGo(b.x,b.y,800);await W(900,g);await curClick(g);await W(120,g);return{x:b.x,y:b.y}},
 
 async function pack_(g,o){
-  pack.t=0;show(2);const box=$('#pkBox');box.classList.remove('in');
+  pack.t=0;show(2);
   $('#pkBtn').classList.remove('in','press');$('#pkT').textContent='packing your box';$('#pkS').textContent='4 meals · 1 entomo box';
-  await W(250,g);box.classList.add('in');await W(2600,g);
+  await W(250,g);await W(2600,g);
   $('#pkT').textContent='all packed!';$('#pkS').textContent='ships to 330 university ave';$('#pkBtn').classList.add('in');await W(900,g);
   const c=cen($('#pkBtn'));curSet(c.x+380,c.y+150);showCursor();await W(50,g);curGo(c.x,c.y+4,850);await W(950,g);
   $('#pkBtn').classList.add('press');await curClick(g);await W(120,g);return{x:c.x,y:c.y}},
