@@ -35,6 +35,7 @@ const APPS = {
       await at(t0, 1500, () => st(12));
       await at(t0, 2600, () => st(13));
       await at(t0, 3600, () => st(14));
+      await at(t0, 5600, () => st(11));
       await at(t0, 4600, () => st(15));
     } },
   'grubclub-holiday': { vp: [1280, 769], crop: [0, 49, 1280, 720],
