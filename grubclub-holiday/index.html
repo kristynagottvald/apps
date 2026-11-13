@@ -126,9 +126,12 @@ const leaf = (cx, cy, len, wid, deg, fill, vein) => rot(deg, cx, cy, `<path d="M
 const halfL = (cx, cy, r, fill) => `<path d="M${cx} ${cy - r} A${r} ${r} 0 0 0 ${cx} ${cy + r}Z" fill="${fill}"/>`;
 const halfR = (cx, cy, r, fill) => `<path d="M${cx} ${cy - r} A${r} ${r} 0 0 1 ${cx} ${cy + r}Z" fill="${fill}"/>`;
 const poly = (pts, fill) => `<polygon points="${pts.map((p) => p.map(f).join(',')).join(' ')}" fill="${fill}"/>`;
-/* faceted star built from kites: long points N/E/S/W, short points on the diagonals, each point split into two tones */
-const star8 = (cx, cy, R, c1, c2, longK = 1, shortK = .74) => { let s = ''; for (let i = 0; i < 8; i++) { const an = (i * 45 - 90) * Math.PI / 180, ln = R * (i % 2 ? shortK : longK), vr = R * .4, a1 = an - Math.PI / 8, a2 = an + Math.PI / 8; const P = (a, r) => [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; s += poly([[cx, cy], P(a1, vr), P(an, ln)], c1) + poly([[cx, cy], P(an, ln), P(a2, vr)], c2); } return s; };
 const splitCircle = (k, r = 46) => halfL(50, 50, r, k.a) + halfR(50, 50, r, k.b);
+
+/* chunky worm-line squiggle: arches of semicircles drawn with a thick round-capped stroke (bleeds off the tile) */
+const archWave = (x0, y, r, n, col, sw, flip) => { let d = `M${f(x0)} ${f(y)}`; for (let i = 0; i < n; i++) d += ` A${f(r)} ${f(r)} 0 0 ${(i + (flip ? 1 : 0)) % 2 ? 0 : 1} ${f(x0 + 2 * r * (i + 1))} ${f(y)}`; return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${f(sw)}" stroke-linecap="round"/>`; };
+const contrastOf = (c1, c2) => { const a = lum(c1), b = lum(c2); return (Math.max(a, b) + .05) / (Math.min(a, b) + .05); };
+const squigCols = (k) => [k.a, k.b, k.x].sort((u, v) => contrastOf(v, k.bg) - contrastOf(u, k.bg));
 
 const ICON = {
   /* thin cap and loop, big round bauble, split tone or wavy diagonal lines */
@@ -142,8 +145,6 @@ const ICON = {
   bell: (k) => `<path d="M16 68 V50 Q16 8 50 8 Q84 8 84 50 V68Z" fill="${k.a}"/><rect x="6" y="66" width="88" height="16" fill="${k.b}"/>` + zig(6, 94, 74, 3.4, 8, k.bg, 2.4) + circ(50, 90, 11, k.x),
   hat: (k) => `<path d="M20 70 V58 Q20 22 50 22 Q80 22 80 58 V70Z" fill="${k.a}"/><rect x="10" y="68" width="80" height="18" rx="2" fill="${k.b}"/>` + zig(10, 90, 77, 3.4, 8, k.bg, 2.4) + circ(50, 14, 11, k.x),
   /* wrapped gift: full tile, ribbon cross, star bow */
-  gift: (k) => `<rect x="0" y="0" width="100" height="100" fill="${k.a}"/><rect x="40" y="0" width="20" height="100" fill="${k.b}"/><rect x="0" y="40" width="100" height="20" fill="${k.b}"/>` +
-    `<path d="M50 4 V38 M50 62 V96" stroke="${k.a}" stroke-width="2.4" stroke-linecap="round" fill="none"/>` + star8(50, 50, 30, k.bg, k.x, 1, .7),
   /* thick candy cane with diagonal stripes */
   cane: (k) => { const id = 'cm' + (uid++), d = 'M32 104 V42 A21 21 0 0 1 74 42 V54'; return `<mask id="${id}"><path d="${d}" stroke="#fff" stroke-width="26" fill="none"/></mask><path d="${d}" stroke="${k.a}" stroke-width="26" fill="none"/><g mask="url(#${id})">${Array.from({ length: 16 }, (_, i) => `<path d="M-10 ${i * 17 - 10} L110 ${i * 17 - 70}" stroke="${k.b}" stroke-width="7"/>`).join('')}</g>`; },
   candle: (k) => `<rect x="30" y="42" width="40" height="58" fill="${k.a}"/><path d="M30 84 L70 60 M30 100 L70 76 M30 68 L70 44" stroke="${k.bg}" stroke-width="2.6" fill="none" clip-path="inset(0)"/>` +
@@ -159,8 +160,15 @@ const ICON = {
   treeC: (k) => circ(50, 24, 17, k.a) + circ(50, 50, 24, k.b) + circ(50, 80, 28, k.a) + circ(50, 6, 5.5, k.x) + circ(42, 52, 3.6, k.bg) + circ(60, 46, 3.6, k.bg) + circ(38, 82, 4, k.bg) + circ(58, 84, 4, k.bg) + circ(70, 76, 4, k.x),
   wreath: (k) => Array.from({ length: 12 }, (_, i) => { const an = i / 12 * Math.PI * 2; return circ(50 + Math.cos(an) * 34, 50 + Math.sin(an) * 34, 13, i % 2 ? k.b : k.a); }).join('') + circ(50, 50, 20, k.bg) +
     circ(40, 82, 4.5, k.x) + circ(50, 85, 4.5, k.x) + circ(60, 82, 4.5, k.x) + poly([[50, 84], [36, 96], [36, 74]], k.x) + poly([[50, 84], [64, 96], [64, 74]], k.x),
-  moon: (k) => circ(44, 54, 38, k.a) + circ(64, 42, 31, k.bg) + star8(80, 76, 11, k.x, k.x, 1, .5),
   scallop: (k) => [0, 1, 2].map((i) => { const cx = 16.65 + i * 33.3; return `<path d="M${i * 33.3} 0 A16.65 16.65 0 0 0 ${(i + 1) * 33.3} 0Z" fill="${k.a}"/>` + line(`M${cx} 16 V40`, k.b, 2.4) + `<ellipse cx="${cx}" cy="58" rx="12" ry="17" fill="${i % 2 ? k.x : k.b}"/>` + circ(cx, 58, 4, k.bg); }).join(''),
+  /* two hanging baubles, different sizes: one split in two tones, one with wavy lines */
+  doubleBauble: (k) => { const id = 'db' + (uid++); const bauble = (cx, cy, r, top, body) => `<path d="M${cx} ${top - 4} V${cy - r - 9}" stroke="${k.b}" stroke-width="2.2" fill="none"/>` + line(`M${cx - 3.4} ${cy - r - 1} V${cy - r - 5} A3.4 3.4 0 1 1 ${cx + 3.4} ${cy - r - 5} V${cy - r - 1}`, k.b, 2.4) + `<rect x="${cx - 7}" y="${cy - r - 5}" width="14" height="8" rx="1.5" fill="${k.b}"/>` + body;
+    return bauble(28, 66, 27, 0, halfL(28, 66, 27, k.a) + halfR(28, 66, 27, k.b) + zig(3, 53, 60, 4, 4, k.bg, 2.3)) +
+      bauble(73, 54, 22, 0, `<clipPath id="${id}"><circle cx="73" cy="54" r="22"/></clipPath>` + circ(73, 54, 22, k.a) + `<g clip-path="url(#${id})"><g transform="rotate(-40 73 54)">${[0, 1, 2, 3, 4].map((i) => zig(30, 120, 34 + i * 11, 3.4, 5, k.bg, 2.3)).join('')}</g></g>`); },
+  /* wrapped gift: ribbon cross with a wavy line and one flat eight-point star */
+  gift: (k) => { const wave = (x0, y0, x1, y1) => { const n = 4, dx = (x1 - x0) / (n * 2), dy = (y1 - y0) / (n * 2), horiz = dy === 0; let d = `M${x0} ${y0}`; for (let i = 0; i < n * 2; i++) { const t = i + .5; d += horiz ? ` Q${f(x0 + dx * t)} ${y0 + (i % 2 ? 3.6 : -3.6)} ${f(x0 + dx * (i + 1))} ${y0}` : ` Q${x0 + (i % 2 ? 3.6 : -3.6)} ${f(y0 + dy * t)} ${x0} ${f(y0 + dy * (i + 1))}`; } return `<path d="${d}" fill="none" stroke="${k.s}" stroke-width="2.2" stroke-linecap="round"/>`; };
+    let pts = ''; for (let i = 0; i < 16; i++) { const an = (i * 22.5 - 90) * Math.PI / 180, rr = i % 2 ? 13 : 30; pts += `${f(50 + Math.cos(an) * rr)},${f(50 + Math.sin(an) * rr)} `; }
+    return `<rect x="39" y="0" width="22" height="100" fill="${k.r}"/><rect x="0" y="39" width="100" height="22" fill="${k.r}"/>` + wave(50, 2, 50, 17) + wave(50, 83, 50, 98) + wave(2, 50, 17, 50) + wave(83, 50, 98, 50) + `<polygon points="${pts}" fill="${k.s}"/>`; },
   /* ---- exact geometric blocks (square, full bleed): pinwheel star, triangle tree, holly. Colours come from GEO below. ---- */
   /* 3x3 quilt star: corner squares and edge notches are background, four arms of two parallelograms each, turned as a pinwheel */
   pinwheel: (k) => [0, 90, 180, 270].map((d) => rot(d, 50, 50, poly([[100 / 3, 0], [50, 100 / 6], [50, 50], [100 / 3, 100 / 3]], k.p) + poly([[200 / 3, 0], [50, 100 / 6], [50, 50], [200 / 3, 100 / 3]], k.q))).join(''),
@@ -173,6 +181,7 @@ const ICON = {
     const motif = (d, o) => rot(d, 50, 50, `<g transform="translate(0 ${-o})"><g fill="${k.leaf}">${lv}</g><path d="M50 0 V${46 + o}" stroke="${k.bg}" stroke-width="2.6"/></g>`);
     const bs = [[50, 41.5], [40, 58.8], [60, 58.8]]; return motif(0, 0) + motif(135, off) + motif(225, off) + bs.map(([x, y]) => circ(x, y, 11.4, k.bg)).join('') + bs.map(([x, y]) => circ(x, y, 10, k.berry)).join(''); },
   /* abstract grid fillers */
+  squiggle: (k, v) => { const [c1, c2] = squigCols(k); return archWave(-14, 28, 14, 6, c1, 16, v) + archWave(-14, 72, 14, 6, c2, 16, !v); },
   halfdisc: (k, v) => rot(v ? 90 : 0, 50, 50, splitCircle(k, 46)),
   rings: (k) => circ(50, 50, 44, k.a) + circ(50, 50, 32, k.bg) + circ(50, 50, 20, k.b) + circ(50, 50, 8, k.bg),
   quarters: (k) => `<path d="M0 0 H50 A50 50 0 0 1 0 50Z" fill="${k.a}"/><path d="M100 0 V50 A50 50 0 0 1 50 0Z" fill="${k.b}"/><path d="M0 100 V50 A50 50 0 0 1 50 100Z" fill="${k.b}"/><path d="M100 100 H50 A50 50 0 0 1 100 50Z" fill="${k.a}"/>`,
@@ -182,9 +191,9 @@ const ICON = {
   wavyDiag: (k) => rot(-45, 50, 50, [-20, 0, 20, 40, 60, 80, 100, 120].map((y) => zig(-30, 130, y, 5, 8, k.a, 3.4)).join(''))
 };
 /* plain split circles (two half circles in varying colour pairs) and the three exact geometric blocks, weighted up */
-const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'moon', 'scallop', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'halfdisc', 'halfdisc', 'halfdisc', 'halfdisc'];
-const FILLERS = ['halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
-const BLEED = { tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1, elf: 1 };
+const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'doubleBauble', 'scallop', 'doubleBauble', 'gift', 'squiggle', 'squiggle', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'halfdisc', 'halfdisc', 'halfdisc', 'halfdisc'];
+const FILLERS = ['squiggle', 'halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
+const BLEED = { squiggle: 1, tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1, elf: 1 };
 
 
 /* ---------- contrast: WCAG ratios, so the geometric blocks only use colour sets that read clearly ---------- */
@@ -193,6 +202,8 @@ const cr = (a, b) => { const x = lum(C[a]), y = lum(C[b]); return (Math.max(x, y
 /* [bg, arm 1, arm 2] for the pinwheel: white or lime arms against dark, dark arms against white or lime; every arm is 4:1 or better on its background, white/dark arms 8:1 */
 const GEO = {
   pinwheel: (r) => { const [bg, p, q] = pick(r, [['W', 'D', 'M'], ['L', 'D', 'M'], ['M', 'W', 'D'], ['M', 'L', 'D'], ['W', 'D', 'M'], ['M', 'W', 'D']]); return { bg: C[bg], p: C[p], q: C[q] }; },
+  /* gift: [bg, ribbon, star]; ribbon on bg and star on ribbon are all 4:1 or better */
+  gift: (r) => { const [bg, rb, st] = pick(r, [['M', 'W', 'D'], ['D', 'W', 'M'], ['W', 'D', 'L'], ['L', 'D', 'W'], ['M', 'D', 'W'], ['D', 'M', 'L']]); return { bg: C[bg], r: C[rb], s: C[st] }; },
   /* [pale, mid, dark]: pale triangles sit on dark (>=7:1) and on mid (>=4:1) */
   treeTri: (r) => { const [p, m, d] = pick(r, [['W', 'M', 'D'], ['L', 'M', 'D'], ['W', 'D', 'M'], ['L', 'D', 'M']]); return { bg: C[p], p: C[p], m: C[m], d: C[d] }; },
   /* [bg, leaf, berry]: leaf on bg >= 3.9:1, berries carry a ring of the bg colour so they stay crisp on the leaves */
@@ -220,11 +231,14 @@ const BANDS = {
       Array.from({ length: n }, (_, i) => { const x = (i + .5) * st; const y = h * .2 + h * .3 * (1 - Math.pow(2 * ((i + .5) % 1) - 1, 2)) * 0; return `<rect x="${f(x - h * .035)}" y="${f(h * .36)}" width="${f(h * .07)}" height="${f(h * .08)}" fill="${k.b === k.bg ? k.a : k.b}"/>` + circ(x, h * .6, Math.min(st * .3, h * .17), cols[i % 3]); }).join(''); },
   garland: (w, h, k) => { const R = h * .42, n = Math.ceil(w / (R * 1.5)); let s = ''; for (let i = 0; i <= n; i++) s += circ(i * w / n, h / 2, R, i % 2 ? (k.b === k.bg ? k.x : k.b) : k.a); for (let i = 0; i < n; i++) s += circ((i + .5) * w / n, h / 2, R * .2, k.x); return s; },
   stripes: (w, h, k) => { const st = Math.min(w, h) * .3; let s = ''; for (let x = -h; x < w + h; x += st * 2) s += `<path d="M${x} ${h} L${x + st} ${h} L${x + st + h} 0 L${x + h} 0Z" fill="${k.a}"/>`; return s; },
+  squiggle: (w, h, k) => { const tall = h > w, W = tall ? h : w, H = tall ? w : h, u = Math.min(W, H), r = u * .24, sw = u * .2, rows = Math.max(1, Math.round(H / (u * 1.05))), [c1, c2] = squigCols(k); let o = '';
+    for (let i = 0; i < rows; i++) o += archWave(-2 * r + (i % 2 ? r : 0), H * (i + .5) / rows, r, Math.ceil(W / (2 * r)) + 3, i % 2 ? c2 : c1, sw, i % 2);
+    return tall ? `<g transform="translate(${f(w)} 0) rotate(90)">${o}</g>` : o; },
   zigzag: (w, h, k) => { const u = Math.min(w, h) * .5; let s = ''; for (let y = h * .25; y < h; y += h * .5) s += zig(0, w, y + u * .25, u * .5, Math.max(2, Math.round(w / u)), y < h * .5 ? k.a : k.b === k.bg ? k.x : k.b, u * .12); return s; },
   snow: (w, h, k, r) => { let s = ''; const n = Math.round(w * h / 1800); for (let i = 0; i < n; i++) s += circ(r() * w, r() * h, 2 + r() * 5, i % 5 ? k.a : k.x); return s; },
   hang: (w, h, k, r) => { const n = Math.max(2, Math.round(w / h * 6 + 1)); let s = ''; for (let i = 0; i < n; i++) { const x = (i + .5) * w / n, rad = Math.min(w / n * .36, h * .13), y = h * (.35 + r() * .5); s += `<line x1="${f(x)}" y1="0" x2="${f(x)}" y2="${f(y - rad)}" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="${f(rad * .12 + 1)}"/>` + circ(x, y, rad, [k.a, k.x, k.b === k.bg ? k.a : k.b][i % 3]); } return s; }
 };
-const WIDE = ['stripes', 'zigzag', 'stripes'];
+const WIDE = ['squiggle', 'squiggle', 'stripes', 'zigzag'];
 
 /* ---------- layout: pack a grid of 1x1 / 2x1 / 1x2 / 2x2 / 3x3 tiles around the wordmark and hero ---------- */
 function layout(cols, rows, r) {
@@ -296,7 +310,7 @@ function build(anim) {
       body = iconSvg(nm, k, x, y, w, h, GEO[nm] ? 0 : mn * .05);
     } else if (t.kind === 'band' && (t.w !== t.h)) {
       k = scheme(r);
-      const name = pick(r, t.w > t.h ? WIDE : ['stripes', 'zigzag']);
+      const name = pick(r, t.w > t.h ? WIDE : ['squiggle', 'squiggle', 'stripes', 'zigzag']);
       body = `<g transform="translate(${f(x)} ${f(y)})">${BANDS[name](w, h, k, r)}</g>`;
     } else if (t.kind === 'multi') {
       k = scheme(r);
