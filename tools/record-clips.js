@@ -50,7 +50,7 @@ const APPS = {
     ready: 700,
     run: async (p) => {
       const t0 = Date.now();
-      await at(t0, 1400, () => p.evaluate(() => ec.play({ speed: 3 })));
+      await at(t0, 1400, () => p.evaluate(() => ec.play({ speed: 3, loop: false })));
       await at(t0, 3200, () => domClick(p, '#motions .opt:nth-child(2)'));
       await at(t0, 4100, () => domClick(p, '#motions .opt:nth-child(3)'));
       await at(t0, 4900, () => domClick(p, '#themes .opt:nth-child(3)'));
