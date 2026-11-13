@@ -25,8 +25,6 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
-  // loops on its own (12 s cycle, random events); start at 1 s so the clip spans a busy peak, a lull and the next peak
-  'human-tech-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#t=1', ready: 1000, q: 38, run: async () => {} },
   'workout-year-reels': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // the cycle starts on the circles; step through the newest styles and one older one the way a visitor would with the switcher
     ready: 1500,
@@ -35,9 +33,26 @@ const APPS = {
       await at(t0, 1500, () => st(12));
       await at(t0, 2600, () => st(13));
       await at(t0, 3600, () => st(14));
-      await at(t0, 4600, () => st(15));
-      await at(t0, 5600, () => st(11));
+      await at(t0, 4600, () => st(11));
+      await at(t0, 5600, () => st(8));
     } },
+  // park on the chat with the recommendations already shown (that is the first frame), then carry on from there at 4x: pick the item, size, Buy, Apple Pay, Face ID, order confirmed in the chat
+  'agentic-storefront': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '?park=1',
+    ready: 1500, q: 70,
+    run: async (p) => {
+      const t0 = Date.now();
+      await at(t0, 1300, () => p.evaluate(() => { fl.play({ from: 2, speed: 5.8, keep: true, loop: false }); }));
+      await sleep(5200);
+    } },
+  // ten full-screen styles, each looping on its own with random events; click through five of them with the numbered switcher, ending back near the first
+  'human-tech-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#c=1&t=2', ready: 1000, q: 38, run: async (p) => {
+    const t0 = Date.now(), st = (n) => domClick(p, '#sw button:nth-child(' + n + ')');
+    await at(t0, 1100, () => st(2));
+    await at(t0, 2200, () => st(4));
+    await at(t0, 3300, () => st(5));
+    await at(t0, 4300, () => st(6));
+    await at(t0, 5300, () => st(8));
+  } },
   'grubclub-holiday': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // the grid pops in on its own, then shuffle it and try the other shapes the way a visitor would
     ready: 1800,
@@ -91,6 +106,8 @@ const APPS = {
   } },
   // the sequence starts part way in (#t=4.6): headline, sub-headline, then the logo fades in at the end
   'clearco-logistics-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#v=hero&t=4.6', ready: 1500, run: async () => {} },
+  // the globe turns and orders fly on their own; wait for the headline to fade in
+  'ilg-pixel-globe': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1300, q: 50, run: async () => {} },
   'clearco-terrain': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'clearco-target-frame': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'video-synopsis': { vp: [1280, 769], setup: cropOf('#vSyn'), run: async () => {} },
