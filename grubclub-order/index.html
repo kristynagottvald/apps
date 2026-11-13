@@ -52,8 +52,8 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 #pLogo i{color:var(--bean)}
 #pStep{right:56px;top:40px;font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--bean);display:flex;gap:18px}
 #pStep em{font-style:normal;opacity:.4}#pStep em.a{opacity:1}
-#pHead{left:56px;top:102px}
-#pHead h1{margin:0;font-size:42px;line-height:1.1;font-weight:700;letter-spacing:-.01em}
+#pHead{left:56px;top:116px}
+#pHead h1{margin:0;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:-.01em}
 #pHead p{margin:8px 0 0;font-size:17px;color:#3d6f74}
 #grid{left:56px;top:216px;width:744px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .card{background:#fff;border-radius:22px;padding:14px;height:226px;box-shadow:0 10px 24px -14px rgba(14,50,81,.35);opacity:0;transform:translateY(26px);transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),box-shadow .3s,outline-color .3s;outline:3px solid transparent;outline-offset:-1px}
@@ -85,12 +85,12 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 #s2 svg.bg{position:absolute;inset:0;width:100%;height:100%}
 #kLogo{left:56px;top:38px;font-size:40px;color:#fff}
 #kLogo i{color:var(--kiwi)}
-#pkT{left:120px;width:520px;top:236px;text-align:left;color:#fff;font-size:54px;font-weight:700;letter-spacing:-.02em;line-height:1.08}
-#pkS{left:120px;width:520px;top:334px;text-align:left;color:var(--egg);font-size:14px;font-weight:500;letter-spacing:.22em;text-transform:uppercase}
+#pkT{left:120px;width:520px;top:196px;height:128px;display:flex;align-items:flex-end;text-align:left;color:#fff;font-size:54px;font-weight:700;letter-spacing:-.02em;line-height:1.08}
+#pkS{left:120px;width:520px;top:346px;text-align:left;color:var(--egg);font-size:14px;font-weight:500;letter-spacing:.22em;text-transform:uppercase}
 #pkT,#pkS{transition:opacity .3s}
 #pkBox{left:650px;top:128px;width:450px;opacity:0;transform:scale(.6);transition:opacity calc(.5s*var(--k)),transform calc(.8s*var(--k)) cubic-bezier(.3,1.4,.5,1)}
 #pkBox.in{opacity:1;transform:none}
-#pkBtn{left:120px;top:396px;width:270px;height:62px;border-radius:999px;background:var(--kiwi);color:var(--bean);font:600 20px/62px Poppins,sans-serif;text-align:center;opacity:0;transform:translateY(16px);transition:opacity calc(.6s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1)}
+#pkBtn{left:120px;top:410px;width:270px;height:62px;border-radius:999px;background:var(--kiwi);color:var(--bean);font:600 20px/62px Poppins,sans-serif;text-align:center;opacity:0;transform:translateY(16px);transition:opacity calc(.6s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1)}
 #pkBtn.in{opacity:1;transform:none}
 #pkBtn.press{transform:scale(.96)}
 
@@ -120,20 +120,37 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 
 
 /* shared site header on every screen */
-#hLogo,#pLogo,#kLogo{left:56px;top:38px;font-size:38px}
+#hLogo,#pLogo,#kLogo{left:56px;top:30px;font-size:32px}
 #pLogo{color:var(--bean)}#pLogo i{color:var(--bean)}
-.snav{left:318px;right:56px;top:30px;height:56px;display:flex;align-items:center;gap:36px;font:500 17px/1 Poppins,sans-serif;white-space:nowrap;z-index:4}
-.snav a{display:inline-flex;align-items:center;gap:7px}
-.snav svg{width:15px;height:15px;flex:none}
+.snav{left:268px;right:56px;top:24px;height:44px;display:flex;align-items:center;gap:30px;font:600 13px/1 Poppins,sans-serif;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;z-index:4}
+.snav a{display:inline-flex;align-items:center;gap:6px}
+.snav svg{width:13px;height:13px;flex:none}
 .snav .sp{flex:1}
-.snav .lang{display:inline-flex;align-items:center;gap:9px;margin-right:4px}
-.snav .lang svg.g{width:22px;height:22px}
-.snav .login{padding:13px 26px;border:1.5px solid currentColor;border-radius:10px;font-weight:600;font-size:16px}
+.snav .lang{display:inline-flex;align-items:center;gap:8px;margin-right:2px}
+.snav .lang svg.g{width:18px;height:18px}
+.snav .login{padding:11px 20px;border:1.5px solid currentColor;border-radius:9px;font-weight:700;font-size:12.5px}
 #hNav,#kNav{color:#fff}#pNav{color:var(--bean)}
-#kBar{left:0;top:0;width:1280px;height:92px;background:var(--navy);z-index:3}
+#kBar{left:0;top:0;width:1280px;height:76px;background:var(--navy);z-index:3}
 #kLogo{z-index:4}
 #hNav{opacity:0;transform:translateY(14px);transition:opacity calc(.7s*var(--k)),transform calc(.7s*var(--k)) cubic-bezier(.2,.8,.2,1)}
 #hNav.in{opacity:1;transform:none}
+
+
+/* pick: roomier cards with product photos */
+#grid{left:56px;top:226px;width:744px;grid-template-columns:repeat(2,1fr);gap:32px}
+.card{display:flex;gap:20px;padding:20px;height:216px;border-radius:26px;outline:none;transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),background .3s}
+#s1.in .card.sel{transform:translateY(-3px);outline:none;background:var(--kiwi)}
+.card .il{flex:none;width:140px;height:176px;border-radius:16px;overflow:hidden;background:#d4ea70}
+.card .il img{display:block;width:100%;height:100%;object-fit:cover}
+.card .tx{display:flex;flex-direction:column;flex:1;min-width:0}
+.card .tx h4{margin:4px 0 0;height:auto;font-size:16px;line-height:1.3;font-weight:600}
+.card .tx .rw{margin-top:auto}
+.card.sel .add{background:var(--navy);color:var(--kiwi)}
+.card.sel .rw small{color:var(--navy)}
+.bx{top:116px;height:574px}
+#pbox{left:84px;top:62px;width:220px}
+#slots{top:282px;gap:10px}
+.slot{height:50px}
 
 /* ===== 4 email ===== */
 #s3{background:var(--mint)}
@@ -149,8 +166,8 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 #email.in .rv{opacity:1;transform:none}
 #eLogo{left:167px;top:52px;font-size:39px;color:#fff;line-height:56px}
 #eLogo i{color:var(--kiwi)}
-#eHdrR{right:167px;top:52px;height:56px;display:flex;align-items:center;gap:38px;font-size:20.5px;font-weight:500;color:#fff;line-height:1;white-space:nowrap}
-#eHdrR .elog{padding:15px 30px;border:2px solid #fff;border-radius:11px;font-weight:600;font-size:19.5px}
+#eHdrR{right:167px;top:52px;height:56px;display:flex;align-items:center;gap:36px;font-size:17px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#fff;line-height:1;white-space:nowrap}
+#eHdrR .elog{padding:14px 26px;border:2px solid #fff;border-radius:11px;font-weight:700;font-size:16.5px}
 #eTitle{left:262px;top:249px;margin:0;font-size:50px;font-weight:700;letter-spacing:-.005em;line-height:78px;color:#fff;white-space:nowrap}
 #eHi{left:262px;top:371px;margin:0;font-size:23.4px;line-height:29px;color:#fff;white-space:nowrap}
 #eAdr{left:262px;top:455px;margin:0;font-size:22px;line-height:34px;letter-spacing:.14em;color:#fff;white-space:nowrap}
@@ -195,9 +212,9 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 <section class="scene" id="s1" aria-label="Pick your meals">
   <div class="abs logo" id="pLogo">grub<i>club</i><span class="wm" style="color:var(--bean)"></span></div>
 <div class="abs snav" id="pNav"><a>Our plans</a><a>How it works<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our recipes<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our meal kits<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="sp"></span><span class="lang"><svg class="g" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.5"/><ellipse cx="12" cy="12" rx="4.2" ry="9.5"/><path d="M2.5 12h19M4 7h16M4 17h16"/></svg>English<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="login">Log in</span></div>
-  <div class="abs" id="pHead"><h1>Pick your meals</h1><p>Choose 4 you like for your entomo box</p></div>
+  <div class="abs" id="pHead"><h1>Pick your meals</h1><p>Choose 3 you like for your entomo box</p></div>
   <div class="abs" id="grid"></div>
-  <div class="abs bx"><h3>Your box</h3><div class="cn"><b id="cnt">0</b><small> / 4</small></div><div id="pbox"></div><div id="slots"></div><div id="cont">Continue</div></div>
+  <div class="abs bx"><h3>Your box</h3><div class="cn"><b id="cnt">0</b><small> / 3</small></div><div id="pbox"></div><div id="slots"></div><div id="cont">Continue</div></div>
 </section>
 
 <!-- 3 pack -->
@@ -206,7 +223,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
   <div class="abs" id="kBar"></div>
   <div class="abs snav" id="kNav"><a>Our plans</a><a>How it works<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our recipes<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a>Our meal kits<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="sp"></span><span class="lang"><svg class="g" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.5"/><ellipse cx="12" cy="12" rx="4.2" ry="9.5"/><path d="M2.5 12h19M4 7h16M4 17h16"/></svg>English<svg viewBox="0 0 16 16"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="login">Log in</span></div>
   <div class="abs logo" id="kLogo">grub<i>club</i><span class="wm" style="color:var(--kiwi)"></span></div>
-  <div class="abs" id="pkT">Packing your box</div><div class="abs" id="pkS">4 meals · 1 entomo box</div>
+  <div class="abs" id="pkT">Packing<br>your box</div><div class="abs" id="pkS">4 meals · 1 entomo box</div>
   <div class="abs" id="pkMap"><div id="mapTiles"></div><div id="mapPin"><b></b><b></b><b></b><i></i></div><span id="mapAttr">© OpenStreetMap contributors</span></div>
   <div class="abs" id="pkBtn" role="button">Place order</div>
 </section>
@@ -289,43 +306,15 @@ const LF=a=>a.map(x=>leafG({x:x[0],y:x[1],r:x[2],L:x[3]*1.1,W:x[4]*1.1,b:x[5]*1.
 
 /* ============ meals ============ */
 const MEALS=[
- {n:'Lightly salted dehydrated grasshoppers',s:'Salted grasshoppers',g:'20g',c:'#D6ECE8'},
- {n:'Chili lime mealworm crisps',s:'Chili lime crisps',g:'35g',c:'#EEFB71'},
- {n:'Roasted cricket trail mix',s:'Cricket trail mix',g:'50g',c:'#8CE39B'},
- {n:'Wasabi grasshopper bites',s:'Wasabi bites',g:'25g',c:'#9EC878'},
- {n:'Cricket flour brownie mix',s:'Cricket brownie mix',g:'200g',c:'#3FA0BE'},
- {n:'Matcha cricket protein bar',s:'Matcha protein bar',g:'40g',c:'#D7F5FA'}];
-const PICKS=[0,1,4,5];
-
-/* flat illustrated packs for the meal cards: k = p (stand-up pouch) | t (tub with lid) */
-const PACK=[
- {k:'p',body:'#14447C',ink:'#fff',cir:'#D6ECE8',nm:['Lightly','salted'],lv:[3,5]},
- {k:'t',body:'#8DB83C',ink:'#fff',nm:['Chili lime','crisps'],lv:[6,3]},
- {k:'p',body:'#1B7A4A',ink:'#fff',cir:'#EEF6A8',nm:['Cricket','trail mix'],lv:[0,7]},
- {k:'t',body:'#E6EDB0',ink:'#0E3251',nm:['Wasabi','bites'],lv:[7,4]},
- {k:'t',body:'#2F9A74',ink:'#fff',nm:['Brownie','mix'],lv:[0,1]},
- {k:'p',body:'#A9D8CF',ink:'#0E3251',cir:'#fff',nm:['Matcha','bar'],lv:[6,4]}];
-function mini(m,i){const P=PACK[i],j=(i%3-1)*5,id='k'+(uid++),back='';
-  const tub='M62 24H148L144 80Q143 88 135 88H75Q67 88 66 80Z',pouch='M77 8H133L135 86Q105 94 75 86Z';
-  const spr='';
-  let g;
-  if(P.k==='t'){
-    g=`<clipPath id="${id}"><path d="${tub}"/></clipPath><path d="${tub}" fill="${P.body}"/>
-    <g clip-path="url(#${id})">${spr}</g>
-    <path d="M55 24V15Q55 12 58 12H62L66 5H144L148 12H152Q155 12 155 15V24Z" fill="#165B63"/>
-    <text x="74" y="38" font-family="Poppins,sans-serif" font-weight="700" font-size="7" fill="${P.ink}">grubclub</text>
-    <text font-family="Poppins,sans-serif" font-weight="700" font-size="12" letter-spacing="-.3" fill="${P.ink}"><tspan x="74" y="54">${P.nm[0]}</tspan><tspan x="74" y="68">${P.nm[1]}</tspan></text>`}
-  else{
-    g=`<clipPath id="${id}"><path d="${pouch}"/></clipPath><path d="${pouch}" fill="${P.body}"/>
-    <g clip-path="url(#${id})">${spr}<rect x="70" y="8" width="70" height="8" fill="#000" opacity=".2"/><path d="M80 12H130" stroke="#fff" stroke-opacity=".35" stroke-width="1" stroke-dasharray="2 2"/></g>
-    <text x="105" y="29" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="6.5" fill="${P.ink}">grubclub</text>
-    <circle cx="105" cy="56" r="24" fill="${P.cir}"/>
-    <text text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="7.4" fill="#14396B"><tspan x="105" y="54">${P.nm[0]}</tspan><tspan x="105" y="64">${P.nm[1]}</tspan></text>`}
-  return `<svg viewBox="0 0 210 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">${back}<g class="cc" transform="translate(105 61) scale(1.2) translate(-105 -48)">${g}</g></svg>`}
+ {n:'Lightly Salted Dehydrated Grasshoppers',s:'Salted Grasshoppers',g:'20g',c:'#3FA0BE',img:'meal-grasshoppers.webp'},
+ {n:'Honey Roasted Buffalo Worms',s:'Buffalo Worms',g:'20g',c:'#8CE39B',img:'meal-buffalo.webp'},
+ {n:'Mealworm Powder',s:'Mealworm Powder',g:'225g',c:'#EEFB71',img:'meal-mealworm.webp'},
+ {n:'Cricket Powder',s:'Cricket Powder',g:'225g',c:'#D7F5FA',img:'meal-cricket.webp'}];
+const PICKS=[0,1,3];
 
 /* ============ build static DOM ============ */
-$('#grid').innerHTML=MEALS.map((m,i)=>`<div class="card" style="--i:${i}" data-i="${i}"><div class="il">${mini(m,i)}</div><h4>${m.n}</h4><div class="rw"><small>${m.g}</small><div class="add">+ Add</div></div></div>`).join('');
-$('#slots').innerHTML=[0,1,2,3].map(()=>`<div class="slot"><i></i><span>Choose a meal</span></div>`).join('');
+$('#grid').innerHTML=MEALS.map((m,i)=>`<div class="card" style="--i:${i}" data-i="${i}"><div class="il"><img src="${m.img}" alt="${m.n}"></div><div class="tx"><h4>${m.n}</h4><div class="rw"><small>${m.g}</small><div class="add">+ Add</div></div></div></div>`).join('');
+$('#slots').innerHTML=PICKS.map(()=>`<div class="slot"><i></i><span>Choose a meal</span></div>`).join('');
 $('#pbox').innerHTML='<img src="box.webp" alt="">';
 $('#eThumb').innerHTML='<img src="box.webp" alt="">';
 
@@ -418,7 +407,7 @@ async function pick_(g,o){
 
 async function pack_(g,o){
   pack.t=0;pack.out=null;show(2);$('#pkMap').classList.remove('in');$('#pkT').classList.remove('ship');$('#pkS').classList.remove('ship');const loc=getLoc();
-  $('#pkBtn').classList.remove('in','press');$('#pkT').textContent='Packing your box';$('#pkS').textContent='4 meals · 1 entomo box';
+  $('#pkBtn').classList.remove('in','press');$('#pkT').innerHTML='Packing<br>your box';$('#pkS').textContent=PICKS.length+' meals · 1 entomo box';
   await W(250,g);await W(2600,g);
   $('#pkT').textContent='All packed!';$('#pkS').textContent='Ready to ship';$('#pkBtn').classList.add('in');await W(900,g);
   const c=cen($('#pkBtn'));curSet(c.x+380,c.y+150);showCursor();await W(50,g);curGo(c.x,c.y+4,850);await W(950,g);
