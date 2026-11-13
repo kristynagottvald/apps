@@ -438,10 +438,10 @@ function curGo(x,y,ms){cursor.style.transition=`transform ${ms*K}ms cubic-bezier
 async function curClick(g){cursor.classList.remove('down');void cursor.offsetWidth;cursor.classList.add('down');await W(160,g)}
 const cen=el=>{const r=rc(el);return{x:r.x+r.w/2,y:r.y+r.h/2}};
 const BG=['#0E3251','#F7F6FA','#0E3251','#0E3251','#F7F6FA','#F7F6FA','#F7F6FA','#F7F6FA','#F7F6FA'];
-const ORDER=[0,4,5,6,7,8,1,2],ORDER_CLIP=[0,1];
+const ORDER=[0,4,5,6,7,8,1,2],ORDER_CLIP=[0,1],FLOWSET=new Set([4,5,6,7,8,1]);
 function clearWipe(){['#w1','#w2'].forEach(x=>{const e=$(x);e.getAnimations().forEach(a=>a.cancel());e.style.display='none';e.style.opacity=''})}
 /* scene change: a calm dissolve through the next scene's background colour */
-async function wipe(g,x,y,col){const w=$('#w2');$('#w1').style.display='none';w.style.background=col;w.style.opacity=0;w.style.display='block';
+async function wipe(g,x,y,col,part){const w=$('#w2');w.style.top=part?'142px':'0';w.style.bottom=part?'80px':'0';$('#w1').style.display='none';w.style.background=col;w.style.opacity=0;w.style.display='block';
   await w.animate([{opacity:0},{opacity:1}],{duration:500*K,easing:'ease-in-out',fill:'forwards'}).finished;if(g!==gen)throw CANCEL;w.style.opacity=1}
 function unwipe(){const w=$('#w2');$('#w1').style.display='none';w.getAnimations().forEach(a=>a.cancel());
   if(w.style.display!=='block'){return}w.style.opacity=1;
@@ -461,7 +461,7 @@ function showMap(L){const z=15,n=2**z,xt=(L.lon+180)/360*n,la=L.lat*Math.PI/180,
   T.innerHTML=[0,1,2].map(r=>[0,1,2].map(c=>`<img alt="" style="left:${c*256}px;top:${r*256}px" src="https://tile.openstreetmap.org/${z}/${tx-1+c}/${ty-1+r}.png">`).join('')).join('')}
 const scenes=[
 async function hero_(g,o){
-  hero.t=o.clip?3.4:0;show(0);$('#cta').classList.remove('press');
+  hero.t=o.clip?3.4:0;barNow=[0,0];show(0);$('#cta').classList.remove('press');
   const tm=o.clip?0:1;
   await W(o.clip?700:3200,g);
   const c=cen($('#cta'));curSet(c.x+420,c.y+200);showCursor();await W(50,g);curGo(c.x,c.y+4,900);await W(1000,g);
@@ -506,7 +506,8 @@ function shell(id,step,b1,b2,nxId){return `<div class="fh"><div class="logo dk">
 <div class="fbar"><div class="bkb">Back</div><div class="nx"${nxId?` id="${nxId}"`:''}>Next</div></div>`}
 [[4,1,12,0],[5,1,36,0],[6,1,62,0],[7,1,88,0],[8,2,100,22]].forEach(([i,st,b1,b2])=>$('#s'+i).insertAdjacentHTML('afterbegin',shell(i,st,b1,b2)));
 $('#s1').insertAdjacentHTML('afterbegin',shell(1,3,100,100,'cont'));
-const fillBars=sc=>$$('.bar i',sc).forEach(e=>{e.style.transition='none';e.style.width='0';void e.offsetWidth;e.style.transition='';setTimeout(()=>e.style.width=e.dataset.w+'%',350)});
+let barNow=[0,0];
+const fillBars=sc=>$$('.bar i',sc).forEach(e=>{const k=e.parentElement.classList.contains('b1')?0:1,to=+e.dataset.w;e.style.transition='none';e.style.width=barNow[k]+'%';void e.offsetWidth;e.style.transition='';barNow[k]=to;if(to!==+e.style.width.slice(0,-1))setTimeout(()=>e.style.width=to+'%',200)});
 /* flavours */
 const FLV=[['Salty','<svg class="ic" viewBox="0 0 48 48"><rect x="14" y="14" width="20" height="26" rx="5" fill="#D7F5FA"/><rect x="16" y="8" width="16" height="9" rx="4" fill="#3FA0BE"/><circle cx="21" cy="11.500" r="1.200" fill="#fff"/><circle cx="27" cy="11.500" r="1.200" fill="#fff"/><rect x="14" y="24" width="20" height="8" fill="#9EC878"/></svg>'],
  ['Smoky','<svg class="ic" viewBox="0 0 48 48"><path d="M14 38c-6-4 2-8-2-12s4-8 0-12M26 38c-6-4 2-8-2-12s4-8 0-12M38 38c-6-4 2-8-2-12s4-8 0-12" fill="none" stroke="#0F5A5C" stroke-width="3.500" stroke-linecap="round"/></svg>'],
@@ -545,7 +546,7 @@ scenes[8]=async function plan_(g,o){
   const a=$$('#segA span')[0],b=$$('#segB span')[0];startCur(a);await tap(g,a,()=>a.classList.add('sel'));await tap(g,b,()=>b.classList.add('sel'),650);await W(1200,g);return await flowNext(g,sc)};
 
 /* ============ story ============ */
-async function run(i,g,o){let first=true;for(;;){if(!first||o.wipeFirst){}first=false;const org=await scenes[i](g,o);const ord=o.clip?ORDER_CLIP:ORDER;let n=ord[(ord.indexOf(i)+1)%ord.length];if(n===0)o.clip=false;await wipe(g,org.x,org.y,BG[n]);i=n}}
+async function run(i,g,o){let first=true;for(;;){if(!first||o.wipeFirst){}first=false;const org=await scenes[i](g,o);const ord=o.clip?ORDER_CLIP:ORDER;let n=ord[(ord.indexOf(i)+1)%ord.length];if(n===0)o.clip=false;await wipe(g,org.x,org.y,BG[n],FLOWSET.has(i)&&FLOWSET.has(n));i=n}}
 function play(o={}){K=1/(o.speed||1);document.documentElement.style.setProperty('--k',K);const g=++gen;paused=false;syncPP();run(o.from||0,g,o).catch(e=>{if(e!==CANCEL)console.error(e)})}
 
 const PAUSE='<svg viewBox="0 0 12 12"><rect x="1.500" y="1" width="3" height="10" rx=".8"/><rect x="7.500" y="1" width="3" height="10" rx=".8"/></svg>',PLAY='<svg viewBox="0 0 12 12"><path d="M2.500 1.200v9.600L10.500 6z"/></svg>';
