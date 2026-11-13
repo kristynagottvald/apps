@@ -89,6 +89,7 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px}
       </div></div>
     <div class="sec" style="border:0">
       <button id="shuf">Shuffle the grid</button>
+      <button id="shufc" class="dl" style="width:100%;margin-top:10px;flex:none">Shuffle colours</button>
       <div class="row" style="margin-top:10px"><button class="dl" id="dPng">Download PNG</button><button class="dl" id="dSvg">Download SVG</button></div>
     </div>
   </aside>
@@ -105,7 +106,7 @@ const GRID = {
   '1:1':  [[8, 8], [12, 12], [16, 16]],
   '3:4':  [[6, 8], [9, 12], [12, 16]]
 };
-const S = { ratio: '16:9', dens: 1, gut: 'white', word: 'GRUBCLUB', seed: 7 };
+const S = { ratio: '16:9', dens: 1, gut: 'white', word: 'GRUBCLUB', seed: 7, cseed: 1 };
 
 /* the Grubclub logo worm (same PNG the other Grubclub apps use as the logo mark), 131x112 */
 const WORM_PNG = 'data:image/png;base64,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';
@@ -160,13 +161,11 @@ const ICON = {
       fl(29, 10, 30, 13, k.b, 3) + `<path d="M29 40 V58" stroke="${k.b}" stroke-width="3" stroke-linecap="round"/>` +
       fl(76, 41, 20, 9, k.b, 2.8) + `<path d="M76 61 V72" stroke="${k.b}" stroke-width="2.8" stroke-linecap="round"/>`; },
   stocking: (k) => `<path d="M30 22 H66 V60 H84 A16 16 0 0 1 84 92 H46 A16 16 0 0 1 30 76Z" fill="${k.a}"/><rect x="24" y="8" width="48" height="18" fill="${k.b}"/>` + zig(24, 72, 17, 3.4, 4, k.bg, 2.4) + circ(78, 76, 11, k.b),
-  /* elf: zigzag crown, a light band with two round eyes between two dark bands */
-  elf: (k) => { const ey = bestOn(k.b, [k.bg, k.a, k.x]); return poly([[8, 34], [8, 8], [22, 22], [36, 8], [50, 22], [64, 8], [78, 22], [92, 8], [92, 34]], k.b) + `<rect x="8" y="34" width="84" height="62" fill="${k.a}"/><rect x="8" y="52" width="84" height="24" fill="${k.b}"/>` + circ(33, 64, 5.2, ey) + circ(67, 64, 5.2, ey); },
   /* snowman: two big circles, hat, a single accent nose */
   snowman: (k) => circ(50, 78, 36, k.a) + circ(50, 31, 21, k.b) + `<rect x="34" y="2" width="32" height="12" rx="1" fill="${k.a}"/><rect x="26" y="12" width="48" height="5" rx="2" fill="${k.a}"/>` +
-    poly([[50, 32], [72, 36], [50, 40]], bestOn(k.b, [k.bg, k.a, k.x])) + circ(50, 66, 3.4, bestOn(k.a, [k.bg, k.b, k.x])) + circ(50, 78, 3.4, bestOn(k.a, [k.bg, k.b, k.x])) + circ(50, 90, 3.4, bestOn(k.a, [k.bg, k.b, k.x])),
+    poly([[50, 32], [72, 36], [50, 40]], bestOn(k.b, [k.bg, k.a, k.x])) + circ(50, 66, 3.4, bestOn(k.a, [k.bg, k.b, k.x])) + circ(50, 78, 3.4, bestOn(k.a, [k.bg, k.b, k.x])),
   ginger: (k) => circ(50, 22, 17, k.a) + `<rect x="8" y="40" width="84" height="20" rx="10" fill="${k.a}"/><rect x="28" y="40" width="44" height="40" rx="14" fill="${k.a}"/><rect x="30" y="64" width="16" height="34" rx="8" fill="${k.a}"/><rect x="54" y="64" width="16" height="34" rx="8" fill="${k.a}"/>` +
-    [51, 63, 75].map((y) => circ(50, y, 3.6, bestOn(k.a, [k.bg, k.b, k.x]))).join(''),
+    [51, 63].map((y) => circ(50, y, 3.6, bestOn(k.a, [k.bg, k.b, k.x]))).join(''),
   treeC: (k) => circ(50, 24, 17, k.a) + circ(50, 50, 24, k.b) + circ(50, 80, 28, k.a) + circ(50, 6, 5.5, k.x) + circ(42, 52, 3.6, k.bg) + circ(60, 46, 3.6, k.bg) + circ(38, 82, 4, k.bg) + circ(58, 84, 4, k.bg) + circ(70, 76, 4, k.x),
   wreath: (k) => Array.from({ length: 12 }, (_, i) => { const an = i / 12 * Math.PI * 2; return circ(50 + Math.cos(an) * 34, 50 + Math.sin(an) * 34, 13, i % 2 ? k.b : k.a); }).join('') + circ(50, 50, 20, k.bg) +
     circ(40, 82, 4.5, k.x) + circ(50, 85, 4.5, k.x) + circ(60, 82, 4.5, k.x) + poly([[50, 84], [36, 96], [36, 74]], k.x) + poly([[50, 84], [64, 96], [64, 74]], k.x),
@@ -203,7 +202,7 @@ const ICON = {
   wavyDiag: (k) => rot(-45, 50, 50, [-20, 0, 20, 40, 60, 80, 100, 120].map((y) => zig(-30, 130, y, 5, 8, k.a, 3.4)).join(''))
 };
 /* plain split circles (two half circles in varying colour pairs) and the three exact geometric blocks, weighted up */
-const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'doubleBauble', 'scallop', 'doubleBauble', 'gift', 'squiggle', 'squiggle', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'halfdisc', 'halfdisc', 'halfdisc', 'halfdisc'];
+const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'snowman', 'ginger', 'wreath', 'doubleBauble', 'scallop', 'doubleBauble', 'gift', 'squiggle', 'squiggle', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'halfdisc', 'halfdisc', 'halfdisc', 'halfdisc'];
 const FILLERS = ['squiggle', 'halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
 const BLEED = { squiggle: 1, candle: 1, tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1 };
 
@@ -300,7 +299,7 @@ let usedRecent = [];
 function build(anim) {
   const [W, H] = SIZE[S.ratio];
   const [cols, rows] = GRID[S.ratio][S.dens];
-  const r = rngOf(S.seed * 9301 + cols * 17 + rows);
+  const r = rngOf(S.seed * 9301 + cols * 17 + rows), rc = rngOf(S.cseed * 7919 + 13); /* r drives layout and icon choice, rc drives colours only */
   const gap = Math.round(Math.min(W / cols, H / rows) * .07 * (S.dens === 2 ? .8 : 1));
   const gutC = { white: C.W, lime: C.L, dark: C.D }[S.gut];
   const cw = (W - gap * (cols + 1)) / cols, ch = (H - gap * (rows + 1)) / rows;
@@ -316,7 +315,7 @@ function build(anim) {
     const mn = Math.min(w, h);
     let body = '', k;
     if (t.kind === 'word') {
-      k = scheme(r, 'L'); k = { ...k, bg: C.L, a: C.D, b: C.M, x: C.M };
+      k = scheme(rc, 'L'); k = { ...k, bg: C.L, a: C.D, b: C.M, x: C.M };
       const txt = (S.word || 'GRUBCLUB').toUpperCase();
       const fs = Math.min(h * .4, (w - h * 2.9) / (txt.length * .74));
       body = `<text x="${f(x + w / 2)}" y="${f(y + h / 2)}" text-anchor="middle" dominant-baseline="central" font-family="Poppins,'Helvetica Neue',Arial,sans-serif" font-weight="600" font-size="${f(fs)}" letter-spacing="${f(fs * .14)}" fill="${C.D}">${txt.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`;
@@ -326,19 +325,19 @@ function build(anim) {
         `<image href="${WORM_PNG}" filter="url(#wmf)" x="${f(x + h * .3)}" y="${f(wy)}" width="${f(ww2)}" height="${f(wh)}"/>` +
         `<image href="${WORM_PNG}" filter="url(#wmf)" x="${f(x + w - h * .3 - ww2)}" y="${f(wy)}" width="${f(ww2)}" height="${f(wh)}"/>`;
     } else if (t.kind === 'hero') {
-      k = scheme(r, pick(r, ['W', 'M', 'D', 'L']));
+      k = scheme(rc, pick(rc, ['W', 'M', 'D', 'L']));
       const nm = pick(r, ['ornament', 'wreath', 'snowman', 'reindeer', 'gift', 'bell', 'hat', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri']);
-      usedRecent.push(nm); if (GEO[nm]) k = GEO[nm](r);
+      usedRecent.push(nm); if (GEO[nm]) k = GEO[nm](rc);
       body = iconSvg(nm, k, x, y, w, h, GEO[nm] ? 0 : mn * .05);
     } else if (t.kind === 'cane') {
-      k = scheme(r);
+      k = scheme(rc);
       body = `<g transform="translate(${f(x)} ${f(y)})">${BANDS.caneSide(w, h, k, r)}</g>`;
     } else if (t.kind === 'band' && (t.w !== t.h)) {
-      k = scheme(r);
+      k = scheme(rc);
       const name = pick(r, t.w > t.h ? WIDE : ['squiggle', 'zigzag', 'zigzag', 'stripes']);
       body = `<g transform="translate(${f(x)} ${f(y)})">${BANDS[name](w, h, k, r)}</g>`;
     } else if (t.kind === 'multi') {
-      k = scheme(r);
+      k = scheme(rc);
       const m = Math.round(Math.max(t.w, t.h) / Math.min(t.w, t.h));
       for (let j = 0; j < m; j++) {
         const kk = j ? { ...k, a: k.b === k.bg ? k.a : k.b, b: k.a } : k;
@@ -346,11 +345,11 @@ function build(anim) {
         body += t.w > t.h ? iconSvg(nm, kk, x + j * w / m, y, w / m, h, mn * .05) : iconSvg(nm, kk, x, y + j * h / m, w, h / m, mn * .05);
       }
     } else if (t.kind === 'filler') {
-      k = scheme(r);
+      k = scheme(rc);
       body = iconSvg(pick(r, FILLERS), k, x, y, w, h, mn * .08);
     } else {
-      k = scheme(r);
-      const nm = t.w >= 2 && t.w === t.h && r() < .6 ? pick(r, ['pinwheel', 'holly', 'treeTri']) : nextIcon(true); if (GEO[nm]) k = GEO[nm](r);
+      k = scheme(rc);
+      const nm = t.w >= 2 && t.w === t.h && r() < .6 ? pick(r, ['pinwheel', 'holly', 'treeTri']) : nextIcon(true); if (GEO[nm]) k = GEO[nm](rc);
       body = iconSvg(nm, k, x, y, w, h, GEO[nm] ? 0 : mn * .05);
     }
     const dly = f(((t.x / cols + t.y / rows) * .9 + r() * .15));
@@ -384,6 +383,8 @@ const group = (id, key, parse = (v) => v) => document.getElementById(id).addEven
 group('ratios', 'ratio'); group('dens', 'dens', Number); group('gut', 'gut');
 document.getElementById('txt').addEventListener('input', (e) => { S.word = e.target.value; draw(false); });
 document.getElementById('shuf').addEventListener('click', () => { S.seed = Math.floor(Math.random() * 1e6); draw(true); });
+/* same layout and illustrations, new colours */
+document.getElementById('shufc').addEventListener('click', () => { S.cseed = Math.floor(Math.random() * 1e6); draw(false); });
 
 const saveBlob = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
 const fname = () => `grubclub-holiday-${S.ratio.replace(':', 'x')}`;
