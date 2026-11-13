@@ -77,7 +77,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 .slot span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .slot.on{border:1.5px solid transparent;background:rgba(215,245,250,.1);color:#fff}
 #cont{position:absolute;left:28px;right:28px;bottom:26px;height:52px;border-radius:999px;background:rgba(215,245,250,.12);color:rgba(215,245,250,.4);font:600 17px/52px Poppins,sans-serif;text-align:center;transition:background .3s,color .3s}
-#cont.ready{background:var(--kiwi);color:var(--bean);animation:glow calc(1.2s*var(--k)) ease-in-out infinite}
+#cont.ready{background:var(--kiwi);color:var(--bean)}
 @keyframes glow{50%{box-shadow:0 0 0 8px rgba(238,251,113,.25)}}
 
 /* ===== 3 pack ===== */
@@ -284,7 +284,7 @@ const FRONT=[[470,764,-18,330,88,-30,0],[700,764,14,320,84,26,4],[855,764,42,280
 const hero={t:0,L:[]};
 function buildLeaves(sel,arr,from){const g=$(sel);g.innerHTML=LF(arr);[...g.querySelectorAll('.lf')].forEach((el,i)=>{const a=arr[i];hero.L.push({el,x:a[0],y:a[1],r:a[2],d:.15+(from+i)*.05,ph:i*1.7,amp:1.6+(i%3)*.7,sp:.8+(i%4)*.18})})}
 buildLeaves('#hBack',BACK,0);buildLeaves('#hFront',FRONT,BACK.length);
-$('#pkRings').innerHTML=`<circle cx="640" cy="410" r="225" fill="#0F5A5C"/><circle cx="640" cy="410" r="188" fill="#1C8859" opacity=".5"/><circle cx="640" cy="410" r="150" fill="none" stroke="#EEFB71" stroke-opacity=".5" stroke-width="2"/>`;
+$('#pkRings').innerHTML=`<circle cx="640" cy="410" r="225" fill="#0F5A5C"/><circle cx="640" cy="410" r="188" fill="#1C8859" opacity=".3"/><circle cx="640" cy="410" r="150" fill="none" stroke="#EEFB71" stroke-opacity=".25" stroke-width="2"/>`;
 
 /* ============ per-frame drawing ============ */
 const pack={t:0,col:-1};
@@ -307,11 +307,14 @@ function curGo(x,y,ms){cursor.style.transition=`transform ${ms*K}ms cubic-bezier
 async function curClick(g){cursor.classList.remove('down');void cursor.offsetWidth;cursor.classList.add('down');await W(160,g)}
 const cen=el=>{const r=rc(el);return{x:r.x+r.w/2,y:r.y+r.h/2}};
 const BG=['#0E3251','#F7F6FA','#0E3251','#A3DAC5'];
-function clearWipe(){['#w1','#w2'].forEach(s=>{const e=$(s);e.getAnimations().forEach(a=>a.cancel());e.style.display='none'})}
-async function wipe(g,x,y,col){const a=$('#w1'),b=$('#w2');a.style.background='#EEFB71';b.style.background=col;
-  const R=Math.hypot(Math.max(x,1280-x),Math.max(y,720-y))+30,run=(e,d)=>{e.style.display='block';return e.animate([{clipPath:`circle(0px at ${x}px ${y}px)`},{clipPath:`circle(${R}px at ${x}px ${y}px)`}],{duration:800*K,delay:d*K,easing:'cubic-bezier(.65,0,.3,1)',fill:'both'}).finished};
-  await Promise.all([run(a,0),run(b,130)]);if(g!==gen)throw CANCEL}
-function show(i){$$('.scene').forEach((s,j)=>s.classList.toggle('on',j===i));$$('.ctl [data-s]').forEach(b=>b.classList.toggle('on',+b.dataset.s===i));clearWipe();cursor.style.opacity=0}
+function clearWipe(){['#w1','#w2'].forEach(x=>{const e=$(x);e.getAnimations().forEach(a=>a.cancel());e.style.display='none';e.style.opacity=''})}
+/* scene change: a calm dissolve through the next scene's background colour */
+async function wipe(g,x,y,col){const w=$('#w2');$('#w1').style.display='none';w.style.background=col;w.style.opacity=0;w.style.display='block';
+  await w.animate([{opacity:0},{opacity:1}],{duration:500*K,easing:'ease-in-out',fill:'forwards'}).finished;if(g!==gen)throw CANCEL;w.style.opacity=1}
+function unwipe(){const w=$('#w2');$('#w1').style.display='none';w.getAnimations().forEach(a=>a.cancel());
+  if(w.style.display!=='block'){return}w.style.opacity=1;
+  w.animate([{opacity:1},{opacity:0}],{duration:600*K,easing:'ease-out'}).finished.then(()=>{w.style.display='none';w.style.opacity=''}).catch(()=>{})}
+function show(i){$$('.scene').forEach((s,j)=>s.classList.toggle('on',j===i));$$('.ctl [data-s]').forEach(b=>b.classList.toggle('on',+b.dataset.s===i));unwipe();cursor.style.opacity=0}
 function showCursor(){cursor.style.opacity=1}
 
 /* ============ scenes ============ */
