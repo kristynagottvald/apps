@@ -146,14 +146,14 @@ const WM_SRC="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIMAAABwCAYAAAA9m8PR
 /* ---------------- brand ---------------- */
 /* the only three colour combinations allowed (from the brand panels): the logo is a single colour, white on teal, kiwi on green, teal on kiwi */
 const THEMES=[
- {id:'teal', name:'teal and kiwi', bg:'#12525A', ink:'#FFFFFF', url:'#EEFB71', g:'#FFFFFF', c:'#FFFFFF', a:'#FFFFFF', ring:['#4D9060','#90BE70','#DBED80'], stack:['#9EE3A3','#41865D','#5B9DBD','#A5C882','#5B9DBD','#F0FB85']},
- {id:'green',name:'green and kiwi',bg:'#23936B', ink:'#EEFB71', url:'#EEFB71', g:'#EEFB71', c:'#EEFB71', a:'#EEFB71', ring:['#9ED27A','#CDE67C','#F0FB85'], stack:['#F0FB85','#D7F5FA','#5B9DBD','#A5C882','#0F5A5C','#9EE3A3']},
- {id:'kiwi', name:'kiwi and teal', bg:'#EEFB71', ink:'#12525A', url:'#12525A', g:'#12525A', c:'#12525A', a:'#12525A', ring:['#F4FC9E','#FAFECF','#FFFFFB'], stack:['#41865D','#12525A','#5B9DBD','#A5C882','#5B9DBD','#FFFFFF']}
+ {id:'teal', name:'teal and kiwi', bg:'#12525A', ink:'#FFFFFF', url:'#EEFB71', g:'#FFFFFF', c:'#FFFFFF', a:'#FFFFFF', ring:['#4D9060','#90BE70','#DBED80']},
+ {id:'green',name:'green and kiwi',bg:'#23936B', ink:'#EEFB71', url:'#EEFB71', g:'#EEFB71', c:'#EEFB71', a:'#EEFB71', ring:['#9ED27A','#CDE67C','#F0FB85']},
+ {id:'kiwi', name:'kiwi and teal', bg:'#EEFB71', ink:'#12525A', url:'#12525A', g:'#12525A', c:'#12525A', a:'#12525A', ring:['#F4FC9E','#FAFECF','#FFFFFB']}
 ];
 const RATIOS=[['16:9',1920,1080],['1:1',1080,1080],['4:5',1080,1350],['3:4',1080,1440],['9:16',1080,1920]];
 
 /* ---------------- state ---------------- */
-const S={theme:0,ratio:4,motion:0,mspeed:1,mscale:1,melas:2,mrings:6,mcount:5,text:'delicious starts here',prods:[],speed:1};
+const S={theme:0,ratio:4,motion:0,mspeed:1,mscale:1,melas:2,mrings:6,text:'delicious starts here',prods:[],speed:1};
 let frame=FR, playing=false, last=0, acc=0, exporting=false;
 const wm=new Image(); wm.src=WM_SRC;
 const wmCache={};
@@ -182,9 +182,9 @@ let ctx, hits=[];
 function layout(W,H){
   const wide=W/H>1.1, m=W*.08;
   if(wide){ const hc=H*.05, uf=0, uy=H-H*.09, lf=H*.06, ly=H*.14, top=ly+lf*.75, bot=uy-uf*1.6;
-    return {wide,m,hc,logo:{x:m,y:ly,f:lf,al:'left'},zone:{cx:W*.71,cy:H*.46,s:H*.62,rowW:W*.46},tx:{x:m,y:(top+bot)/2,h:bot-top,w:W*.36,al:'left',max:H*.11,lines:3},url:{x:m,y:uy,f:uf,al:'left'}}; }
+    return {wide,m,hc,logo:{x:m,y:ly,f:lf,al:'left'},zone:{cx:W*.71,cy:H*.46,s:H*.62},tx:{x:m,y:(top+bot)/2,h:bot-top,w:W*.36,al:'left',max:H*.11,lines:3},url:{x:m,y:uy,f:uf,al:'left'}}; }
   const hc=H*.045, uf=0, uy=H-H*.075, s=Math.min(W*.66,H*.38), cy=H*.4, top=cy+s*.58, bot=H*.865;
-  return {wide,m,hc,logo:{x:W/2,y:H*.09,f:W*.068,al:'center'},zone:{cx:W/2,cy,s,rowW:W*.98},tx:{x:W/2,y:(top+bot)/2,h:bot-top,bot,w:W-2*m,al:'center',max:Math.min(W*.095,H*.06),lines:3},url:{x:W/2,y:uy,f:uf,al:'center'}};
+  return {wide,m,hc,logo:{x:W/2,y:H*.09,f:W*.068,al:'center'},zone:{cx:W/2,cy,s},tx:{x:W/2,y:(top+bot)/2,h:bot-top,bot,w:W-2*m,al:'center',max:Math.min(W*.095,H*.06),lines:3},url:{x:W/2,y:uy,f:uf,al:'center'}};
 }
 function wrapText(words,f,w){
   ctx.font=`700 ${f}px Poppins,"Helvetica Neue",Arial,sans-serif`; ctx.letterSpacing=(-0.03*f)+'px';
@@ -209,13 +209,6 @@ function drawMotion(c,f,T,z){
   if(S.motion===1){
     const R=z.s*sc*(.62+.05*Math.sin(TAU*S.melas*ph))*sine((f-4)*sp/34);
     if(R>0){ c.fillStyle=T.url; c.beginPath(); c.arc(0,0,R,0,TAU); c.fill(); }
-  }else if(S.motion===3){
-    const n=S.mcount, d=Math.min(z.s*.42*sc,z.rowW/((n-1)*.8+1)), step=d*.8; c.translate(0,z.s*.42);
-    for(let i=0;i<n;i++){
-      const a=sine((f-2-i*4)*sp/24); if(a<=0) continue;
-      const x=(i-(n-1)/2)*step, y=Math.sin(TAU*2*ph-i*.4)*d*.17;
-      c.fillStyle=T.stack[i%T.stack.length]; c.beginPath(); c.arc(x,y,d/2*a,0,TAU); c.fill();
-    }
   }else if(S.motion===2){
     const n=S.mrings;
     for(let i=n;i>0;i--){
@@ -228,7 +221,7 @@ function drawMotion(c,f,T,z){
 function draw(c,W,H,f,k,collect){
   ctx=c; c.save(); c.scale(k,k);
   scene(c,W,H,f,collect,S.theme);
-  if(S.motion===4){ const L=layout(W,H), R=macroR(f,W,H,L.zone);
+  if(S.motion===3){ const L=layout(W,H), R=macroR(f,W,H,L.zone);
     if(R>0){ c.save(); c.beginPath(); c.arc(L.zone.cx,L.zone.cy,R,0,Math.PI*2); c.clip(); scene(c,W,H,f,false,INV[S.theme]); c.restore(); } }
   c.restore(); c.letterSpacing='0px';
 }
@@ -244,7 +237,7 @@ function scene(c,W,H,f,collect,th){
     c.textAlign='left'; c.fillStyle=T.g; c.fillText('grub',x0,base); c.fillStyle=T.c; c.fillText('club',x0+w1,base);
     if(wm.complete&&wm.naturalWidth) c.drawImage(tintedWm(T.a,Math.round(wmh)),x0+w1+w2-lf*.02,base-wmh+lf*.035,wmw,wmh);
     c.restore(); }
-  if(S.motion&&S.motion<4) drawMotion(c,f,T,L.zone);
+  if(S.motion&&S.motion<3) drawMotion(c,f,T,L.zone);
   /* products */
   const n=S.prods.length, sl=slots(n), z=L.zone, order=sl.map((s,i)=>i).sort((a,b)=>sl[a][2]-sl[b][2]);
   if(collect) hits=[];
@@ -306,16 +299,15 @@ $('#ratios').innerHTML=RATIOS.map((r,i)=>`<button class="opt" data-i="${i}" aria
 $('#sets').innerHTML=SETS.map((m,i)=>`<button class="opt" data-i="${i}" aria-pressed="false">${m.n}</button>`).join('');
 $('#sets').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; loadSet(+b.dataset.i); press($('#sets'),S.set)};
 const unset=()=>{ S.set=-1; press($('#sets'),-1); };
-const MOTIONS=['off','grow','evolve','stack','macro'];
+const MOTIONS=['off','grow','evolve','macro'];
 $('#motions').innerHTML=MOTIONS.map((m,i)=>`<button class="opt" data-i="${i}" aria-pressed="${i===S.motion}">${m}</button>`).join('');
 $('#motions').onclick=e=>{const b=e.target.closest('.opt'); if(!b)return; S.motion=+b.dataset.i; press($('#motions'),S.motion); thirdUI(); render()};
 function thirdUI(){
-  const t=$('#mThird'), m=S.motion; $('#msl').classList.toggle('on',m>0); $('#mThirdL').hidden=!(m>=1&&m<=3);
+  const t=$('#mThird'), m=S.motion; $('#msl').classList.toggle('on',m>0); $('#mThirdL').hidden=!(m===1||m===2);
   if(m===1){ $('#mThirdT').textContent='elasticity'; t.min=1; t.max=6; t.step=1; t.value=S.melas; }
   if(m===2){ $('#mThirdT').textContent='ring count'; t.min=2; t.max=8; t.step=1; t.value=S.mrings; }
-  if(m===3){ $('#mThirdT').textContent='circle count'; t.min=3; t.max=9; t.step=1; t.value=S.mcount; }
 }
-$('#mThird').oninput=e=>{ const v=+e.target.value; if(S.motion===1) S.melas=v; else if(S.motion===2) S.mrings=v; else S.mcount=v; render(); };
+$('#mThird').oninput=e=>{ const v=+e.target.value; if(S.motion===1) S.melas=v; else S.mrings=v; render(); };
 $('#mSpeed').oninput=e=>{S.mspeed=+e.target.value; render()};
 $('#mScale').oninput=e=>{S.mscale=+e.target.value; render()};
 function press(box,i){ box.querySelectorAll('.opt').forEach((b,j)=>b.setAttribute('aria-pressed',j===i)); }
