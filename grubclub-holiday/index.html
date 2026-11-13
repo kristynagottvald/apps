@@ -151,11 +151,13 @@ const ICON = {
   /* wrapped gift: full tile, ribbon cross, star bow */
   /* thick candy cane with diagonal stripes */
   cane: (k) => { const id = 'cm' + (uid++), d = 'M32 104 V42 A21 21 0 0 1 74 42 V54', [cb, cs] = caneCols(k.bg); k = { ...k, a: cb, b: cs }; return `<mask id="${id}"><path d="${d}" stroke="#fff" stroke-width="26" fill="none"/></mask><path d="${d}" stroke="${k.a}" stroke-width="26" fill="none"/><g mask="url(#${id})">${Array.from({ length: 16 }, (_, i) => `<path d="M-10 ${i * 17 - 10} L110 ${i * 17 - 70}" stroke="${k.b}" stroke-width="7"/>`).join('')}</g>`; },
-  /* two candles, a tall and a short, striped bodies and outlined flames on a round backdrop; bleeds off the bottom */
-  candle: (k) => { const c1 = 'cd' + (uid++), c2 = 'cd' + (uid++), st = (x0, y0, w2, h2, col, id) => `<clipPath id="${id}"><rect x="${x0}" y="${y0}" width="${w2}" height="${h2}"/></clipPath><g clip-path="url(#${id})">${Array.from({ length: 9 }, (_, i) => `<path d="M${x0 - 6 + i * 11} ${y0 + h2 + 4} L${x0 + 30 + i * 11} ${y0 - 30}" stroke="${col}" stroke-width="3.4"/>`).join('')}</g>`;
-    return circ(50, 44, 41, k.a) + `<rect x="10" y="52" width="42" height="52" fill="${k.a}" stroke="${k.bg}" stroke-width="3.6"/>` + st(10, 52, 42, 52, k.b, c1) + `<rect x="58" y="70" width="32" height="34" fill="${k.b}" stroke="${k.bg}" stroke-width="3.6"/>` + st(58, 70, 32, 34, k.a, c2) +
-      `<path d="M31 12 Q45 28 31 44 Q17 28 31 12Z" fill="none" stroke="${k.b}" stroke-width="2.8" stroke-linejoin="round"/><path d="M31 44 V52" stroke="${k.b}" stroke-width="2.8" stroke-linecap="round"/>` +
-      `<path d="M74 48 Q84 58 74 67 Q64 58 74 48Z" fill="none" stroke="${k.b}" stroke-width="2.8" stroke-linejoin="round"/><path d="M74 67 V70" stroke="${k.b}" stroke-width="2.8" stroke-linecap="round"/>`; },
+  /* two candles, a tall and a short: each flame sits in its own round backdrop, striped bodies, bleeding off the bottom */
+  candle: (k) => { const c1 = 'cd' + (uid++), c2 = 'cd' + (uid++), st = (x0, y0, w2, h2, col, id, n) => `<clipPath id="${id}"><rect x="${x0}" y="${y0}" width="${w2}" height="${h2}"/></clipPath><g clip-path="url(#${id})">${Array.from({ length: n }, (_, i) => `<path d="M${x0 - h2 + 2 + i * 12} ${y0 + h2 + 2} L${x0 + 2 + i * 12} ${y0 - 2}" stroke="${col}" stroke-width="4.2"/>`).join('')}</g>`, fl = (cx, y0, hh, ww, col, sw) => `<path d="M${cx} ${y0} Q${cx + ww} ${y0 + hh / 2} ${cx} ${y0 + hh} Q${cx - ww} ${y0 + hh / 2} ${cx} ${y0}Z" fill="none" stroke="${col}" stroke-width="${sw}" stroke-linejoin="round"/>`;
+    return circ(29, 34, 29, k.a) + circ(76, 56, 19, k.a) +
+      `<rect x="6" y="58" width="46" height="46" fill="${k.a}"/>` + st(6, 58, 46, 46, k.b, c1, 8) +
+      `<rect x="60" y="72" width="32" height="32" fill="${k.b}"/>` + st(60, 72, 32, 32, k.a, c2, 6) +
+      fl(29, 10, 30, 13, k.b, 3) + `<path d="M29 40 V58" stroke="${k.b}" stroke-width="3" stroke-linecap="round"/>` +
+      fl(76, 41, 20, 9, k.b, 2.8) + `<path d="M76 61 V72" stroke="${k.b}" stroke-width="2.8" stroke-linecap="round"/>`; },
   stocking: (k) => `<path d="M30 22 H66 V60 H84 A16 16 0 0 1 84 92 H46 A16 16 0 0 1 30 76Z" fill="${k.a}"/><rect x="24" y="8" width="48" height="18" fill="${k.b}"/>` + zig(24, 72, 17, 3.4, 4, k.bg, 2.4) + circ(78, 76, 11, k.b),
   /* elf: zigzag crown, a light band with two round eyes between two dark bands */
   elf: (k) => { const ey = bestOn(k.b, [k.bg, k.a, k.x]); return poly([[8, 34], [8, 8], [22, 22], [36, 8], [50, 22], [64, 8], [78, 22], [92, 8], [92, 34]], k.b) + `<rect x="8" y="34" width="84" height="62" fill="${k.a}"/><rect x="8" y="52" width="84" height="24" fill="${k.b}"/>` + circ(33, 64, 5.2, ey) + circ(67, 64, 5.2, ey); },
