@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postmark Awards Ribbon Engine</title>
+<style>
+:root{--bg:#14123A;--panel:#1B1850;--line:#332E8A;--ink:#fff;--mute:#a7a3e0;--pink:#F15076;--yellow:#FECA4F;--peri:#6C5CE7;--mag:#D045DC;--violet:#4E3EC8}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:14px/1.4 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+nav.back{flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;white-space:nowrap;overflow:hidden}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}}
+.app{flex:1;min-height:0;display:flex}
+.panel{width:310px;flex:none;background:var(--panel);border-right:2px solid var(--line);overflow-y:auto;padding:18px 18px 32px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.brand i{width:34px;height:34px;border-radius:50%;background:conic-gradient(var(--pink),var(--yellow),var(--peri),var(--mag),var(--pink))}
+.brand h1{margin:0;font-size:16px;line-height:1.15}.brand small{color:var(--mute);font-size:12px}
+label.l{display:flex;justify-content:space-between;margin:14px 0 6px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--mute);text-transform:uppercase}
+label.l output{color:#fff;font-weight:500;text-transform:none}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button,.btn{font:inherit;font-weight:600;font-size:13px;color:#fff;background:transparent;border:1.5px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+.seg button:hover,.btn:hover{border-color:#7d76e8}
+.seg button[aria-pressed=true]{background:#fff;color:var(--violet);border-color:#fff}
+textarea,select{width:100%;font:inherit;color:#fff;background:#110F33;border:1.5px solid var(--line);border-radius:8px;padding:8px}
+textarea{height:64px;resize:vertical}
+input[type=range]{width:100%;accent-color:var(--pink)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.btn{border-radius:10px;padding:10px}
+.btn.primary{background:var(--pink);border-color:var(--pink)}
+.btn.wide{grid-column:1/-1}
+.sw{display:flex;gap:6px;margin-top:2px}.sw i{width:18px;height:18px;border-radius:50%;display:block;border:1px solid #0004}
+.stage{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;padding:20px;background:#0E0C2A}
+#cv{display:block;max-width:100%;max-height:100%;box-shadow:0 12px 40px #0008}
+@media (max-width:820px){.app{flex-direction:column}.panel{width:auto;max-height:46vh;border-right:0;border-bottom:2px solid var(--line)}.stage{padding:12px}}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Postmark Awards Ribbon Engine</b></nav>
+<div class="app">
+  <aside class="panel" aria-label="Controls">
+    <div class="brand"><i></i><div><h1>Ribbon Engine</h1><small>Postmark Awards brand tool</small></div></div>
+
+    <label class="l">Style</label>
+    <div class="seg" id="modes"></div>
+
+    <label class="l">Ribbon text <small style="text-transform:none;font-weight:400">one per line</small></label>
+    <textarea id="text" spellcheck="false">POSTMARK AWARDS</textarea>
+
+    <label class="l">Font weight</label>
+    <select id="weight"><option value="n">Normal (Arial)</option><option value="b" selected>Bold (Arial)</option><option value="k">Black (Arial Black)</option></select>
+
+    <label class="l">Colourway</label>
+    <div class="seg" id="ways"></div>
+
+    <label class="l">Format</label>
+    <select id="fmt"></select>
+
+    <div id="sliders"></div>
+
+    <div class="btns">
+      <button class="btn wide" id="rand">🎲 Randomize pattern</button>
+      <button class="btn primary" id="svg">Download SVG</button>
+      <button class="btn" id="png">Download PNG</button>
+    </div>
+  </aside>
+  <main class="stage"><canvas id="cv" aria-label="Ribbon artwork"></canvas></main>
+</div>
+
+<script>
+/* Postmark Awards ribbon engine: three brand ribbon systems that draw to a canvas and export the same geometry as SVG. */
+const WAYS = {
+  violet: { name:'Violet', bg:'#4E3EC8', ribbons:['#F15076','#FECA4F','#6C5CE7','#D045DC'], text:'#FFFFFF' },
+  lilac:  { name:'Lilac',  bg:'#BBAAFF', ribbons:['#4131F1'], text:'#BBAAFF' }
+};
+const FORMATS = { land:['Landscape 1600×900',1600,900], sq:['Square 1080×1080',1080,1080], port:['Portrait 1080×1350',1080,1350], story:['Story 1080×1920',1080,1920] };
+/* sliders per style: [key, label, min, max, step, default] */
+const MODES = {
+  wiggle: { name:'Wiggles', way:'violet', th:0.42, sliders:[
+    ['bend','Wave bend / swing',10,120,1,45],['freq','Wave frequency',0.003,0.02,0.001,0.007],['thick','Ribbon thickness',25,90,1,55],['space','Letter spacing',-4,25,0.5,4]] },
+  chaos:  { name:'Chaos', way:'violet', th:0.42, sliders:[
+    ['bend','Path chaos / turn sharpness',10,150,1,50],['freq','Wiggle frequency',0.001,0.03,0.001,0.006],['count','Ribbons',3,12,1,7],['thick','Ribbon thickness',25,90,1,55],['space','Letter spacing',-4,25,0.5,4]] },
+  loop:   { name:'Loop', way:'lilac', th:0.45, sliders:[
+    ['bend','Ribbon swing',0.15,0.45,0.01,0.32],['loops','Loop tightness',1,4,0.1,2.5],['tangle','Path tangle / meander',0,1,0.01,0.35],['thick','Ribbon thickness',80,400,1,200],['space','Letter spacing',0,60,0.5,16]] }
+};
+const S = { mode:'wiggle', way:'violet', fmt:'land', seed:1, phase:0, angle:-Math.PI/4, ox:0, oy:0, gAngle:0, vals:{}, W:1600, H:900 };
+for (const m in MODES) { S.vals[m] = {}; MODES[m].sliders.forEach(s => S.vals[m][s[0]] = s[5]); }
+
+/* seeded randomness */
+function rng(seed){ let a = seed>>>0; return () => { a = (a + 0x6D2B79F5)>>>0; let t = a; t = Math.imul(t ^ t>>>15, t|1); t ^= t + Math.imul(t ^ t>>>7, t|61); return ((t ^ t>>>14)>>>0)/4294967296; }; }
+function noise2(seed, x, y){
+  const h = (i, j) => { let n = Math.imul(i, 374761393) + Math.imul(j, 668265263) + Math.imul(seed, 1442695041); n = Math.imul(n ^ n>>>13, 1274126177); return ((n ^ n>>>16)>>>0)/4294967296; };
+  const xi = Math.floor(x), yi = Math.floor(y), xf = x-xi, yf = y-yi, u = xf*xf*(3-2*xf), v = yf*yf*(3-2*yf);
+  const a = h(xi,yi), b = h(xi+1,yi), c = h(xi,yi+1), d = h(xi+1,yi+1);
+  return a + (b-a)*u + (c-a)*v + (a-b-c+d)*u*v;
+}
+
+/* a polyline with arc length: position and smoothed heading at any distance */
+class Path {
+  constructor(pts){ this.p = []; let d = 0; pts.forEach((q,i) => { if (i) d += Math.hypot(q.x-pts[i-1].x, q.y-pts[i-1].y); this.p.push({x:q.x, y:q.y, d}); }); this.len = d; }
+  idx(d){ const p = this.p; let lo = 0, hi = p.length-1; while (lo <= hi) { const m = (lo+hi)>>1; if (p[m].d < d) lo = m+1; else hi = m-1; } return Math.min(Math.max(0, lo-1), p.length-2); }
+  pos(d){ d = Math.min(Math.max(d,0), this.len); const i = this.idx(d), a = this.p[i], b = this.p[i+1], s = b.d-a.d, t = s > 0 ? (d-a.d)/s : 0; return { x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t }; }
+  at(d, w = 10){ const c = this.pos(d), a = this.pos(d-w), b = this.pos(d+w); return { x:c.x, y:c.y, a:Math.atan2(b.y-a.y, b.x-a.x) }; }
+  slice(d0, d1){ const out = [this.pos(d0)]; for (let i = this.idx(d0)+1; i < this.p.length && this.p[i].d < d1; i++) if (this.p[i].d > d0) out.push(this.p[i]); out.push(this.pos(d1)); return out; }
+}
+
+/* ---- layout: returns a list of ops { k:'path', pts, col, w } and { k:'ch', c, x, y, a } in paint order ---- */
+function layChars(path, str, size, spacing, ctx, W, H, out, depthFor){
+  const chars = []; let d = 20, i = 0;
+  while (d < path.len - 20) {
+    const c = str[i % str.length], w = ctx.measureText(c).width, mid = d + w/2;
+    if (c !== ' ' && mid < path.len - 10) { const s = path.at(mid, 10); if (s.x > -100 && s.x < W+100 && s.y > -100 && s.y < H+100) chars.push({ k:'ch', c, x:s.x, y:s.y, a:s.a, d:mid }); }
+    d += w + spacing; i++;
+  }
+  return chars;
+}
+function runs(pts, W, H, m){ // keep only the parts of a polyline that are near the artboard
+  const out = []; let cur = [];
+  pts.forEach(p => { if (p.x > -m && p.x < W+m && p.y > -m && p.y < H+m) cur.push(p); else { if (cur.length) { cur.push(p); out.push(cur); } cur = []; } });
+  if (cur.length) out.push(cur);
+  return out.filter(r => r.length > 1);
+}
+
+function build(ctx){
+  const { W, H } = S, v = S.vals[S.mode], T = v.thick, M = MODES[S.mode], way = WAYS[S.way];
+  const lines = document.getElementById('text').value.split('\n').map(s => s.trim()).filter(Boolean); if (!lines.length) lines.push(' ');
+  const size = (S.mode === 'loop' ? T*0.45 : T*0.42);
+  ctx.font = fontCss(size); const ops = [];
+
+  if (S.mode === 'wiggle') {
+    const diag = Math.hypot(W,H), gap = T*1.55, n = Math.ceil(diag*2/gap), ca = Math.cos(S.angle), sa = Math.sin(S.angle);
+    for (let r = 0; r < n; r++) {
+      const off = -diag + r*gap, pts = [];
+      for (let u = -diag*0.6; u <= diag*1.6; u += 4) { const wv = Math.sin(u*v.freq + S.phase)*v.bend; pts.push({ x:W/2 + u*ca - (off+wv)*sa, y:H/2 + u*sa + (off+wv)*ca }); }
+      const path = new Path(pts), col = way.ribbons[r % way.ribbons.length];
+      runs(pts, W, H, T).forEach(rp => ops.push({ k:'path', pts:rp, col, w:T }));
+      layChars(path, lines[r % lines.length] + '    ', size, v.space, ctx, W, H).forEach(c => ops.push(c));
+    }
+  } else if (S.mode === 'chaos') {
+    const rand = rng(S.seed), margin = Math.max(T*2.5, 150), cx = W/2, cy = H/2;
+    for (let r = 0; r < v.count; r++) {
+      const side = Math.floor(rand()*4); let x, y;
+      if (side === 0) { x = -margin + rand()*(W+2*margin); y = -margin; } else if (side === 1) { x = W+margin; y = -margin + rand()*(H+2*margin); }
+      else if (side === 2) { x = -margin + rand()*(W+2*margin); y = H+margin; } else { x = -margin; y = -margin + rand()*(H+2*margin); }
+      const tx = cx + (rand()*2-1)*W*0.25, ty = cy + (rand()*2-1)*H*0.25; let ang = Math.atan2(ty-y, tx-x), entered = false; const pts = [];
+      for (let i = 0; i < 8000; i++) {
+        pts.push({ x, y });
+        if (x >= 0 && x <= W && y >= 0 && y <= H) entered = true;
+        if (entered) { if (x < -margin || x > W+margin || y < -margin || y > H+margin) break; }
+        else { let diff = Math.atan2(cy-y, cx-x) - ang; while (diff > Math.PI) diff -= 2*Math.PI; while (diff < -Math.PI) diff += 2*Math.PI; ang += diff*0.03; }
+        ang += (noise2(S.seed, i*v.freq, r*100)*2-1)*(v.bend*0.0025)*0.8;
+        x += Math.cos(ang)*8; y += Math.sin(ang)*8;
+      }
+      if (pts.length < 2) continue;
+      const path = new Path(pts), col = way.ribbons[r % way.ribbons.length];
+      ops.push({ k:'path', pts:pts.filter((_, i) => i % 2 === 0 || i === pts.length-1), col, w:T });
+      layChars(path, lines[r % lines.length] + '    ', size, v.space, ctx, W, H).forEach(c => ops.push(c));
+    }
+  } else {
+    const margin = T*4, pos = (t) => {
+      const f = v.loops/2.5, bx = Math.sin(t*0.25 + S.phase*2.1)*(W*0.6*v.tangle) + Math.sin(t*f + S.phase)*(W*v.bend);
+      const by = t*(H*0.08/f) + Math.cos(t*0.18 + S.phase*0.7)*(H*0.6*v.tangle) + Math.cos(t*f + S.phase)*(H*0.15*(v.bend/0.32));
+      return { x:W/2 + S.ox + bx*Math.cos(S.gAngle) - by*Math.sin(S.gAngle), y:H/2 + S.oy + bx*Math.sin(S.gAngle) + by*Math.cos(S.gAngle) };
+    };
+    let lo = 1e9, hi = -1e9;
+    for (let t = -300; t <= 300; t += 0.5) { const p = pos(t); if (p.x > -margin && p.x < W+margin && p.y > -margin && p.y < H+margin) { lo = Math.min(lo,t); hi = Math.max(hi,t); } }
+    if (lo === 1e9) { lo = -10; hi = 10; }
+    const pts = []; let last = null;
+    for (let t = lo-1; t <= hi+1; t += 0.02) { const p = pos(t); if (!last || Math.hypot(p.x-last.x, p.y-last.y) >= 3) { pts.push(p); last = p; } }
+    if (pts.length > 1) {
+      const path = new Path(pts), col = way.ribbons[0], letters = layChars(path, (lines[0]) + '    ', size, v.space, ctx, W, H, null);
+      // a letter is painted once the ribbon has moved on, so later passes of the ribbon cross over it
+      let from = 0;
+      letters.forEach(c => { const to = Math.min(path.len, c.d + T*0.75); if (to > from) { ops.push({ k:'path', pts:path.slice(from, to), col, w:T }); from = to; } ops.push(c); });
+      if (from < path.len) ops.push({ k:'path', pts:path.slice(from, path.len), col, w:T });
+    }
+  }
+  return { ops, size };
+}
+function fontCss(sz){ const w = document.getElementById('weight').value; return w === 'n' ? `400 ${sz}px Arial, sans-serif` : w === 'b' ? `700 ${sz}px Arial, sans-serif` : `900 ${sz}px "Arial Black", Arial, sans-serif`; }
+
+/* ---- render ---- */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let model = null;
+function render(){
+  const f = FORMATS[S.fmt]; S.W = f[1]; S.H = f[2];
+  if (cv.width !== S.W || cv.height !== S.H) { cv.width = S.W; cv.height = S.H; }
+  fit();
+  const way = WAYS[S.way]; model = build(ctx);
+  ctx.fillStyle = way.bg; ctx.fillRect(0, 0, S.W, S.H);
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = fontCss(model.size);
+  for (const o of model.ops) {
+    if (o.k === 'path') { ctx.strokeStyle = o.col; ctx.lineWidth = o.w; ctx.beginPath(); o.pts.forEach((p,i) => i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y)); ctx.stroke(); }
+    else { ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.a); ctx.fillStyle = way.text; ctx.fillText(o.c, 0, -model.size*0.05); ctx.restore(); }
+  }
+}
+function fit(){ // largest box of the format's shape that fits the stage
+  const st = cv.parentElement, aw = st.clientWidth - 40, ah = st.clientHeight - 40, r = S.W/S.H;
+  let w = aw, h = aw/r; if (h > ah) { h = ah; w = ah*r; }
+  cv.style.width = Math.max(120, Math.floor(w)) + 'px'; cv.style.height = Math.max(120, Math.floor(h)) + 'px';
+}
+
+/* ---- export ---- */
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function toSVG(){
+  const way = WAYS[S.way], w = document.getElementById('weight').value, fam = w === 'k' ? 'Arial Black' : 'Arial', fw = w === 'n' ? 'normal' : 'bold', sz = model.size.toFixed(2), yo = (-model.size*0.05).toFixed(2);
+  const out = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S.W} ${S.H}" width="${S.W}" height="${S.H}">`, `<rect width="100%" height="100%" fill="${way.bg}"/>`];
+  for (const o of model.ops) {
+    if (o.k === 'path') out.push(`<path d="${o.pts.map((p,i) => (i ? 'L' : 'M') + p.x.toFixed(2) + ' ' + p.y.toFixed(2)).join(' ')}" fill="none" stroke="${o.col}" stroke-width="${o.w}" stroke-linecap="round" stroke-linejoin="round"/>`);
+    else out.push(`<text x="0" y="${yo}" transform="translate(${o.x.toFixed(2)}, ${o.y.toFixed(2)}) rotate(${(o.a*180/Math.PI).toFixed(2)})" fill="${way.text}" font-family="${fam}, sans-serif" font-weight="${fw}" font-size="${sz}px" text-anchor="middle" dominant-baseline="central">${esc(o.c)}</text>`);
+  }
+  out.push('</svg>'); return out.join('\n');
+}
+function save(blob, name){ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+
+/* ---- controls ---- */
+const $ = id => document.getElementById(id);
+function seg(el, items, cur, on){ el.innerHTML = ''; items.forEach(([k,label]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.setAttribute('aria-pressed', k === cur); b.onclick = () => on(k); el.appendChild(b); }); }
+function drawControls(){
+  seg($('modes'), Object.entries(MODES).map(([k,m]) => [k,m.name]), S.mode, setMode);
+  seg($('ways'), Object.entries(WAYS).map(([k,w]) => [k,w.name]), S.way, k => { S.way = k; drawControls(); render(); });
+  const box = $('sliders'); box.innerHTML = '';
+  MODES[S.mode].sliders.forEach(([k,label,min,max,step]) => {
+    const l = document.createElement('label'); l.className = 'l'; l.innerHTML = `<span>${label}</span><output></output>`;
+    const r = document.createElement('input'); r.type = 'range'; r.min = min; r.max = max; r.step = step; r.value = S.vals[S.mode][k]; r.id = 'sl-' + k;
+    const o = l.querySelector('output'); o.textContent = r.value;
+    r.oninput = () => { S.vals[S.mode][k] = +r.value; o.textContent = r.value; render(); };
+    box.append(l, r);
+  });
+}
+function setMode(m){ S.mode = m; S.way = MODES[m].way; if (m === 'wiggle') { S.phase = 0; S.angle = -Math.PI/4; } if (m === 'loop') { S.phase = 0; S.ox = S.oy = S.gAngle = 0; } drawControls(); render(); }
+function setVal(k, x){ S.vals[S.mode][k] = x; const r = $('sl-' + k); if (r) { r.value = x; r.previousElementSibling.querySelector('output').textContent = +(+r.value).toFixed(3); } }
+function randomize(){
+  const R = Math.random, v = (k, a, b, st) => { const s = MODES[S.mode].sliders.find(q => q[0] === k); setVal(k, Math.min(s[3], Math.max(s[2], Math.round((a + R()*(b-a))/s[4])*s[4]))); };
+  S.seed = Math.floor(R()*1e6);
+  if (S.mode === 'wiggle') { v('bend',20,100); v('freq',0.004,0.015); v('thick',35,80); v('space',0,12); S.phase = R()*Math.PI*2; S.angle = [-1,1,-0.3,0.3][Math.floor(R()*4)]*(Math.PI/4); }
+  else if (S.mode === 'chaos') { v('bend',30,110); v('freq',0.003,0.015); }
+  else { v('bend',0.15,0.45); v('loops',1,4); v('tangle',0,1); S.phase = R()*Math.PI*2; S.ox = (R()*2-1)*S.W*0.25; S.oy = (R()*2-1)*S.H*0.25; S.gAngle = R()*Math.PI*2; }
+  render();
+}
+$('text').oninput = render; $('weight').onchange = render;
+$('fmt').innerHTML = Object.entries(FORMATS).map(([k,f]) => `<option value="${k}">${f[0]}</option>`).join('');
+$('fmt').onchange = e => { S.fmt = e.target.value; render(); };
+$('rand').onclick = randomize;
+$('svg').onclick = () => save(new Blob([toSVG()], { type:'image/svg+xml' }), 'postmark_ribbon_' + S.mode + '.svg');
+$('png').onclick = () => cv.toBlob(b => save(b, 'postmark_ribbon_' + S.mode + '.png'));
+addEventListener('keydown', e => { if (e.key.toLowerCase() === 'r' && !/TEXTAREA|SELECT|INPUT/.test(e.target.tagName)) randomize(); });
+addEventListener('resize', fit);
+window.rb = { setMode, randomize, render, S };
+S.seed = 20260;
+drawControls(); (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(render); render();
+</script>
+</body>
+</html>

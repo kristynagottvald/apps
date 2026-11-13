@@ -18,6 +18,24 @@
     "alt": "Black screen with outlined boxes, thin rays from the centre and floating stacks of fine white lines, behind the headline 'Plan your inventory logistics before your next peak season.'"
   },
   {
+    "id": "postmark-awards-motion",
+    "title": "Postmark Awards Motion Engine",
+    "category": "Interactive Engine",
+    "url": "postmark-awards-motion/",
+    "thumbnail": "postmark-awards-motion/thumb.png",
+    "preview": "postmark-awards-motion/thumb.webp",
+    "alt": "Motion graphic engine for the Postmark Awards that switches between four styles: a repeating STANDOUT DESIGN AWARD stack on indigo, a GROWTH AWARD headline with a long lavender shadow, a rotated ticker of MAIL FOR GOOD AWARD, and a handwritten 'campaign personalization' headline on guides"
+  },
+  {
+    "id": "postmark-ribbon-engine",
+    "title": "Postmark Awards Ribbon Engine",
+    "category": "Interactive Engine",
+    "url": "postmark-ribbon-engine/",
+    "thumbnail": "postmark-ribbon-engine/thumb.png",
+    "preview": "postmark-ribbon-engine/thumb.webp",
+    "alt": "Diagonal wavy ribbons in pink, yellow, periwinkle and magenta on a deep violet background, each carrying the white text 'POSTMARK AWARDS' along its curve"
+  },
+  {
     "id": "flavor-all-stars",
     "title": "Grubclub Flavor All Stars",
     "category": "Email",
