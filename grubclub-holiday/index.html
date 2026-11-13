@@ -131,6 +131,8 @@ const splitCircle = (k, r = 46) => halfL(50, 50, r, k.a) + halfR(50, 50, r, k.b)
 /* chunky worm-line squiggle: arches of semicircles drawn with a thick round-capped stroke (bleeds off the tile) */
 const archWave = (x0, y, r, n, col, sw, flip) => { let d = `M${f(x0)} ${f(y)}`; for (let i = 0; i < n; i++) d += ` A${f(r)} ${f(r)} 0 0 ${(i + (flip ? 1 : 0)) % 2 ? 0 : 1} ${f(x0 + 2 * r * (i + 1))} ${f(y)}`; return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${f(sw)}" stroke-linecap="round"/>`; };
 const contrastOf = (c1, c2) => { const a = lum(c1), b = lum(c2); return (Math.max(a, b) + .05) / (Math.min(a, b) + .05); };
+/* the palette colour from pool that contrasts most with the surface a detail sits on */
+const bestOn = (surface, pool) => pool.filter((c) => c !== surface).sort((u, v) => contrastOf(v, surface) - contrastOf(u, surface))[0];
 const squigCols = (k) => [k.a, k.b, k.x].sort((u, v) => contrastOf(v, k.bg) - contrastOf(u, k.bg));
 
 const ICON = {
@@ -140,23 +142,26 @@ const ICON = {
       `<clipPath id="${id}"><circle cx="50" cy="61" r="38"/></clipPath>` + circ(50, 61, 38, k.a) + `<g clip-path="url(#${id})"><g transform="rotate(-40 50 61)">${[-10, 10, 30, 50, 70, 90].map((y) => zig(-20, 120, y + 20, 4, 8, k.bg, 2.6)).join('')}</g></g>`); },
   /* pentagon face, ring antlers, one round nose */
   reindeer: (k) => circ(14, 12, 20, 'none', `stroke="${k.b}" stroke-width="3.4"`) + circ(86, 12, 20, 'none', `stroke="${k.b}" stroke-width="3.4"`) +
-    poly([[10, 20], [90, 20], [90, 62], [50, 98], [10, 62]], k.a) + circ(50, 68, 11, k.x),
+    poly([[10, 20], [90, 20], [90, 62], [50, 98], [10, 62]], k.a) + circ(50, 68, 11, bestOn(k.a, [k.bg, k.b, k.x])),
   /* bell: big dome, wavy white band, round clapper below */
   bell: (k) => `<path d="M16 68 V50 Q16 8 50 8 Q84 8 84 50 V68Z" fill="${k.a}"/><rect x="6" y="66" width="88" height="16" fill="${k.b}"/>` + zig(6, 94, 74, 3.4, 8, k.bg, 2.4) + circ(50, 90, 11, k.x),
   hat: (k) => `<path d="M20 70 V58 Q20 22 50 22 Q80 22 80 58 V70Z" fill="${k.a}"/><rect x="10" y="68" width="80" height="18" rx="2" fill="${k.b}"/>` + zig(10, 90, 77, 3.4, 8, k.bg, 2.4) + circ(50, 14, 11, k.x),
   /* wrapped gift: full tile, ribbon cross, star bow */
   /* thick candy cane with diagonal stripes */
   cane: (k) => { const id = 'cm' + (uid++), d = 'M32 104 V42 A21 21 0 0 1 74 42 V54'; return `<mask id="${id}"><path d="${d}" stroke="#fff" stroke-width="26" fill="none"/></mask><path d="${d}" stroke="${k.a}" stroke-width="26" fill="none"/><g mask="url(#${id})">${Array.from({ length: 16 }, (_, i) => `<path d="M-10 ${i * 17 - 10} L110 ${i * 17 - 70}" stroke="${k.b}" stroke-width="7"/>`).join('')}</g>`; },
-  candle: (k) => `<rect x="30" y="42" width="40" height="58" fill="${k.a}"/><path d="M30 84 L70 60 M30 100 L70 76 M30 68 L70 44" stroke="${k.bg}" stroke-width="2.6" fill="none" clip-path="inset(0)"/>` +
-    `<path d="M50 6 Q66 22 50 38 Q34 22 50 6Z" fill="none" stroke="${k.x}" stroke-width="3.6" stroke-linejoin="round"/>` + line('M50 38 V44', k.a, 3),
+  /* two candles, a tall and a short, striped bodies and outlined flames on a round backdrop; bleeds off the bottom */
+  candle: (k) => { const c1 = 'cd' + (uid++), c2 = 'cd' + (uid++), st = (x0, y0, w2, h2, col, id) => `<clipPath id="${id}"><rect x="${x0}" y="${y0}" width="${w2}" height="${h2}"/></clipPath><g clip-path="url(#${id})">${Array.from({ length: 9 }, (_, i) => `<path d="M${x0 - 6 + i * 11} ${y0 + h2 + 4} L${x0 + 30 + i * 11} ${y0 - 30}" stroke="${col}" stroke-width="3.4"/>`).join('')}</g>`;
+    return circ(50, 44, 41, k.a) + `<rect x="10" y="52" width="42" height="52" fill="${k.a}" stroke="${k.bg}" stroke-width="3.6"/>` + st(10, 52, 42, 52, k.b, c1) + `<rect x="58" y="70" width="32" height="34" fill="${k.b}" stroke="${k.bg}" stroke-width="3.6"/>` + st(58, 70, 32, 34, k.a, c2) +
+      `<path d="M31 12 Q45 28 31 44 Q17 28 31 12Z" fill="none" stroke="${k.b}" stroke-width="2.8" stroke-linejoin="round"/><path d="M31 44 V52" stroke="${k.b}" stroke-width="2.8" stroke-linecap="round"/>` +
+      `<path d="M74 50 Q83 59 74 67 Q65 59 74 50Z" fill="none" stroke="${k.a}" stroke-width="2.6" stroke-linejoin="round"/><path d="M74 67 V70" stroke="${k.a}" stroke-width="2.6" stroke-linecap="round"/>`; },
   stocking: (k) => `<path d="M30 22 H66 V60 H84 A16 16 0 0 1 84 92 H46 A16 16 0 0 1 30 76Z" fill="${k.a}"/><rect x="24" y="8" width="48" height="18" fill="${k.b}"/>` + zig(24, 72, 17, 3.4, 4, k.bg, 2.4) + circ(78, 76, 11, k.b),
-  elf: (k) => poly([[10, 10], [22, 24], [34, 10], [46, 24], [58, 10], [70, 24], [82, 10], [90, 24], [90, 32], [10, 32]], k.b) +
-    `<rect x="10" y="30" width="80" height="62" fill="${k.a}"/><rect x="10" y="48" width="80" height="16" fill="${k.b}"/>` + circ(32, 56, 5.5, k.bg) + circ(68, 56, 5.5, k.bg) + '',
+  /* elf: zigzag crown, a light band with two round eyes between two dark bands */
+  elf: (k) => { const ey = bestOn(k.b, [k.bg, k.a, k.x]); return poly([[8, 34], [8, 8], [22, 22], [36, 8], [50, 22], [64, 8], [78, 22], [92, 8], [92, 34]], k.b) + `<rect x="8" y="34" width="84" height="62" fill="${k.a}"/><rect x="8" y="52" width="84" height="24" fill="${k.b}"/>` + circ(33, 64, 5.2, ey) + circ(67, 64, 5.2, ey); },
   /* snowman: two big circles, hat, a single accent nose */
   snowman: (k) => circ(50, 78, 36, k.a) + circ(50, 31, 21, k.b) + `<rect x="34" y="2" width="32" height="12" rx="1" fill="${k.a}"/><rect x="26" y="12" width="48" height="5" rx="2" fill="${k.a}"/>` +
-    poly([[50, 32], [72, 36], [50, 40]], k.x) + circ(50, 66, 3.4, k.bg) + circ(50, 78, 3.4, k.bg) + circ(50, 90, 3.4, k.bg),
+    poly([[50, 32], [72, 36], [50, 40]], bestOn(k.b, [k.bg, k.a, k.x])) + circ(50, 66, 3.4, bestOn(k.a, [k.bg, k.b, k.x])) + circ(50, 78, 3.4, bestOn(k.a, [k.bg, k.b, k.x])) + circ(50, 90, 3.4, bestOn(k.a, [k.bg, k.b, k.x])),
   ginger: (k) => circ(50, 22, 17, k.a) + `<rect x="8" y="40" width="84" height="20" rx="10" fill="${k.a}"/><rect x="28" y="40" width="44" height="40" rx="14" fill="${k.a}"/><rect x="30" y="64" width="16" height="34" rx="8" fill="${k.a}"/><rect x="54" y="64" width="16" height="34" rx="8" fill="${k.a}"/>` +
-    circ(50, 51, 3.6, k.x) + circ(50, 63, 3.6, k.x) + circ(50, 75, 3.6, k.x),
+    [51, 63, 75].map((y) => circ(50, y, 3.6, bestOn(k.a, [k.bg, k.b, k.x]))).join(''),
   treeC: (k) => circ(50, 24, 17, k.a) + circ(50, 50, 24, k.b) + circ(50, 80, 28, k.a) + circ(50, 6, 5.5, k.x) + circ(42, 52, 3.6, k.bg) + circ(60, 46, 3.6, k.bg) + circ(38, 82, 4, k.bg) + circ(58, 84, 4, k.bg) + circ(70, 76, 4, k.x),
   wreath: (k) => Array.from({ length: 12 }, (_, i) => { const an = i / 12 * Math.PI * 2; return circ(50 + Math.cos(an) * 34, 50 + Math.sin(an) * 34, 13, i % 2 ? k.b : k.a); }).join('') + circ(50, 50, 20, k.bg) +
     circ(40, 82, 4.5, k.x) + circ(50, 85, 4.5, k.x) + circ(60, 82, 4.5, k.x) + poly([[50, 84], [36, 96], [36, 74]], k.x) + poly([[50, 84], [64, 96], [64, 74]], k.x),
@@ -193,7 +198,7 @@ const ICON = {
 /* plain split circles (two half circles in varying colour pairs) and the three exact geometric blocks, weighted up */
 const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'doubleBauble', 'scallop', 'doubleBauble', 'gift', 'squiggle', 'squiggle', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'halfdisc', 'halfdisc', 'halfdisc', 'halfdisc'];
 const FILLERS = ['squiggle', 'halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
-const BLEED = { squiggle: 1, tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1, elf: 1 };
+const BLEED = { squiggle: 1, candle: 1, tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1 };
 
 
 /* ---------- contrast: WCAG ratios, so the geometric blocks only use colour sets that read clearly ---------- */
@@ -234,6 +239,12 @@ const BANDS = {
   squiggle: (w, h, k) => { const tall = h > w, W = tall ? h : w, H = tall ? w : h, u = Math.min(W, H), r = u * .24, sw = u * .2, rows = Math.max(1, Math.round(H / (u * 1.05))), [c1, c2] = squigCols(k); let o = '';
     for (let i = 0; i < rows; i++) o += archWave(-2 * r + (i % 2 ? r : 0), H * (i + .5) / rows, r, Math.ceil(W / (2 * r)) + 3, i % 2 ? c2 : c1, sw, i % 2);
     return tall ? `<g transform="translate(${f(w)} 0) rotate(90)">${o}</g>` : o; },
+  /* candy cane lying on its side in a long rectangle: striped stem bleeding off one edge, hook at the other */
+  caneSide: (w, h, k, r) => { const id = 'cs' + (uid++), sw = h * .27, rad = (h * .9 - sw) / 2, ys = h * .05 + sw / 2 + (h * .9 - 2 * rad - sw) / 2, flip = r() < .5, xe = w - h * .12 - rad - sw / 2, c1 = squigCols(k)[0], c2 = bestOn(c1, [k.bg, k.a, k.b, k.x]), st = sw * .62;
+    const d = `M${f(-sw)} ${f(ys)} H${f(xe)} A${f(rad)} ${f(rad)} 0 0 1 ${f(xe)} ${f(ys + 2 * rad)} H${f(xe - rad * .45)}`; let stripes = '';
+    for (let x = -h * 2; x < w + h; x += st * 2) stripes += `<path d="M${f(x)} ${f(h + sw)} L${f(x + h * 1.3)} ${f(-sw)}" stroke="${c2}" stroke-width="${f(st)}"/>`;
+    const g = `<mask id="${id}"><path d="${d}" stroke="#fff" stroke-width="${f(sw)}" fill="none"/></mask><path d="${d}" stroke="${c1}" stroke-width="${f(sw)}" fill="none"/><g mask="url(#${id})">${stripes}</g>`;
+    return flip ? `<g transform="translate(${f(w)} 0) scale(-1 1)">${g}</g>` : g; },
   zigzag: (w, h, k) => { const u = Math.min(w, h) * .5; let s = ''; for (let y = h * .25; y < h; y += h * .5) s += zig(0, w, y + u * .25, u * .5, Math.max(2, Math.round(w / u)), y < h * .5 ? k.a : k.b === k.bg ? k.x : k.b, u * .12); return s; },
   snow: (w, h, k, r) => { let s = ''; const n = Math.round(w * h / 1800); for (let i = 0; i < n; i++) s += circ(r() * w, r() * h, 2 + r() * 5, i % 5 ? k.a : k.x); return s; },
   hang: (w, h, k, r) => { const n = Math.max(2, Math.round(w / h * 6 + 1)); let s = ''; for (let i = 0; i < n; i++) { const x = (i + .5) * w / n, rad = Math.min(w / n * .36, h * .13), y = h * (.35 + r() * .5); s += `<line x1="${f(x)}" y1="0" x2="${f(x)}" y2="${f(y - rad)}" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="${f(rad * .12 + 1)}"/>` + circ(x, y, rad, [k.a, k.x, k.b === k.bg ? k.a : k.b][i % 3]); } return s; }
@@ -255,6 +266,8 @@ function layout(cols, rows, r) {
   /* hero: big square tile */
   const hs = Math.max(3, Math.min(Math.floor(Math.min(cols, rows) * (S.dens === 2 ? .3 : .4)), 5));
   for (let t = 0; t < 80; t++) { const x = Math.floor(r() * (cols - hs + 1)), y = Math.floor(r() * (rows - hs + 1)); if (fits(x, y, hs, hs)) { put(x, y, hs, hs, 'hero'); break; } }
+  /* a long rectangle for the sideways candy cane */
+  { const cw = Math.min(4, Math.max(2, Math.floor(cols / 3))); for (let t = 0; t < 60; t++) { const x = Math.floor(r() * (cols - cw + 1)), y = Math.floor(r() * rows); if (fits(x, y, cw, 1)) { put(x, y, cw, 1, 'cane'); break; } } }
   /* a few more big squares on bigger grids */
   const big = Math.max(0, Math.floor(Math.min(cols, rows) / 6));
   for (let b = 0; b < big; b++) { const s = hs > 3 ? hs - 1 : 2; for (let t = 0; t < 60; t++) { const x = Math.floor(r() * (cols - s + 1)), y = Math.floor(r() * (rows - s + 1)); if (fits(x, y, s, s)) { put(x, y, s, s, 'icon'); break; } } }
@@ -268,7 +281,7 @@ function layout(cols, rows, r) {
     if (roll > .94) opts.push([3, 1], [1, 3]);
     const sh = opts.find(([w, h]) => fits(x, y, w, h));
     const [w, h] = sh || [1, 1];
-    put(x, y, w, h, w === 1 && h === 1 ? (r() < .14 ? 'filler' : 'icon') : (w !== h ? (r() < .3 ? 'band' : 'multi') : 'icon'));
+    put(x, y, w, h, w === 1 && h === 1 ? (r() < .14 ? 'filler' : 'icon') : (w !== h ? (w >= 2 && h === 1 && r() < .22 ? 'cane' : r() < .3 ? 'band' : 'multi') : 'icon'));
   }
   return tiles;
 }
@@ -308,6 +321,9 @@ function build(anim) {
       const nm = pick(r, ['ornament', 'wreath', 'snowman', 'reindeer', 'gift', 'bell', 'hat', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri']);
       usedRecent.push(nm); if (GEO[nm]) k = GEO[nm](r);
       body = iconSvg(nm, k, x, y, w, h, GEO[nm] ? 0 : mn * .05);
+    } else if (t.kind === 'cane') {
+      k = scheme(r);
+      body = `<g transform="translate(${f(x)} ${f(y)})">${BANDS.caneSide(w, h, k, r)}</g>`;
     } else if (t.kind === 'band' && (t.w !== t.h)) {
       k = scheme(r);
       const name = pick(r, t.w > t.h ? WIDE : ['squiggle', 'squiggle', 'stripes', 'zigzag']);
