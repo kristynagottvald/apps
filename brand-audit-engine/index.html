@@ -301,8 +301,7 @@ const CR = ratio(C.yellow, C.pink).toFixed(1);
 const FLAGS = [
   {n:1, title:'Logo missing',        sub:'Brand rule 2.1',          cx:1180, cy:106,  rx:98,  ry:98,  side:'R', slot:.12},
   {n:2, title:'Low contrast',        sub:`${CR}:1, minimum 3:1`,    cx:320,  cy:106,  rx:112, ry:112, side:'L', slot:.14},
-  {n:3, title:'Empty merge field',   sub:'{{ }} not resolved',      cx:1171, cy:532,  rx:112, ry:112, side:'R', slot:.46},
-  {n:4, title:'Colour not on brand', sub:'Brand palette',           cx:692,  cy:586,  rx:78,  ry:78,  side:'L', slot:.5}
+  {n:3, title:'Colour not on brand', sub:'Brand palette',           cx:692,  cy:586,  rx:78,  ry:78,  side:'L', slot:.5}
 ];
 const SCAN_A = 6900, SCAN_B = 11400;
 FLAGS.forEach(f => f.t = SCAN_A + (SCAN_B - SCAN_A) * clamp01((f.cy - f.ry * .5) / REF));
@@ -412,7 +411,7 @@ function renderDetail(t){
   const S = ST[st], steps = ['Uploaded','Auto-audit','Human review','Approved'];
   const pipe = steps.map((n, i) => `<div class="${i + 1 < S.step ? 'done' : i + 1 === S.step ? 'cur' : ''}" style="--c:${S.c}"><b>${i + 1 < S.step ? '✓' : i + 1}</b>${n}${i + 1 === S.step ? `<small>${st === 'changes' ? 'Back to designer' : 'In progress'}</small>` : ''}</div>`).join('');
   detail.innerHTML = `<div class="dthumb"></div><div class="dname">${it.name}</div>
-    <dl class="kv"><dt>Status</dt><dd><span class="pill" style="--c:${S.c};margin:0">${S.label}</span></dd><dt>Format</dt><dd>1:1 · 1293 px</dd><dt>Campaign</dt><dd>No-code launch</dd><dt>Flags</dt><dd>${st === 'changes' ? '4 open' : 'Not audited'}</dd></dl>
+    <dl class="kv"><dt>Status</dt><dd><span class="pill" style="--c:${S.c};margin:0">${S.label}</span></dd><dt>Format</dt><dd>1:1 · 1293 px</dd><dt>Campaign</dt><dd>No-code launch</dd><dt>Flags</dt><dd>${st === 'changes' ? '3 open' : 'Not audited'}</dd></dl>
     <div class="pipe">${pipe}</div><button class="btn${st === 'changes' ? ' ghost' : ''}" id="runBtn">${st === 'changes' ? 'View report' : 'Run audit'}</button>`;
   const c = document.createElement('canvas'); c.width = c.height = 300; c.getContext('2d').drawImage(tcv, 0, 0); detail.querySelector('.dthumb').appendChild(c);
 }
@@ -479,7 +478,7 @@ function drawFx(t){
 
 /* ---------- main render ---------- */
 const sceneLib = $('#lib'), sceneAud = $('#aud');
-const SCAN_LABELS = [[0, 'palette'], [.18, 'typography'], [.32, 'logo zone'], [.48, 'merge fields'], [.64, 'contrast'], [.82, 'brand colours']];
+const SCAN_LABELS = [[0, 'palette'], [.18, 'typography'], [.32, 'logo zone'], [.64, 'contrast'], [.82, 'brand colours']];
 const cache = {};
 const setTxt = (id, el, v) => { if(cache[id] !== v){ cache[id] = v; el.textContent = v; } };
 const el = {estatus: $('#estatus'), eleft: $('#eleft'), eright: $('#eright'), cn: $('#cn'), cf: $('#cf'), lblG: $('#lblG'), lblO: $('#lblO'), accN: $('#accN'), barG: $('#barG'), barO: $('#barO'), ring: $('#ring'), decide: $('#decide'), bC: $('#bChanges'), bA: $('#bApprove'), accBox: $('#accBox')};
@@ -532,7 +531,7 @@ function render(t){
     setTxt('el', el.eleft, done ? 'Reviewer decides' : t < SCAN_A ? 'Preparing' : `Scanning · ${lab} · ${Math.round(sp * 100)}%`);
     setTxt('er', el.eright, `${started} flag${started === 1 ? '' : 's'} to review`);
     const n = Math.round(14 * sp);
-    tickEls.forEach((e, i) => { const fl = [3, 5, 8, 11].indexOf(i) >= 0 && i < n && FLAGS[[3, 5, 8, 11].indexOf(i)].t <= t; e.className = i < n ? (fl ? 'x' : 'p') : ''; });
+    tickEls.forEach((e, i) => { const fl = [3, 5, 8].indexOf(i) >= 0 && i < n && FLAGS[[3, 5, 8].indexOf(i)].t <= t; e.className = i < n ? (fl ? 'x' : 'p') : ''; });
     setTxt('cn', el.cn, `${n} / 14`); setTxt('cf', el.cf, `${started} flagged`);
     FLAGS.forEach(f => {
       const c = easeOut(prog(t, f.t, f.t + 450)), l = easeOut(prog(t, f.t + 380, f.t + 750)), k = easeOut(prog(t, f.t + 600, f.t + 950));
