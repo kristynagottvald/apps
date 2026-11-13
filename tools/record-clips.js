@@ -25,12 +25,23 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  'workout-year-reels': { vp: [1280, 769], crop: [0, 49, 1280, 720],
+    // the cycle starts on the circles; step through the newest styles and one older one the way a visitor would with the switcher
+    ready: 1500,
+    run: async (p) => {
+      const t0 = Date.now(), st = (n) => domClick(p, '#sw button:nth-child(' + n + ')');
+      await at(t0, 1500, () => st(12));
+      await at(t0, 2600, () => st(13));
+      await at(t0, 3600, () => st(14));
+      await at(t0, 4600, () => st(11));
+      await at(t0, 5600, () => st(8));
+    } },
   // park on the chat with the recommendations already shown (that is the first frame), then carry on from there at 4x: pick the item, size, Buy, Apple Pay, Face ID, order confirmed in the chat
   'agentic-storefront': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '?park=1',
     ready: 1500, q: 70,
     run: async (p) => {
       const t0 = Date.now();
-      await at(t0, 1300, () => p.evaluate(() => { fl.play({ from: 2, speed: 4.8, keep: true, loop: false }); }));
+      await at(t0, 1300, () => p.evaluate(() => { fl.play({ from: 2, speed: 5.8, keep: true, loop: false }); }));
       await sleep(5200);
     } },
   // ten full-screen styles, each looping on its own with random events; click through five of them with the numbered switcher, ending back near the first
@@ -109,6 +120,11 @@ const APPS = {
     await at(t0, 3900, () => click(p, /^Icons$/));
     await at(t0, 5000, () => click(p, /^Spot illo$/));
     await at(t0, 5600, () => click(p, /^Pink$/));
+  } },
+  // the whole 21 s loop played at 3x from the middle of the scan: flags land, result fills in, reviewer requests changes, library updates, next audit starts
+  'brand-audit-engine': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1200, q: 40, run: async (p) => {
+    await p.evaluate(() => ba.play({ from: 9000, speed: 3 }));
+    await sleep(6600);
   } },
   'hero-banner-engine': { vp: [1280, 769], setup: cropOf('#cv'), run: async (p) => {
     const t0 = Date.now();
