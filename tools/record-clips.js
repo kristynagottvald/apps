@@ -66,6 +66,16 @@ const APPS = {
       await at(t0, 5000, () => domClick(p, '#themes .opt:nth-child(3)'));
       await at(t0, 5700, () => domClick(p, '#ratios .opt:nth-child(2)'));
     } },
+  // the hero pills run on a 8.2 s cycle on their own; wait until the circle has grown so the loop starts on the full composition
+  'clearco-attribution-guide': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#still-title', ready: 1400, run: async () => {} },
+  'clearco-logistics-guide': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async (p) => {
+    const t0 = Date.now();
+    const go = (id, d) => p.evaluate(([i, o]) => scrollTo(0, document.getElementById(i).offsetTop - 49 + o), [id, d]);
+    await at(t0, 900, () => go('stmt', 0));      // the grid with sliding squares
+    await at(t0, 3000, () => go('ch1', 40));     // chapter one, chart stuck to the top
+    await at(t0, 4300, () => go('ch1', 260));
+    await at(t0, 5200, () => p.evaluate(() => scrollTo(0, 0)));
+  } },
   // the sequence starts part way in (#t=4.6): headline, sub-headline, then the logo fades in at the end
   'clearco-logistics-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#v=hero&t=4.6', ready: 1500, run: async () => {} },
   'clearco-terrain': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
