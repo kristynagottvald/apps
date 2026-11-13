@@ -9,6 +9,15 @@
     "alt": "Black screen with outlined boxes, thin rays and floating stacks of fine white lines behind the headline 'Out-ship your competition.', with a Hero / Lines switcher in the header"
   },
   {
+    "id": "grubclub-holiday",
+    "title": "Grubclub Holiday Grid",
+    "category": "Interactive Engine",
+    "url": "grubclub-holiday/",
+    "thumbnail": "grubclub-holiday/thumb.png",
+    "preview": "grubclub-holiday/thumb.webp",
+    "alt": "Grubclub holiday design: a heavy modular grid of flat geometric tiles in lime, medium and dark green, white and light orange, with ornaments, snowmen, wreaths, reindeer and candy canes built from circles around a lime GRUBCLUB wordmark band"
+  },
+  {
     "id": "postmark-awards-motion",
     "title": "Postmark Awards Motion Engine",
     "category": "Interactive Engine",
@@ -28,12 +37,12 @@
   },
   {
     "id": "flavor-all-stars",
-    "title": "Grubclub Flavor All Stars",
+    "title": "Grubclub Offer Emails",
     "category": "Email",
     "url": "flavor-all-stars/",
     "thumbnail": "flavor-all-stars/thumb.png",
     "preview": "flavor-all-stars/thumb.webp",
-    "alt": "Grubclub offer email: a navy header with the headline '2026 Flavor All Stars' above a kiwi panel reading '$160 off, first box ships free' with a round '+3 surprise gifts' badge, over a bed of striped green and blue leaves"
+    "alt": "Grubclub offer email: a navy header with the headline '2026 Flavor All Stars' above a kiwi panel reading '$160 off, first box ships free' with a round '+3 surprise gifts' badge, over a pattern of vector vegetables and grasshoppers on dark green"
   },
   {
     "id": "grubclub-end-card",
