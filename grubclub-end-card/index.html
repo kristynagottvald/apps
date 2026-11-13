@@ -147,7 +147,7 @@ const WM_SRC="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIMAAABwCAYAAAA9m8PR
 /* the only three colour combinations allowed (from the brand panels): the logo is a single colour, white on teal, kiwi on green, teal on kiwi */
 const THEMES=[
  {id:'teal', name:'teal and kiwi', bg:'#12525A', ink:'#FFFFFF', url:'#EEFB71', g:'#FFFFFF', c:'#FFFFFF', a:'#FFFFFF', ring:['#4D9060','#90BE70','#DBED80'], stack:['#9EE3A3','#41865D','#5B9DBD','#A5C882','#5B9DBD','#F0FB85']},
- {id:'green',name:'green and kiwi',bg:'#23936B', ink:'#EEFB71', url:'#EEFB71', g:'#EEFB71', c:'#EEFB71', a:'#EEFB71', ring:['#5E9D64','#A5CC74','#F0FB85'], stack:['#F0FB85','#D7F5FA','#5B9DBD','#A5C882','#0F5A5C','#9EE3A3']},
+ {id:'green',name:'green and kiwi',bg:'#23936B', ink:'#EEFB71', url:'#EEFB71', g:'#EEFB71', c:'#EEFB71', a:'#EEFB71', ring:['#9ED27A','#CDE67C','#F0FB85'], stack:['#F0FB85','#D7F5FA','#5B9DBD','#A5C882','#0F5A5C','#9EE3A3']},
  {id:'kiwi', name:'kiwi and teal', bg:'#EEFB71', ink:'#12525A', url:'#12525A', g:'#12525A', c:'#12525A', a:'#12525A', ring:['#F4FC9E','#FAFECF','#FFFFFB'], stack:['#41865D','#12525A','#5B9DBD','#A5C882','#5B9DBD','#FFFFFF']}
 ];
 const RATIOS=[['16:9',1920,1080],['1:1',1080,1080],['4:5',1080,1350],['3:4',1080,1440],['9:16',1080,1920]];
@@ -219,7 +219,7 @@ function drawMotion(c,f,T,z){
   }else if(S.motion===2){
     const n=S.mrings;
     for(let i=n;i>0;i--){
-      const a=sine((f-2-(n-i)*4)*sp/32), u=.5+.5*Math.sin(TAU*ph-i*.55), morph=1+Math.sin(TAU*2*ph+i*.3)*.05, R=i*z.s*(.88/n)*sc*morph*a;
+      const a=sine((f-2-(n-i)*4)*sp/32), u=.5+.5*Math.sin(TAU*ph-i*.55), morph=1+Math.sin(TAU*2*ph+i*.3)*.05, R=i*z.s*(.74/n)*sc*morph*a;
       if(R<=0) continue; const q=u*(T.ring.length-1), k0=Math.min(T.ring.length-2,Math.floor(q)); c.fillStyle=mixc(T.ring[k0],T.ring[k0+1],q-k0); c.beginPath(); c.arc(0,0,R,0,TAU); c.fill();
     }
   }
