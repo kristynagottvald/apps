@@ -498,8 +498,8 @@ async function pick_(g,o){
 async function pack_(g,o){
   pack.t=0;pack.out=null;show(2);$('#pkMap').classList.remove('in');$('#pkCd').classList.remove('in');$('#pkBtns').classList.remove('in');$('#pkT').classList.remove('sm');pack.cd0=null;const loc=getLoc();
   $('#pkBtn').classList.remove('in','press');$('#pkBtn').classList.add('wait');$('#pkT').innerHTML='Packing<br>your box';$('#pkS').textContent=PICKS.length+' meals · 1 entomo box';
-  await W(250,g);await W(2600,g);
-  $('#pkT').textContent='All packed!';$('#pkS').textContent='Ready to ship';$('#pkBtn').classList.add('in');await W(2400,g);$('#pkBtn').classList.remove('wait');await W(700,g);
+  await W(250,g);$('#pkBtn').classList.add('in');await W(2600,g);
+  $('#pkT').textContent='All packed!';$('#pkS').textContent='Ready to ship';$('#pkBtn').classList.remove('wait');await W(900,g);
   const c=cen($('#pkBtn'));curSet(c.x+380,c.y+150);showCursor();await W(50,g);curGo(c.x,c.y+4,850);await W(950,g);
   $('#pkBtn').classList.add('press');await curClick(g);await W(120,g);
   /* shipped: hold for a beat, then the map */
