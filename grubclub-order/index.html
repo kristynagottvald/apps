@@ -327,7 +327,7 @@ async function hero_(g,o){
 
 async function pick_(g,o){
   show(1);const s=$('#s1');s.classList.remove('in');
-  $$('.card').forEach(c=>c.classList.remove('sel'));$$('.slot').forEach(e=>{e.classList.remove('on');$('span',e).textContent='choose a meal';$('i',e).style.background=''});
+  $$('.card').forEach(c=>{c.classList.remove('sel');$('.add',c).textContent='+ add'});$$('.slot').forEach(e=>{e.classList.remove('on');$('span',e).textContent='choose a meal';$('i',e).style.background=''});
   $('#cnt').textContent=0;$('#cont').classList.remove('ready');$('#pbox').classList.remove('bump');
   await W(150,g);s.classList.add('in');await W(o.clip?600:1200,g);
   const c0=cen($('#cta')),first=cen($('.card[data-i="'+PICKS[0]+'"] .add'));curSet(first.x+260,first.y+60);showCursor();
