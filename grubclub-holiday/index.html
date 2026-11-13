@@ -150,10 +150,8 @@ const ICON = {
   /* wrapped gift: full tile, ribbon cross, star bow */
   gift: (k) => `<rect x="0" y="0" width="100" height="100" fill="${k.a}"/><rect x="40" y="0" width="20" height="100" fill="${k.b}"/><rect x="0" y="40" width="100" height="20" fill="${k.b}"/>` +
     `<path d="M50 4 V38 M50 62 V96" stroke="${k.a}" stroke-width="2.4" stroke-linecap="round" fill="none"/>` + star8(50, 50, 30, k.bg, k.x, 1, .7),
-  star8: (k) => star8(50, 50, 48, k.a, k.b) + circ(50, 50, 7, k.bg),
   /* thick candy cane with diagonal stripes */
   cane: (k) => { const id = 'cm' + (uid++), d = 'M32 104 V42 A21 21 0 0 1 74 42 V54'; return `<mask id="${id}"><path d="${d}" stroke="#fff" stroke-width="26" fill="none"/></mask><path d="${d}" stroke="${k.a}" stroke-width="26" fill="none"/><g mask="url(#${id})">${Array.from({ length: 16 }, (_, i) => `<path d="M-10 ${i * 17 - 10} L110 ${i * 17 - 70}" stroke="${k.b}" stroke-width="7"/>`).join('')}</g>`; },
-  holly: (k) => leaf(50, 50, 48, 20, -45, k.a, k.bg) + leaf(50, 50, 48, 20, 45, k.b, k.bg) + leaf(50, 50, 48, 20, 135, k.a, k.bg) + leaf(50, 50, 48, 20, 225, k.b, k.bg) + circ(50, 40, 9, k.x) + circ(41, 56, 9, k.x) + circ(59, 56, 9, k.x),
   candle: (k) => `<rect x="30" y="42" width="40" height="58" fill="${k.a}"/><path d="M30 84 L70 60 M30 100 L70 76 M30 68 L70 44" stroke="${k.bg}" stroke-width="2.6" fill="none" clip-path="inset(0)"/>` +
     `<path d="M50 6 Q66 22 50 38 Q34 22 50 6Z" fill="none" stroke="${k.x}" stroke-width="3.6" stroke-linejoin="round"/>` + line('M50 38 V44', k.a, 3),
   stocking: (k) => `<path d="M30 22 H66 V60 H84 A16 16 0 0 1 84 92 H46 A16 16 0 0 1 30 76Z" fill="${k.a}"/><rect x="24" y="8" width="48" height="18" fill="${k.b}"/>` + zig(24, 72, 17, 3.4, 4, k.bg, 2.4) + circ(78, 76, 11, k.b),
@@ -164,12 +162,22 @@ const ICON = {
     poly([[50, 32], [72, 36], [50, 40]], k.x) + circ(50, 66, 3.4, k.bg) + circ(50, 78, 3.4, k.bg) + circ(50, 90, 3.4, k.bg),
   ginger: (k) => circ(50, 22, 17, k.a) + `<rect x="8" y="40" width="84" height="20" rx="10" fill="${k.a}"/><rect x="28" y="40" width="44" height="40" rx="14" fill="${k.a}"/><rect x="30" y="64" width="16" height="34" rx="8" fill="${k.a}"/><rect x="54" y="64" width="16" height="34" rx="8" fill="${k.a}"/>` +
     circ(50, 51, 3.6, k.x) + circ(50, 63, 3.6, k.x) + circ(50, 75, 3.6, k.x),
-  treeT: (k) => [[4, 34, 24], [22, 62, 34], [44, 90, 46]].map(([y0, y1, w]) => poly([[50, y0], [50 - w, y1], [50, y1]], k.a) + poly([[50, y0], [50, y1], [50 + w, y1]], k.b)).join('') + `<rect x="43" y="90" width="14" height="10" fill="${k.a}"/>` + circ(50, 6, 6, k.x),
   treeC: (k) => circ(50, 24, 17, k.a) + circ(50, 50, 24, k.b) + circ(50, 80, 28, k.a) + circ(50, 6, 5.5, k.x) + circ(42, 52, 3.6, k.bg) + circ(60, 46, 3.6, k.bg) + circ(38, 82, 4, k.bg) + circ(58, 84, 4, k.bg) + circ(70, 76, 4, k.x),
   wreath: (k) => Array.from({ length: 12 }, (_, i) => { const an = i / 12 * Math.PI * 2; return circ(50 + Math.cos(an) * 34, 50 + Math.sin(an) * 34, 13, i % 2 ? k.b : k.a); }).join('') + circ(50, 50, 20, k.bg) +
     circ(40, 82, 4.5, k.x) + circ(50, 85, 4.5, k.x) + circ(60, 82, 4.5, k.x) + poly([[50, 84], [36, 96], [36, 74]], k.x) + poly([[50, 84], [64, 96], [64, 74]], k.x),
   moon: (k) => circ(44, 54, 38, k.a) + circ(64, 42, 31, k.bg) + star8(80, 76, 11, k.x, k.x, 1, .5),
   scallop: (k) => [0, 1, 2].map((i) => { const cx = 16.65 + i * 33.3; return `<path d="M${i * 33.3} 0 A16.65 16.65 0 0 0 ${(i + 1) * 33.3} 0Z" fill="${k.a}"/>` + line(`M${cx} 16 V40`, k.b, 2.4) + `<ellipse cx="${cx}" cy="58" rx="12" ry="17" fill="${i % 2 ? k.x : k.b}"/>` + circ(cx, 58, 4, k.bg); }).join(''),
+  /* ---- exact geometric blocks (square, full bleed): pinwheel star, triangle tree, holly. Colours come from GEO below. ---- */
+  /* 3x3 quilt star: corner squares and edge notches are background, four arms of two parallelograms each, turned as a pinwheel */
+  pinwheel: (k) => [0, 90, 180, 270].map((d) => rot(d, 50, 50, poly([[100 / 3, 0], [50, 100 / 6], [50, 50], [100 / 3, 100 / 3]], k.p) + poly([[200 / 3, 0], [50, 100 / 6], [50, 50], [200 / 3, 100 / 3]], k.q))).join(''),
+  /* two columns of square cells cut by a diagonal; the dark and pale halves make stacked pointed triangles */
+  treeTri: (k) => { let o = ''; for (let rr = 0; rr < 4; rr++) for (let c = 0; c < 4; c++) { const x = c * 25, y = rr * 25; o += c % 2 === 0 ?
+    poly([[x, y], [x + 25, y], [x, y + 25]], k.p) + poly([[x + 25, y], [x, y + 25], [x + 25, y + 25]], k.d) :
+    poly([[x, y], [x + 25, y], [x + 25, y + 25]], k.m) + poly([[x, y], [x, y + 25], [x + 25, y + 25]], k.p); } return o; },
+  /* three berries, three stems at the top and the two lower diagonals, each with two stacked half-disc leaves */
+  holly: (k) => { const lv = '<path d="M25 0 A25 25 0 0 0 75 0Z"/><path d="M25 25 A25 25 0 0 0 75 25Z"/>'; const off = 20.7 /* outer half-disc sits in the tile corner on the diagonals */;
+    const motif = (d, o) => rot(d, 50, 50, `<g transform="translate(0 ${-o})"><g fill="${k.leaf}">${lv}</g><path d="M50 0 V${46 + o}" stroke="${k.bg}" stroke-width="2.6"/></g>`);
+    const bs = [[50, 41.5], [40, 58.8], [60, 58.8]]; return motif(0, 0) + motif(135, off) + motif(225, off) + bs.map(([x, y]) => circ(x, y, 11.4, k.bg)).join('') + bs.map(([x, y]) => circ(x, y, 10, k.berry)).join(''); },
   /* split circles with thin line-art food, like the burger / fries / shake / cone circles */
   lineBowl: (k) => splitCircle(k) + glyph(k, 'M24 50 H76 Q76 76 50 76 Q24 76 24 50Z M38 42 Q34 35 38 28 M50 42 Q46 34 50 25 M62 42 Q58 35 62 28 M40 84 H60'),
   lineCup: (k) => splitCircle(k) + glyph(k, 'M35 36 L38.5 77 Q39 80 42 80 H58 Q61 80 61.5 77 L65 36 M30 36 H70 M53 36 L57 14 H69 M37 53 Q43.5 46 50 53 T63 53'),
@@ -190,9 +198,25 @@ const ICON = {
   stripesDiag: (k) => Array.from({ length: 9 }, (_, i) => `<path d="M${-20 + i * 20} 120 L${60 + i * 20} -20" stroke="${k.a}" stroke-width="9"/>`).join(''),
   wavyDiag: (k) => rot(-45, 50, 50, [-20, 0, 20, 40, 60, 80, 100, 120].map((y) => zig(-30, 130, y, 5, 8, k.a, 3.4)).join(''))
 };
-const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'star8', 'cane', 'holly', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'treeT', 'wreath', 'moon', 'scallop', 'lineBowl', 'lineCup', 'lineFork', 'lineCone', 'lineCricket', 'lineGrasshopper', 'lineMealworm', 'lineBeetle', 'lineAnt'];
+const LINES = ['lineBowl', 'lineCup', 'lineFork', 'lineCone', 'lineCricket', 'lineGrasshopper', 'lineMealworm', 'lineBeetle', 'lineAnt'];
+/* 'line' stands for one of the split-circle line icons; the three exact geometric blocks are weighted up */
+const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'cane', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'wreath', 'moon', 'scallop', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri', 'line', 'line', 'line', 'line'];
 const FILLERS = ['halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
 const BLEED = { tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1, elf: 1 };
+
+
+/* ---------- contrast: WCAG ratios, so the geometric blocks only use colour sets that read clearly ---------- */
+const lum = (h) => { const c = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((v) => v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+const cr = (a, b) => { const x = lum(C[a]), y = lum(C[b]); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+/* [bg, arm 1, arm 2] for the pinwheel: every arm >= 3.5:1 on the bg except the orange-on-green pairs; orange sets give the best arm-to-arm contrast */
+const GEO = {
+  pinwheel: (r) => { const hi = [['D', 'W', 'O'], ['W', 'D', 'O'], ['L', 'D', 'O'], ['D', 'L', 'O'], ['M', 'W', 'O']], lo = [['W', 'D', 'M'], ['L', 'D', 'M'], ['M', 'W', 'D'], ['M', 'L', 'D']];
+    const [bg, p, q] = pick(r, S.org && r() < (S.org === 2 ? .85 : .6) ? hi : lo); return { bg: C[bg], p: C[p], q: C[q] }; },
+  /* [pale, mid, dark]: pale triangles sit on dark (>=7:1) and on mid (>=4:1) */
+  treeTri: (r) => { const [p, m, d] = pick(r, [['W', 'M', 'D'], ['L', 'M', 'D'], ['W', 'D', 'M'], ['L', 'D', 'M']]); return { bg: C[p], p: C[p], m: C[m], d: C[d] }; },
+  /* [bg, leaf, berry]: leaf on bg >= 3.9:1, berries carry a ring of the bg colour so they stay crisp on the leaves */
+  holly: (r) => { const [bg, leaf, berry] = pick(r, [['W', 'M', 'D'], ['L', 'M', 'D'], ['M', 'W', 'D'], ['M', 'L', 'D'], ['D', 'W', 'O'], ['D', 'L', 'O']]); return { bg: C[bg], leaf: C[leaf], berry: C[berry] }; }
+};
 
 /* ---------- colour schemes per tile ---------- */
 const orangeBias = () => [0, .09, .22][S.org];
@@ -270,7 +294,7 @@ function build(anim) {
   const cw = (W - gap * (cols + 1)) / cols, ch = (H - gap * (rows + 1)) / rows;
   const tiles = layout(cols, rows, r);
   let out = '', n = 0, last = '';
-  const nextIcon = () => { let name, tries = 0; do { name = pick(r, ICONS_FULL); tries++; } while ((name === last || usedRecent.slice(-3).includes(name)) && tries < 12); last = name; usedRecent.push(name); return name; };
+  const nextIcon = (geo = true) => { let name, tries = 0; do { name = pick(r, ICONS_FULL); if (name === 'line') name = pick(r, LINES); tries++; } while ((name === last || usedRecent.slice(-3).includes(name) || (!geo && GEO[name])) && tries < 40); last = name; usedRecent.push(name); return name; };
   usedRecent = [];
   const iconSvg = (name, k, x, y, w, h, pad) => { const sl = BLEED[name]; const p = sl ? 0 : pad; return `<svg x="${f(x + p)}" y="${f(y + p)}" width="${f(w - p * 2)}" height="${f(h - p * 2)}" viewBox="0 0 100 100" preserveAspectRatio="${sl ? 'xMidYMid slice' : 'xMidYMid meet'}" overflow="${sl ? 'hidden' : 'visible'}">${ICON[name](k, r() < .5 ? 1 : 0)}</svg>`; };
   const clipId = (i) => `c${i}`;
@@ -286,9 +310,9 @@ function build(anim) {
       if (w > h * 3) { const rr = h * .1; body += circ(x + h * .5, y + h / 2, rr, C.O) + circ(x + w - h * .5, y + h / 2, rr, C.O); }
     } else if (t.kind === 'hero') {
       k = scheme(r, pick(r, ['W', 'M', 'D', 'L']));
-      const nm = pick(r, ['ornament', 'wreath', 'snowman', 'reindeer', 'treeT', 'gift', 'lineBowl', 'bell', 'star8', 'hat']);
-      usedRecent.push(nm);
-      body = iconSvg(nm, k, x, y, w, h, mn * .05);
+      const nm = pick(r, ['ornament', 'wreath', 'snowman', 'reindeer', 'gift', 'bell', 'hat', 'pinwheel', 'pinwheel', 'pinwheel', 'holly', 'holly', 'holly', 'treeTri', 'treeTri', 'treeTri']);
+      usedRecent.push(nm); if (GEO[nm]) k = GEO[nm](r);
+      body = iconSvg(nm, k, x, y, w, h, GEO[nm] ? 0 : mn * .05);
     } else if (t.kind === 'band' && (t.w !== t.h)) {
       k = scheme(r);
       const name = pick(r, t.w > t.h ? WIDE : ['stripes', 'zigzag']);
@@ -298,7 +322,7 @@ function build(anim) {
       const m = Math.round(Math.max(t.w, t.h) / Math.min(t.w, t.h));
       for (let j = 0; j < m; j++) {
         const kk = j ? { ...k, a: k.b === k.bg ? k.a : k.b, b: k.a } : k;
-        const nm = nextIcon();
+        const nm = nextIcon(false);
         body += t.w > t.h ? iconSvg(nm, kk, x + j * w / m, y, w / m, h, mn * .05) : iconSvg(nm, kk, x, y + j * h / m, w, h / m, mn * .05);
       }
     } else if (t.kind === 'filler') {
@@ -306,7 +330,8 @@ function build(anim) {
       body = iconSvg(pick(r, FILLERS), k, x, y, w, h, mn * .08);
     } else {
       k = scheme(r);
-      body = iconSvg(nextIcon(), k, x, y, w, h, mn * .05);
+      const nm = t.w >= 2 && t.w === t.h && r() < .6 ? pick(r, ['pinwheel', 'holly', 'treeTri']) : nextIcon(true); if (GEO[nm]) k = GEO[nm](r);
+      body = iconSvg(nm, k, x, y, w, h, GEO[nm] ? 0 : mn * .05);
     }
     const dly = f(((t.x / cols + t.y / rows) * .9 + r() * .15));
     out += `<g ${anim ? `class="t" style="--d:${dly}s"` : ''}><clipPath id="${clipId(i)}"><rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}"/></clipPath><rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" fill="${k.bg}"/><g clip-path="url(#${clipId(i)})">${body}</g></g>`;
