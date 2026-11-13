@@ -40,9 +40,8 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 #s0 svg.bg{position:absolute;inset:0;width:100%;height:100%}
 #hLogo{left:56px;top:38px;font-size:40px;color:#fff}
 #hLogo i{color:var(--kiwi)}
-#hTag{right:56px;top:50px;font-size:13px;font-weight:500;letter-spacing:.22em;color:var(--egg)}
-#hLogo,#hTag,#cta{opacity:0;transform:translateY(14px);transition:opacity calc(.7s*var(--k)),transform calc(.7s*var(--k)) cubic-bezier(.2,.8,.2,1)}
-#hLogo.in,#hTag.in,#cta.in{opacity:1;transform:none}
+#hLogo,#cta{opacity:0;transform:translateY(14px);transition:opacity calc(.7s*var(--k)),transform calc(.7s*var(--k)) cubic-bezier(.2,.8,.2,1)}
+#hLogo.in,#cta.in{opacity:1;transform:none}
 #cta{left:50%;bottom:50px;margin-left:-135px;width:270px;height:64px;border-radius:999px;background:var(--kiwi);color:var(--bean);font:600 21px/64px Poppins,sans-serif;text-align:center;box-shadow:0 14px 30px -10px rgba(0,0,0,.45);cursor:pointer;border:0;transition:opacity calc(.7s*var(--k)),transform calc(.7s*var(--k)) cubic-bezier(.2,.8,.2,1),background .2s}
 #cta.in.press{transform:scale(.96)}
 #cta svg{width:20px;height:20px;vertical-align:-3px;margin-left:8px}
@@ -56,11 +55,11 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
 #pHead{left:56px;top:92px}
 #pHead h1{margin:0;font-size:42px;line-height:1.1;font-weight:700;letter-spacing:-.01em}
 #pHead p{margin:8px 0 0;font-size:17px;color:#3d6f74}
-#grid{left:56px;top:222px;width:744px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.card{background:#fff;border-radius:22px;padding:14px;height:220px;box-shadow:0 10px 24px -14px rgba(14,50,81,.35);opacity:0;transform:translateY(26px);transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),box-shadow .3s,outline-color .3s;outline:3px solid transparent;outline-offset:-1px}
+#grid{left:56px;top:206px;width:744px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:#fff;border-radius:22px;padding:14px;height:232px;box-shadow:0 10px 24px -14px rgba(14,50,81,.35);opacity:0;transform:translateY(26px);transition:opacity calc(.5s*var(--k)),transform calc(.6s*var(--k)) cubic-bezier(.2,.8,.2,1),box-shadow .3s,outline-color .3s;outline:3px solid transparent;outline-offset:-1px}
 #s1.in .card{opacity:1;transform:none;transition-delay:calc(var(--i)*70ms*var(--k))}
 #s1.in .card.sel{transition-delay:0s;transform:translateY(-4px);outline-color:var(--matcha)}
-.card .il{height:104px;border-radius:14px;overflow:hidden;background:var(--navy)}
+.card .il{height:120px;border-radius:14px;overflow:hidden;background:var(--navy)}
 .card h4{margin:10px 0 0;height:39px;font-size:15px;line-height:1.3;font-weight:600;letter-spacing:-.005em}
 .card .rw{display:flex;justify-content:space-between;align-items:center;margin-top:7px}
 .card .rw small{font-size:12px;color:#4d8184;font-weight:500}
@@ -149,7 +148,6 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:#07213a}
         <text class="hl" y="74" font-size="19" font-weight="500" letter-spacing="0">get up to 20 free meals</text></g></g>
     <g id="hFront"></g></svg>
   <div class="abs logo" id="hLogo">grub<i>club</i><span class="wm" style="color:var(--kiwi)"></span></div>
-  <div class="abs" id="hTag">THE ENTOMO BOX</div>
   <div class="abs" id="cta" role="button">build your box<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></div>
 </section>
 
@@ -243,8 +241,31 @@ const MEALS=[
  {n:'matcha cricket protein bar',s:'matcha protein bar',g:'40g',c:'#D7F5FA'}];
 const PICKS=[0,1,4,5];
 
-function mini(m,i){const j=(i%3-1)*6;
-  return `<svg viewBox="0 0 210 104" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">${LF([[24,114,28+j,84,18,8,2],[46,114,54-j,60,15,-6,0],[188,114,-30-j,86,19,-8,1],[166,114,-56+j,62,15,6,3],[110,112,-2,0.1,0.1,0,0]].slice(0,4))}<circle class="cc" cx="105" cy="50" r="33" fill="${m.c}"/><text x="105" y="56" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="15" fill="#14396B">${m.g}</text>${LF([[92,114,-8,40,12,4,0],[124,114,12,34,10,-4,4]])}</svg>`}
+/* flat illustrated packs for the meal cards: k = p (stand-up pouch) | t (tub with lid) */
+const PACK=[
+ {k:'p',body:'#14447C',ink:'#fff',cir:'#D6ECE8',nm:['lightly','salted'],lv:[3,5]},
+ {k:'t',body:'#8DB83C',ink:'#fff',nm:['chili lime','crisps'],lv:[6,3]},
+ {k:'p',body:'#1B7A4A',ink:'#fff',cir:'#EEF6A8',nm:['cricket','trail mix'],lv:[0,7]},
+ {k:'t',body:'#E6EDB0',ink:'#0E3251',nm:['wasabi','bites'],lv:[7,4]},
+ {k:'t',body:'#2F9A74',ink:'#fff',nm:['brownie','mix'],lv:[0,1]},
+ {k:'p',body:'#A9D8CF',ink:'#0E3251',cir:'#fff',nm:['matcha','bar'],lv:[6,4]}];
+function mini(m,i){const P=PACK[i],j=(i%3-1)*5,id='k'+(uid++),back=LF([[20,128,28+j,92,19,8,4],[46,128,52-j,66,16,-6,7],[192,128,-28-j,94,20,-8,6],[166,128,-54+j,68,16,6,2]]);
+  const tub='M77 24H133L130 80Q129 88 121 88H89Q81 88 80 80Z',pouch='M77 8H133L135 86Q105 94 75 86Z';
+  const spr=`${LF([[88,92,-14,30,9,4,P.lv[0]],[108,94,6,34,10,-4,P.lv[1]],[126,92,24,28,9,5,P.lv[0]]])}`;
+  let g;
+  if(P.k==='t'){
+    g=`<clipPath id="${id}"><path d="${tub}"/></clipPath><path d="${tub}" fill="${P.body}"/>
+    <g clip-path="url(#${id})">${spr}</g>
+    <path d="M70 24V15Q70 12 73 12H76L79 5H131L134 12H137Q140 12 140 15V24Z" fill="#165B63"/>
+    <text x="84" y="38" font-family="Poppins,sans-serif" font-weight="700" font-size="6.5" fill="${P.ink}">grubclub</text>
+    <text font-family="Poppins,sans-serif" font-weight="700" font-size="10.5" letter-spacing="-.3" fill="${P.ink}"><tspan x="84" y="52">${P.nm[0]}</tspan><tspan x="84" y="63">${P.nm[1]}</tspan></text>`}
+  else{
+    g=`<clipPath id="${id}"><path d="${pouch}"/></clipPath><path d="${pouch}" fill="${P.body}"/>
+    <g clip-path="url(#${id})">${spr}<rect x="70" y="8" width="70" height="8" fill="#000" opacity=".2"/><path d="M80 12H130" stroke="#fff" stroke-opacity=".35" stroke-width="1" stroke-dasharray="2 2"/></g>
+    <text x="105" y="29" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="6.5" fill="${P.ink}">grubclub</text>
+    <circle cx="105" cy="55" r="21" fill="${P.cir}"/>
+    <text text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="8.5" letter-spacing="-.2" fill="#14396B"><tspan x="105" y="53">${P.nm[0]}</tspan><tspan x="105" y="63">${P.nm[1]}</tspan></text>`}
+  return `<svg viewBox="0 0 210 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">${back}<g class="cc" transform="translate(105 61) scale(1.2) translate(-105 -48)">${g}</g></svg>`}
 
 /* ============ build static DOM ============ */
 $('#grid').innerHTML=MEALS.map((m,i)=>`<div class="card" style="--i:${i}" data-i="${i}"><div class="il">${mini(m,i)}</div><h4>${m.n}</h4><div class="rw"><small>${m.g}</small><div class="add">+ add</div></div></div>`).join('');
@@ -296,10 +317,10 @@ function showCursor(){cursor.style.opacity=1}
 /* ============ scenes ============ */
 const scenes=[
 async function hero_(g,o){
-  hero.t=o.clip?3.4:0;show(0);$$('#hLogo,#hTag,#cta').forEach(e=>e.classList.remove('in','press'));
+  hero.t=o.clip?3.4:0;show(0);$$('#hLogo,#cta').forEach(e=>e.classList.remove('in','press'));
   const tm=o.clip?0:1;
-  if(o.clip)$$('#hLogo,#hTag,#cta').forEach(e=>e.classList.add('in'));
-  else{await W(500,g);$('#hLogo').classList.add('in');await W(400,g);$('#hTag').classList.add('in');await W(1000,g);$('#cta').classList.add('in');await W(2300,g)}
+  if(o.clip)$$('#hLogo,#cta').forEach(e=>e.classList.add('in'));
+  else{await W(500,g);$('#hLogo').classList.add('in');await W(1400,g);$('#cta').classList.add('in');await W(2300,g)}
   if(o.clip)await W(700,g);
   const c=cen($('#cta'));curSet(c.x+420,c.y+200);showCursor();await W(50,g);curGo(c.x,c.y+4,900);await W(1000,g);
   $('#cta').classList.add('press');await curClick(g);await W(120,g);return{x:c.x,y:c.y}},
@@ -345,8 +366,8 @@ $('#pp').onclick=()=>{if(started===false){started=true;paused=false;play({from:c
 let started=false,cur_=0;
 $$('.ctl [data-s]').forEach(b=>b.onclick=()=>{cur_=+b.dataset.s;started=true;play({from:cur_})});
 window.gc={play,
-  park(){gen++;paused=false;K=1;document.documentElement.style.setProperty('--k',1);hero.t=3.4;show(0);$$('#hLogo,#hTag,#cta').forEach(e=>e.classList.add('in'));syncPP()}};
-document.fonts.ready.then(()=>{syncPP();if(location.search.includes('park'))gc.park();else if(reduce){hero.t=3.4;show(0);$$('#hLogo,#hTag,#cta').forEach(e=>e.classList.add('in'));paused=true;syncPP()}else{started=true;play({})}});
+  park(){gen++;paused=false;K=1;document.documentElement.style.setProperty('--k',1);hero.t=3.4;show(0);$$('#hLogo,#cta').forEach(e=>e.classList.add('in'));syncPP()}};
+document.fonts.ready.then(()=>{syncPP();if(location.search.includes('park'))gc.park();else if(reduce){hero.t=3.4;show(0);$$('#hLogo,#cta').forEach(e=>e.classList.add('in'));paused=true;syncPP()}else{started=true;play({})}});
 </script>
 </body>
 </html>
