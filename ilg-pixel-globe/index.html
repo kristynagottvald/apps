@@ -205,56 +205,60 @@ const LET={
  L:[".#####...",".#####...",".#####...",".#####...",".#####...",".#####...",".#####...",".#####...",".########",".########",".########"],
  G:["..#####..",".#######.","###...###","###......","###......","###..####","###..####","###...###","###...###",".#######.","..#####.."]
 };
-function drawLogo(){
-  const L=document.getElementById('logo'),r=L.getBoundingClientRect(),dp=Math.min(3,(window.devicePixelRatio||1)*1.5);
-  L.width=Math.round(r.width*dp);L.height=Math.round(r.height*dp);
-  const c=L.getContext('2d');c.setTransform(dp,0,0,dp,0,0);c.clearRect(0,0,r.width,r.height);
-  const th=Math.PI/4,ph=Math.atan(1/Math.SQRT2),ct=Math.cos(th),st=Math.sin(th),cp=Math.cos(ph),sp=Math.sin(ph);
-  const prj=(x,y,z)=>{const xr=x*ct-z*st,zr=x*st+z*ct;return [xr,-(y*cp-zr*sp)]};
-  const ext=[];for(const x of[-1,1])for(const y of[-1,1])for(const z of[-1,1])ext.push(prj(x,y,z));
-  const minx=Math.min(...ext.map(e=>e[0])),maxx=Math.max(...ext.map(e=>e[0])),miny=Math.min(...ext.map(e=>e[1])),maxy=Math.max(...ext.map(e=>e[1]));
-  const pad=2,k=Math.min((r.width-pad*2)/(maxx-minx),(r.height-pad*2)/(maxy-miny));
-  const ox=r.width/2-(minx+maxx)/2*k,oy=r.height/2-(miny+maxy)/2*k;
-  const P=(x,y,z)=>{const q=prj(x,y,z);return [ox+q[0]*k,oy+q[1]*k]};
-  const N=19,SH=-75;
-  const faces=[
-    {O:[-1,1,1],U:[0,0,-2],V:[2,0,0],tone:'#1d1d1d',ch:'I'},   /* top */
-    {O:[-1,1,1],U:[2,0,0],V:[0,-2,0],tone:'#121212',ch:'L'},   /* left */
-    {O:[1,1,1],U:[0,0,-2],V:[0,-2,0],tone:'#0a0a0a',ch:'G'}   /* right */
-  ];
-  for(const f of faces){
-    const at=(u,v)=>[f.O[0]+f.U[0]*u+f.V[0]*v,f.O[1]+f.U[1]*u+f.V[1]*v,f.O[2]+f.U[2]*u+f.V[2]*v];
-    const quad=(i,j,sh)=>{const a=sh,b=1-sh;return [at((i+a)/N,(j+a)/N),at((i+b)/N,(j+a)/N),at((i+b)/N,(j+b)/N),at((i+a)/N,(j+b)/N)].map(p=>P(p[0],p[1],p[2]))};
-    /* face base */
-    const base=[at(0,0),at(1,0),at(1,1),at(0,1)].map(p=>P(p[0],p[1],p[2]));
-    c.fillStyle=f.tone;c.beginPath();base.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();
-    const bm=LET[f.ch],i0=5,j0=4;
-    for(let j=0;j<N;j++)for(let i=0;i<N;i++){
-      const bi=i-i0,bj=j-j0,onL=bi>=0&&bi<9&&bj>=0&&bj<11&&bm[bj][bi]==='#';
-      const cc=at((i+.5)/N,(j+.5)/N),m=Math.hypot(cc[0],cc[1],cc[2]);
-      const lat=Math.asin(cc[1]/m)/D,lon=Math.atan2(cc[0],cc[2])/D+SH;
-      const ld=land(lat,lon);
-      let q;
-      if(onL){c.fillStyle='#fff';q=quad(i,j,.04)}
-      else if(ld){c.fillStyle='rgba(255,255,255,.4)';q=quad(i,j,.2)}
-      else{c.fillStyle='rgba(255,255,255,.09)';q=quad(i,j,.38)}
-      c.beginPath();q.forEach((p,n)=>n?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();
-    }
+const LN=19,LSH=-75;
+/* five faces in cube space: letters are cut into the surface of the four sides, the top is pure world */
+const LF=[
+  {O:[-1,1,1],U:[0,0,-2],V:[2,0,0],n:[0,1,0],ch:null},
+  {O:[-1,1,1],U:[2,0,0],V:[0,-2,0],n:[0,0,1],ch:'I'},
+  {O:[1,1,1],U:[0,0,-2],V:[0,-2,0],n:[1,0,0],ch:'L'},
+  {O:[1,1,-1],U:[-2,0,0],V:[0,-2,0],n:[0,0,-1],ch:'G'},
+  {O:[-1,1,-1],U:[0,0,2],V:[0,-2,0],n:[-1,0,0],ch:null}
+];
+const at3=(f,u,v)=>[f.O[0]+f.U[0]*u+f.V[0]*v,f.O[1]+f.U[1]*u+f.V[1]*v,f.O[2]+f.U[2]*u+f.V[2]*v];
+for(const f of LF){
+  f.cells=[];const bm=f.ch&&LET[f.ch];
+  for(let j=0;j<LN;j++)for(let i=0;i<LN;i++){
+    const bi=i-5,bj=j-4,isL=!!bm&&bi>=0&&bi<9&&bj>=0&&bj<11&&bm[bj][bi]==='#';
+    const c=at3(f,(i+.5)/LN,(j+.5)/LN),m=Math.hypot(c[0],c[1],c[2]);
+    f.cells.push({i,j,t:isL?2:(land(Math.asin(c[1]/m)/D,Math.atan2(c[0],c[2])/D+LSH)?1:0)});
   }
-  /* cube edges */
-  c.strokeStyle='#fff';c.lineWidth=1.6;c.lineJoin='miter';
-  const V=(x,y,z)=>P(x,y,z);
-  const path=(pts)=>{c.beginPath();pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.stroke()};
-  path([V(-1,1,-1),V(1,1,-1),V(1,-1,-1),V(1,-1,1),V(-1,-1,1),V(-1,1,-1)].slice(0,0));
-  const hex=[V(-1,1,-1),V(1,1,-1),V(1,-1,-1),V(1,-1,1),V(-1,-1,1),V(-1,1,1)];
-  c.beginPath();hex.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.stroke();
-  path([V(-1,1,1),V(1,1,1),V(1,-1,1)]);path([V(1,1,-1),V(1,1,1)]);path([V(-1,1,1),V(-1,-1,1)].slice(0,0));
 }
-
-resize();setView();drawLogo();addEventListener("resize",drawLogo);
+const LGT=(()=>{const l=[-.5,.8,.35],m=Math.hypot(...l);return l.map(x=>x/m)})();
+let lgW=0,lgH=0,lgDp=1;
+function sizeLogo(){
+  const L=document.getElementById('logo'),r=L.getBoundingClientRect();
+  lgDp=Math.min(3,(window.devicePixelRatio||1)*1.5);lgW=r.width;lgH=r.height;
+  L.width=Math.round(lgW*lgDp);L.height=Math.round(lgH*lgDp);
+}
+function drawLogo(rot){
+  const L=document.getElementById('logo'),c=L.getContext('2d');
+  c.setTransform(lgDp,0,0,lgDp,0,0);c.clearRect(0,0,lgW,lgH);
+  const th=Math.PI/4+rot*D,ph=Math.atan(1/Math.SQRT2),ct=Math.cos(th),st=Math.sin(th),cp=Math.cos(ph),sp=Math.sin(ph);
+  const prj=(x,y,z)=>{const xr=x*ct-z*st,zr=x*st+z*ct;return [xr,-(y*cp-zr*sp)]};
+  /* fixed scale from the cube's largest extent so it does not pulse while it turns */
+  const k=Math.min((lgW-4)/(2*Math.SQRT2),(lgH-4)/(2*(cp+sp*1)+0.0001)*1.0)*.98,ox=lgW/2,oy=lgH/2;
+  const P=(x,y,z)=>{const q=prj(x,y,z);return [ox+q[0]*k,oy+q[1]*k*1+0]};
+  for(const f of LF){
+    const nx=f.n[0],ny=f.n[1],nz=f.n[2],xr=nx*ct-nz*st,zr=nx*st+nz*ct;
+    if(ny*sp+zr*cp<=.001)continue;                       /* back face */
+    const sh=.4+.6*Math.max(0,xr*LGT[0]+(ny*cp-zr*sp)*LGT[1]+(ny*sp+zr*cp)*LGT[2]);
+    const quad=(i,j,s)=>{const a=s,b=1-s;return [at3(f,(i+a)/LN,(j+a)/LN),at3(f,(i+b)/LN,(j+a)/LN),at3(f,(i+b)/LN,(j+b)/LN),at3(f,(i+a)/LN,(j+b)/LN)].map(p=>P(p[0],p[1],p[2]))};
+    const poly=(q)=>{c.beginPath();q.forEach((p,n)=>n?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath()};
+    const base=[at3(f,0,0),at3(f,1,0),at3(f,1,1),at3(f,0,1)].map(p=>P(p[0],p[1],p[2]));
+    const g8=Math.round(10+22*sh);c.fillStyle='rgb('+g8+','+g8+','+g8+')';poly(base);c.fill();
+    for(const e of f.cells){
+      if(e.t===2){c.fillStyle='rgba(255,255,255,'+(.5+.5*sh).toFixed(3)+')';poly(quad(e.i,e.j,.03))}
+      else if(e.t===1){c.fillStyle='rgba(255,255,255,'+(.42*sh).toFixed(3)+')';poly(quad(e.i,e.j,.2))}
+      else{c.fillStyle='rgba(255,255,255,'+(.1*sh).toFixed(3)+')';poly(quad(e.i,e.j,.38))}
+      c.fill();
+    }
+    c.strokeStyle='#fff';c.lineWidth=1.6;c.lineJoin='miter';poly(base);c.stroke();
+  }
+}
+resize();setView();sizeLogo();drawLogo(0);addEventListener("resize",()=>{sizeLogo();drawLogo(0)});
 for(let i=0;i<150;i++){step(1/30);lon0-=SPEED/30}        /* start with orders already in flight */
 if(reduce){frame(0)}
-else{let last=performance.now();const loop=(t)=>{const dt=Math.min(.05,(t-last)/1000);last=t;step(dt);frame(dt);requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+else{let last=performance.now(),spin=0;const loop=(t)=>{const dt=Math.min(.05,(t-last)/1000);last=t;step(dt);frame(dt);spin+=14*dt;drawLogo(spin);requestAnimationFrame(loop)};requestAnimationFrame(loop)}
 })();
 </script>
 </body>
