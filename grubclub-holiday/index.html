@@ -119,79 +119,88 @@ const rngOf = (s) => { let a = s >>> 0; return () => { a |= 0; a = a + 0x6D2B79F
 const pick = (r, a) => a[Math.floor(r() * a.length)];
 const f = (n) => +n.toFixed(2);
 
-/* ---------- icons, drawn in a 100x100 box. k = {bg, a (main), b (second), x (accent)} ---------- */
+/* ---------- icons, drawn in a 100x100 box. k = {bg, a (main), b (second tone), x (accent)} ---------- */
+let uid = 0;
 const circ = (cx, cy, r, fill, extra = '') => `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="${fill}" ${extra}/>`;
-const zig = (x0, x1, y, amp, n, col, w) => { let d = `M${x0} ${y}`; const st = (x1 - x0) / n; for (let i = 0; i < n; i++) d += ` L${f(x0 + st * (i + .5))} ${y - amp} L${f(x0 + st * (i + 1))} ${y}`; return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`; };
+/* soft wave line (the thin wavy detail from the references): n wavelengths between x0 and x1 */
+const zig = (x0, x1, y, amp, n, col, w) => { const wl = (x1 - x0) / n; let d = `M${f(x0)} ${f(y)} Q${f(x0 + wl / 4)} ${f(y - amp)} ${f(x0 + wl / 2)} ${f(y)}`; for (let i = 1; i < n * 2; i++) d += ` T${f(x0 + wl / 2 * (i + 1))} ${f(y)}`; return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`; };
+const line = (d, col, w = 3) => `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
 const rot = (deg, cx, cy, s) => `<g transform="rotate(${deg} ${cx} ${cy})">${s}</g>`;
-const leaf = (cx, cy, len, wid, deg, fill) => rot(deg, cx, cy, `<path d="M${cx} ${cy} Q${cx + len * .5} ${cy - wid} ${cx + len} ${cy} Q${cx + len * .5} ${cy + wid} ${cx} ${cy}Z" fill="${fill}"/>`);
+const leaf = (cx, cy, len, wid, deg, fill, vein) => rot(deg, cx, cy, `<path d="M${cx} ${cy} Q${cx + len * .45} ${cy - wid} ${cx + len} ${cy} Q${cx + len * .45} ${cy + wid} ${cx} ${cy}Z" fill="${fill}"/>` + (vein ? `<path d="M${cx + 6} ${cy} H${cx + len - 8}" stroke="${vein}" stroke-width="2.4" stroke-linecap="round"/>` : ''));
 const halfL = (cx, cy, r, fill) => `<path d="M${cx} ${cy - r} A${r} ${r} 0 0 0 ${cx} ${cy + r}Z" fill="${fill}"/>`;
 const halfR = (cx, cy, r, fill) => `<path d="M${cx} ${cy - r} A${r} ${r} 0 0 1 ${cx} ${cy + r}Z" fill="${fill}"/>`;
+const poly = (pts, fill) => `<polygon points="${pts.map((p) => p.map(f).join(',')).join(' ')}" fill="${fill}"/>`;
+/* faceted star built from kites: long points N/E/S/W, short points on the diagonals, each point split into two tones */
+const star8 = (cx, cy, R, c1, c2, longK = 1, shortK = .74) => { let s = ''; for (let i = 0; i < 8; i++) { const an = (i * 45 - 90) * Math.PI / 180, ln = R * (i % 2 ? shortK : longK), vr = R * .4, a1 = an - Math.PI / 8, a2 = an + Math.PI / 8; const P = (a, r) => [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; s += poly([[cx, cy], P(a1, vr), P(an, ln)], c1) + poly([[cx, cy], P(an, ln), P(a2, vr)], c2); } return s; };
+const splitCircle = (k, r = 46) => halfL(50, 50, r, k.a) + halfR(50, 50, r, k.b);
+const glyph = (k, d) => line(d, k.bg, 3.2);
 
 const ICON = {
-  ornament: (k, v) => circ(50, 58, 34, k.a) + (v ? halfR(50, 58, 34, k.b) : '') + zig(18, 82, 58, 5, 8, k.bg, 3) +
-    `<rect x="41" y="14" width="18" height="10" rx="2" fill="${k.b === k.bg ? k.a : k.b}"/><circle cx="50" cy="10" r="5" fill="none" stroke="${k.x}" stroke-width="3"/>`,
-  snowman: (k) => circ(50, 80, 19, k.a) + circ(50, 53, 15, k.a) + circ(50, 29, 11, k.a) +
-    `<rect x="37" y="10" width="26" height="11" fill="${k.b}"/><rect x="31" y="19" width="38" height="4" rx="2" fill="${k.b}"/>` +
-    `<path d="M50 29 L66 32 L50 35Z" fill="${k.x}"/>` + circ(46, 27, 1.8, k.bg) + circ(54, 27, 1.8, k.bg) + circ(50, 50, 2.6, k.bg) + circ(50, 58, 2.6, k.bg) + circ(50, 76, 2.6, k.bg) +
-    `<rect x="38" y="38" width="24" height="5" rx="2.5" fill="${k.x}"/>`,
-  wreath: (k) => Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI * 2; return circ(50 + Math.cos(a) * 31, 52 + Math.sin(a) * 31, 10.5, i % 2 ? k.b : k.a); }).join('') +
-    circ(50, 52, 17, k.bg) + [0, 1, 2].map((i) => circ(30 + i * 7 + (i === 1 ? 14 : 0), 70 + (i === 1 ? 4 : 0) - 0, 4.5, k.x)).join('') +
-    circ(40, 21, 8, 'none', `stroke="${k.x}" stroke-width="5"`) + circ(60, 21, 8, 'none', `stroke="${k.x}" stroke-width="5"`) + circ(50, 22, 4.5, k.x),
-  holly: (k) => leaf(50, 52, 42, 15, -32, k.a) + leaf(50, 52, 42, 15, 212, k.b) + leaf(50, 52, 42, 15, 32 + 180 + 36, k.a) + leaf(50, 52, 42, 15, -32 - 36 - 180 + 360, k.b) + circ(43, 48, 8, k.x) + circ(58, 48, 8, k.x) + circ(50, 61, 8, k.x),
-  snowflake: (k, v) => { const n = v ? 6 : 8; let s = ''; for (let i = 0; i < n; i++) { const d = i * 360 / n; s += rot(d, 50, 50, `<rect x="47" y="10" width="6" height="30" rx="3" fill="${k.a}"/>${circ(50, 12, 6.5, k.x)}<rect x="40" y="26" width="20" height="5" rx="2.5" fill="${k.b === k.bg ? k.a : k.b}"/>`); } return s + circ(50, 50, 10, k.a) + circ(50, 50, 4.5, k.bg); },
-  gift: (k) => `<rect x="18" y="38" width="64" height="48" fill="${k.a}"/><rect x="13" y="30" width="74" height="14" fill="${k.b === k.bg ? k.a : k.b}"/><rect x="45" y="30" width="10" height="56" fill="${k.x}"/>` +
-    circ(39, 20, 10, 'none', `stroke="${k.x}" stroke-width="6"`) + circ(61, 20, 10, 'none', `stroke="${k.x}" stroke-width="6"`) + circ(50, 28, 5.5, k.x),
-  treeC: (k) => circ(50, 28, 15, k.a) + circ(50, 52, 21, k.a) + circ(50, 79, 25, k.a) + circ(50, 9, 6, k.x) +
-    circ(42, 50, 3.6, k.bg) + circ(60, 56, 3.6, k.x) + circ(34, 78, 4, k.x) + circ(52, 80, 4, k.bg) + circ(68, 76, 4, k.b === k.bg ? k.x : k.b),
-  treeT: (k) => [[10, 40, 18], [26, 54, 28], [44, 70, 40]].map(([y, w, hh], i) => `<path d="M50 ${y} L${50 + w / 2 + 6} ${y + hh} L${50 - w / 2 - 6} ${y + hh}Z" fill="${i % 2 ? k.b === k.bg ? k.a : k.b : k.a}"/>`).join('') +
-    `<rect x="44" y="84" width="12" height="10" fill="${k.x}"/>` + circ(50, 8, 5.5, k.x),
-  candle: (k) => `<rect x="36" y="46" width="28" height="44" fill="${k.a}"/><path d="M36 46 A14 9 0 0 1 64 46Z" fill="${k.a}"/>` +
-    zig(36, 64, 66, 5, 4, k.bg, 3) + `<path d="M50 8 Q66 28 50 42 Q34 28 50 8Z" fill="${k.x}"/><rect x="48.5" y="40" width="3" height="10" fill="${k.b === k.bg ? k.a : k.b}"/>` + `<rect x="24" y="88" width="52" height="7" rx="3.5" fill="${k.b === k.bg ? k.a : k.b}"/>`,
-  reindeer: (k) => `<path d="M32 34 C18 26 12 14 18 4 M24 20 L10 18 M68 34 C82 26 88 14 82 4 M76 20 L90 18" fill="none" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="5" stroke-linecap="round"/>` +
-    `<path d="M20 32 L80 32 L80 62 L50 92 L20 62Z" fill="${k.a}"/>` + circ(50, 68, 10, k.x) + circ(36, 50, 3.4, k.bg) + circ(64, 50, 3.4, k.bg),
-  bell: (k) => `<path d="M20 64 A30 32 0 0 1 80 64Z" fill="${k.a}"/><rect x="14" y="62" width="72" height="14" fill="${k.b === k.bg ? k.a : k.b}"/>` + zig(14, 86, 69, 3, 9, k.bg, 2) + circ(50, 86, 8, k.x) + circ(50, 24, 4, k.a),
-  hat: (k) => `<path d="M20 74 A30 40 0 0 1 80 74Z" fill="${k.a}"/><rect x="13" y="70" width="74" height="16" rx="3" fill="${k.b === k.bg ? k.x : k.b}"/>` + zig(16, 84, 78, 3, 10, k.bg, 2) + circ(50, 28, 10, k.x),
-  mug: (k) => `<path d="M22 38 H68 V70 A14 14 0 0 1 54 84 H36 A14 14 0 0 1 22 70Z" fill="${k.a}"/>` + circ(72, 56, 11, 'none', `stroke="${k.a}" stroke-width="6"`) +
-    circ(35, 34, 7, k.x) + circ(49, 31, 8, k.x) + circ(62, 35, 6, k.x) + `<path d="M36 20 Q42 14 36 8 M52 18 Q58 12 52 6" fill="none" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="3.5" stroke-linecap="round"/>` + zig(22, 68, 62, 4, 6, k.bg, 3),
-  plate: (k) => circ(50, 50, 40, k.a) + circ(50, 50, 29, k.b === k.bg ? k.x : k.b) + circ(50, 50, 18, k.bg === k.x ? k.a : k.bg) + circ(50, 50, 8, k.x),
-  moon: (k) => circ(46, 52, 34, k.a) + circ(62, 42, 28, k.bg) + circ(78, 22, 5, k.x) + circ(80, 74, 3.5, k.a) + circ(26, 18, 3.5, k.a) + circ(86, 48, 2.6, k.x),
-  ginger: (k) => circ(50, 22, 14, k.a) + circ(50, 58, 20, k.a) + circ(22, 52, 9, k.a) + circ(78, 52, 9, k.a) + circ(38, 86, 10, k.a) + circ(62, 86, 10, k.a) +
-    circ(45, 20, 2.4, k.bg) + circ(55, 20, 2.4, k.bg) + circ(50, 50, 3.4, k.x) + circ(50, 61, 3.4, k.x) + circ(50, 72, 3.4, k.x) + `<path d="M43 27 Q50 32 57 27" fill="none" stroke="${k.bg}" stroke-width="2.4" stroke-linecap="round"/>`,
-  cane: (k) => `<path d="M32 94 V38 A18 18 0 0 1 68 38" fill="none" stroke="${k.a}" stroke-width="16"/><path d="M32 94 V38 A18 18 0 0 1 68 38" fill="none" stroke="${k.x === k.a ? k.b : k.bg}" stroke-width="16" stroke-dasharray="6 9" opacity=".95"/>`,
-  star: (k) => `<path d="M50 6 Q54 46 94 50 Q54 54 50 94 Q46 54 6 50 Q46 46 50 6Z" fill="${k.a}"/>` + circ(50, 50, 9, k.x) + circ(22, 24, 4, k.b === k.bg ? k.a : k.b) + circ(80, 78, 4, k.b === k.bg ? k.a : k.b),
-  penguin: (k) => circ(50, 56, 34, k.a) + `<path d="M50 30 A22 28 0 0 0 50 92 A22 28 0 0 0 50 30Z" fill="${k.b === k.bg ? k.bg : k.b}"/>` + circ(41, 46, 3, k.a) + circ(59, 46, 3, k.a) + `<path d="M44 53 L56 53 L50 61Z" fill="${k.x}"/>` + circ(34, 90, 6, k.x) + circ(66, 90, 6, k.x),
-  mitten: (k) => circ(48, 62, 28, k.a) + circ(80, 56, 11, k.a) + `<rect x="26" y="18" width="44" height="22" rx="4" fill="${k.b === k.bg ? k.x : k.b}"/>` + zig(26, 70, 29, 4, 6, k.bg, 2.4) + circ(48, 66, 9, k.x),
+  /* thin cap and loop, big round bauble, split tone or wavy diagonal lines */
+  ornament: (k, v) => { const id = 'oc' + (uid++); return `<rect x="41" y="11" width="18" height="11" rx="1.5" fill="${k.b}"/>` + line('M44 12 V8 A6 6 0 1 1 56 8 V12', k.x, 3) +
+    (v ? halfL(50, 61, 38, k.a) + halfR(50, 61, 38, k.b) + zig(14, 86, 56, 5, 6, k.bg, 2.6) + zig(14, 86, 68, 5, 6, k.bg, 2.6) :
+      `<clipPath id="${id}"><circle cx="50" cy="61" r="38"/></clipPath>` + circ(50, 61, 38, k.a) + `<g clip-path="url(#${id})"><g transform="rotate(-40 50 61)">${[-10, 10, 30, 50, 70, 90].map((y) => zig(-20, 120, y + 20, 4, 8, k.bg, 2.6)).join('')}</g></g>`); },
+  /* pentagon face, ring antlers, one round nose */
+  reindeer: (k) => circ(14, 12, 20, 'none', `stroke="${k.b}" stroke-width="3.4"`) + circ(86, 12, 20, 'none', `stroke="${k.b}" stroke-width="3.4"`) +
+    poly([[10, 20], [90, 20], [90, 62], [50, 98], [10, 62]], k.a) + circ(50, 68, 11, k.x),
+  /* bell: big dome, wavy white band, round clapper below */
+  bell: (k) => `<path d="M16 68 V50 Q16 8 50 8 Q84 8 84 50 V68Z" fill="${k.a}"/><rect x="6" y="66" width="88" height="16" fill="${k.b}"/>` + zig(6, 94, 74, 3.4, 8, k.bg, 2.4) + circ(50, 90, 11, k.x),
+  hat: (k) => `<path d="M20 70 V58 Q20 22 50 22 Q80 22 80 58 V70Z" fill="${k.a}"/><rect x="10" y="68" width="80" height="18" rx="2" fill="${k.b}"/>` + zig(10, 90, 77, 3.4, 8, k.bg, 2.4) + circ(50, 14, 11, k.x),
+  /* wrapped gift: full tile, ribbon cross, star bow */
+  gift: (k) => `<rect x="0" y="0" width="100" height="100" fill="${k.a}"/><rect x="40" y="0" width="20" height="100" fill="${k.b}"/><rect x="0" y="40" width="100" height="20" fill="${k.b}"/>` +
+    `<path d="M50 4 V38 M50 62 V96" stroke="${k.a}" stroke-width="2.4" stroke-linecap="round" fill="none"/>` + star8(50, 50, 30, k.bg, k.x, 1, .7),
+  star8: (k) => star8(50, 50, 48, k.a, k.b) + circ(50, 50, 7, k.bg),
+  /* thick candy cane with diagonal stripes */
+  cane: (k) => { const id = 'cm' + (uid++), d = 'M32 104 V42 A21 21 0 0 1 74 42 V54'; return `<mask id="${id}"><path d="${d}" stroke="#fff" stroke-width="26" fill="none"/></mask><path d="${d}" stroke="${k.a}" stroke-width="26" fill="none"/><g mask="url(#${id})">${Array.from({ length: 16 }, (_, i) => `<path d="M-10 ${i * 17 - 10} L110 ${i * 17 - 70}" stroke="${k.b}" stroke-width="7"/>`).join('')}</g>`; },
+  holly: (k) => leaf(50, 50, 48, 20, -45, k.a, k.bg) + leaf(50, 50, 48, 20, 45, k.b, k.bg) + leaf(50, 50, 48, 20, 135, k.a, k.bg) + leaf(50, 50, 48, 20, 225, k.b, k.bg) + circ(50, 40, 9, k.x) + circ(41, 56, 9, k.x) + circ(59, 56, 9, k.x),
+  candle: (k) => `<rect x="30" y="42" width="40" height="58" fill="${k.a}"/><path d="M30 84 L70 60 M30 100 L70 76 M30 68 L70 44" stroke="${k.bg}" stroke-width="2.6" fill="none" clip-path="inset(0)"/>` +
+    `<path d="M50 6 Q66 22 50 38 Q34 22 50 6Z" fill="none" stroke="${k.x}" stroke-width="3.6" stroke-linejoin="round"/>` + line('M50 38 V44', k.a, 3),
+  stocking: (k) => `<path d="M30 22 H66 V60 H84 A16 16 0 0 1 84 92 H46 A16 16 0 0 1 30 76Z" fill="${k.a}"/><rect x="24" y="8" width="48" height="18" fill="${k.b}"/>` + zig(24, 72, 17, 3.4, 4, k.bg, 2.4) + circ(78, 76, 11, k.b),
+  elf: (k) => poly([[10, 10], [22, 24], [34, 10], [46, 24], [58, 10], [70, 24], [82, 10], [90, 24], [90, 32], [10, 32]], k.b) +
+    `<rect x="10" y="30" width="80" height="62" fill="${k.a}"/><rect x="10" y="48" width="80" height="16" fill="${k.b}"/>` + circ(32, 56, 5.5, k.bg) + circ(68, 56, 5.5, k.bg) + '',
+  /* snowman: two big circles, hat, a single orange nose */
+  snowman: (k) => circ(50, 78, 36, k.a) + circ(50, 31, 21, k.b) + `<rect x="34" y="2" width="32" height="12" rx="1" fill="${k.a}"/><rect x="26" y="12" width="48" height="5" rx="2" fill="${k.a}"/>` +
+    poly([[50, 32], [72, 36], [50, 40]], k.x) + circ(50, 66, 3.4, k.bg) + circ(50, 78, 3.4, k.bg) + circ(50, 90, 3.4, k.bg),
+  ginger: (k) => circ(50, 22, 17, k.a) + `<rect x="8" y="40" width="84" height="20" rx="10" fill="${k.a}"/><rect x="28" y="40" width="44" height="40" rx="14" fill="${k.a}"/><rect x="30" y="64" width="16" height="34" rx="8" fill="${k.a}"/><rect x="54" y="64" width="16" height="34" rx="8" fill="${k.a}"/>` +
+    circ(50, 51, 3.6, k.x) + circ(50, 63, 3.6, k.x) + circ(50, 75, 3.6, k.x),
+  treeT: (k) => [[4, 34, 24], [22, 62, 34], [44, 90, 46]].map(([y0, y1, w]) => poly([[50, y0], [50 - w, y1], [50, y1]], k.a) + poly([[50, y0], [50, y1], [50 + w, y1]], k.b)).join('') + `<rect x="43" y="90" width="14" height="10" fill="${k.a}"/>` + circ(50, 6, 6, k.x),
+  treeC: (k) => circ(50, 24, 17, k.a) + circ(50, 50, 24, k.b) + circ(50, 80, 28, k.a) + circ(50, 6, 5.5, k.x) + circ(42, 52, 3.6, k.bg) + circ(60, 46, 3.6, k.bg) + circ(38, 82, 4, k.bg) + circ(58, 84, 4, k.bg) + circ(70, 76, 4, k.x),
+  wreath: (k) => Array.from({ length: 12 }, (_, i) => { const an = i / 12 * Math.PI * 2; return circ(50 + Math.cos(an) * 34, 50 + Math.sin(an) * 34, 13, i % 2 ? k.b : k.a); }).join('') + circ(50, 50, 20, k.bg) +
+    circ(40, 82, 4.5, k.x) + circ(50, 85, 4.5, k.x) + circ(60, 82, 4.5, k.x) + poly([[50, 84], [36, 96], [36, 74]], k.x) + poly([[50, 84], [64, 96], [64, 74]], k.x),
+  moon: (k) => circ(44, 54, 38, k.a) + circ(64, 42, 31, k.bg) + star8(80, 76, 11, k.x, k.x, 1, .5),
+  scallop: (k) => [0, 1, 2].map((i) => { const cx = 16.65 + i * 33.3; return `<path d="M${i * 33.3} 0 A16.65 16.65 0 0 0 ${(i + 1) * 33.3} 0Z" fill="${k.a}"/>` + line(`M${cx} 16 V40`, k.b, 2.4) + `<ellipse cx="${cx}" cy="58" rx="12" ry="17" fill="${i % 2 ? k.x : k.b}"/>` + circ(cx, 58, 4, k.bg); }).join(''),
+  /* split circles with thin line-art food, like the burger / fries / shake / cone circles */
+  lineBowl: (k) => splitCircle(k) + glyph(k, 'M24 50 H76 Q76 76 50 76 Q24 76 24 50Z M38 42 Q34 35 38 28 M50 42 Q46 34 50 25 M62 42 Q58 35 62 28 M40 84 H60'),
+  lineCup: (k) => splitCircle(k) + glyph(k, 'M33 34 H67 L62 80 H38Z M30 34 H70 M52 34 L58 16 H68 M36 54 Q41 49 46 54 T56 54 T66 54'),
+  lineFork: (k) => splitCircle(k) + glyph(k, 'M32 20 V38 Q32 48 41 48 Q50 48 50 38 V20 M41 20 V80 M66 20 Q80 36 66 56 V80'),
+  lineCone: (k) => splitCircle(k) + glyph(k, 'M36 46 L50 84 L64 46Z M34 46 A16 16 0 1 1 66 46 M42 56 L56 70 M46 48 L58 62') + circ(50, 18, 4, k.x),
   /* abstract grid fillers */
-  halfdisc: (k) => halfL(50, 50, 40, k.a) + halfR(50, 50, 40, k.b === k.bg ? k.x : k.b),
-  rings: (k) => circ(50, 50, 42, k.a) + circ(50, 50, 31, k.bg) + circ(50, 50, 20, k.b === k.bg ? k.x : k.b) + circ(50, 50, 9, k.bg),
-  quarters: (k) => `<path d="M8 8 H50 A42 42 0 0 1 8 50Z" fill="${k.a}"/><path d="M92 8 V50 A42 42 0 0 1 50 8Z" fill="${k.b === k.bg ? k.x : k.b}"/><path d="M8 92 V50 A42 42 0 0 1 50 92Z" fill="${k.b === k.bg ? k.x : k.b}"/><path d="M92 92 H50 A42 42 0 0 1 92 50Z" fill="${k.a}"/>`,
-  dots: (k) => { let s = ''; for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) s += circ(20 + i * 30, 20 + j * 30, 11, (i + j) % 2 ? k.b === k.bg ? k.a : k.b : k.a); return s + circ(50, 50, 5, k.x); },
-  leaves: (k) => leaf(10, 90, 105, 22, -45, k.a) + leaf(10, 62, 70, 15, -45, k.b === k.bg ? k.x : k.b) + circ(70, 30, 8, k.x),
-  tris: (k) => { let s = ''; for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) { const x = c * 25, y = r * 25; s += `<path d="${(r + c) % 2 ? `M${x} ${y + 25} L${x + 12.5} ${y} L${x + 25} ${y + 25}Z` : `M${x} ${y} L${x + 25} ${y} L${x + 12.5} ${y + 25}Z`}" fill="${(r + c) % 3 ? k.a : k.b === k.bg ? k.x : k.b}"/>`; } return s; }
+  halfdisc: (k) => splitCircle(k, 46),
+  rings: (k) => circ(50, 50, 44, k.a) + circ(50, 50, 32, k.bg) + circ(50, 50, 20, k.b) + circ(50, 50, 8, k.bg),
+  quarters: (k) => `<path d="M0 0 H50 A50 50 0 0 1 0 50Z" fill="${k.a}"/><path d="M100 0 V50 A50 50 0 0 1 50 0Z" fill="${k.b}"/><path d="M0 100 V50 A50 50 0 0 1 50 100Z" fill="${k.b}"/><path d="M100 100 H50 A50 50 0 0 1 100 50Z" fill="${k.a}"/>`,
+  dots: (k) => { let s = ''; for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) s += circ(18 + i * 32, 18 + j * 32, 13, (i + j) % 2 ? k.b : k.a); return s; },
+  tris: (k) => { let s = ''; for (let r = 0; r < 4; r++) for (let c = 0; c < 2; c++) { const x = c * 50, y = r * 25; s += poly([[x, y + 25], [x + 25, y], [x + 25, y + 25]], (r + c) % 2 ? k.a : k.b) + poly([[x + 25, y], [x + 50, y + 25], [x + 25, y + 25]], (r + c) % 2 ? k.b : k.a); } return s; },
+  stripesDiag: (k) => Array.from({ length: 9 }, (_, i) => `<path d="M${-20 + i * 20} 120 L${60 + i * 20} -20" stroke="${k.a}" stroke-width="9"/>`).join(''),
+  wavyDiag: (k) => rot(-45, 50, 50, [-20, 0, 20, 40, 60, 80, 100, 120].map((y) => zig(-30, 130, y, 5, 8, k.a, 3.4)).join(''))
 };
-const ICONS_FULL = ['ornament', 'snowman', 'wreath', 'holly', 'snowflake', 'gift', 'treeC', 'treeT', 'candle', 'reindeer', 'bell', 'hat', 'mug', 'plate', 'moon', 'ginger', 'cane', 'star', 'penguin', 'mitten'];
-const FILLERS = ['halfdisc', 'rings', 'quarters', 'dots', 'leaves', 'tris'];
-const BLEED = { tris: 1, leaves: 1, quarters: 1 };
+const ICONS_FULL = ['ornament', 'reindeer', 'bell', 'hat', 'gift', 'star8', 'cane', 'holly', 'candle', 'stocking', 'elf', 'snowman', 'ginger', 'treeT', 'wreath', 'moon', 'scallop', 'lineBowl', 'lineCup', 'lineFork', 'lineCone'];
+const FILLERS = ['halfdisc', 'rings', 'quarters', 'dots', 'tris', 'stripesDiag', 'wavyDiag'];
+const BLEED = { tris: 1, quarters: 1, gift: 1, stripesDiag: 1, wavyDiag: 1, scallop: 1, elf: 1 };
 
 /* ---------- colour schemes per tile ---------- */
 const orangeBias = () => [0, .09, .22][S.org];
 function scheme(r, force) {
-  const o = r() < orangeBias();
-  const bgs = ['W', 'W', 'L', 'M', 'D', 'D', 'M', 'L'];
-  let bg = force || pick(r, bgs);
-  if (!force && o && S.org) bg = 'O';
-  const t = {
-    W: { a: 'M', b: 'D', x: 'O' }, L: { a: 'D', b: 'M', x: 'W' }, M: { a: 'L', b: 'W', x: 'O' },
-    D: { a: 'L', b: 'M', x: 'O' }, O: { a: 'D', b: 'W', x: 'M' }
-  }[bg];
-  /* vary which tone leads so neighbours differ */
-  let { a, b, x } = t;
-  if (r() < .25 && bg === 'W') { a = 'D'; b = 'M'; }
-  if (r() < .2 && bg === 'D') { a = 'W'; b = 'L'; }
-  if (r() < .2 && bg === 'M') { a = 'W'; b = 'D'; }
+  const o = S.org && r() < orangeBias();
+  let bg = force || (o ? 'O' : pick(r, ['W', 'W', 'W', 'M', 'M', 'D', 'D', 'L', 'L']));
+  /* tone-on-tone pairs, like the references: a shape and its second half share a family */
+  const pairs = { W: [['M', 'D'], ['D', 'M'], ['M', 'L'], ['D', 'L']], L: [['D', 'M'], ['M', 'D']], M: [['D', 'L'], ['L', 'D'], ['W', 'D'], ['D', 'W']], D: [['M', 'L'], ['L', 'M'], ['W', 'M'], ['M', 'W']], O: [['D', 'W'], ['M', 'D']] };
+  const [a, b] = pick(r, pairs[bg]);
+  let x = bg === 'W' || bg === 'L' ? 'O' : bg === 'M' ? 'O' : 'O';
+  if (!S.org) x = bg === 'W' || bg === 'L' ? 'D' : 'L';
+  else if (S.org === 1 && r() < .35) x = bg === 'W' || bg === 'L' ? 'M' : 'W';
+  if (bg === 'O') x = 'D';
+  if (x === bg || x === a || x === b) x = bg === 'O' ? 'D' : 'O';
   if (!S.org && x === 'O') x = bg === 'W' || bg === 'L' ? 'D' : 'L';
-  if (S.org === 2 && r() < .45 && bg !== 'O') x = 'O';
-  if (x === bg) x = a;
   return { bg: C[bg], a: C[a], b: C[b], x: C[x], bgk: bg };
 }
 
@@ -208,7 +217,7 @@ const BANDS = {
   snow: (w, h, k, r) => { let s = ''; const n = Math.round(w * h / 1800); for (let i = 0; i < n; i++) s += circ(r() * w, r() * h, 2 + r() * 5, i % 5 ? k.a : k.x); return s; },
   hang: (w, h, k, r) => { const n = Math.max(2, Math.round(w / h * 6 + 1)); let s = ''; for (let i = 0; i < n; i++) { const x = (i + .5) * w / n, rad = Math.min(w / n * .36, h * .13), y = h * (.35 + r() * .5); s += `<line x1="${f(x)}" y1="0" x2="${f(x)}" y2="${f(y - rad)}" stroke="${k.b === k.bg ? k.a : k.b}" stroke-width="${f(rad * .12 + 1)}"/>` + circ(x, y, rad, [k.a, k.x, k.b === k.bg ? k.a : k.b][i % 3]); } return s; }
 };
-const WIDE = ['lights', 'garland', 'stripes', 'zigzag', 'snow', 'hang'];
+const WIDE = ['stripes', 'zigzag', 'stripes'];
 
 /* ---------- layout: pack a grid of 1x1 / 2x1 / 1x2 / 2x2 / 3x3 tiles around the wordmark and hero ---------- */
 function layout(cols, rows, r) {
@@ -223,7 +232,7 @@ function layout(cols, rows, r) {
   const wy = Math.max(0, Math.min(rows - 1, Math.round(rows * (.3 + r() * .35))));
   put(wx, wy, ww, 1, 'word');
   /* hero: big square tile */
-  const hs = Math.max(2, Math.min(Math.floor(Math.min(cols, rows) * (S.dens === 2 ? .3 : .38)), 5));
+  const hs = Math.max(3, Math.min(Math.floor(Math.min(cols, rows) * (S.dens === 2 ? .3 : .4)), 5));
   for (let t = 0; t < 80; t++) { const x = Math.floor(r() * (cols - hs + 1)), y = Math.floor(r() * (rows - hs + 1)); if (fits(x, y, hs, hs)) { put(x, y, hs, hs, 'hero'); break; } }
   /* a few more big squares on bigger grids */
   const big = Math.max(0, Math.floor(Math.min(cols, rows) / 6));
@@ -233,12 +242,12 @@ function layout(cols, rows, r) {
     if (occ[y][x]) continue;
     const roll = r();
     const opts = [];
-    if (roll < .16) opts.push([2, 2]);
-    if (roll < .34) opts.push([2, 1], [1, 2]);
+    if (roll < .3) opts.push([2, 2]);
+    if (roll < .46) opts.push([2, 1], [1, 2]);
     if (roll > .94) opts.push([3, 1], [1, 3]);
     const sh = opts.find(([w, h]) => fits(x, y, w, h));
     const [w, h] = sh || [1, 1];
-    put(x, y, w, h, w === 1 && h === 1 ? (r() < .3 ? 'filler' : 'icon') : (w !== h ? (r() < .55 ? 'band' : 'multi') : 'icon'));
+    put(x, y, w, h, w === 1 && h === 1 ? (r() < .14 ? 'filler' : 'icon') : (w !== h ? (r() < .3 ? 'band' : 'multi') : 'icon'));
   }
   return tiles;
 }
@@ -270,12 +279,12 @@ function build(anim) {
       if (w > h * 3) { const rr = h * .1; body += circ(x + h * .5, y + h / 2, rr, C.O) + circ(x + w - h * .5, y + h / 2, rr, C.O); }
     } else if (t.kind === 'hero') {
       k = scheme(r, pick(r, ['W', 'M', 'D', 'L']));
-      const nm = pick(r, ['ornament', 'wreath', 'snowman', 'reindeer', 'treeC', 'gift', 'plate']);
+      const nm = pick(r, ['ornament', 'wreath', 'snowman', 'reindeer', 'treeT', 'gift', 'lineBowl', 'bell', 'star8', 'hat']);
       usedRecent.push(nm);
-      body = iconSvg(nm, k, x, y, w, h, mn * .09);
+      body = iconSvg(nm, k, x, y, w, h, mn * .05);
     } else if (t.kind === 'band' && (t.w !== t.h)) {
       k = scheme(r);
-      const name = pick(r, t.w > t.h ? WIDE : ['hang', 'stripes', 'snow', 'zigzag']);
+      const name = pick(r, t.w > t.h ? WIDE : ['stripes', 'zigzag']);
       body = `<g transform="translate(${f(x)} ${f(y)})">${BANDS[name](w, h, k, r)}</g>`;
     } else if (t.kind === 'multi') {
       k = scheme(r);
@@ -283,14 +292,14 @@ function build(anim) {
       for (let j = 0; j < m; j++) {
         const kk = j ? { ...k, a: k.b === k.bg ? k.a : k.b, b: k.a } : k;
         const nm = nextIcon();
-        body += t.w > t.h ? iconSvg(nm, kk, x + j * w / m, y, w / m, h, mn * .1) : iconSvg(nm, kk, x, y + j * h / m, w, h / m, mn * .1);
+        body += t.w > t.h ? iconSvg(nm, kk, x + j * w / m, y, w / m, h, mn * .05) : iconSvg(nm, kk, x, y + j * h / m, w, h / m, mn * .05);
       }
     } else if (t.kind === 'filler') {
       k = scheme(r);
-      body = iconSvg(pick(r, FILLERS), k, x, y, w, h, mn * .12);
+      body = iconSvg(pick(r, FILLERS), k, x, y, w, h, mn * .08);
     } else {
       k = scheme(r);
-      body = iconSvg(nextIcon(), k, x, y, w, h, mn * .1);
+      body = iconSvg(nextIcon(), k, x, y, w, h, mn * .05);
     }
     const dly = f(((t.x / cols + t.y / rows) * .9 + r() * .15));
     out += `<g ${anim ? `class="t" style="--d:${dly}s"` : ''}><clipPath id="${clipId(i)}"><rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}"/></clipPath><rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" fill="${k.bg}"/><g clip-path="url(#${clipId(i)})">${body}</g></g>`;
