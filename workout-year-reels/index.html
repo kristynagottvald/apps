@@ -70,7 +70,7 @@ const STYLES=[
      for(let i=0;i<N;i++){
        c.beginPath();
        for(let x=-10;x<=W+10;x+=10){
-         const y=600+i*52+(26-i*1.5)*Math.sin(x/W*TAU*1.25-p*TAU+i*.55);
+         const y=600+i*52+26*Math.sin(x/W*TAU*1.25-p*TAU);   // same curve for every band: constant thickness
          x===-10?c.moveTo(x,y):c.lineTo(x,y);
        }
        c.lineTo(W+10,H+10);c.lineTo(-10,H+10);c.closePath();
@@ -92,17 +92,12 @@ const STYLES=[
  { id:'sunset', name:'Sunset', bg:P.green, ink:P.pine, layout:'left',
    kicker:'You rose early', big:'5:42', sub:'am was your average start',
    draw(c,p){
-     // repeating sunset: half-discs keep rising off the horizon, reflected in the lines below
-     const pal=[P.orange,P.peach,P.cream,P.pine,P.blue,P.sky],L=pal.length,hy=770,cx=W/2;
-     const drawSet=()=>rings(p*L,7,L,(pos,ci)=>{
+     // repeating sunset: half-discs keep rising off a low horizon
+     const pal=[P.orange,P.peach,P.cream,P.pine,P.blue,P.sky],L=pal.length,hy=850,cx=W/2;
+     c.beginPath();c.rect(0,0,W,hy);c.clip();c.beginPath();c.arc(cx,hy,440,0,TAU);c.clip();
+     rings(p*L,7,L,(pos,ci)=>{
        const r=6+pos*470;c.beginPath();c.arc(cx,hy,r,0,TAU);c.fillStyle=pal[ci];c.fill();
      });
-     c.save();c.beginPath();c.rect(0,0,W,hy);c.clip();c.beginPath();c.arc(cx,hy,440,0,TAU);c.clip();drawSet();c.restore();
-     c.save();c.beginPath();c.rect(0,hy,W,H-hy);c.clip();c.beginPath();c.arc(cx,hy,440,0,TAU);c.clip();drawSet();c.restore();
-     // reflection: lines of the background colour get thicker towards the bottom
-     c.fillStyle=P.green;
-     for(let y=hy,g=2;y<H;g+=1.25){c.fillRect(0,y,W,g);y+=g+11}
-     c.fillRect(0,hy-2,W,3);
    }},
  { id:'lines', name:'Lines', bg:P.navy, ink:P.white, layout:'left-title',
    title:'True\nNight Owl\nenergy', cap:'Your peak workouts were after 7 pm',
@@ -173,8 +168,8 @@ const STYLES=[
      for(let i=0;i<7;i++){
        c.beginPath();
        for(let x=-10;x<=W+10;x+=8){
-         const dip=Math.cos((x-W/2)/W*TAU)*(.5+.5*Math.cos(p*TAU+i*.5));
-         const y=590+i*50+8*Math.sin(p*TAU+i*.8)+78*dip*(1-i*.06);
+         const dip=Math.cos((x-W/2)/W*TAU)*(.65+.35*Math.cos(p*TAU));
+         const y=590+i*50+8*Math.sin(p*TAU)+78*dip;   // same curve for every line: constant spacing
          x===-10?c.moveTo(x,y):c.lineTo(x,y);
        }
        c.stroke();
