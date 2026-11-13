@@ -102,6 +102,11 @@ const APPS = {
     await at(t0, 5000, () => click(p, /^Spot illo$/));
     await at(t0, 5600, () => click(p, /^Pink$/));
   } },
+  // the whole 21 s loop played at 3x from the middle of the scan: flags land, result fills in, reviewer requests changes, library updates, next audit starts
+  'brand-audit-engine': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1200, q: 40, run: async (p) => {
+    await p.evaluate(() => ba.play({ from: 9000, speed: 3 }));
+    await sleep(6600);
+  } },
   'hero-banner-engine': { vp: [1280, 769], setup: cropOf('#cv'), run: async (p) => {
     const t0 = Date.now();
     await at(t0, 800, () => click(p, /^Midnight$/));
