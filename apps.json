@@ -1,5 +1,14 @@
 [
   {
+    "id": "paid-ad-pipeline",
+    "title": "Paid Ad Pipeline",
+    "category": "Tools",
+    "url": "paid-ad-pipeline/",
+    "thumbnail": "paid-ad-pipeline/thumb.png",
+    "preview": "paid-ad-pipeline/thumb.webp",
+    "alt": "A LinkedIn feed with a sponsored direct mail ad for San Diego that follows the viewer's metro, then the live Location Hero landing page it links to, then a dark performance dashboard with clicks, click-through rate, leads, a funnel and market metrics"
+  },
+  {
     "id": "search-robot",
     "title": "Search Robot",
     "category": "Motion",
