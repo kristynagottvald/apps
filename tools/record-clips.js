@@ -99,6 +99,15 @@ const APPS = {
       await at(t0, 700, () => p.evaluate(() => gc.play({ speed: 2.4, clip: true })));
       await sleep(5600);
     } },
+  'location-hero': { vp: [1280, 769], crop: [0, 49, 1280, 720],
+    // hold on San Francisco, then switch the hero copy, blurbs and mailpiece to Miami
+    ready: 600,
+    run: async (p) => {
+      const t0 = Date.now();
+      await p.evaluate(() => { lp.stop(); lp.set(0); });
+      await at(t0, 3200, () => p.evaluate(() => lp.set(1)));
+      await sleep(5600);
+    } },
   'grubclub-end-card': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // park on the finished card, replay the end card animation at 3x, then try the motion, circle style, theme and format the way a visitor would
     setup: async (p) => { await p.evaluate(() => ec.seek(125)); },
