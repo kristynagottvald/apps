@@ -23,7 +23,7 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .chip{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
 .chip svg{width:14px;height:14px;fill:var(--lime)}
 .chip em{font-style:normal;color:var(--lime)}
-h1{font-weight:400;font-size:clamp(34px,4.4vw,58px);line-height:1.18;letter-spacing:-.02em;margin:30px 0 34px;white-space:nowrap}
+h1{font-weight:400;font-size:clamp(34px,4.4vw,58px);line-height:1.04;letter-spacing:-2px;margin:30px 0 34px;white-space:nowrap}
 h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 .sw{display:inline-block;transition:opacity .35s,transform .35s,filter .35s}
 .sw.out{opacity:0;transform:translateY(10px);filter:blur(6px)}
@@ -34,12 +34,12 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 .form button{border:0;background:var(--lime);color:var(--ink);font:600 15px var(--sans);padding:14px 24px;border-radius:99px;cursor:pointer;white-space:nowrap}
 .form button:hover{filter:brightness(1.06)}
 .g2{display:flex;gap:12px;margin-top:32px}
-.g2 svg{width:84px;height:auto;display:block}
+.g2 svg{width:88px;height:auto;display:block}
 
 /* illustration */
 .stage{position:relative;aspect-ratio:1/1;width:100%;max-width:600px;justify-self:end;container-type:inline-size}
-.blurbs div.bl{position:absolute;width:50%;background:var(--card);border-radius:20px;padding:2.6cqw 3cqw;color:#fff;transition:opacity .35s,transform .35s,filter .35s}
-#b1{left:0;top:0}#b2{right:0;top:15%}
+.blurbs div.bl{position:absolute;width:60%;background:var(--card);border-radius:20px;padding:2.6cqw 3cqw;color:#fff;transition:opacity .35s,transform .35s,filter .35s}
+#b1{left:26%;top:0}#b2{left:2%;top:16.5%}
 .bl.out{opacity:0;transform:translateY(8px);filter:blur(5px)}
 .bl small{display:block;font:600 1.5cqw/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--lime);margin-bottom:1.4cqw}
 .bl strong{display:block;font:400 3.6cqw/1.1 var(--sans);letter-spacing:-.02em}
@@ -57,31 +57,29 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 .t2{left:56%;top:9%;width:38%;height:26%;background:var(--yel)}
 .t2 i{position:absolute;bottom:0;width:6%;background:var(--yel2);border-radius:3px 3px 0 0}
 .t3{left:16.5%;top:40%;width:77.5%;height:60%;background:var(--pink)}
-.t3 svg{position:absolute;left:0;bottom:0;width:100%;height:80%}
-.mail{position:absolute;left:38.5%;top:35%;width:50%;aspect-ratio:1.5;border-radius:12px;overflow:hidden;box-shadow:0 .8cqw 2.4cqw rgba(20,10,120,.3)}
+.t3 svg{position:absolute;left:0;top:22%;width:100%;height:42%}
+.mail{position:absolute;left:47%;top:35%;width:50%;aspect-ratio:1.5;border-radius:3px;overflow:hidden}
 .pc{position:absolute;inset:0;background:#a393f5}
 .el{position:absolute}
-.bar{background:var(--purple);border-radius:3px}
-.tag{background:var(--deep);color:#fff;border-radius:4px;font:600 1.5cqw/1 var(--sans);display:flex;align-items:center;justify-content:center}
-.qr{background:var(--lav2);border-radius:8px;display:grid;place-items:center}
-.qr svg{width:62%;height:62%}
-.scan{background:var(--deep);color:#fff;border-radius:6px;font:italic 400 1.55cqw/1.15 var(--serif);display:flex;align-items:center;padding:0 5%}
+.bar{background:var(--purple);border-radius:1px}
+.tag{background:var(--deep);color:#fff;border-radius:2px;font:600 1.2cqw/1 var(--sans);display:flex;align-items:center;justify-content:center}
+.qr{background:var(--deep);border-radius:2px;display:grid;place-items:center}
+.qr svg{width:66%;height:66%}
+.scan{background:var(--deep);color:#fff;border-radius:2px;font:italic 400 1.4cqw/1.15 var(--serif);display:flex;align-items:center;padding:0 5%}
 .ph{object-fit:cover;border-radius:0}
-.crop{position:absolute;left:38.5%;top:35%;width:50%;aspect-ratio:1.5;pointer-events:none}
-.crop:before{content:"";position:absolute;inset:-8% -5%;background:linear-gradient(#9d95ff,#9d95ff) 0 0/8% 1px,linear-gradient(#9d95ff,#9d95ff) 0 0/1px 14%,linear-gradient(#9d95ff,#9d95ff) 100% 0/8% 1px,linear-gradient(#9d95ff,#9d95ff) 100% 0/1px 14%,linear-gradient(#9d95ff,#9d95ff) 0 100%/8% 1px,linear-gradient(#9d95ff,#9d95ff) 0 100%/1px 14%,linear-gradient(#9d95ff,#9d95ff) 100% 100%/8% 1px,linear-gradient(#9d95ff,#9d95ff) 100% 100%/1px 14%;background-repeat:no-repeat}
 @media(max-width:900px){.hero{grid-template-columns:1fr;padding:24px 20px 28px}.stage{justify-self:center}.sub{min-height:0}h1{white-space:normal}}
 @media(prefers-reduced-motion:reduce){.sw,.bl{transition:none}}
 </style>
 </head>
 <body>
 <nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span class="x">/</span><a class="x" href="../">Back to all projects</a><span>/</span><b>Location Hero</b>
-<div class="tog" role="group" aria-label="Preview location"><button class="on" data-i="0">San Francisco</button><button data-i="1">Miami</button></div></nav>
+<div class="tog" role="group" aria-label="Preview location"><button class="on" data-i="0">San Diego</button><button data-i="1">Miami</button></div></nav>
 <main class="hero">
   <section>
-    <div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg><span>Mailing near <em class="sw" id="city">San Francisco, CA</em></span></div>
-    <h1><span class="sw" id="h1">Direct mail that<br>lands in <i>San Francisco</i><br>in days</span></h1>
-    <p class="sub sw" id="sub">Print at our Bay Area facility and reach every Mission, SoMa and Sunset mailbox fast. Automated mail that's timed for conversion.</p>
-    <form class="form" onsubmit="return false"><input type="email" placeholder="What's your work email?" aria-label="Work email"><button>Get started for free</button></form>
+    <div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg><span>Mailing near <em class="sw" id="city">San Diego, CA</em></span></div>
+    <h1><span class="sw" id="h1">Direct mail that<br>lands in <i>San Diego</i><br>in days</span></h1>
+    <p class="sub sw" id="sub">Print at our Southern California facility and reach every Gaslamp, La Jolla and North Park mailbox fast. Automated mail that's timed for conversion.</p>
+    <form class="form" onsubmit="return false"><input type="email" placeholder="What's your work email?" aria-label="Work email"><button>Start sending</button></form>
     <div class="g2" id="g2" aria-label="G2 awards"></div>
   </section>
 
@@ -97,30 +95,39 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
       <div class="t t3"><small style="color:#fff">AUDIENCE ENGAGEMENT</small><svg viewBox="0 0 300 100" preserveAspectRatio="none"><polyline fill="none" stroke="#fff" stroke-width="1.5" vector-effect="non-scaling-stroke" points="20,92 60,78 100,84 140,58 180,70 220,34 260,52 300,40"/><g fill="#fff"><circle cx="60" cy="78" r="2.5"/><circle cx="100" cy="84" r="2.5"/><circle cx="140" cy="58" r="2.5"/><circle cx="180" cy="70" r="2.5"/></g></svg></div>
     </div></div>
     <div class="mail"><div class="pc">
-        <div class="el bar" style="left:7.7%;top:9%;width:38%;height:4.2%"></div>
-        <div class="el bar" style="left:7.7%;top:17%;width:26%;height:4.2%"></div>
-        <div class="el tag" style="left:61.5%;top:11%;width:32.5%;height:16.4%">// co.</div>
-        <div class="el qr" style="left:7.7%;top:31.6%;width:23%;height:33.2%"><svg viewBox="0 0 24 24" fill="none" stroke="#171a42" stroke-width="1.5"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/><rect x="8" y="8" width="3" height="3"/><rect x="13" y="8" width="3" height="3"/><rect x="8" y="13" width="3" height="3"/><path d="M13.5 13.5h2.5v2.5h-2.5z" fill="#171a42"/></svg></div>
-        <div class="el scan" style="left:7.7%;top:71.3%;width:44%;height:16.8%">Scan to accept your offer</div>
-        <img class="el ph" src="photo.jpg" alt="Family in front of their home" style="left:58.2%;top:49%;width:41.8%;height:51%">
+        <div class="el bar" style="left:7.7%;top:9%;width:34%;height:4.2%"></div>
+        <div class="el bar" style="left:7.7%;top:16.5%;width:24%;height:4.2%"></div>
+        <div class="el tag" style="left:70%;top:8.5%;width:22%;height:10%">// co.</div>
+        <div class="el bar" style="left:7.7%;top:37%;width:34%;height:3.6%"></div>
+        <div class="el bar" style="left:7.7%;top:45%;width:26%;height:3.6%"></div>
+        <div class="el bar" style="left:7.7%;top:53%;width:30%;height:3.6%"></div>
+        <div class="el qr" style="left:7.7%;top:70%;width:11.4%;height:17%"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="square"><path d="M2 7V2h5M17 2h5v5M22 17v5h-5M7 22H2v-5"/><rect x="6.5" y="6.5" width="4" height="4"/><rect x="13.5" y="6.5" width="4" height="4"/><rect x="6.5" y="13.5" width="4" height="4"/><path d="M13.5 13.5h2v2h-2zM16.5 16.5h1.500v1.500h-1.500zM13.5 17h1v1h-1z" fill="#fff" stroke="none"/></svg></div>
+        <div class="el scan" style="left:20.6%;top:70%;width:28%;height:17%">Scan to accept your offer</div>
+        <img class="el ph" src="photo.jpg" alt="Family in front of their home" style="left:52%;top:27%;width:48%;height:73%">
       </div></div>
-    <div class="crop"></div>
-  </div>
+      </div>
 </main>
 <script>
 const CITIES=[
- {city:'San Francisco, CA',h:'Direct mail that<br>lands in <i>San Francisco</i><br>in days',sub:"Print at our Bay Area facility and reach every Mission, SoMa and Sunset mailbox fast. Automated mail that's timed for conversion.",
-  b1:['USPS mailing data','1.9 <i>day</i> delivery','Avg. First-Class time in your SCF, 940–941'],
-  b2:['Your print location','Concord, <i>CA</i>','42 mi from your delivery zone, 94110 · 18,420 homes']},
+ {city:'San Diego, CA',h:'Direct mail that<br>lands in <i>San Diego</i><br>in days',sub:"Print at our Southern California facility and reach every Gaslamp, La Jolla and North Park mailbox fast. Automated mail that's timed for conversion.",
+  b1:['USPS mailing data','2.0 <i>day</i> delivery','Avg. First-Class time in your SCF, 919–921'],
+  b2:['Your print location','Carlsbad, <i>CA</i>','36 mi from your delivery zone, 92101 · 21,340 homes']},
  {city:'Miami, FL',h:'Direct mail that<br>lands in <i>Miami</i><br>in days',sub:"Print at our Florida facility and reach every Brickell, Wynwood and Coral Gables mailbox fast. Automated mail that's timed for conversion.",
   b1:['USPS mailing data','2.3 <i>day</i> delivery','Avg. First-Class time in your SCF, 331–332'],
   b2:['Your print location','Orlando, <i>FL</i>','235 mi from your delivery zone, 33131 · 24,760 homes']}];
 const $=id=>document.getElementById(id);
 // G2 style badges
-const BADGES=[['Leader','','#ff492c','#ff9d1c','#ffd21f'],['Best','Est. ROI','#5a3fc0','#7c5fe0','#5a3fc0'],['Fastest','Implementation','#1c7ff2','#3b9bff','#1c7ff2'],['Easiest','Admin','#f5b50a','#ffd21f','#f5b50a']];
-$('g2').innerHTML=BADGES.map(([a,b,c1,c2,c3],n)=>{
- const t=b?`<text x="42" y="46" text-anchor="middle" font-size="${b.length>8?8:11}" font-weight="700">${a}</text><text x="42" y="${b.length>8?57:59}" text-anchor="middle" font-size="${b.length>8?8:11}" font-weight="700">${b}</text>`:`<text x="42" y="52" text-anchor="middle" font-size="12" font-weight="700">${a}</text>`;
- return `<svg viewBox="0 0 84 100" role="img" aria-label="G2 ${a} ${b}"><path d="M2 2h80v70L42 96 2 72z" fill="${c3}"/><path d="M2 2h80v62L42 88 2 64z" fill="${c2}"/><path d="M2 2h80v54L42 80 2 56z" fill="${c1}"/><path d="M2 2h80v50L42 76 2 52z" fill="#fff"/><g font-family="Inter,Arial,sans-serif" fill="#111"><text x="30" y="14" text-anchor="middle" font-size="5.2" font-weight="600">SUMMER 2026</text>${t}<text x="42" y="${b?68:62}" text-anchor="middle" font-size="4.6" font-weight="600" fill="#555">MID-MARKET</text></g><rect x="62" y="6" width="14" height="14" rx="3" fill="#ff492c"/><text x="69" y="16.5" text-anchor="middle" font-family="Inter,Arial" font-size="9" font-weight="700" fill="#fff">G</text></svg>`}).join('');
+const BADGES=[
+ {l:['Leader'],fs:12.5,mm:0,bands:['#f2593a','#ffc710']},
+ {l:['Best','Est. ROI'],fs:12.5,mm:1,bands:['#5b3fb5']},
+ {l:['Fastest','Implementation'],fs:[9,9],mm:1,bands:['#2f86f6']},
+ {l:['Easiest','Admin'],fs:12.5,mm:1,bands:['#f7b500']}];
+const SH='M1 1H81V68L41 93 1 68Z';
+$('g2').innerHTML=BADGES.map((b,n)=>{
+ const fs=Array.isArray(b.fs)?b.fs:b.l.map(()=>b.fs),mid=b.mm?38:44,y0=mid-(b.l.length-1)*6.5;
+ const txt=b.l.map((t,i)=>`<text x="41" y="${y0+i*(b.l.length>1?12:0)+fs[i]*.36}" text-anchor="middle" font-size="${fs[i]}" font-weight="700" fill="#111">${t}</text>`).join('');
+ const bands=b.bands.map((c,i)=>{const t=5*(i+1),t0=5*i;return `<path d="M-2 ${68-t0}L41 ${93-t0}L84 ${68-t0}V${68-t}L41 ${93-t}-2 ${68-t}Z" fill="${c}"/>`}).join('');
+ return `<svg viewBox="0 0 82 94" role="img" aria-label="G2 ${b.l.join(' ')}"><defs><clipPath id="sh${n}"><path d="${SH}"/></clipPath></defs><path d="${SH}" fill="#fff"/><g clip-path="url(#sh${n})">${bands}<rect x="61" y="1" width="20" height="16" fill="#ff492c"/><path d="M0 17H82" stroke="#1a1a1a" stroke-width="1"/></g><g font-family="Inter,Arial,sans-serif"><text x="31" y="11.2" text-anchor="middle" font-size="5.6" font-weight="600" letter-spacing=".5" fill="#1a1a1a">SUMMER 2026</text>${txt}${b.mm?`<text x="41" y="56" text-anchor="middle" font-size="4" font-weight="600" letter-spacing=".4" fill="#1a1a1a">MID-MARKET</text>`:''}<text x="69.5" y="13" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">G</text><text x="76.5" y="8" text-anchor="middle" font-size="5" font-weight="700" fill="#fff">2</text></g><path d="${SH}" fill="none" stroke="#1a1a1a" stroke-width="1.3" stroke-linejoin="round"/></svg>`}).join('');
 const sw=['city','h1','sub','b1','b2'];
 const lp={i:0,timer:null,
  apply(i){const c=CITIES[i];$('city').textContent=c.city;$('h1').innerHTML=c.h;$('sub').textContent=c.sub;
