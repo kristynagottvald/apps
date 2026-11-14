@@ -1,5 +1,23 @@
 [
   {
+    "id": "variant-tryon-engine",
+    "title": "Variant Try-On Engine",
+    "category": "Tools",
+    "url": "variant-tryon-engine/",
+    "thumbnail": "variant-tryon-engine/thumb.png",
+    "preview": "variant-tryon-engine/thumb.webp",
+    "alt": "A try-on engine that restyles the same sander support illustration in four looks: monochrome with white faces and navy and grey people, fill and line, pale blue with brand accents, and bold yellow, with colour only on the screen and the tool in the first"
+  },
+  {
+    "id": "sander-troubleshoot-flow",
+    "title": "Sander Troubleshoot Flow",
+    "category": "Tools",
+    "url": "sander-troubleshoot-flow/",
+    "thumbnail": "sander-troubleshoot-flow/thumb.png",
+    "preview": "sander-troubleshoot-flow/thumb.webp",
+    "alt": "An illustrated troubleshooting flow for a scratching sander: a person holds the tool beside a support screen asking what it is doing, then questions about the pad and grit lead to a fix with numbered steps and a solved screen"
+  },
+  {
     "id": "sander-troubleshoot",
     "title": "Sander Troubleshoot",
     "category": "Motion",
