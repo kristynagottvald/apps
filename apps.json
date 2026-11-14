@@ -1,5 +1,23 @@
 [
   {
+    "id": "search-robot",
+    "title": "Search Robot",
+    "category": "Motion",
+    "url": "search-robot/",
+    "thumbnail": "search-robot/thumb.png",
+    "preview": "search-robot/thumb.webp",
+    "alt": "An illustrated robot between a support search card and a graph: the query 'sander is scratching' is typed, matching questions appear, and yellow context notes and the chosen result land on the graph"
+  },
+  {
+    "id": "thread-brand-guidelines",
+    "title": "Thread Brand Guidelines",
+    "category": "Tools",
+    "url": "thread-brand-guidelines/",
+    "thumbnail": "thread-brand-guidelines/thumb.png",
+    "preview": "thread-brand-guidelines/thumb.webp",
+    "alt": "An interactive brand guidelines site for the Thread 2026 conference: a yellow hero post with a calligraphy swash headline and outlined portraits, a colour mosaic of Framework, Voice and Tone, Logo, Typography, Color, Imagery, Badges and Motion tiles, then the badge shapes and the animated stroke timeline"
+  },
+  {
     "id": "thread-live-session",
     "title": "Thread Live Session",
     "category": "Motion",
