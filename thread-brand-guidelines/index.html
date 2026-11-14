@@ -161,11 +161,11 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 .im:hover .mini{transform:rotate(-2deg) scale(1.04)}
 .im .mini img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;filter:grayscale(1) contrast(1.4)}
 .im .mini2{right:36%;bottom:22%;width:26%;transform:rotate(-7deg)}
-.us .rg{position:absolute;right:6%;bottom:12%;height:62%;aspect-ratio:1;border-radius:50%;background:var(--cream);transition:transform .8s var(--ease)}
-.us .rg::after{content:"";position:absolute;inset:29%;border-radius:50%;background:var(--ink)}
-.us .rg i{position:absolute;width:26%;aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);transform:translate(-50%,-50%);z-index:1}
+.us .rg{position:absolute;right:6%;bottom:12%;height:62%;aspect-ratio:1;background:var(--cream);transition:transform .8s var(--ease)}
+.us .rg::after{content:"";position:absolute;inset:29%;background:var(--ink)}
+.us .rg i{position:absolute;width:26%;aspect-ratio:1;border:2px solid var(--ink);transform:translate(-50%,-50%);z-index:1}
 .us .rg i:nth-child(1){left:50%;top:14.5%;background:var(--yellow)}.us .rg i:nth-child(2){left:80.7%;top:67.8%;background:var(--ink)}.us .rg i:nth-child(3){left:19.3%;top:67.8%;background:var(--cream)}
-.us:hover .rg{transform:rotate(120deg)}
+.us:hover .rg{transform:rotate(90deg)}
 .bd canvas,.mo canvas{position:absolute;display:block}
 .bd canvas{right:-4%;bottom:-6%;width:84%}
 .mo canvas{left:0;right:0;bottom:0;width:100%}
@@ -291,12 +291,12 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 
 /* ---------- In use ---------- */
 .ringwrap{display:flex;align-items:center;gap:clamp(18px,3vw,40px);flex-wrap:wrap;margin-bottom:clamp(30px,4vw,56px);justify-content:space-between}
-.ring{position:relative;width:clamp(150px,16vw,220px);aspect-ratio:1;border-radius:50%;background:var(--cream);flex:none}
-.ring::after{content:"";position:absolute;inset:29%;border-radius:50%;background:var(--ink)}
-.ring button{position:absolute;width:26%;aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);cursor:pointer;padding:0;transform:translate(-50%,-50%);transition:transform .5s var(--ease);z-index:2}
+.ring{position:relative;width:clamp(150px,16vw,220px);aspect-ratio:1;background:var(--cream);flex:none}
+.ring::after{content:"";position:absolute;inset:29%;background:var(--ink)}
+.ring button{position:absolute;width:26%;aspect-ratio:1;border-radius:0;border:2px solid var(--ink);cursor:pointer;padding:0;transform:translate(-50%,-50%);transition:transform .5s var(--ease);z-index:2}
 .ring button:hover{transform:translate(-50%,-50%) scale(1.12)}
 .ring button.on{box-shadow:0 0 0 3px var(--cream),0 0 0 5px var(--ink)}
-.surf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.8vw,26px)}
+.surf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,1.8vw,26px)}
 .surf>div{background:#222;padding:clamp(10px,1.4vw,18px);display:flex;flex-direction:column;gap:14px;border:1.5px solid var(--yellow)}
 .surf .lab{font:700 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;text-align:center;padding-top:4px}
 .surf .cell{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
@@ -618,10 +618,6 @@ footer.end .row a{text-decoration:none}
         <div class="hd"><span class="slide">Thread 2026<br>in under<br>10 minutes</span><p>The SMS marketing conference, May 12–14 in New York.</p><span class="tb">Register now</span></div>
         <div class="band"><div><span>Keynote · Day 1</span><b>9:30</b></div><div><span>Workshops</span><b>11:00</b></div><div><span>Speaker panel</span><b>14:15</b></div></div>
       </div></div><div class="lab">Web</div></div>
-      <div><div class="cell"><div class="mock prod"><div class="pin">
-        <div class="av"><i>TH</i><i>MC</i><i>JR</i><i>12</i></div>
-        <div class="pc"><div class="ph"><img src="photos/p1.jpg" alt=""></div><canvas id="uBd" aria-hidden="true"></canvas><span class="cu"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 1l12 4.4-5 2.2-2.2 5z" fill="currentColor"/></svg>James</span></div>
-      </div></div></div><div class="lab">Product</div></div>
     </div>
   </div></div>
 </section>
@@ -1436,7 +1432,6 @@ function setUse(k) { US.th = k; const u = $('#use'); u.dataset.th = k; u.style.s
 ring.addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (b) { US.picked = true; setUse(b.dataset.v); } });
 setUse('yellow');
 surface($('#uMk'), { W: 1600, H: 1600, draw: (ctx, W, H, t, still) => withS({ ...POST, headline: 'Thread 2026\nin under\n10 minutes', sub: 'The SMS marketing conference', theme: US.th }, () => render(ctx, W, H, t, still)) });
-surface($('#uBd'), { W: 420, H: 420, draw: (ctx, W, H, t) => drawBadge(ctx, THEMES.yellow, 'circle', W / 2, H / 2 + 4 * sway(t, 1), 330, 0.07 + 0.02 * sway(t, 0), 'Speaker', 9) });
 new IntersectionObserver((es) => { US.vis = es[0].isIntersecting; }).observe($('#use'));
 setInterval(() => { if (US.vis && !US.picked && frozen == null && !reduce) { const k = Object.keys(THS); setUse(k[(k.indexOf(US.th) + 1) % 3]); } }, 3400);
 
