@@ -107,9 +107,12 @@ input[type=text]:focus,textarea:focus{outline:2px solid var(--yellow);outline-of
       <label class="f" data-for="intro"><span>Host one</span><input type="text" id="host1"></label>
       <label class="f" data-for="intro"><span>Host two</span><input type="text" id="host2"></label>
 
-      <label class="f" data-for="live"><span>Question from the audience</span><textarea id="question" rows="3"></textarea></label>
-      <label class="f" data-for="live"><span>Asked by</span><input type="text" id="qName"></label>
-      <label class="f" data-for="live"><span>Their role</span><input type="text" id="qRole"></label>
+      <label class="f" data-for="live"><span>Question 1 from the audience</span><textarea id="q1" rows="3"></textarea></label>
+      <label class="f" data-for="live"><span>Asked by</span><input type="text" id="qn1"></label>
+      <label class="f" data-for="live"><span>Question 2 from the audience</span><textarea id="q2" rows="3"></textarea></label>
+      <label class="f" data-for="live"><span>Asked by</span><input type="text" id="qn2"></label>
+      <label class="f" data-for="live"><span>Question 3 from the audience</span><textarea id="q3" rows="3"></textarea></label>
+      <label class="f" data-for="live"><span>Asked by</span><input type="text" id="qn3"></label>
       <label class="f" data-for="live"><span>On screen (three names)</span><input type="text" id="n1"></label>
       <label class="f" data-for="live"><input type="text" id="n2"></label>
       <label class="f" data-for="live"><input type="text" id="n3"></label>
@@ -164,7 +167,9 @@ const S = {
   lines: true, anim: true, auto: false, weight: 5,
   soonHead: 'Stream starts\n*soon*', soonTag: 'Live on LinkedIn',
   introTag: 'Episode 1', introSub: 'SMS marketing, answered live', tickL: 'Feat. Maya Chen of Northwind', tickR: 'Jordan Ellis of Lumen & Co', host1: 'Maya Chen', host2: 'Jordan Ellis',
-  question: 'How often is too often for SMS? We text four times a week and opt-outs keep creeping up.', qName: 'Dana Okafor', qRole: 'Retention Lead, Brightline',
+  q1: 'How often is too often for SMS? We text four times a week and opt-outs keep creeping up.', qn1: 'Dana Okafor',
+  q2: 'Should SMS replace email in our welcome flow, or just sit on top of it?', qn2: 'Marcus Lee',
+  q3: 'What is a realistic opt-in rate from a popup, and how do we keep it compliant?', qn3: 'Tomás Rivera',
   n1: 'Maya Chen', n2: 'Jordan Ellis', n3: 'Priya Raman',
   sKick: 'Breakout session', sTitle: 'Supercharge\nyour list\ngrowth', sSpeaker: 'Maya Chen', sRole: 'VP of Growth, Northwind',
   stKick: 'Why is list growth important?', stText: 'You can’t text\nanyone if you\ndon’t have\nsubscribers',
@@ -314,25 +319,22 @@ const attentive = (ctx, th) => { const aw = 170, ah = aw * ATT_H / ATT_W; drawAt
 
 /* ===== 1. starting soon: 10 second count, mirrored calligraphy ===== */
 function sSoon(ctx, c) {
-  const { th, t, still } = c, tc = still ? STILL_T : ((t % PERIOD) + PERIOD) % PERIOD, live = tc >= COUNT;
+  const { th, t, still } = c, tc = still ? STILL_T : ((t % PERIOD) + PERIOD) % PERIOD;
   flourishPair(ctx, 0, GY0, W, GY1 - GY0, { color: th.fg, t, still, fw: penW() });
   grid(ctx, c);
   const pw = 700, ph = 620, px = W / 2 - pw / 2, py = H / 2 - ph / 2 + (still ? 0 : 4 * sway(t, 0.7));
-  const bg = live ? th.fg : th.bg, ink = live ? th.bg : th.fg;
+  const bg = th.bg, ink = th.fg;
   ctx.save(); ctx.fillStyle = bg; ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.lineJoin = 'miter'; ctx.fillRect(px, py, pw, ph); ctx.strokeRect(px, py, pw, ph); ctx.restore();
-  sansText(ctx, (live ? 'Going live' : S.soonTag).toUpperCase(), W / 2, py + 66, 22, ink, { wt: 700, ls: 6, align: 'center' });
+  sansText(ctx, S.soonTag.toUpperCase(), W / 2, py + 66, 22, ink, { wt: 700, ls: 6, align: 'center' });
   ctx.save(); ctx.strokeStyle = ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(px + 60, py + 96); ctx.lineTo(px + pw - 60, py + 96); ctx.stroke(); ctx.restore();
-  const lines = parseLines(live ? 'Here we\n*go*' : S.soonHead, 3), fs = fitLines(ctx, lines, pw - 100, 190, 104, 0.9);
+  const lines = parseLines(S.soonHead, 3), fs = fitLines(ctx, lines, pw - 100, 190, 104, 0.9);
   lines.forEach((l, i) => slideC(ctx, l.s, W / 2, py + 96 + fs * 0.95 + i * fs * 0.9, fs, l.it, ink));
   const base = py + ph - 96;
-  if (live) slideC(ctx, 'Live', W / 2, base - 8, 190, true, ink);
-  else {
-    const n = cl(Math.ceil(COUNT - tc), 1, COUNT), u = tc - Math.floor(tc), e = still ? 1 : easeOut(u / 0.3);
-    ctx.save(); ctx.globalAlpha = 0.35 + 0.65 * e; slideC(ctx, String(n), W / 2, base + (1 - e) * 36, 212, false, ink); ctx.restore();
-  }
+  const n = Math.max(0, Math.ceil(COUNT - tc)), u = tc - Math.floor(tc), e = still || tc >= COUNT ? 1 : easeOut(u / 0.3);   // counts 10 to 1, rests on 0 for the last 2 s of the loop
+  ctx.save(); ctx.globalAlpha = 0.35 + 0.65 * e; slideC(ctx, String(n), W / 2, base + (1 - e) * 36, 212, false, ink); ctx.restore();
   const cw = 52, gap = (pw - 120 - 10 * cw) / 9, ty = py + ph - 62;   // ten cells, one fills every second
   for (let i = 0; i < COUNT; i++) {
-    const x = px + 60 + i * (cw + gap), f = live ? 1 : i < Math.floor(tc) ? 1 : i === Math.floor(tc) ? tc - Math.floor(tc) : 0;
+    const x = px + 60 + i * (cw + gap), f = i < Math.floor(tc) ? 1 : i === Math.floor(tc) ? tc - Math.floor(tc) : 0;
     ctx.save(); ctx.strokeStyle = ink; ctx.lineWidth = 2; ctx.lineCap = 'butt'; ctx.globalAlpha = 0.28; ctx.beginPath(); ctx.moveTo(x, ty + 9); ctx.lineTo(x + cw, ty + 9); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 3; if (f > 0) { ctx.beginPath(); ctx.moveTo(x, ty + 9); ctx.lineTo(x + cw * f, ty + 9); ctx.stroke(); } ctx.restore();
   }
 }
@@ -387,21 +389,21 @@ function sLive(ctx, c) {
   tile(ctx, 1, W / 2 + tw / 2 + g, 77 + 19 + thh / 2 - 0, tw, thh, th, S.n2, t, still);
   tile(ctx, 2, W / 2, 77 + 19 + thh + 19 + 20 + 19 + thh / 2 - 0, tw, thh, th, S.n3, t, still);
   // the question card: wipes in from the left, holds, wipes out
-  const e = still ? 1 : easeOut((tt - 0.3) / 0.8) * (1 - ease((tt - 10.6) / 0.8));
+  const qi = still ? 0 : Math.floor(tt / 4) % 3, lt = tt - Math.floor(tt / 4) * 4, Q = { q: S['q' + (qi + 1)], n: S['qn' + (qi + 1)] };   // three questions, 4 s each, so the 12 s loop repeats
+  const e = still ? 1 : easeOut((lt - 0.2) / 0.6) * (1 - ease((lt - 3.45) / 0.5));
   if (e <= 0.001) return;
   const cw = 1440, cx = W / 2 - cw / 2; ctx.font = serifFont(54, false);
-  const lines = wrapText(ctx, '“' + S.question.trim() + '”', cw - 120).slice(0, 3), ch = 104 + (lines.length - 1) * 60 + 30, cy0 = 1004 - ch, cy = cy0 + (1 - e) * 30;
+  const lines = wrapText(ctx, '“' + (Q.q || '').trim() + '”', cw - 120).slice(0, 3), ch = 104 + (lines.length - 1) * 60 + 30, cy0 = 972 - ch, cy = cy0 + (1 - e) * 30;
   ctx.save(); ctx.beginPath(); ctx.rect(cx - 20, cy - 70, (cw + 40) * Math.min(1, e * 1.1), ch + 110); ctx.clip(); ctx.globalAlpha = Math.min(1, e * 2);
   ctx.fillStyle = DARK; ctx.fillRect(cx + 10, cy + 10, cw, ch); ctx.fillStyle = th.paper; ctx.fillRect(cx, cy, cw, ch);
   ctx.strokeStyle = DARK; ctx.lineWidth = 3; ctx.strokeRect(cx + 1.5, cy + 1.5, cw - 3, ch - 3);
   lines.forEach((l, i) => serifText(ctx, l, cx + 60, cy + 104 + i * 60, 54, DARK));
   // who asked: ink chip with a monogram, name, role and a small "in" mark
-  const nm = (S.qName || 'Guest').toUpperCase(), rl = (S.qRole || '').toUpperCase(), tw2 = Math.max(sansW(ctx, nm, 24, 700, 2), sansW(ctx, rl, 15, 500, 3)), chipW = 64 + 20 + tw2 + 24 + 28 + 18, chy = cy - 32;
+  const nm = (Q.n || 'Guest').toUpperCase(), chipW = 64 + 22 + sansW(ctx, nm, 26, 700, 2.5) + 28, chy = cy - 32;
   ctx.fillStyle = DARK; ctx.fillRect(cx + 36, chy, chipW, 64);
   ctx.fillStyle = '#faf4de'; ctx.fillRect(cx + 36, chy, 64, 64);
   const ini = nm.split(/\s+/).map((w) => w[0]).slice(0, 2).join(''); serifText(ctx, ini, cx + 68, chy + 43, 34, DARK, { align: 'center' });
-  sansText(ctx, nm, cx + 120, chy + 28, 24, '#faf4de', { wt: 700, ls: 2 }); sansText(ctx, rl, cx + 120, chy + 51, 15, '#a8a697', { wt: 500, ls: 3 });
-  const bx = cx + 36 + chipW - 18 - 28; ctx.fillStyle = '#faf4de'; ctx.fillRect(bx, chy + 18, 28, 28); sansText(ctx, 'in', bx + 14, chy + 39, 19, DARK, { wt: 700, align: 'center' });
+  sansText(ctx, nm, cx + 122, chy + 41, 26, '#faf4de', { wt: 700, ls: 2.5 });
   tag(ctx, 'AUDIENCE QUESTION', cx + cw - 36, cy - 24, 48, 18, DARK, { right: true, pad: 24, ls: 4, fill: th.paper, lw: 2 });
   ctx.restore();
 }
@@ -410,19 +412,15 @@ function sLive(ctx, c) {
 function sSession(ctx, c) {
   const { th, t, still } = c; grid(ctx, c);
   const lx = GX + 64, lw = 400, px = lx + lw + 40, pw = W - GX - 64 - px, py = GY0 + 60, ph = GY1 - 60 - py;
-  const plate = (x, y, w, h) => { ctx.save(); ctx.fillStyle = th.paper; ctx.fillRect(x, y, w, h); ctx.strokeStyle = th.fg === YEL ? th.fg : DARK; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, w - 2, h - 2); ctx.restore(); };
-  // left column: logo plate and label plate
-  plate(lx, py, lw, 148); const k = 270 / 2485; drawLogo(ctx, lx + lw / 2 - 135, py + 74 - 918 * k / 2 + (still ? 0 : 2 * sway(t, 0.2)), k, DARK, still ? 0 : 0.012 * sway(t, 0));
-  plate(lx, py + 172, lw, 100); sansText(ctx, (S.sKick || '').toUpperCase(), lx + lw / 2, py + 172 + 58, 24, DARK, { wt: 700, ls: 3.5, align: 'center' });
-  // the big panel: tonal calligraphy in the corner, title, speaker
-  plate(px, py, pw, ph);
-  ctx.save(); ctx.beginPath(); ctx.rect(px + 2, py + 2, pw - 4, ph - 4); ctx.clip();
-  flourishPair(ctx, px, py, pw, ph, { color: th.accent === YEL && th.bg === YEL ? '#ece06a' : th.accent, t, still, fw: penW() * 1.25, s: 0.62, va: 'bottom', side: 'R', off: 1.5 });
-  ctx.restore();
-  const lines = parseLines(S.sTitle, 4), fs = fitLines(ctx, lines, pw - 150, ph - 360, 190, 0.92), tx = px + 76;
-  lines.forEach((l, i) => slide(ctx, l.s, tx, py + 76 + fs * 0.78 + i * fs * 0.92 + (still ? 0 : 2 * sway(t, i * 0.8)), fs, l.it, DARK));
-  const ry = py + ph - 150; ctx.save(); ctx.strokeStyle = DARK; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(px + 76, ry); ctx.lineTo(px + pw - 76, ry); ctx.stroke(); ctx.restore();
-  serifText(ctx, S.sSpeaker || '', px + 76, ry + 60, 54, DARK, { it: true }); sansText(ctx, (S.sRole || '').toUpperCase(), px + 76, ry + 100, 19, DARK, { wt: 600, ls: 3.5 });
+  const box = (x, y, w, h) => { ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, w - 2, h - 2); ctx.restore(); };   // outlines only, no fill: the type sits straight on the background
+  box(lx, py, lw, 148); const k = 270 / 2485; drawLogo(ctx, lx + lw / 2 - 135, py + 74 - 918 * k / 2 + (still ? 0 : 2 * sway(t, 0.2)), k, th.fg, still ? 0 : 0.012 * sway(t, 0));
+  box(lx, py + 172, lw, 100); sansText(ctx, (S.sKick || '').toUpperCase(), lx + lw / 2, py + 172 + 58, 24, th.fg, { wt: 700, ls: 3.5, align: 'center' });
+  // calligraphy bleeds off the bottom right corner
+  flourishPair(ctx, px, py, W - px, ph, { color: th.fg, t, still, fw: penW(), s: 0.62, va: 'bottom', side: 'R', off: 1.5 });
+  const lines = parseLines(S.sTitle, 4), fs = fitLines(ctx, lines, pw - 150, ph - 360, 190, 0.92), tx = px;
+  lines.forEach((l, i) => slide(ctx, l.s, tx, py + 10 + fs * 0.78 + i * fs * 0.92 + (still ? 0 : 2 * sway(t, i * 0.8)), fs, l.it, th.fg));
+  const ry = py + ph - 150; ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(px, ry); ctx.lineTo(px + pw * 0.5, ry); ctx.stroke(); ctx.restore();
+  serifText(ctx, S.sSpeaker || '', px, ry + 60, 54, th.fg, { it: true }); sansText(ctx, (S.sRole || '').toUpperCase(), px, ry + 100, 19, th.fg, { wt: 600, ls: 3.5 });
   attentive(ctx, th);
 }
 
@@ -462,7 +460,7 @@ function frame(now) {
   }
   requestAnimationFrame(frame);
 }
-const TEXTS = ['soonHead', 'soonTag', 'introTag', 'introSub', 'tickL', 'tickR', 'host1', 'host2', 'question', 'qName', 'qRole', 'n1', 'n2', 'n3', 'sKick', 'sTitle', 'sSpeaker', 'sRole', 'stKick', 'stText', 'date'], CHECKS = ['lines', 'anim', 'auto'], RANGES = ['weight'];
+const TEXTS = ['soonHead', 'soonTag', 'introTag', 'introSub', 'tickL', 'tickR', 'host1', 'host2', 'q1', 'qn1', 'q2', 'qn2', 'q3', 'qn3', 'n1', 'n2', 'n3', 'sKick', 'sTitle', 'sSpeaker', 'sRole', 'stKick', 'stText', 'date'], CHECKS = ['lines', 'anim', 'auto'], RANGES = ['weight'];
 function syncUI() {
   document.querySelectorAll('#layout .chip').forEach((b) => { b.classList.toggle('on', b.dataset.v === S.layout); b.setAttribute('aria-pressed', b.dataset.v === S.layout); });
   document.querySelectorAll('#theme .sw').forEach((b) => b.classList.toggle('on', b.dataset.v === S.themes[S.layout]));
