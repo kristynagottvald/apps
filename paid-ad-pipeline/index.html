@@ -318,7 +318,7 @@ function syncFrame(o){try{const d=o.fr.contentDocument,w=o.fr.contentWindow;if(!
 function loadPage(o){fit(o);if(!o.on){o.on=true;o.fr.onload=()=>{syncFrame(o);setTimeout(()=>syncFrame(o),400)};o.fr.src='../location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero'}else syncFrame(o)}
 /* dot grid in the purple visual: a darker purple, dots grow towards the bottom and shrink to nothing in the top 40% */
 function drawAdDots(){const c=$('adots'),x=c.getContext('2d'),d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#3425dc';
- const g=13;for(let y=g/2;y<h;y+=g){const t=Math.max(0,(y/h-.4)/.6),r=g*.48*Math.pow(t,1.1);if(r<.4)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}}
+ const g=10;for(let y=g/2;y<h;y+=g){const t=Math.max(0,(y/h-.4)/.6),r=g*.4*Math.pow(t,1.1);if(r<.4)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}}
 /* dot grid on the bottom 30% of the landing page and performance screens, dots shrinking towards the top */
 function drawDots(){document.querySelectorAll('.scr.on .dotbg').forEach(c=>{const x=c.getContext('2d'),d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#10133a';
  const g=22;for(let y=g/2;y<h;y+=g){const r=g*.48*Math.pow(y/h,1.1);if(r<.5)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}})}
