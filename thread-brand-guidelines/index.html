@@ -221,12 +221,11 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 .duo{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
 .duo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border:1.5px solid var(--fg)}
 .pair{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:start;margin-top:clamp(40px,5vw,64px)}
-.pgrid{display:grid;grid-template-columns:70px repeat(5,1fr);border-top:1.5px solid var(--fg);border-left:1.5px solid var(--fg)}
-.pgrid>*{border-right:1.5px solid var(--fg);border-bottom:1.5px solid var(--fg);min-height:54px}
-.pgrid .h{display:grid;place-items:center;font:700 9.5px/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;padding:4px;text-align:center}
-.pgrid button{border-radius:0;border-top:0;border-left:0;font:400 28px/1 var(--serif);cursor:pointer;position:relative}
-.pgrid button.sel{outline:3px solid var(--fg);outline-offset:-5px}
-.pgrid button.ok::after{content:"";position:absolute;right:5px;top:5px;width:8px;height:8px;background:currentColor}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));border-top:1.5px solid var(--fg);border-left:1.5px solid var(--fg)}
+.pgrid button{border-radius:0;border:0;border-right:1.5px solid var(--fg);border-bottom:1.5px solid var(--fg);font:400 40px/1 var(--serif);cursor:pointer;position:relative;min-height:92px;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between}
+.pgrid button small{font:700 9.5px/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase}
+.pgrid button.sel{outline:3px solid var(--fg);outline-offset:-6px}
+.pgrid button.ok::after{content:"";position:absolute;right:6px;top:6px;width:8px;height:8px;background:currentColor}
 .pview{border:1.5px solid var(--fg);padding:clamp(16px,2.4vw,30px);display:flex;flex-direction:column;gap:12px;min-height:280px;transition:background .5s var(--ease),color .5s var(--ease)}
 .pview .aa{font:400 clamp(70px,9vw,130px)/.95 var(--serif);letter-spacing:-.0174em;transform:scaleX(1.16);transform-origin:0 0;width:calc(100%/1.16)}
 .pview .meta{font:700 11px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;margin-top:auto}
@@ -504,7 +503,7 @@ footer.end .row a{text-decoration:none}
       <div class="ramp"><i style="left:10px;color:#fff383">#141414</i><i style="right:10px;color:#141414">#FFF383</i></div>
       <div class="duo"><img src="photos/p1.jpg" alt="Portrait in black and white" style="filter:grayscale(1) contrast(1.6)"><img src="photos/p1.jpg" alt="Portrait in the yellow duotone" style="filter:url(#duo)"><img src="photos/p3.jpg" alt="Portrait in the yellow duotone" style="filter:url(#duo)"></div></div>
     <div class="pair">
-      <div><span class="sub" style="display:block;margin-bottom:12px">Pairings · type on ground</span><div class="pgrid" id="pgrid"></div><p class="note" style="margin-top:12px">Rows are the type colour, columns the ground. A square marks the three pairings the system ships.</p></div>
+      <div><span class="sub" style="display:block;margin-bottom:12px">Approved pairings · type on ground</span><div class="pgrid" id="pgrid"></div><p class="note" style="margin-top:12px">Only combinations that pass AA contrast (4.5:1) are listed. A square marks the three the system ships.</p></div>
       <div class="pview" id="pview"></div>
     </div>
   </div></div>
@@ -1295,8 +1294,8 @@ document.addEventListener('click', (e) => { const b = e.target.closest('[data-he
 const PK = Object.keys(COL), SHIPS = ['ink|yellow', 'yellow|ink', 'ink|cream'];
 let pSel = ['ink', 'yellow'];
 function drawPairs() {
-  $('#pgrid').innerHTML = '<span class="h"></span>' + PK.map((k) => '<span class="h">On ' + COL[k][0] + '</span>').join('') +
-    PK.map((fg) => '<span class="h">' + COL[fg][0] + '</span>' + PK.map((bg) => '<button data-fg="' + fg + '" data-bg="' + bg + '" class="' + (SHIPS.includes(fg + '|' + bg) ? 'ok ' : '') + (pSel[0] === fg && pSel[1] === bg ? 'sel' : '') + '" style="background:' + COL[bg][1] + ';color:' + (fg === bg ? textOn(COL[bg][1]) : COL[fg][1]) + '" aria-label="' + COL[fg][0] + ' on ' + COL[bg][0] + '">' + (fg === bg ? '–' : 'Aa') + '</button>').join('')).join('');
+  const pairs = []; PK.forEach((fg) => PK.forEach((bg) => { if (fg !== bg && contrast(COL[fg][1], COL[bg][1]) >= 4.5) pairs.push([fg, bg]); }));
+  $('#pgrid').innerHTML = pairs.map(([fg, bg]) => '<button data-fg="' + fg + '" data-bg="' + bg + '" class="' + (SHIPS.includes(fg + '|' + bg) ? 'ok ' : '') + (pSel[0] === fg && pSel[1] === bg ? 'sel' : '') + '" style="background:' + COL[bg][1] + ';color:' + COL[fg][1] + '" aria-label="' + COL[fg][0] + ' on ' + COL[bg][0] + '">Aa<small>' + COL[fg][0] + ' on ' + COL[bg][0] + '</small></button>').join('');
   const fg = COL[pSel[0]], bg = COL[pSel[1]], r = contrast(fg[1], bg[1]), same = pSel[0] === pSel[1];
   const v = same ? 'Same colour' : r >= 7 ? 'AAA' : r >= 4.5 ? 'AA' : r >= 3 ? 'Large text only' : 'Fails';
   const pv = $('#pview'); pv.style.background = bg[1]; pv.style.color = fg[1]; pv.style.borderColor = '#141414';
