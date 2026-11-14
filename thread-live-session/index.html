@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thread Live Session</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0e0e; --panel:#171717; --line:#2a2a2a; --text:#f3f2ea; --muted:#9a998d;
+  --yellow:#fff383; --ink:#141414;
+  --font:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --serif:"Instrument Serif",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font:400 14px/1.4 var(--font);-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit}
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap;overflow:hidden}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}}
+
+.app{display:grid;grid-template-columns:minmax(0,1fr) 380px;height:calc(100vh - 49px);height:calc(100dvh - 49px)}
+.stage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;min-width:0;min-height:0;
+  background:radial-gradient(circle at 1px 1px,#262626 1px,transparent 0) 0 0/22px 22px,var(--bg)}
+#box{width:100%;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+#cv{display:block;border-radius:4px;box-shadow:0 18px 60px rgba(0,0,0,.55);background:var(--yellow)}
+.meta{font:500 11px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+
+.panel{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding:20px 20px 48px}
+.brand{margin-bottom:6px}
+.brand h1{font:400 30px/1 var(--serif);letter-spacing:-.01em}
+.brand h1 em{font-style:italic}
+.brand p{color:var(--muted);font-size:12.5px;margin-top:6px}
+section{border-top:1px solid var(--line);padding:16px 0 4px;margin-top:16px}
+h2{font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--yellow);margin-bottom:10px}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{border:1px solid #3a3a3a;background:transparent;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:500;cursor:pointer;line-height:1.1}
+.chip:hover{border-color:#777}
+.chip.on{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+.chip small{opacity:.6;font-weight:400;margin-left:4px}
+.sw{width:34px;height:34px;border-radius:8px;border:2px solid #3a3a3a;cursor:pointer;padding:0;position:relative;overflow:hidden}
+.sw i{position:absolute;inset:auto 0 0 0;height:45%;display:block}
+.sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--yellow)}
+label.f{display:block;margin-bottom:10px}
+label.f>span{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px}
+input[type=text],textarea{width:100%;background:#0f0f0f;border:1px solid #333;border-radius:8px;padding:8px 10px;font-size:13.5px;resize:vertical}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--yellow);outline-offset:0;border-color:transparent}
+.hide{display:none!important}
+.chk{display:flex;gap:8px;align-items:center;margin-bottom:10px;font-size:13px;cursor:pointer}
+.chk input{accent-color:var(--yellow);width:16px;height:16px;margin:0}
+.rng{display:grid;grid-template-columns:86px 1fr 28px;gap:8px;align-items:center;margin-bottom:8px;font-size:12.5px;color:var(--muted)}
+.rng input{accent-color:var(--yellow);width:100%}
+.rng output{color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+.btn{border:1px solid #444;background:#222;border-radius:8px;padding:9px 14px;font-weight:600;font-size:13px;cursor:pointer}
+.btn:hover{border-color:#888}
+.btn.pri{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:default}
+#status{font-size:12px;color:var(--muted);min-height:18px;margin-top:6px}
+.hint{font-size:11.5px;color:var(--muted);margin:-4px 0 10px}
+:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr;height:auto}
+  .stage{padding:16px;position:sticky;top:0;z-index:5;background:var(--bg)}
+  #box{height:34vh;flex:none}
+  .panel{border-left:0;border-top:1px solid var(--line);overflow:visible}
+}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Thread Live Session</b></nav>
+<div class="app">
+  <main class="stage">
+    <div id="box"><canvas id="cv" role="img" aria-label="Live preview of the LinkedIn Live screen"></canvas></div>
+    <div class="meta"><span>16:9 · 1920 × 1080</span><span id="loopNote">12 s loop</span></div>
+  </main>
+  <aside class="panel">
+    <div class="brand"><h1>Thread <em>live</em></h1><p>Screens for a LinkedIn Live session at the SMS marketing conference. Hairline grid, calligraphy loops, side tickers.</p></div>
+
+    <section>
+      <h2>Screen</h2>
+      <div class="row" id="layout">
+        <button class="chip" data-v="soon">Starting soon<small>10 s</small></button>
+        <button class="chip" data-v="intro">Intro title</button>
+        <button class="chip" data-v="live">Audience question</button>
+        <button class="chip" data-v="session">Session title</button>
+        <button class="chip" data-v="statement">Statement</button>
+      </div>
+      <h2>Colour</h2>
+      <div class="row" id="theme"></div>
+    </section>
+
+    <section>
+      <h2>Text</h2>
+      <label class="f" data-for="soon"><span>Headline, one line per row (wrap a line in *stars* for italic)</span><textarea id="soonHead" rows="2"></textarea></label>
+      <label class="f" data-for="soon"><span>Tag</span><input type="text" id="soonTag"></label>
+
+      <label class="f" data-for="intro"><span>Tag</span><input type="text" id="introTag"></label>
+      <label class="f" data-for="intro"><span>Sub line</span><input type="text" id="introSub"></label>
+      <label class="f" data-for="intro"><span>Left ticker</span><input type="text" id="tickL"></label>
+      <label class="f" data-for="intro"><span>Right ticker</span><input type="text" id="tickR"></label>
+      <label class="f" data-for="intro"><span>Host one</span><input type="text" id="host1"></label>
+      <label class="f" data-for="intro"><span>Host two</span><input type="text" id="host2"></label>
+
+      <label class="f" data-for="live"><span>Question from the audience</span><textarea id="question" rows="3"></textarea></label>
+      <label class="f" data-for="live"><span>Asked by</span><input type="text" id="qName"></label>
+      <label class="f" data-for="live"><span>Their role</span><input type="text" id="qRole"></label>
+      <label class="f" data-for="live"><span>On screen (three names)</span><input type="text" id="n1"></label>
+      <label class="f" data-for="live"><input type="text" id="n2"></label>
+      <label class="f" data-for="live"><input type="text" id="n3"></label>
+
+      <label class="f" data-for="session"><span>Label</span><input type="text" id="sKick"></label>
+      <label class="f" data-for="session"><span>Title, one line per row (wrap a line in *stars* for italic)</span><textarea id="sTitle" rows="3"></textarea></label>
+      <label class="f" data-for="session"><span>Speaker</span><input type="text" id="sSpeaker"></label>
+      <label class="f" data-for="session"><span>Role</span><input type="text" id="sRole"></label>
+
+      <label class="f" data-for="statement"><span>Question above the statement</span><input type="text" id="stKick"></label>
+      <label class="f" data-for="statement"><span>Statement, one line per row</span><textarea id="stText" rows="4"></textarea></label>
+
+      <label class="f"><span>Date and place (bottom band)</span><input type="text" id="date"></label>
+    </section>
+
+    <section>
+      <h2>Loops and motion</h2>
+      <div class="rng"><span>Pen weight</span><input type="range" id="weight" min="1" max="10" step="1"><output id="weightO"></output></div>
+      <label class="chk"><input type="checkbox" id="lines"> Hairline grid</label>
+      <label class="chk"><input type="checkbox" id="anim"> Animate</label>
+      <label class="chk"><input type="checkbox" id="auto"> Run of show: play every screen in turn</label>
+      <div class="row"><button class="btn" id="restart">Restart this screen</button></div>
+    </section>
+
+    <section>
+      <h2>Export</h2>
+      <div class="row"><button class="btn pri" id="png">Download PNG</button><button class="btn" id="rec">Record 12 s loop (WebM)</button></div>
+      <div id="status" role="status"></div>
+    </section>
+  </aside>
+</div>
+
+<script>
+/* Thread Live Session: five 1920 x 1080 screens for a LinkedIn Live, drawn on one canvas in the Thread conference look
+   (yellow and black, stretched Instrument Serif, hairline grid, calligraphy loops). Every animation repeats every PERIOD seconds. */
+const W = 1920, H = 1080, FU = W / 2000, TAU = Math.PI * 2, PERIOD = 12, COUNT = 10, STILL_T = 3.2;
+const DARK = '#141414', YEL = '#fff383';
+const GX = 131 * FU, GY0 = 45 * FU, GY1 = H - 47 * FU;   // the hairline grid: two verticals, a top and a bottom line
+const $ = (s, r = document) => r.querySelector(s);
+const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = (u) => 0.5 - 0.5 * Math.cos(Math.PI * cl(u, 0, 1));
+const easeOut = (u) => 1 - Math.pow(1 - cl(u, 0, 1), 3);
+const sway = (t, ph) => Math.sin(TAU * t / PERIOD + ph);
+const THEMES = {
+  yellow: { name: 'Yellow', bg: '#fff383', fg: '#141414', accent: '#fff383', paper: '#faf4de' },
+  ink:    { name: 'Ink',    bg: '#141414', fg: '#fff383', accent: '#fff383', paper: '#faf4de' },
+  cream:  { name: 'Cream',  bg: '#faf4de', fg: '#141414', accent: '#fff383', paper: '#ffffff' },
+};
+const LAYOUTS = ['soon', 'intro', 'live', 'session', 'statement'];
+const S = {
+  layout: 'soon', themes: { soon: 'yellow', intro: 'ink', live: 'yellow', session: 'yellow', statement: 'cream' },
+  lines: true, anim: true, auto: false, weight: 5,
+  soonHead: 'Stream starts\n*soon*', soonTag: 'Live on LinkedIn',
+  introTag: 'Episode 1', introSub: 'SMS marketing, answered live', tickL: 'Feat. Maya Chen of Northwind', tickR: 'Jordan Ellis of Lumen & Co', host1: 'Maya Chen', host2: 'Jordan Ellis',
+  question: 'How often is too often for SMS? We text four times a week and opt-outs keep creeping up.', qName: 'Dana Okafor', qRole: 'Retention Lead, Brightline',
+  n1: 'Maya Chen', n2: 'Jordan Ellis', n3: 'Priya Raman',
+  sKick: 'Breakout session', sTitle: 'Supercharge\nyour list\ngrowth', sSpeaker: 'Maya Chen', sRole: 'VP of Growth, Northwind',
+  stKick: 'Why is list growth important?', stText: 'You can’t text\nanyone if you\ndon’t have\nsubscribers',
+  date: 'May 12–14 · New York',
+};
+
+/* ===== logo artwork (from the Thread 2026 post) ===== */
+const LOGO_WORD = 'M1911.08 428.196C1921.72 392.888 1906.25 387.084 1878.19 387.084C1874.32 387.084 1872.87 386.116 1872.87 383.214C1872.87 380.312 1874.32 379.345 1878.19 379.345C1895.12 379.345 1918.82 381.763 1934.3 381.763H1944.94C1962.84 381.763 1988.95 379.345 2008.3 379.345C2012.65 379.345 2014.11 380.312 2014.11 383.214C2014.11 386.116 2012.65 387.084 2008.79 387.084C1976.38 387.084 1951.71 392.888 1941.07 428.196L1851.11 722.272C1840.47 757.581 1858.36 763.385 1890.28 763.385C1894.64 763.385 1896.09 764.352 1896.09 767.254C1896.09 770.156 1894.64 771.123 1889.8 771.123C1870.94 771.123 1844.33 768.705 1826.92 768.705H1815.8C1800.32 768.705 1777.1 771.123 1760.17 771.123C1756.31 771.123 1754.85 770.156 1754.85 767.254C1754.85 764.352 1756.31 763.385 1759.69 763.385C1788.23 763.385 1810.48 757.581 1821.6 722.272L1863.68 583.94C1867.07 573.783 1860.78 565.077 1850.14 565.077H1722.93C1712.29 565.077 1701.17 573.783 1697.78 583.94L1655.22 722.272C1644.58 757.581 1660.05 763.385 1688.59 763.385C1691.98 763.385 1693.43 764.352 1693.43 767.254C1693.43 770.156 1691.98 771.123 1688.11 771.123C1671.18 771.123 1647.96 768.705 1632.48 768.705H1621.36C1603.95 768.705 1577.34 771.123 1558.48 771.123C1553.64 771.123 1552.19 770.156 1552.19 767.254C1552.19 764.352 1553.64 763.385 1558 763.385C1589.92 763.385 1615.07 757.581 1625.71 722.272L1715.19 428.196C1726.32 392.888 1708.42 387.084 1676.02 387.084C1672.15 387.084 1670.21 386.116 1670.21 383.214C1670.21 380.312 1672.15 379.345 1676.5 379.345C1695.36 379.345 1721.96 381.763 1739.38 381.763H1750.5C1765.98 381.763 1789.2 379.345 1806.12 379.345C1810.48 379.345 1811.93 380.312 1811.93 383.214C1811.93 386.116 1810.48 387.084 1806.61 387.084C1778.07 387.084 1755.82 392.888 1745.18 428.196L1711.32 539.926C1707.94 550.083 1714.23 558.305 1724.87 558.305H1852.07C1862.71 558.305 1873.84 550.083 1877.22 539.926L1911.08 428.196ZM1960.6 768.705C1944.64 768.705 1919.97 771.123 1902.56 771.123C1898.21 771.123 1896.76 770.156 1896.76 767.254C1896.76 764.352 1898.21 763.385 1902.08 763.385C1931.58 763.385 1954.8 757.581 1965.44 722.272L2055.4 428.196C2066.04 392.888 2050.08 387.084 2020.09 387.084C2016.71 387.084 2014.77 386.116 2014.77 383.214C2014.77 380.312 2016.71 379.345 2020.58 379.345C2038.47 379.345 2062.66 381.763 2078.62 381.763H2146.82C2207.28 381.763 2236.3 404.98 2236.3 445.125C2236.3 484.303 2209.7 555.887 2120.22 573.299C2108.61 575.234 2102.32 582.489 2106.19 592.163C2118.77 628.922 2130.37 666.649 2139.56 711.631C2146.33 745.972 2156.01 763.385 2186.48 763.385C2189.87 763.385 2190.83 763.868 2190.83 765.803C2190.83 769.189 2187.93 771.123 2183.58 771.123C2122.63 770.64 2118.77 761.934 2110.54 720.821L2083.94 594.098C2081.04 579.587 2073.3 577.169 2061.69 577.169C2043.31 577.169 2038.47 580.555 2032.67 599.902L1995.43 722.272C1984.3 757.581 2000.75 763.385 2030.25 763.385C2034.12 763.385 2035.57 764.352 2035.57 767.254C2035.57 770.156 2034.12 771.123 2029.77 771.123C2012.36 771.123 1988.17 768.705 1971.73 768.705H1960.6ZM2050.57 540.893C2045.25 557.338 2049.12 571.848 2076.69 571.848C2166.17 571.848 2204.86 493.976 2204.86 448.027C2204.86 412.718 2181.64 389.018 2134.24 389.018C2107.64 389.018 2096.03 393.371 2088.29 418.523L2050.57 540.893ZM2408.98 771.123C2399.3 771.123 2389.14 768.705 2366.9 768.705H2242.59C2226.63 768.705 2201.96 771.123 2184.55 771.123C2180.2 771.123 2178.74 770.156 2178.74 767.254C2178.74 764.352 2180.2 763.385 2184.07 763.385C2213.57 763.385 2236.79 757.581 2247.43 722.272L2337.39 428.196C2348.03 392.888 2332.07 387.084 2302.08 387.084C2298.7 387.084 2296.76 386.116 2296.76 383.214C2296.76 380.312 2298.7 379.345 2302.57 379.345C2320.46 379.345 2344.65 381.763 2360.61 381.763H2483.46C2503.78 381.763 2515.38 379.345 2524.09 379.345C2532.31 379.345 2532.8 384.182 2530.38 391.92C2526.03 407.398 2521.19 422.392 2517.8 437.386C2514.9 452.38 2512.97 467.374 2510.55 486.721C2510.06 491.558 2508.13 494.46 2505.23 494.46C2502.33 494.46 2501.84 492.042 2502.33 487.205C2510.06 407.882 2504.74 388.535 2457.34 388.535H2400.27C2385.76 388.535 2376.57 396.757 2372.7 410.3L2331.59 544.279C2328.68 554.436 2334.49 563.142 2344.65 563.142L2398.33 562.658C2434.61 563.142 2447.67 541.377 2456.86 510.421C2458.31 506.552 2459.76 505.585 2462.18 506.068C2464.6 507.036 2465.08 508.97 2464.11 513.323C2458.79 530.252 2450.09 551.05 2444.28 568.946L2446.22 563.626C2440.9 581.038 2436.06 603.771 2431.22 620.7C2429.77 625.053 2428.32 626.504 2425.42 625.537C2423 625.053 2422.52 623.118 2423.97 619.249C2433.16 588.293 2432.68 569.43 2396.4 569.43H2343.2C2332.55 569.43 2321.43 577.652 2318.53 587.326L2274.03 732.913C2267.26 755.646 2269.19 761.934 2289.51 761.934H2346.1C2388.18 761.934 2407.04 745.489 2467.98 658.91C2471.37 654.074 2474.27 651.171 2476.21 651.171C2479.11 651.171 2479.11 654.074 2476.21 658.427C2467.5 673.421 2460.73 682.611 2449.6 700.99C2433.64 726.141 2428.81 739.684 2423 758.548C2420.58 766.287 2417.2 771.123 2408.98 771.123ZM2448.32 767.254C2448.32 764.352 2449.77 763.385 2452.67 763.385C2476.37 763.385 2498.14 759.032 2518.94 728.076L2753.52 376.443C2754.49 374.992 2756.42 374.024 2757.87 374.024H2762.23C2763.68 374.024 2764.64 374.992 2764.64 376.443L2753.52 719.854C2752.55 757.097 2767.55 763.385 2790.76 763.385C2793.67 763.385 2795.12 764.352 2795.12 767.254C2795.12 770.156 2793.67 771.123 2790.28 771.123C2776.74 771.123 2757.39 768.705 2744.81 768.705H2731.75C2715.31 768.705 2690.16 771.123 2671.78 771.123C2667.43 771.123 2665.97 770.156 2665.97 767.254C2665.97 764.352 2667.43 763.385 2671.29 763.385C2702.25 763.385 2723.05 757.097 2724.02 719.854L2726.43 655.041C2726.92 644.4 2718.21 635.694 2707.57 635.694H2608.42C2597.78 635.694 2584.23 642.949 2578.43 651.655L2527.64 728.076C2506.84 759.032 2519.9 763.385 2549.41 763.385C2553.28 763.385 2554.73 764.352 2554.73 767.254C2554.73 770.156 2553.28 771.123 2548.92 771.123C2532.96 771.123 2512.65 768.705 2495.72 768.705C2482.66 768.705 2466.22 771.123 2453.16 771.123C2449.77 771.123 2448.32 770.156 2448.32 767.254ZM2604.55 612.477C2598.26 621.667 2602.13 628.922 2612.77 628.922H2707.57C2718.21 628.922 2727.4 620.216 2727.89 609.575L2733.21 439.804C2733.69 429.164 2728.85 427.712 2723.05 436.902L2604.55 612.477ZM2844.11 768.705C2828.15 768.705 2803.48 771.123 2786.07 771.123C2781.71 771.123 2780.26 770.156 2780.26 767.254C2780.26 764.352 2781.71 763.385 2785.58 763.385C2815.09 763.385 2838.3 757.581 2848.94 722.272L2938.91 428.196C2949.55 392.888 2933.59 387.084 2903.6 387.084C2900.21 387.084 2898.28 386.116 2898.28 383.214C2898.28 380.312 2900.21 379.345 2904.08 379.345C2921.98 379.345 2946.16 381.763 2962.12 381.763H3020.17C3103.36 381.763 3158.01 425.294 3158.01 506.552C3158.01 605.222 3080.63 768.705 2905.05 768.705H2844.11ZM2874.1 745.005C2874.1 759.515 2884.74 761.45 2902.63 761.45C3044.83 761.45 3125.12 614.412 3125.12 509.454C3125.12 436.902 3085.46 389.018 3018.23 389.018C2991.15 389.018 2979.54 393.371 2971.8 419.006L2877 727.592C2875.06 734.848 2874.1 740.652 2874.1 745.005Z';
+
+const LOGO_ATT = 'M1285.3 95.0 L1279.0 98.7 L1272.0 101.7 L1265.0 103.7 L1255.3 105.0 L1247.3 105.0 L1238.0 103.7 L1228.3 100.7 L1222.0 97.7 L1218.7 95.3 L1217.7 95.3 L1217.3 96.3 L1217.3 309.7 L1218.0 310.3 L1285.3 310.0ZM1304.3 94.7 L1304.0 96.0 L1322.0 139.3 L1326.0 150.3 L1329.0 156.3 L1329.0 157.7 L1335.0 171.3 L1336.0 175.0 L1338.7 180.3 L1391.0 309.7 L1391.7 310.3 L1456.7 310.3 L1461.7 299.7 L1462.7 296.0 L1463.7 294.7 L1470.7 276.3 L1478.7 258.0 L1479.7 254.3 L1501.7 201.3 L1502.7 197.7 L1505.7 191.7 L1506.0 189.7 L1544.7 95.0 L1472.3 94.7 L1471.3 95.3 L1458.0 135.0 L1456.0 139.3 L1454.0 146.7 L1450.0 157.0 L1449.0 161.3 L1443.0 177.3 L1439.0 190.3 L1427.0 223.7 L1426.0 228.0 L1424.3 230.3 L1415.7 207.0 L1415.7 205.7 L1409.7 189.7 L1408.7 185.3 L1405.7 178.3 L1404.7 174.0 L1403.7 172.7 L1402.3 167.3 L1395.7 149.7 L1394.7 145.3 L1392.7 141.0 L1377.0 95.3 L1376.3 94.7ZM1613.0 95.7 L1599.7 100.7 L1590.0 105.7 L1580.3 112.0 L1570.7 120.0 L1561.0 130.3 L1555.0 138.3 L1550.0 146.3 L1546.0 154.3 L1541.0 167.0 L1538.0 178.7 L1536.0 190.0 L1535.3 201.0 L1536.0 219.0 L1539.3 235.7 L1543.0 247.0 L1547.0 255.7 L1553.3 266.3 L1559.3 274.3 L1570.0 285.3 L1577.3 291.3 L1587.7 298.0 L1596.0 302.3 L1605.7 306.3 L1623.7 311.3 L1639.0 313.3 L1653.7 313.7 L1662.0 313.3 L1677.7 311.3 L1690.3 308.3 L1699.3 305.3 L1700.7 304.3 L1702.0 304.3 L1715.0 298.0 L1729.3 288.3 L1737.7 280.7 L1743.0 274.7 L1744.0 272.7 L1693.0 249.3 L1686.0 254.3 L1679.3 257.7 L1665.3 261.7 L1657.3 262.7 L1647.0 262.7 L1635.3 260.7 L1629.3 258.7 L1621.7 255.0 L1612.7 248.0 L1609.0 243.7 L1604.7 236.0 L1602.7 230.3 L1602.3 227.0 L1603.0 226.0 L1756.3 226.0 L1758.7 218.3 L1759.7 210.7 L1760.0 192.0 L1757.7 173.3 L1752.7 156.7 L1745.3 141.7 L1739.3 132.7 L1734.3 126.7 L1726.7 119.0 L1718.0 112.0 L1708.0 105.7 L1700.0 101.7 L1687.0 96.7 L1679.7 94.7 L1665.7 92.0 L1654.3 91.0 L1639.3 91.0 L1625.0 92.7ZM1603.0 175.7 L1606.0 166.3 L1610.0 159.0 L1612.7 155.7 L1618.7 150.0 L1626.3 145.3 L1634.3 142.3 L1642.3 141.0 L1654.3 141.0 L1663.3 142.3 L1671.7 145.3 L1678.3 149.3 L1684.0 154.3 L1688.7 160.3 L1692.0 168.0 L1693.7 176.3 L1693.7 183.0 L1692.0 183.7 L1603.7 183.7 L1602.3 182.7ZM640.0 95.7 L631.3 98.7 L619.0 104.7 L610.3 110.0 L599.3 118.7 L595.0 122.7 L586.0 133.0 L579.3 142.7 L573.0 154.7 L569.0 164.7 L565.3 177.7 L563.3 189.3 L562.7 197.3 L562.7 211.7 L564.0 224.3 L567.0 237.7 L572.0 251.0 L576.0 259.0 L581.7 268.0 L589.3 277.7 L596.3 284.7 L607.3 293.3 L615.3 298.3 L623.0 302.3 L635.7 307.3 L646.3 310.3 L663.0 313.0 L673.3 313.7 L689.0 313.3 L709.3 310.3 L720.7 307.3 L734.3 302.0 L747.7 294.7 L756.3 288.3 L767.3 278.0 L771.3 272.7 L720.3 249.3 L714.3 253.7 L708.7 256.7 L702.0 259.3 L694.3 261.3 L684.3 262.7 L674.7 262.7 L666.7 261.7 L659.3 259.7 L654.0 257.7 L646.7 253.7 L638.3 246.3 L632.7 238.0 L629.3 227.0 L630.3 226.0 L783.3 226.0 L784.3 224.7 L785.3 220.7 L787.3 205.0 L786.7 185.0 L784.7 172.3 L782.7 165.0 L776.7 149.3 L771.3 139.7 L764.7 130.3 L752.3 117.7 L744.7 111.7 L737.0 106.7 L720.0 98.7 L710.7 95.7 L697.3 92.7 L681.3 91.0 L667.3 91.0 L658.7 91.7ZM630.7 174.0 L632.7 167.3 L635.7 161.3 L641.3 154.0 L646.7 149.3 L653.3 145.3 L661.3 142.3 L669.7 141.0 L681.7 141.0 L690.3 142.3 L698.7 145.3 L704.7 148.7 L710.0 153.0 L715.0 159.0 L719.0 167.3 L721.0 177.3 L721.0 182.7 L720.3 183.3 L630.7 183.7 L629.3 182.7ZM27.0 129.3 L19.0 139.3 L14.0 147.3 L9.0 157.3 L5.0 168.0 L2.0 179.7 L0.0 194.0 L0.0 217.7 L3.0 236.7 L8.0 252.3 L15.0 266.7 L21.3 276.3 L28.0 284.3 L36.7 292.7 L44.0 298.3 L53.3 304.0 L68.7 310.3 L76.3 312.3 L88.7 314.3 L105.7 314.3 L123.3 311.3 L132.0 308.3 L139.3 305.0 L145.0 301.7 L153.0 295.7 L161.7 287.0 L165.7 281.7 L167.0 281.0 L168.0 287.3 L169.0 309.7 L169.7 310.7 L234.3 310.3 L234.3 199.0 L232.7 184.7 L230.7 175.0 L227.7 164.7 L220.7 148.7 L210.7 133.3 L204.3 126.0 L197.0 119.0 L189.0 112.7 L178.0 105.7 L167.7 100.7 L157.0 96.7 L145.7 93.7 L134.0 91.7 L125.3 91.0 L111.3 91.0 L100.0 92.0 L86.3 94.7 L73.0 98.7 L65.7 101.7 L51.7 109.0 L41.3 116.0ZM111.3 150.3 L120.0 150.0 L131.0 151.7 L142.0 156.3 L147.3 160.0 L154.3 166.3 L160.0 173.7 L165.0 183.3 L168.0 194.3 L168.3 207.3 L167.7 213.0 L164.0 224.7 L158.0 235.0 L151.0 242.7 L143.7 248.3 L135.0 252.7 L128.7 254.7 L122.7 255.7 L113.7 255.7 L103.3 253.7 L95.3 250.7 L86.0 244.7 L77.7 236.0 L72.7 227.7 L69.7 219.7 L67.7 209.7 L67.7 195.7 L68.7 189.7 L71.7 180.0 L77.7 169.7 L84.0 162.7 L92.7 156.3 L101.7 152.3ZM1000.7 110.7 L995.0 106.0 L983.0 98.7 L969.3 93.7 L960.7 91.7 L951.0 90.7 L937.7 90.7 L929.7 91.7 L914.7 96.0 L906.7 99.7 L900.0 103.7 L890.7 111.0 L882.3 119.7 L878.3 125.7 L877.0 126.7 L876.3 125.7 L874.7 96.3 L874.3 95.0 L873.7 94.7 L809.3 95.0 L809.7 310.3 L876.3 310.3 L876.7 194.3 L878.7 185.0 L880.7 179.3 L885.7 170.3 L891.7 163.3 L895.7 159.7 L902.0 155.3 L908.3 152.3 L914.7 150.3 L921.7 149.3 L929.0 149.7 L937.3 151.3 L947.0 156.3 L952.3 161.3 L956.0 166.3 L958.7 171.3 L962.0 182.0 L963.0 191.7 L963.0 310.0 L1029.7 310.0 L1030.0 182.0 L1028.7 165.0 L1025.0 149.3 L1018.7 134.0 L1011.3 122.3ZM1789.0 81.7 L1789.0 116.0 L1790.0 116.7 L1797.7 116.3 L1797.7 105.0 L1798.3 104.3 L1802.3 104.3 L1805.0 107.3 L1810.3 116.3 L1819.7 116.7 L1820.3 116.0 L1812.0 103.7 L1812.0 103.0 L1815.7 99.7 L1817.7 95.0 L1817.7 90.0 L1816.0 86.0 L1812.3 82.7 L1806.3 81.0ZM1797.3 89.0 L1798.0 88.3 L1806.0 88.3 L1809.0 91.3 L1809.0 93.3 L1808.3 94.7 L1805.0 97.3 L1798.7 97.7 L1797.3 96.7ZM1793.3 65.7 L1786.7 67.7 L1780.3 71.0 L1775.0 75.7 L1771.0 81.3 L1769.0 85.7 L1767.0 94.3 L1767.0 102.7 L1769.0 111.7 L1772.0 118.0 L1775.0 122.0 L1781.3 127.3 L1787.3 130.3 L1793.0 132.0 L1799.0 132.7 L1808.7 132.3 L1814.3 131.0 L1822.3 127.3 L1825.0 125.3 L1831.7 118.0 L1835.7 108.7 L1836.7 102.7 L1836.7 95.0 L1835.7 88.7 L1831.7 79.3 L1825.0 72.0 L1821.7 69.7 L1815.0 66.7 L1811.0 65.7 L1804.3 65.0ZM1795.0 71.3 L1805.3 70.7 L1810.0 71.3 L1816.0 73.7 L1819.3 75.7 L1824.0 80.3 L1825.7 82.7 L1829.0 90.3 L1830.0 96.0 L1830.0 101.7 L1829.0 107.0 L1827.0 112.3 L1824.3 116.7 L1821.3 120.0 L1818.0 122.7 L1812.0 125.7 L1807.7 126.7 L1799.3 127.0 L1791.7 125.7 L1784.3 121.7 L1780.0 117.3 L1775.7 109.0 L1774.7 105.0 L1774.3 97.3 L1775.7 89.3 L1777.7 84.3 L1780.7 80.0 L1785.3 75.7 L1791.3 72.3ZM1058.3 31.0 L1058.0 109.7 L1058.7 156.0 L1058.7 247.3 L1060.0 259.0 L1062.3 268.0 L1065.0 275.0 L1069.0 282.7 L1075.3 291.3 L1081.3 297.3 L1092.7 305.3 L1099.0 308.3 L1107.7 311.3 L1117.7 313.3 L1125.3 314.0 L1146.7 313.3 L1167.0 310.3 L1178.3 307.3 L1186.3 304.3 L1188.7 302.7 L1188.7 250.0 L1187.7 249.7 L1181.3 252.7 L1170.3 255.7 L1156.7 257.0 L1147.3 256.7 L1142.7 255.7 L1136.7 252.3 L1131.7 247.3 L1127.7 240.0 L1126.0 232.7 L1126.0 150.0 L1126.7 149.3 L1186.7 149.3 L1187.0 95.0 L1186.3 94.3 L1127.7 94.7 L1126.0 94.0 L1125.7 39.7 L1125.0 31.0ZM420.0 31.0 L419.7 99.3 L420.3 249.0 L422.0 261.0 L426.0 273.7 L432.3 285.3 L437.0 291.3 L443.7 298.0 L454.3 305.3 L459.7 308.0 L469.3 311.3 L479.3 313.3 L486.3 314.0 L508.0 313.3 L524.0 311.3 L536.7 308.3 L548.0 304.3 L550.0 303.0 L550.0 250.0 L549.3 249.7 L542.7 252.7 L532.0 255.7 L518.0 257.0 L508.7 256.7 L504.3 255.7 L497.7 252.0 L491.7 245.3 L489.0 239.7 L487.3 230.0 L487.3 150.7 L488.3 149.3 L548.0 149.3 L548.7 95.3 L547.3 94.3 L488.7 94.7 L487.7 94.0 L487.0 32.0 L486.3 31.0ZM263.0 31.0 L262.3 32.0 L263.0 95.3 L263.0 246.3 L265.0 261.7 L270.0 276.0 L275.0 285.0 L279.0 290.3 L287.0 298.3 L295.3 304.3 L303.3 308.3 L315.0 312.0 L329.3 314.0 L354.3 313.0 L371.3 310.3 L382.7 307.3 L390.7 304.3 L393.0 302.7 L392.7 249.7 L385.7 252.7 L375.0 255.7 L361.3 257.0 L351.7 256.7 L346.3 255.3 L341.0 252.3 L335.0 246.0 L332.0 240.0 L330.3 231.0 L330.3 150.3 L331.3 149.3 L391.0 149.3 L391.3 94.7 L331.7 94.7 L330.7 94.0 L330.0 73.0 L330.0 35.0 L329.3 31.0ZM1233.7 3.0 L1227.0 6.3 L1221.3 10.7 L1216.0 16.7 L1212.0 24.3 L1210.0 31.3 L1209.7 42.0 L1211.0 49.0 L1214.7 57.7 L1220.0 64.7 L1226.3 70.0 L1233.3 73.7 L1241.7 76.3 L1246.3 77.0 L1256.3 77.0 L1266.3 75.0 L1275.0 71.0 L1279.3 68.0 L1285.3 62.0 L1288.7 57.0 L1291.7 50.0 L1292.7 45.7 L1293.3 36.0 L1291.7 26.3 L1288.7 19.3 L1284.3 13.3 L1279.3 8.7 L1275.0 5.7 L1265.3 1.7 L1257.0 0.0 L1246.3 0.0 L1241.7 0.7Z';
+const ATT_W = 1836.7, ATT_H = 314.3;
+
+const LOGO_SWASH = 'M1297.63 203.139L1295.37 199.379C1306.9 191.357 1320.94 185.09 1337.49 180.578C1354.03 175.564 1371.83 173.058 1390.88 173.058C1421.97 173.058 1447.28 178.071 1466.84 188.098C1486.89 198.126 1501.68 211.412 1511.21 227.957C1521.24 244.502 1526.25 262.3 1526.25 281.352C1526.25 299.401 1521.74 317.7 1512.71 336.251C1503.69 354.801 1490.4 371.847 1472.85 387.389C1455.81 402.932 1434.25 415.466 1408.18 424.991C1382.61 434.016 1352.78 438.528 1318.69 438.528C1264.54 438.528 1219.42 429.754 1183.32 412.207C1147.72 394.659 1120.9 371.596 1102.85 343.019C1084.8 313.94 1075.78 283.106 1075.78 250.518C1075.78 222.442 1082.54 194.115 1096.08 165.537C1109.62 136.458 1129.92 109.886 1157 85.8209C1184.57 61.7556 1219.17 42.4532 1260.78 27.9137C1302.89 12.8729 1352.53 5.35245 1409.68 5.35245C1448.29 5.35245 1486.39 10.6168 1523.99 21.1454C1562.1 31.6739 1599.95 45.2106 1637.55 61.7556C1675.15 77.7991 1712.76 95.0961 1750.36 113.646C1788.46 132.197 1826.31 149.744 1863.92 166.289C1901.52 182.333 1939.37 195.619 1977.47 206.147C2015.58 216.676 2053.68 221.94 2091.78 221.94C2133.9 221.94 2169.75 214.42 2199.33 199.379C2228.91 184.338 2247.71 164.033 2255.73 138.464L2260.99 139.216C2252.97 166.289 2233.67 187.597 2203.09 203.139C2173 218.681 2135.65 226.453 2091.03 226.453C2053.93 226.453 2017.08 221.94 1980.48 212.916C1943.88 203.39 1907.28 191.357 1870.68 176.818C1834.59 162.278 1797.99 146.987 1760.89 130.943C1723.79 114.398 1686.18 98.8562 1648.08 84.3168C1609.98 69.7773 1571.12 57.9954 1531.51 48.9709C1491.91 39.445 1451.3 34.6821 1409.68 34.6821C1362.55 34.6821 1318.94 40.4477 1278.83 51.979C1239.22 63.009 1204.63 78.5511 1175.05 98.6056C1145.47 118.66 1122.4 142.475 1105.86 170.049C1089.81 197.123 1081.79 226.954 1081.79 259.542C1081.79 293.134 1091.82 323.215 1111.87 349.787C1132.43 375.858 1160.51 396.414 1196.1 411.455C1232.2 426.495 1273.31 434.016 1319.44 434.016C1357.04 434.016 1391.13 427.248 1421.72 413.711C1452.3 400.174 1476.61 381.874 1494.66 358.812C1512.71 335.248 1521.74 309.428 1521.74 281.352C1521.74 249.766 1509.7 224.447 1485.64 205.395C1462.07 186.344 1430.49 176.818 1390.88 176.818C1372.33 176.818 1354.78 179.074 1338.24 183.586C1322.2 188.098 1308.66 194.616 1297.63 203.139ZM1093.83 749.873C1138.45 749.873 1180.31 743.105 1219.42 729.568C1258.52 715.53 1295.37 696.729 1329.97 673.165C1364.56 649.1 1397.4 622.026 1428.48 591.944C1459.57 561.863 1489.4 530.277 1517.98 497.187C1546.55 463.596 1574.38 430.506 1601.45 397.918C1628.53 364.828 1655.1 333.994 1681.17 305.417C1698.72 286.365 1716.77 270.071 1735.32 256.534C1753.87 242.997 1770.66 231.968 1785.7 223.444H1824.06C1812.02 225.951 1797.74 231.215 1781.19 239.237C1764.65 247.259 1747.85 257.286 1730.8 269.319C1714.26 281.352 1699.22 294.888 1685.68 309.929C1660.61 337.003 1637.8 365.831 1617.25 396.414C1597.19 426.997 1577.39 458.081 1557.83 489.667C1538.78 520.751 1518.23 551.334 1496.17 581.416C1474.61 611.498 1449.79 639.824 1421.72 666.397C1380.6 705.503 1332.47 734.832 1277.32 754.385C1222.68 774.44 1165.27 784.467 1105.11 784.467C1043.94 784.467 992.801 775.443 951.69 757.394C911.079 739.345 880.496 714.778 859.941 683.694C839.385 652.108 829.107 616.762 829.107 577.656C829.107 550.081 836.126 523.007 850.164 496.435C864.202 469.863 884.257 446.049 910.327 424.991C936.899 403.433 968.736 386.387 1005.84 373.853C1042.94 360.817 1084.3 354.3 1129.92 354.3C1176.55 354.3 1214.4 360.567 1243.48 373.101C1273.06 385.635 1294.87 401.929 1308.91 421.983C1322.95 441.536 1329.97 462.593 1329.97 485.155C1329.97 504.708 1324.7 524.511 1314.17 544.566C1304.15 564.119 1289.11 582.419 1269.05 599.465C1249 616.01 1224.43 629.296 1195.35 639.323C1166.27 649.35 1133.18 654.364 1096.08 654.364C1063.99 654.364 1038.42 650.604 1019.37 643.083C1000.32 635.062 986.534 625.034 978.011 613.002C969.488 600.468 965.226 587.683 965.226 574.648C965.226 558.604 973.248 541.808 989.292 524.261C1005.34 506.713 1029.4 491.923 1061.49 479.89C1094.08 467.356 1134.69 461.089 1183.32 461.089C1224.93 461.089 1263.29 466.103 1298.38 476.13C1333.98 485.656 1364.81 499.443 1390.88 517.492C1417.45 535.541 1438.01 556.849 1452.55 581.416C1467.59 605.983 1475.11 633.056 1475.11 662.636C1475.11 689.71 1468.09 718.287 1454.05 748.369C1440.52 778.952 1418.96 807.279 1389.38 833.35C1359.8 859.922 1321.69 881.48 1275.07 898.025C1228.94 914.57 1173.54 922.843 1108.87 922.843C1044.69 922.843 986.033 914.319 932.889 897.273C879.744 880.227 833.619 856.162 794.513 825.077C755.908 793.993 726.077 757.143 705.02 714.527C683.963 671.912 673.434 625.034 673.434 573.896C673.434 522.757 684.214 475.879 705.772 433.264C726.829 390.648 756.66 353.798 795.265 322.714C834.371 291.128 880.496 266.812 933.641 249.766C986.785 232.72 1045.19 224.196 1108.87 224.196C1135.94 224.196 1163.51 226.453 1191.59 230.965C1220.17 235.477 1247.49 242.747 1273.56 252.774C1299.63 262.3 1322.7 274.583 1342.75 289.624C1362.81 304.163 1378.1 321.962 1388.63 343.019L1384.11 344.523C1373.58 323.967 1358.54 306.42 1338.99 291.88C1319.44 277.341 1296.88 265.559 1271.31 256.534C1245.74 247.008 1218.91 239.989 1190.84 235.477C1163.26 230.965 1135.94 228.709 1108.87 228.709C1045.69 228.709 987.788 237.232 935.145 254.278C882.502 270.823 836.878 294.638 798.273 325.722C760.17 356.305 730.59 392.654 709.532 434.768C688.475 476.882 677.947 523.258 677.947 573.896C677.947 624.533 688.475 670.909 709.532 713.023C730.59 755.137 760.17 791.486 798.273 822.069C836.878 852.652 882.502 876.216 935.145 892.761C987.788 909.807 1045.69 918.33 1108.87 918.33C1173.04 918.33 1227.94 910.058 1273.56 893.513C1319.19 877.469 1356.54 856.412 1385.62 830.341C1414.7 804.271 1436 776.445 1449.54 746.865C1463.58 717.285 1470.6 689.208 1470.6 662.636C1470.6 633.557 1463.33 607.236 1448.79 583.672C1434.25 559.607 1413.69 538.8 1387.12 521.253C1361.05 503.705 1330.47 490.168 1295.37 480.642C1260.78 471.117 1223.18 466.354 1182.57 466.354C1134.94 466.354 1095.33 472.37 1063.74 484.403C1032.16 495.934 1008.59 509.972 993.052 526.517C977.51 543.062 969.739 558.855 969.739 573.896C969.739 586.43 973.75 598.462 981.771 609.993C990.294 621.525 1003.83 631.051 1022.38 638.571C1040.93 646.091 1065.5 649.852 1096.08 649.852C1132.18 649.852 1164.27 644.838 1192.34 634.811C1220.92 624.784 1244.99 611.748 1264.54 595.705C1284.59 579.661 1299.63 561.863 1309.66 542.31C1320.19 522.757 1325.45 503.705 1325.45 485.155C1325.45 463.095 1318.43 442.539 1304.4 423.487C1290.86 404.436 1269.55 388.893 1240.47 376.861C1211.9 364.828 1175.05 358.812 1129.92 358.812C1084.8 358.812 1043.94 365.329 1007.34 378.365C971.243 390.899 940.158 407.694 914.088 428.752C888.017 449.809 867.962 473.373 853.924 499.443C840.388 525.013 833.619 551.084 833.619 577.656C833.619 617.765 845.15 650.604 868.213 676.173C891.777 701.742 923.112 720.544 962.218 732.576C1001.83 744.107 1045.69 749.873 1093.83 749.873Z';
+const FDEFS = [
+  { w0: 15, w1: 3, taper: 0.45, pts: [[-20,200],[60,215],[200,238],[300,248],[370,270],[412,310],[405,350],[360,370],[320,350],[295,310]] },
+  { w0: 16, w1: 3, taper: 0.3, pts: [[-20,340],[100,360],[230,385],[380,415],[500,470],[570,540],[595,610],[570,670],[500,712],[430,700],[370,665],[310,600],[262,520],[228,420],[207,320],[203,230],[195,120],[165,55],[125,32],[92,60],[92,110],[130,150],[190,170],[260,172],[340,150],[405,117]] },
+  { w0: 13, w1: 3, taper: 0.3, pts: [[-20,432],[100,448],[200,468],[290,500],[360,550],[410,610],[425,665],[400,710],[340,745],[270,740],[245,712]] },
+  { w0: 14, w1: 3, taper: 0.45, pts: [[-20,535],[60,545],[140,568],[205,605],[238,660],[235,715],[195,745],[150,752],[115,730]] },
+  { w0: 3.5, w1: 3.5, taper: 1, pts: [[85,365],[100,450],[140,550],[215,680]] },
+  { w0: 3.5, w1: 3.5, taper: 1, pts: [[15,5],[32,50],[52,130],[68,230],[70,280]] },
+  { w0: 3, w1: 3, taper: 1, pts: [[-2,350],[8,430],[18,540]] },
+  { w0: 4, w1: 4, taper: 1, pts: [[5,650],[22,680],[20,715],[2,740]] },
+];
+const FN = 420, lerp = (a, b, t) => a + (b - a) * t;
+function buildStroke(def, fx, fy, fw) {
+  const p = def.pts, dense = [];
+  for (let i = 0; i < p.length - 1; i++) {
+    const P0 = p[Math.max(i - 1, 0)], P1 = p[i], P2 = p[i + 1], P3 = p[Math.min(i + 2, p.length - 1)];
+    const t0 = 0, t1 = t0 + Math.pow(Math.hypot(P1[0] - P0[0], P1[1] - P0[1]) || 1e-3, 0.5);
+    const t2 = t1 + Math.pow(Math.hypot(P2[0] - P1[0], P2[1] - P1[1]) || 1e-3, 0.5), t3 = t2 + Math.pow(Math.hypot(P3[0] - P2[0], P3[1] - P2[1]) || 1e-3, 0.5);
+    for (let k = 0; k < 24; k++) {
+      const t = lerp(t1, t2, k / 24), pt = [0, 0];
+      for (let d = 0; d < 2; d++) {
+        const A1 = ((t1 - t) * P0[d] + (t - t0) * P1[d]) / (t1 - t0), A2 = ((t2 - t) * P1[d] + (t - t1) * P2[d]) / (t2 - t1), A3 = ((t3 - t) * P2[d] + (t - t2) * P3[d]) / (t3 - t2);
+        const B1 = ((t2 - t) * A1 + (t - t0) * A2) / (t2 - t0), B2 = ((t3 - t) * A2 + (t - t1) * A3) / (t3 - t1);
+        pt[d] = ((t2 - t) * B1 + (t - t1) * B2) / (t2 - t1);
+      }
+      dense.push(pt);
+    }
+  }
+  dense.push(p[p.length - 1]);
+  const cum = [0];
+  for (let i = 1; i < dense.length; i++) cum.push(cum[i - 1] + Math.hypot(dense[i][0] - dense[i - 1][0], dense[i][1] - dense[i - 1][1]));
+  const total = cum[cum.length - 1], out = []; let j = 0;
+  for (let i = 0; i < FN; i++) {
+    const sd = (i / (FN - 1)) * total; while (j < cum.length - 2 && cum[j + 1] < sd) j++;
+    const u = (sd - cum[j]) / (cum[j + 1] - cum[j] || 1), t = i / (FN - 1), sm = cl(t / def.taper, 0, 1), k = sm * sm * (3 - 2 * sm);
+    out.push({ x: fx(lerp(dense[j][0], dense[j + 1][0], u)), y: fy(lerp(dense[j][1], dense[j + 1][1], u)), w: lerp(def.w0, def.w1, k) * fw });
+  }
+  return out;
+}
+function strokeSpan(i, t) { const u = ((((t + i * 0.55) % PERIOD) + PERIOD) % PERIOD) / PERIOD; return [ease((u - 0.72) / 0.26), ease(u / 0.4)]; }
+function drawStroke(ctx, pts, a, b, t) {
+  const i0 = Math.floor(a * (FN - 1)), i1 = Math.ceil(b * (FN - 1)); if (i1 - i0 < 1) return;
+  const Lp = [], Rp = [];
+  for (let i = i0; i <= i1; i++) {
+    const p = pts[i], q = pts[Math.min(i + 1, FN - 1)], o = pts[Math.max(i - 1, 0)];
+    let dx = q.x - o.x, dy = q.y - o.y; const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m;
+    const h = p.w * (1 + 0.06 * Math.sin(2 * TAU * t / PERIOD + i * 0.12)) / 2;
+    Lp.push(p.x - dy * h, p.y + dx * h); Rp.push(p.x + dy * h, p.y - dx * h);
+  }
+  ctx.beginPath(); ctx.moveTo(Lp[0], Lp[1]);
+  for (let k = 2; k < Lp.length; k += 2) ctx.lineTo(Lp[k], Lp[k + 1]);
+  for (let k = Rp.length - 2; k >= 0; k -= 2) ctx.lineTo(Rp[k], Rp[k + 1]);
+  ctx.closePath(); ctx.fill();
+  const e = pts[i1], st = pts[i0];
+  ctx.beginPath(); ctx.arc(e.x, e.y, e.w / 2, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(st.x, st.y, st.w / 2, 0, TAU); ctx.fill();
+}
+
+const pAtt = new Path2D(LOGO_ATT), pSwash = new Path2D(LOGO_SWASH), pWord = new Path2D(LOGO_WORD);
+function fillStroke(ctx, path, color, lw) { ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineJoin = 'round'; ctx.lineWidth = lw; ctx.fill(path); ctx.stroke(path); }
+/* swash T + wordmark, top-left at x,y, width 2485 k; the swash sways a hair */
+function drawLogo(ctx, x, y, k, color, rot) {
+  ctx.save(); ctx.translate(x - 673 * k, y - 5 * k); ctx.scale(k, k);
+  ctx.save(); ctx.translate(1466, 464); ctx.rotate(rot || 0); ctx.translate(-1466, -464); fillStroke(ctx, pSwash, color, 10.5); ctx.restore();
+  fillStroke(ctx, pWord, color, 10.2); ctx.restore();
+}
+function drawAttentive(ctx, x, y, w, color) { const k = w / ATT_W; ctx.save(); ctx.translate(x, y); ctx.scale(k, k); ctx.fillStyle = color; ctx.fill(pAtt, 'evenodd'); ctx.restore(); }
+
+/* ===== text ===== */
+const serifFont = (size, it) => (it ? 'italic ' : '') + size + "px 'Instrument Serif', Georgia, serif";
+const sansFont = (size, wt) => (wt || 600) + ' ' + size + "px Inter, 'Helvetica Neue', Arial, sans-serif";
+const setLS = (ctx, px) => { if ('letterSpacing' in ctx) ctx.letterSpacing = px + 'px'; };
+function parseLines(s, max) {
+  const out = String(s || '').split('\n').map((l) => l.trim()).filter(Boolean).slice(0, max || 5).map((l) => { const m = /^\*(.+)\*$/.exec(l); return m ? { s: m[1], it: true } : { s: l, it: false }; });
+  return out.length ? out : [{ s: ' ', it: false }];
+}
+/* the headline voice of the post: tight tracking, stretched 16% wide */
+function measureSlide(ctx, str, size, it) { ctx.save(); ctx.font = serifFont(size, it); setLS(ctx, -3 * size / 172); const w = ctx.measureText(str).width * 1.16; ctx.restore(); return w; }
+function slide(ctx, str, x, y, size, it, color) { ctx.save(); ctx.font = serifFont(size, it); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = color; setLS(ctx, -3 * size / 172); ctx.translate(x, y); ctx.scale(1.16, 1); ctx.fillText(str, 0, 0); ctx.restore(); }
+const slideC = (ctx, str, cx, y, size, it, color) => slide(ctx, str, cx - measureSlide(ctx, str, size, it) / 2, y, size, it, color);
+function fitLines(ctx, lines, maxW, maxH, maxFs, lh) { let fs = maxFs; for (; fs > 20; fs *= 0.97) { if (Math.max(...lines.map((l) => measureSlide(ctx, l.s, fs, l.it))) <= maxW && lines.length * fs * lh <= maxH) break; } return fs; }
+function serifText(ctx, str, x, y, size, color, o = {}) { ctx.save(); ctx.font = serifFont(size, o.it); ctx.fillStyle = color; ctx.textAlign = o.align || 'left'; ctx.textBaseline = 'alphabetic'; setLS(ctx, o.ls || 0); ctx.fillText(str, x, y); ctx.restore(); }
+function sansText(ctx, str, x, y, size, color, o = {}) { ctx.save(); ctx.font = sansFont(size, o.wt); ctx.fillStyle = color; ctx.textAlign = o.align || 'left'; ctx.textBaseline = 'alphabetic'; setLS(ctx, o.ls || 0); ctx.fillText(str, x, y); ctx.restore(); }
+function sansW(ctx, str, size, wt, ls) { ctx.save(); ctx.font = sansFont(size, wt); setLS(ctx, ls || 0); const w = ctx.measureText(str).width - (ls || 0); ctx.restore(); return w; }
+function wrapText(ctx, str, maxW) { const out = []; let cur = ''; for (const w of str.split(/\s+/)) { const tt = cur ? cur + ' ' + w : w; if (ctx.measureText(tt).width > maxW && cur) { out.push(cur); cur = w; } else cur = tt; } if (cur) out.push(cur); return out; }
+function star(ctx, cx, cy, r) { ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.42 : r; i ? ctx.lineTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)) : ctx.moveTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)); } ctx.closePath(); ctx.fill(); }
+/* the outlined REGISTER NOW button of the site: sharp corners, hairline stroke, tracked bold capitals. Returns its width. */
+function tag(ctx, str, x, y, h, fs, color, o = {}) {
+  const ls = o.ls != null ? o.ls : 4, pad = o.pad != null ? o.pad : h * 0.5, w = sansW(ctx, str, fs, 700, ls) + 2 * pad, x0 = o.center ? x - w / 2 : o.right ? x - w : x;
+  ctx.save(); if (o.fill) { ctx.fillStyle = o.fill; ctx.fillRect(x0, y, w, h); } ctx.strokeStyle = color; ctx.lineWidth = o.lw || 2; ctx.lineJoin = 'miter'; ctx.strokeRect(x0 + 1, y + 1, w - 2, h - 2); ctx.restore();
+  sansText(ctx, str, x0 + pad, y + h / 2 + fs * 0.36, fs, color, { wt: 700, ls }); return w;
+}
+
+/* ===== mirrored calligraphy: the left set anchored to the left edge of the box, the same set mirrored on the right, drawn in step ===== */
+const flourCache = new Map();
+function flourishPair(ctx, x, y, w, h, o) {
+  const s = o.s || h / 800, y0 = o.va === 'bottom' ? y + h - 770 * s : y + (h - 770 * s) / 2;
+  const key = [x, y, w, h, s, y0, o.fw].map((v) => Math.round(v * 100)).join('|'); let sets = flourCache.get(key);
+  if (!sets) { if (flourCache.size > 12) flourCache.clear(); sets = [FDEFS.map((d) => buildStroke(d, (px) => x + px * s, (py) => y0 + py * s, o.fw)), FDEFS.map((d) => buildStroke(d, (px) => x + w - px * s, (py) => y0 + py * s, o.fw))]; flourCache.set(key, sets); }
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.fillStyle = o.color;
+  sets.forEach((set, side) => { if (o.side === 'R' && !side) return; set.forEach((pts, i) => { const [a, b] = o.still ? [0, 1] : strokeSpan(i, o.t + (o.off || 0)); drawStroke(ctx, pts, a, b, o.t); }); });
+  ctx.restore();
+}
+const penW = () => 1.2 * S.weight / 5 * FU;
+/* a hand-drawn underline that writes itself on and off */
+const ulCache = new Map();
+function underline(ctx, x, y, w, color, t, still, idx) {
+  const key = [x, y, w].map(Math.round).join('|'); let pts = ulCache.get(key);
+  if (!pts) { if (ulCache.size > 20) ulCache.clear(); pts = buildStroke({ w0: 10 * FU, w1: 2, taper: 0.9, pts: [[0, 7], [w * 0.22, 2], [w * 0.5, 6], [w * 0.78, 1], [w, 4]] }, (px) => x + px, (py) => y + py, 1); ulCache.set(key, pts); }
+  ctx.save(); ctx.fillStyle = color; const [a, b] = still ? [0, 1] : strokeSpan(idx, t); drawStroke(ctx, pts, a, b, t); ctx.restore();
+}
+
+/* ===== the hairline grid ===== */
+function hairline(ctx, c, i, x1, y1, x2, y2) {
+  const u = ((((c.t + i * 1.4) % PERIOD) + PERIOD) % PERIOD) / PERIOD; let a = 0, b = 1;
+  if (!c.still) { if (u < 0.2) b = ease(u / 0.2); else if (u >= 0.8 && u < 0.97) a = ease((u - 0.8) / 0.17); else if (u >= 0.97) b = 0; }
+  if (b <= a) return;
+  ctx.save(); ctx.strokeStyle = c.th.fg; ctx.lineWidth = 2; ctx.lineCap = 'butt';
+  ctx.beginPath(); ctx.moveTo(x1 + (x2 - x1) * a, y1 + (y2 - y1) * a); ctx.lineTo(x1 + (x2 - x1) * b, y1 + (y2 - y1) * b); ctx.stroke(); ctx.restore();
+}
+function grid(ctx, c) {
+  if (!S.lines) return;
+  hairline(ctx, c, 0, GX, 0, GX, H); hairline(ctx, c, 1, W - GX, 0, W - GX, H); hairline(ctx, c, 2, 0, GY0, W, GY0); hairline(ctx, c, 3, 0, GY1, W, GY1);
+}
+/* small tracked capitals in the strips outside the grid */
+function bands(ctx, c) {
+  const { th, t, still } = c, fs = 17, ls = 3.5, yT = GY0 / 2 + 6, yB = GY1 + (H - GY1) / 2 + 6, fg = th.fg;
+  sansText(ctx, 'THREAD 2026 · LIVE SESSIONS', GX + 30, yT, fs, fg, { wt: 700, ls });
+  const lw = sansW(ctx, 'LIVE ON LINKEDIN', fs, 700, ls), pulse = still ? 0 : Math.sin(TAU * t * 4 / PERIOD);
+  sansText(ctx, 'LIVE ON LINKEDIN', W - GX - 30, yT, fs, fg, { wt: 700, ls, align: 'right' });
+  ctx.save(); ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(W - GX - 30 - lw - 22, yT - 6, 5 + 1.6 * pulse, 0, TAU); ctx.fill(); ctx.restore();
+  sansText(ctx, 'THE SMS MARKETING CONFERENCE', GX + 30, yB, fs, fg, { wt: 700, ls });
+  if (S.date) sansText(ctx, S.date.toUpperCase(), W - GX - 30, yB, fs, fg, { wt: 700, ls, align: 'right' });
+}
+const attentive = (ctx, th) => { const aw = 170, ah = aw * ATT_H / ATT_W; drawAttentive(ctx, W - GX - 44 - aw, GY1 - 30 - ah, aw, th.fg); };
+
+/* ===== 1. starting soon: 10 second count, mirrored calligraphy ===== */
+function sSoon(ctx, c) {
+  const { th, t, still } = c, tc = still ? STILL_T : ((t % PERIOD) + PERIOD) % PERIOD, live = tc >= COUNT;
+  flourishPair(ctx, 0, GY0, W, GY1 - GY0, { color: th.fg, t, still, fw: penW() });
+  grid(ctx, c);
+  const pw = 700, ph = 620, px = W / 2 - pw / 2, py = H / 2 - ph / 2 + (still ? 0 : 4 * sway(t, 0.7));
+  const bg = live ? th.fg : th.bg, ink = live ? th.bg : th.fg;
+  ctx.save(); ctx.fillStyle = bg; ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.lineJoin = 'miter'; ctx.fillRect(px, py, pw, ph); ctx.strokeRect(px, py, pw, ph); ctx.restore();
+  sansText(ctx, (live ? 'Going live' : S.soonTag).toUpperCase(), W / 2, py + 66, 22, ink, { wt: 700, ls: 6, align: 'center' });
+  ctx.save(); ctx.strokeStyle = ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(px + 60, py + 96); ctx.lineTo(px + pw - 60, py + 96); ctx.stroke(); ctx.restore();
+  const lines = parseLines(live ? 'Here we\n*go*' : S.soonHead, 3), fs = fitLines(ctx, lines, pw - 100, 190, 104, 0.9);
+  lines.forEach((l, i) => slideC(ctx, l.s, W / 2, py + 96 + fs * 0.95 + i * fs * 0.9, fs, l.it, ink));
+  const base = py + ph - 96;
+  if (live) slideC(ctx, 'Live', W / 2, base - 8, 190, true, ink);
+  else {
+    const n = cl(Math.ceil(COUNT - tc), 1, COUNT), u = tc - Math.floor(tc), e = still ? 1 : easeOut(u / 0.3);
+    ctx.save(); ctx.globalAlpha = 0.35 + 0.65 * e; slideC(ctx, String(n), W / 2, base + (1 - e) * 36, 212, false, ink); ctx.restore();
+  }
+  const cw = 52, gap = (pw - 120 - 10 * cw) / 9, ty = py + ph - 62;   // ten cells, one fills every second
+  for (let i = 0; i < COUNT; i++) {
+    const x = px + 60 + i * (cw + gap), f = live ? 1 : i < Math.floor(tc) ? 1 : i === Math.floor(tc) ? tc - Math.floor(tc) : 0;
+    ctx.save(); ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.5; ctx.strokeRect(x + 0.75, ty + 0.75, cw - 1.5, 16.5); ctx.fillRect(x, ty, cw * f, 18); ctx.restore();
+  }
+}
+
+/* ===== 2. intro title: centred logo, side tickers ===== */
+function ticker(ctx, c, dir, text) {
+  const { th, t, still } = c, str = (text || '').toUpperCase().trim(); if (!str) return;
+  ctx.save(); ctx.beginPath(); ctx.rect(dir < 0 ? 0 : W - GX, GY0 + 1, GX, GY1 - GY0 - 2); ctx.clip();
+  ctx.font = sansFont(28, 700); setLS(ctx, 5); const tw = ctx.measureText(str).width, gap = 44, unit = tw + 2 * gap + 20;
+  const n = Math.max(1, Math.round(1100 / unit)), off = ((still ? STILL_T : t) / PERIOD * n * unit) % unit;   // n whole units per loop, so it repeats exactly
+  ctx.translate(dir < 0 ? GX / 2 : W - GX / 2, dir < 0 ? GY1 : GY0); ctx.rotate(dir < 0 ? -Math.PI / 2 : Math.PI / 2);
+  ctx.fillStyle = th.fg; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  for (let p = -unit + off; p < GY1 - GY0 + unit; p += unit) { ctx.fillText(str, p, 1); star(ctx, p + tw + gap, 0, 10); }
+  ctx.restore();
+}
+function sIntro(ctx, c) {
+  const { th, t, still } = c; grid(ctx, c);
+  ticker(ctx, c, -1, S.tickL); ticker(ctx, c, 1, S.tickR);
+  const lw = 1000, k = lw / 2485, lh = 918 * k, top = 168 + (still ? 0 : 3 * sway(t, 0.3));
+  drawLogo(ctx, W / 2 - lw / 2, top, k, th.fg, still ? 0 : 0.012 * sway(t, 0));
+  let y = top + lh + 56;
+  if (S.introTag) { tag(ctx, S.introTag.toUpperCase(), W / 2, y, 58, 22, th.fg, { center: true, pad: 30, ls: 5 }); y += 58 + 34; }
+  if (S.introSub) serifText(ctx, S.introSub, W / 2, y + 48, 68, th.fg, { it: true, align: 'center' });
+  // HOSTED BY  NAME x NAME, each name with a pen underline
+  const fs = 32, ls = 4.5, by = GY1 - 66, hb = 'HOSTED BY', n1 = (S.host1 || '').toUpperCase(), n2 = (S.host2 || '').toUpperCase();
+  const parts = [[hb, 500, 0]]; if (n1) parts.push([n1, 700, 1]); if (n1 && n2) parts.push(['X', 500, 0]); if (n2) parts.push([n2, 700, 2]);
+  const sp = 26, ws = parts.map((p) => sansW(ctx, p[0], fs, p[1], ls)), total = ws.reduce((a, b) => a + b, 0) + sp * (parts.length - 1); let x = W / 2 - total / 2;
+  parts.forEach((p, i) => { sansText(ctx, p[0], x, by, fs, th.fg, { wt: p[1], ls }); if (p[2]) underline(ctx, x, by + 10, ws[i], th.fg, t, still, 3 + p[2] * 2); x += ws[i] + sp; });
+}
+
+/* ===== 3. an audience question over the live view ===== */
+const PH = ['p1', 'p2', 'p3'].map((n) => { const im = new Image(); im.onload = () => { dirty = true; }; im.src = 'photos/' + n + '.jpg'; return im; });
+let dirty = true;
+function tile(ctx, i, cx, cy, w, h, th, label, t, still) {
+  const mat = 18, ol = 3, oy = still ? 0 : 3 * sway(t, i * 1.7); cy += oy;
+  ctx.save(); ctx.fillStyle = DARK; ctx.fillRect(cx - w / 2 - mat + 9, cy - h / 2 - mat + 9, w + 2 * mat, h + 2 * mat);
+  ctx.fillStyle = th.paper; ctx.fillRect(cx - w / 2 - mat, cy - h / 2 - mat, w + 2 * mat, h + 2 * mat);
+  ctx.strokeStyle = DARK; ctx.lineWidth = ol; ctx.lineJoin = 'miter'; ctx.strokeRect(cx - w / 2 - mat, cy - h / 2 - mat, w + 2 * mat, h + 2 * mat);
+  ctx.beginPath(); ctx.rect(cx - w / 2, cy - h / 2, w, h); ctx.clip();
+  const im = PH[i];
+  if (im.complete && im.naturalWidth) { const s = Math.max(w / im.naturalWidth, h / im.naturalHeight), dw = im.naturalWidth * s, dh = im.naturalHeight * s; ctx.drawImage(im, cx - dw / 2, cy - h / 2 - (dh - h) * ([0.5, 0.72, 0.5][i]), dw, dh); }
+  else { ctx.fillStyle = '#d9d2b4'; ctx.fillRect(cx - w / 2, cy - h / 2, w, h); }
+  ctx.restore();
+  if (label) { const lw = sansW(ctx, label.toUpperCase(), 17, 700, 3) + 28; ctx.fillStyle = DARK; ctx.fillRect(cx - w / 2, cy + h / 2 - 38, lw, 38); sansText(ctx, label.toUpperCase(), cx - w / 2 + 14, cy + h / 2 - 13, 17, '#faf4de', { wt: 700, ls: 3 }); }
+}
+function sLive(ctx, c) {
+  const { th, t, still } = c, tt = still ? STILL_T : ((t % PERIOD) + PERIOD) % PERIOD;
+  flourishPair(ctx, 0, GY0, W, GY1 - GY0, { color: th.fg, t, still, fw: penW() });
+  grid(ctx, c);
+  const tw = 480, thh = 270, g = 18 + 19;
+  tile(ctx, 0, W / 2 - tw / 2 - g, 77 + 19 + thh / 2 - 0, tw, thh, th, S.n1, t, still);
+  tile(ctx, 1, W / 2 + tw / 2 + g, 77 + 19 + thh / 2 - 0, tw, thh, th, S.n2, t, still);
+  tile(ctx, 2, W / 2, 77 + 19 + thh + 19 + 20 + 19 + thh / 2 - 0, tw, thh, th, S.n3, t, still);
+  // the question card: wipes in from the left, holds, wipes out
+  const e = still ? 1 : easeOut((tt - 0.3) / 0.8) * (1 - ease((tt - 10.6) / 0.8));
+  if (e <= 0.001) return;
+  const cw = 1440, cx = W / 2 - cw / 2; ctx.font = serifFont(54, false);
+  const lines = wrapText(ctx, '“' + S.question.trim() + '”', cw - 120).slice(0, 3), ch = 104 + (lines.length - 1) * 60 + 30, cy0 = 1004 - ch, cy = cy0 + (1 - e) * 30;
+  ctx.save(); ctx.beginPath(); ctx.rect(cx - 20, cy - 70, (cw + 40) * Math.min(1, e * 1.1), ch + 110); ctx.clip(); ctx.globalAlpha = Math.min(1, e * 2);
+  ctx.fillStyle = DARK; ctx.fillRect(cx + 10, cy + 10, cw, ch); ctx.fillStyle = th.paper; ctx.fillRect(cx, cy, cw, ch);
+  ctx.strokeStyle = DARK; ctx.lineWidth = 3; ctx.strokeRect(cx + 1.5, cy + 1.5, cw - 3, ch - 3);
+  lines.forEach((l, i) => serifText(ctx, l, cx + 60, cy + 104 + i * 60, 54, DARK));
+  // who asked: ink chip with a monogram, name, role and a small "in" mark
+  const nm = (S.qName || 'Guest').toUpperCase(), rl = (S.qRole || '').toUpperCase(), tw2 = Math.max(sansW(ctx, nm, 24, 700, 2), sansW(ctx, rl, 15, 500, 3)), chipW = 64 + 20 + tw2 + 24 + 28 + 18, chy = cy - 32;
+  ctx.fillStyle = DARK; ctx.fillRect(cx + 36, chy, chipW, 64);
+  ctx.fillStyle = '#faf4de'; ctx.fillRect(cx + 36, chy, 64, 64);
+  const ini = nm.split(/\s+/).map((w) => w[0]).slice(0, 2).join(''); serifText(ctx, ini, cx + 68, chy + 43, 34, DARK, { align: 'center' });
+  sansText(ctx, nm, cx + 120, chy + 28, 24, '#faf4de', { wt: 700, ls: 2 }); sansText(ctx, rl, cx + 120, chy + 51, 15, '#a8a697', { wt: 500, ls: 3 });
+  const bx = cx + 36 + chipW - 18 - 28; ctx.fillStyle = '#faf4de'; ctx.fillRect(bx, chy + 18, 28, 28); sansText(ctx, 'in', bx + 14, chy + 39, 19, DARK, { wt: 700, align: 'center' });
+  tag(ctx, 'AUDIENCE QUESTION', cx + cw - 36, cy - 24, 48, 18, DARK, { right: true, pad: 24, ls: 4, fill: th.paper, lw: 2 });
+  ctx.restore();
+}
+
+/* ===== 4. session title card (breakout style) ===== */
+function sSession(ctx, c) {
+  const { th, t, still } = c; grid(ctx, c);
+  const lx = GX + 64, lw = 400, px = lx + lw + 40, pw = W - GX - 64 - px, py = GY0 + 60, ph = GY1 - 60 - py;
+  const plate = (x, y, w, h) => { ctx.save(); ctx.fillStyle = th.paper; ctx.fillRect(x, y, w, h); ctx.strokeStyle = th.fg === YEL ? th.fg : DARK; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, w - 2, h - 2); ctx.restore(); };
+  // left column: logo plate and label plate
+  plate(lx, py, lw, 148); const k = 270 / 2485; drawLogo(ctx, lx + lw / 2 - 135, py + 74 - 918 * k / 2 + (still ? 0 : 2 * sway(t, 0.2)), k, DARK, still ? 0 : 0.012 * sway(t, 0));
+  plate(lx, py + 172, lw, 100); sansText(ctx, (S.sKick || '').toUpperCase(), lx + lw / 2, py + 172 + 58, 24, DARK, { wt: 700, ls: 3.5, align: 'center' });
+  // the big panel: tonal calligraphy in the corner, title, speaker
+  plate(px, py, pw, ph);
+  ctx.save(); ctx.beginPath(); ctx.rect(px + 2, py + 2, pw - 4, ph - 4); ctx.clip();
+  flourishPair(ctx, px, py, pw, ph, { color: th.accent === YEL && th.bg === YEL ? '#ece06a' : th.accent, t, still, fw: penW() * 1.25, s: 0.62, va: 'bottom', side: 'R', off: 1.5 });
+  ctx.restore();
+  const lines = parseLines(S.sTitle, 4), fs = fitLines(ctx, lines, pw - 150, ph - 360, 190, 0.92), tx = px + 76;
+  lines.forEach((l, i) => slide(ctx, l.s, tx, py + 76 + fs * 0.78 + i * fs * 0.92 + (still ? 0 : 2 * sway(t, i * 0.8)), fs, l.it, DARK));
+  const ry = py + ph - 150; ctx.save(); ctx.strokeStyle = DARK; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(px + 76, ry); ctx.lineTo(px + pw - 76, ry); ctx.stroke(); ctx.restore();
+  serifText(ctx, S.sSpeaker || '', px + 76, ry + 60, 54, DARK, { it: true }); sansText(ctx, (S.sRole || '').toUpperCase(), px + 76, ry + 100, 19, DARK, { wt: 600, ls: 3.5 });
+  attentive(ctx, th);
+}
+
+/* ===== 5. statement card ===== */
+function sStatement(ctx, c) {
+  const { th, t, still } = c;
+  flourishPair(ctx, 0, GY0, W, GY1 - GY0, { color: th.fg, t, still, fw: penW() * 0.9, s: 0.5, off: 2.4 });
+  grid(ctx, c);
+  const lines = parseLines(S.stText, 5), fs = fitLines(ctx, lines, 1180, 520, 150, 0.98), blockH = lines.length * fs * 0.98, kick = (S.stKick || '').toUpperCase();
+  const top = H / 2 - (blockH + (kick ? 90 : 0)) / 2 + 6;
+  if (kick) sansText(ctx, kick, W / 2, top + 20, 26, th.fg, { wt: 700, ls: 5, align: 'center' });
+  lines.forEach((l, i) => slideC(ctx, l.s, W / 2, top + (kick ? 90 : 0) + fs * 0.8 + i * fs * 0.98 + (still ? 0 : 2 * sway(t, i * 0.8)), fs, l.it, th.fg));
+  attentive(ctx, th);
+}
+
+const SCENES = { soon: sSoon, intro: sIntro, live: sLive, session: sSession, statement: sStatement };
+function render(ctx, t, still) {
+  const th = THEMES[S.themes[S.layout]], c = { t, still, th };
+  ctx.save(); ctx.fillStyle = th.bg; ctx.fillRect(0, 0, W, H); SCENES[S.layout](ctx, c); bands(ctx, c); ctx.restore();
+}
+
+/* ===== UI ===== */
+const cv = $('#cv'), cx2 = cv.getContext('2d');
+let scalePx = 1, frozenT = null, recording = false, t0 = performance.now();
+function fit() {
+  const box = $('#box'), aw = box.clientWidth, ah = Math.max(240, box.clientHeight);
+  let w = aw, h = aw * H / W; if (h > ah) { h = ah; w = ah * W / H; }
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.style.width = w + 'px'; cv.style.height = h + 'px'; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); scalePx = cv.width / W; dirty = true;
+}
+function setLayout(v) { S.layout = v; t0 = performance.now(); syncUI(); }
+function frame(now) {
+  if (S.auto && frozenT == null && S.anim && (now - t0) / 1000 >= PERIOD) setLayout(LAYOUTS[(LAYOUTS.indexOf(S.layout) + 1) % LAYOUTS.length]);
+  if (S.anim || dirty || frozenT != null) {
+    const t = frozenT != null ? frozenT : (S.anim ? (now - t0) / 1000 : STILL_T);
+    cx2.setTransform(scalePx, 0, 0, scalePx, 0, 0); render(cx2, t, !S.anim && frozenT == null); dirty = false;
+  }
+  requestAnimationFrame(frame);
+}
+const TEXTS = ['soonHead', 'soonTag', 'introTag', 'introSub', 'tickL', 'tickR', 'host1', 'host2', 'question', 'qName', 'qRole', 'n1', 'n2', 'n3', 'sKick', 'sTitle', 'sSpeaker', 'sRole', 'stKick', 'stText', 'date'], CHECKS = ['lines', 'anim', 'auto'], RANGES = ['weight'];
+function syncUI() {
+  document.querySelectorAll('#layout .chip').forEach((b) => { b.classList.toggle('on', b.dataset.v === S.layout); b.setAttribute('aria-pressed', b.dataset.v === S.layout); });
+  document.querySelectorAll('#theme .sw').forEach((b) => b.classList.toggle('on', b.dataset.v === S.themes[S.layout]));
+  document.querySelectorAll('[data-for]').forEach((e) => e.classList.toggle('hide', !e.dataset.for.split(' ').includes(S.layout)));
+  TEXTS.forEach((k) => { if ($('#' + k) !== document.activeElement) $('#' + k).value = S[k]; });
+  CHECKS.forEach((k) => ($('#' + k).checked = S[k]));
+  RANGES.forEach((k) => { $('#' + k).value = S[k]; $('#' + k + 'O').textContent = S[k]; });
+  dirty = true;
+}
+$('#layout').addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (b) { S.auto = false; setLayout(b.dataset.v); } });
+$('#theme').innerHTML = Object.entries(THEMES).map(([k, v]) => `<button class="sw" data-v="${k}" title="${v.name}" aria-label="${v.name}" style="background:${v.bg}"><i style="background:${v.fg}"></i></button>`).join('');
+$('#theme').addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (b) { S.themes[S.layout] = b.dataset.v; syncUI(); } });
+TEXTS.forEach((k) => $('#' + k).addEventListener('input', (e) => { S[k] = e.target.value; dirty = true; }));
+CHECKS.forEach((k) => $('#' + k).addEventListener('change', (e) => { S[k] = e.target.checked; if (k !== 'lines') t0 = performance.now(); dirty = true; }));
+RANGES.forEach((k) => $('#' + k).addEventListener('input', (e) => { S[k] = +e.target.value; $('#' + k + 'O').textContent = S[k]; dirty = true; }));
+$('#restart').addEventListener('click', () => { t0 = performance.now(); dirty = true; });
+
+/* export */
+const status = (m) => ($('#status').textContent = m);
+function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+$('#png').addEventListener('click', () => {
+  const oc = document.createElement('canvas'); oc.width = W; oc.height = H;
+  render(oc.getContext('2d'), S.anim ? (performance.now() - t0) / 1000 : STILL_T, !S.anim);
+  oc.toBlob((b) => { download(b, 'thread-live-' + S.layout + '.png'); status('Saved a ' + W + ' × ' + H + ' PNG.'); }, 'image/png');
+});
+$('#rec').addEventListener('click', () => {
+  if (recording) return;
+  if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { status('This browser cannot record video from a canvas. Use the PNG export.'); return; }
+  const k = 1280 / W, rc = document.createElement('canvas'); rc.width = 1280; rc.height = Math.round(H * k);
+  const rx = rc.getContext('2d'), stream = rc.captureStream(30), chunks = [], mt = ['video/webm;codecs=vp9', 'video/webm'].find((m) => MediaRecorder.isTypeSupported(m));
+  const mr = new MediaRecorder(stream, mt ? { mimeType: mt, videoBitsPerSecond: 8e6 } : undefined);
+  mr.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  mr.onstop = () => { recording = false; $('#rec').disabled = false; download(new Blob(chunks, { type: 'video/webm' }), 'thread-live-' + S.layout + '.webm'); status('Saved a 12 s loop.'); };
+  recording = true; $('#rec').disabled = true; const start = performance.now(); mr.start();
+  const step = () => { const t = (performance.now() - start) / 1000; rx.setTransform(k, 0, 0, k, 0, 0); render(rx, Math.min(t, PERIOD), false); status('Recording… ' + Math.min(PERIOD, Math.ceil(t)) + ' / ' + PERIOD + ' s'); if (t < PERIOD) requestAnimationFrame(step); else mr.stop(); };
+  step();
+});
+
+/* hash: #layout=intro&theme=ink&t=3 (handy for stills) */
+new URLSearchParams(location.hash.slice(1)).forEach((v, k) => {
+  if (k === 'layout' && SCENES[v]) S.layout = v; else if (k === 'theme' && THEMES[v]) S.themes[S.layout] = v; else if (k === 't') frozenT = +v; else if (k === 'anim') S.anim = v !== '0';
+});
+addEventListener('resize', fit);
+Promise.all([document.fonts.load("172px 'Instrument Serif'"), document.fonts.load("italic 60px 'Instrument Serif'"), document.fonts.load('500 40px Inter'), document.fonts.load('700 40px Inter')]).catch(() => {}).then(() => { dirty = true; });
+syncUI(); fit(); requestAnimationFrame(frame);
+</script>
+</body>
+</html>

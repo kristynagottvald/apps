@@ -25,6 +25,14 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  // the starting soon countdown, then the intro title, the audience question, the session title and the statement card, switched the way a visitor would with the screen chips
+  'thread-live-session': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 50, run: async (p) => {
+    const t0 = Date.now(), scr = (n) => domClick(p, '#layout button:nth-child(' + n + ')');
+    await at(t0, 1500, () => scr(2));
+    await at(t0, 2800, () => scr(3));
+    await at(t0, 4200, () => scr(4));
+    await at(t0, 5300, () => scr(5));
+  } },
   'conference-post-generator': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 40, run: async (p) => {
     // the headline post plays on its own, then step through the speaker, badges and pattern templates
     const t0 = Date.now(), tpl = (n) => domClick(p, '#tpl button:nth-child(' + n + ')');
