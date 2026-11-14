@@ -221,7 +221,7 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
       <h4><span class="sw" id="crH"></span></h4><div class="form">Start sending</div></div>
      <div class="stage"><div class="bl" id="bl1" data-s="h"><div><strong class="sw" id="b1h"></strong><p class="sw" id="b1p"></p></div></div><div class="bl" id="bl2" data-s="h"><div><strong class="sw" id="b2h"></strong><p class="sw" id="b2p"></p></div></div><div class="bl" id="bl3" data-s="h"><div><strong class="sw" id="b3h"></strong><p class="sw" id="b3p"></p></div></div>
       <div class="box"><canvas class="adots" id="adots" aria-hidden="true"></canvas></div>
-      <div class="mail"><div class="el bar2" style="left:7.7%;top:9%;width:34%;height:4.2%"></div><div class="el bar2" style="left:7.7%;top:16.5%;width:24%;height:4.2%"></div><div class="el tag" style="left:70%;top:8.5%;width:22%;height:10%">Lob</div>
+      <div class="mail"><div class="el bar2" style="left:7.7%;top:9%;width:34%;height:4.2%"></div><div class="el bar2" style="left:7.7%;top:16.5%;width:24%;height:4.2%"></div><div class="el tag" style="left:64%;top:8.5%;width:28%;height:10%">YOUR BRAND</div>
        <div class="el bar2" style="left:7.7%;top:37%;width:34%;height:3.6%"></div><div class="el bar2" style="left:7.7%;top:45%;width:26%;height:3.6%"></div><div class="el bar2" style="left:7.7%;top:53%;width:30%;height:3.6%"></div>
        <div class="el qr" style="left:7.7%;top:70%;width:11.4%;height:17%"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" style="width:66%;height:66%;margin:17%;display:block"><path d="M2 7V2h5M17 2h5v5M22 17v5h-5M7 22H2v-5"/><rect x="6.5" y="6.5" width="4" height="4"/><rect x="13.5" y="6.5" width="4" height="4"/><rect x="6.5" y="13.5" width="4" height="4"/></svg></div><div class="el scan" style="left:20.6%;top:70%;width:28%;height:17%">Scan to accept your offer</div>
        <img class="el" src="../location-hero/photo.jpg" alt="" style="left:52%;top:27%;width:48%;height:73%"></div></div>
@@ -316,9 +316,9 @@ function syncFrame(o){try{const d=o.fr.contentDocument,w=o.fr.contentWindow;if(!
  if(!d.getElementById('ppx')){const s=d.createElement('style');s.id='ppx';s.textContent='nav.back{display:none!important}';d.head.appendChild(s)}
  const lp=w.eval('typeof lp!=="undefined"?lp:null');if(!lp)return;lp.stop();lp.set(state.m)}catch(e){/* cross-origin (file://): leave the page as it is */}}
 function loadPage(o){fit(o);if(!o.on){o.on=true;o.fr.onload=()=>{syncFrame(o);setTimeout(()=>syncFrame(o),400)};o.fr.src='../location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero'}else syncFrame(o)}
-/* dot grid in the purple visual: a darker purple, dots grow towards the bottom and shrink to nothing in the top 40% */
+/* dot grid in the purple visual: a darker purple, dots grow towards the bottom and shrink to nothing in the top 22%, full size by the bottom of the visible part */
 function drawAdDots(){const c=$('adots'),x=c.getContext('2d'),d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#3425dc';
- const g=13;for(let y=g/2;y<h;y+=g){const t=Math.max(0,(y/h-.4)/.6),r=g*.48*Math.pow(t,1.1);if(r<.4)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}}
+ const g=10;for(let y=g/2;y<h;y+=g){const t=Math.min(1,Math.max(0,(y/h-.22)/.62)),r=g*.4*Math.pow(t,1.1);if(r<.4)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}}
 /* dot grid on the bottom 30% of the landing page and performance screens, dots shrinking towards the top */
 function drawDots(){document.querySelectorAll('.scr.on .dotbg').forEach(c=>{const x=c.getContext('2d'),d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#10133a';
  const g=22;for(let y=g/2;y<h;y+=g){const r=g*.48*Math.pow(y/h,1.1);if(r<.5)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}})}
