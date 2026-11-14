@@ -25,18 +25,13 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:640px){nav.back{padding:0 16px}}
 
 .app{flex:1;min-height:0;display:flex;flex-direction:column}
-.bar{flex:none;display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:var(--navy);border-bottom:2px solid var(--line)}
-.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;white-space:nowrap}
-.brand i{width:20px;height:20px;background:var(--magenta);position:relative;display:block}
-.brand i::after{content:"";position:absolute;right:0;bottom:0;width:10px;height:10px;background:var(--lime)}
-.tabs{display:flex;gap:4px;margin-left:8px}
-.tabs button{background:none;border:0;border-radius:6px;padding:7px 12px;font-size:13px;font-weight:500;color:var(--muted)}
-.tabs button.on{background:var(--indigo);color:#fff}
-.tabs button:hover:not(.on){color:var(--text)}
-.sp{flex:1}
-.scrub{width:min(300px,28vw);accent-color:var(--lime)}
-.pp{width:34px;height:34px;border-radius:8px;border:2px solid var(--line);background:var(--ink);display:grid;place-items:center}
-.pp:hover{border-color:var(--lav)}
+.tools{margin-left:auto;display:flex;align-items:center;gap:10px}
+.sw{display:flex;gap:3px;border:1px solid #333;border-radius:999px;padding:2px}
+.sw button{font:500 12px/1 "Inter",Arial,sans-serif;color:#8d8d8d;background:none;border:0;border-radius:999px;padding:6px 11px}
+.sw button:hover{color:#fff}.sw button.on{background:#fff;color:#000}
+.scrub{width:150px;accent-color:#E6EA9C}
+.tools #pp{font:500 12px/1 "Inter","Helvetica Neue",Arial,sans-serif;color:#d0d0d0;background:none;border:1px solid #333;border-radius:999px;padding:7px 13px;min-width:62px}
+.tools #pp:hover{color:#000;background:#fff;border-color:#fff}
 button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 
 .stage{flex:1;min-height:0;position:relative;overflow:hidden;background:var(--ink)}
@@ -136,7 +131,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
 
 @media (max-width:1100px){.detail{display:none}.res{width:290px;padding:18px 20px}}
 @media (max-width:860px){
-  .bar{gap:10px;padding:0 12px}.brand span{display:none}.scrub{display:none}.sp{display:none}.tabs{margin-left:0;flex:1}.pp{margin-left:auto}
+  nav.back>span:nth-of-type(2),nav.back>b{display:none}.scrub{display:none}.tools{gap:6px}.sw button{padding:6px 8px}.tools #pp{min-width:0;padding:7px 10px}nav.back>a:first-child,nav.back>span:first-of-type{display:none}
   .libtop .avs,.search{display:none}
   .grid{grid-template-columns:repeat(2,1fr);padding:2px 14px 14px;gap:10px}.chips{padding:12px 14px 10px}
   #aud{flex-direction:column}
@@ -149,17 +144,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
 </style>
 </head>
 <body>
-<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Brand Audit Engine</b></nav>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Brand Audit Engine</b>
+<div class="tools"><div class="sw" id="sw" role="group" aria-label="Screen"><button class="on" data-go="1600">Library</button><button data-go="9000">Audit</button><button data-go="16800">Decision</button></div><input class="scrub" id="scrub" type="range" min="0" max="23800" step="10" value="0" aria-label="Timeline"><button type="button" id="pp" title="Pause / play">Pause</button></div></nav>
 <div class="app">
-  <div class="bar">
-    <div class="brand"><i></i><span>Brand Audit Engine</span></div>
-    <div class="tabs" role="tablist">
-      <button class="on" data-go="0">Library</button><button data-go="9000">Audit</button><button data-go="16800">Decision</button>
-    </div>
-    <div class="sp"></div>
-    <input class="scrub" id="scrub" type="range" min="0" max="23800" step="10" value="0" aria-label="Timeline">
-    <button class="pp" id="pp" aria-label="Play or pause"></button>
-  </div>
   <div class="stage" id="stage">
     <!-- LIBRARY -->
     <section class="scene" id="lib" aria-label="Asset library">
@@ -565,10 +552,10 @@ function render(t){
 /* ---------- clock ---------- */
 const scrub = $('#scrub'), pp = $('#pp');
 let T = 0, playing = true, speed = 1, looping = true, last = 0, userDrag = false;
-const ICON = {pause: '<svg width="14" height="14" viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12" fill="#fff"/><rect x="8.5" y="1" width="3.5" height="12" fill="#fff"/></svg>', play: '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1l10 6-10 6z" fill="#fff"/></svg>'};
-function sync(){ pp.innerHTML = playing ? ICON.pause : ICON.play; }
+const ICON_OLD = {pause: '<svg width="14" height="14" viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12" fill="#fff"/><rect x="8.5" y="1" width="3.5" height="12" fill="#fff"/></svg>', play: '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1l10 6-10 6z" fill="#fff"/></svg>'};
+function sync(){ pp.textContent = playing ? 'Pause' : 'Play'; }
 function seek(ms){ T = ms; render(T); if(!userDrag) scrub.value = T; tabsSync(); }
-function tabsSync(){ document.querySelectorAll('.tabs button').forEach((b, i) => b.classList.toggle('on', i === (T >= 16500 && T < 19100 ? 2 : T >= 5400 && T < 19100 ? 1 : 0))); }
+function tabsSync(){ document.querySelectorAll('.sw button').forEach((b, i) => b.classList.toggle('on', i === (T >= 16500 && T < 19100 ? 2 : T >= 5400 && T < 19100 ? 1 : 0))); }
 function frame(now){
   if(playing){
     T += (now - last) * speed;
@@ -579,7 +566,7 @@ function frame(now){
 }
 pp.onclick = () => { playing = !playing; sync(); };
 scrub.addEventListener('input', () => { userDrag = true; playing = false; sync(); T = +scrub.value; render(T); tabsSync(); userDrag = false; });
-document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { playing = false; sync(); seek(+b.dataset.go); });
+document.querySelectorAll('.sw button').forEach(b => b.onclick = () => { playing = false; sync(); seek(+b.dataset.go); });
 window.ba = {
   seek: ms => { playing = false; sync(); seek(ms); },
   play: (o = {}) => { if(o.from != null) T = o.from; speed = o.speed || 1; looping = o.loop !== false; playing = true; sync(); },
