@@ -308,7 +308,7 @@ $('like').onclick=function(){const on=this.classList.toggle('on');$('likes').tex
 
 /* ---------- 2: landing page, the real one in an iframe scaled to fit ---------- */
 const FR=[{fr:$('fr'),vp:$('vp'),on:false},{fr:$('fr2'),vp:$('vp2'),on:false}];
-function fit(o){const w=o.vp.clientWidth,mob=w<760,vw=mob?(o.vp.dataset.split?440:420):1280,vh=mob?(o.vp.dataset.split?720:820):720,sc=w/vw;
+function fit(o){const w=o.vp.clientWidth,mob=w<760,vw=mob?(o.vp.dataset.split?380:420):1280,vh=mob?(o.vp.dataset.split?700:820):720,sc=w/vw;
  o.fr.style.width=vw+'px';o.fr.style.height=vh+'px';o.fr.style.transform=`scale(${sc})`;o.vp.style.height=(vh*sc)+'px'}
 function syncFrame(o){try{const d=o.fr.contentDocument,w=o.fr.contentWindow;if(!d||!d.head)return;
  if(!d.getElementById('ppx')){const s=d.createElement('style');s.id='ppx';s.textContent='nav.back{display:none!important}';d.head.appendChild(s)}
