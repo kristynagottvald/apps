@@ -9,7 +9,7 @@
  * See tools/README.md for how to add an app.
  */
 const { chromium } = require('playwright');
-const fs = require('fs'), os = require('os'), path = require('path'), cp = require('child_process');
+const fs = require('fs'), os = require('os'), path = require('path'), cp = require('child_process'), http = require('http');
 
 const ROOT = path.resolve(__dirname, '..') + '/';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -25,6 +25,30 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  // the finished composition, then the whole 9 s cycle at 1.4x: the query is typed, matches appear, the query and context notes fly onto the graph, the result lands
+  'search-robot': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#clip', ready: 900, run: async (p) => {
+    const t0 = Date.now();
+    await at(t0, 700, () => p.evaluate(() => __rb.play({ from: 0, speed: 1.4, loop: false })));
+    await sleep(5600);
+  } },
+  // starts on the hero post, then scrolls the way a visitor would: the colour mosaic, the badges and the motion timeline, and back up to the hero
+  'thread-brand-guidelines': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1800, q: 55, run: async (p) => {
+    const t0 = Date.now(), to = (sel, off) => p.evaluate(([s, o]) => window.scrollTo({ top: document.querySelector(s).getBoundingClientRect().top + scrollY - 56 + o, behavior: 'smooth' }), [sel, off]);
+    await at(t0, 900, () => to('#mosaic', 24));
+    await at(t0, 2500, () => to('#badges', 600));
+    await at(t0, 3900, () => to('#motion', 640));
+    await at(t0, 5200, () => p.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' })));
+  } },
+  // the starting soon countdown, then the intro title, the audience question, the session title and the statement card, switched the way a visitor would with the screen chips
+  'thread-live-session': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 50, run: async (p) => {
+    const t0 = Date.now(), scr = (n) => domClick(p, '#layout button:nth-child(' + n + ')');
+    await at(t0, 1500, () => scr(2));
+    await at(t0, 2800, () => scr(3));
+    await at(t0, 4200, () => scr(4));
+    await at(t0, 5300, () => scr(5));
+  } },
+  // a block letter on the 12x12 grid: starts on a finished S, then the cells wave through the letters of SANDBOX and back to S
+  'grid-alphabet': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#w=SANDBOX&clip', ready: 500, q: 55, run: async (p) => { const t0 = Date.now(); await at(t0, 700, () => p.evaluate(() => __ga.start())); await sleep(5600); } },
   'conference-post-generator': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 40, run: async (p) => {
     // the headline post plays on its own, then step through the speaker, badges and pattern templates
     const t0 = Date.now(), tpl = (n) => domClick(p, '#tpl button:nth-child(' + n + ')');
@@ -97,12 +121,23 @@ const APPS = {
       await at(t0, 700, () => p.evaluate(() => gc.play({ speed: 2.4, clip: true })));
       await sleep(5600);
     } },
-  'location-hero': { vp: [1280, 769], crop: [0, 49, 1280, 720],
-    // hold on San Francisco, then switch the hero copy, blurbs and mailpiece to Miami
-    ready: 600,
+  // the feed with the sponsored ad (viewer in San Diego), switch the viewer's metro to Miami so the creative follows, click the ad through to the landing page, then on to the performance dashboard
+  'paid-ad-pipeline': { vp: [1280, 769], http: true, crop: [0, 49, 1280, 720], ready: 1200, q: 55,
+    setup: async (p) => { await p.evaluate(() => window.scrollTo(0, 330)); },
     run: async (p) => {
       const t0 = Date.now();
-      await p.evaluate(() => { lp.stop(); lp.set(0); });
+      await at(t0, 1500, () => p.evaluate(() => __pp.setMarket(1)));
+      await at(t0, 2800, () => domClick(p, '#adCr'));
+      await at(t0, 4600, () => domClick(p, '#tog button[data-s="3"]'));
+      await sleep(1700);
+    } },
+  'location-hero': { vp: [1280, 769], crop: [0, 49, 1280, 720],
+    // park on the first two blurbs, let them drift up and a third pop in, and switch the copy to Miami halfway
+    setup: async (p) => { await p.evaluate(() => { lp.stop(); lp.set(0); bl.stop(); bl.instant(); }); },
+    ready: 1200,
+    run: async (p) => {
+      const t0 = Date.now();
+      await p.evaluate(() => { bl.instant(); bl.start(1500); });
       await at(t0, 3200, () => p.evaluate(() => lp.set(1)));
       await sleep(5600);
     } },
@@ -223,13 +258,19 @@ async function record(name) {
   const errs = [];
   page.on('pageerror', (e) => errs.push(e.message));
   if (A.p5 && process.env.P5_LIB) await page.route('**/p5.min.js', (r) => r.fulfill({ path: process.env.P5_LIB, contentType: 'application/javascript' }));
+  if (A.http) {   // apps that embed another app in an iframe need one origin, which file:// does not give
+    const srv = http.createServer((q, r) => { const f = path.join(ROOT, decodeURIComponent(q.url.split('?')[0]).replace(/\/$/, '/index.html'));
+      fs.readFile(f, (e, d) => { if (e) { r.statusCode = 404; return r.end(); } r.setHeader('content-type', { '.html': 'text/html', '.jpg': 'image/jpeg', '.png': 'image/png', '.js': 'text/javascript', '.css': 'text/css' }[path.extname(f)] || 'application/octet-stream'); r.end(d); }); });
+    await new Promise((ok) => srv.listen(0, ok)); A.srv = srv;
+    await page.goto('http://localhost:' + srv.address().port + '/' + name + '/' + (A.hash || ''));
+  } else
   await page.goto('file://' + ROOT + name + '/index.html' + (A.hash || ''));
   await page.waitForLoadState('networkidle').catch(() => {});
   if (A.setup) { const c = await A.setup(page); if (Array.isArray(c)) A.crop = c; }
   await page.waitForTimeout(A.ready || 600);
   const start = (Date.now() - t0) / 1000;
   await Promise.all([A.run(page), sleep(6900)]);
-  await ctx.close(); await browser.close();
+  await ctx.close(); await browser.close(); if (A.srv) A.srv.close();
   if (errs.length) console.log('  page errors:', errs.slice(0, 2));
   return { src: path.join(dir, fs.readdirSync(dir).find((f) => f.endsWith('.webm'))), start };
 }
