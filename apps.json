@@ -1,5 +1,50 @@
 [
   {
+    "id": "conference-post-generator",
+    "title": "Conference Post Generator",
+    "category": "Tools",
+    "url": "conference-post-generator/",
+    "thumbnail": "conference-post-generator/thumb.png",
+    "preview": "conference-post-generator/thumb.webp",
+    "alt": "A yellow and black Thread 2026 conference post with a calligraphy swash headline, looping line panel and black and white portraits in outlined frames, then switching to the speaker, badges and looping line pattern templates"
+  },
+  {
+    "id": "arrow-line-generator",
+    "title": "Arrow Line Generator",
+    "category": "Motion",
+    "url": "arrow-line-generator/",
+    "thumbnail": "arrow-line-generator/thumb.png",
+    "preview": "arrow-line-generator/thumb.webp",
+    "alt": "Curved lines ending in open arrowheads that morph between red lines on black, black flowing lines on orange, and black crossing arches on grey"
+  },
+  {
+    "id": "brand-audit-engine",
+    "title": "Brand Audit Engine",
+    "category": "Motion",
+    "url": "brand-audit-engine/",
+    "thumbnail": "brand-audit-engine/thumb.png",
+    "preview": "brand-audit-engine/thumb.webp",
+    "alt": "Asset library of 1:1 and 9:16 campaign posts with review stages, then an audit engine scanning a no-code design suite post, circling five issues: a missing logo, low contrast, uneven gaps at the edge and bottom, and an off-brand colour, beside a results panel showing check time cut from 5 minutes to 20 seconds and 91% accuracy"
+  },
+  {
+    "id": "agentic-storefront",
+    "title": "Agentic Storefront Walkthrough",
+    "category": "Motion",
+    "url": "agentic-storefront/",
+    "thumbnail": "agentic-storefront/thumb.png",
+    "preview": "agentic-storefront/thumb.webp",
+    "alt": "A phone showing a shopper asking an AI chat for a warm, floral fall scent, two Glossier perfume recommendations, choosing a size, paying with Apple Pay and Face ID, and the order confirmed back in the chat"
+  },
+  {
+    "id": "ilg-pixel-globe",
+    "title": "ILG Pixel Globe",
+    "category": "Motion",
+    "url": "ilg-pixel-globe/",
+    "thumbnail": "ilg-pixel-globe/thumb.png",
+    "preview": "ilg-pixel-globe/thumb.webp",
+    "alt": "Black screen with a slowly turning globe made of white pixels and thin arcs of orders flying between cities, beside the ILG cube logo and the headline 'Get the guide navigating the world's inventory logistics'"
+  },
+  {
     "id": "human-tech-motion",
     "title": "Human / Tech Motion Loop",
     "category": "Motion",
@@ -7,15 +52,15 @@
     "thumbnail": "human-tech-motion/thumb.png",
     "preview": "human-tech-motion/thumb.webp",
     "alt": "Ten looping full-screen styles mixing duotone photography with vector curves, dot grids, halftone, pixel blocks, circles and pixel type, each in a palette of three to five colours, with a numbered switcher in the header"
-    },
-    {
+  },
+  {
     "id": "workout-year-reels",
     "title": "Workout Year in Review Reels",
     "category": "Motion",
     "url": "workout-year-reels/",
     "thumbnail": "workout-year-reels/thumb.png",
     "preview": "workout-year-reels/thumb.webp",
-    "alt": "Vertical reels frame cycling through fourteen flat geometric loops for a workout year in review, including overlapping circles, curved lines, chakra rings, sunsets, nested drops, curved pace lines, a heart and loop, rising arches, a counter dome and rocking bowls, with a style switcher in the header"
+    "alt": "Vertical reels frame cycling through thirteen flat geometric loops for a workout year in review, including overlapping circles, curved lines, chakra rings, sunsets, nested drops, curved pace stripes, counter-rotating loops, rising arches and rocking bowls, with a style switcher in the header"
   },
   {
     "id": "clearco-logistics-motion",

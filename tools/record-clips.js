@@ -25,6 +25,40 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  'conference-post-generator': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 40, run: async (p) => {
+    // the headline post plays on its own, then step through the speaker, badges and pattern templates
+    const t0 = Date.now(), tpl = (n) => domClick(p, '#tpl button:nth-child(' + n + ')');
+    await at(t0, 1300, () => tpl(2));
+    await at(t0, 2700, () => tpl(3));
+    await at(t0, 4000, () => tpl(4));
+    await at(t0, 5000, () => tpl(1));
+  } },
+  // red lattice on black, then the orange flow and the grey arches as the generator cycles on its own (lines draw in first, then morph)
+  'arrow-line-generator': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '?still', ready: 800, q: 48, run: async (p) => {
+    const t0 = Date.now(), go = (n) => p.evaluate((k) => __alg.go(k), n);
+    await at(t0, 1500, () => go(1));
+    await at(t0, 3300, () => go(2));
+    await at(t0, 5100, () => go(0));
+  } },
+  'workout-year-reels': { vp: [1280, 769], crop: [0, 49, 1280, 720],
+    // the cycle starts on the circles; step through the newest styles and one older one the way a visitor would with the switcher
+    ready: 1500,
+    run: async (p) => {
+      const t0 = Date.now(), st = (n) => domClick(p, '#sw button:nth-child(' + n + ')');
+      await at(t0, 1500, () => st(12));
+      await at(t0, 2600, () => st(13));
+      await at(t0, 3600, () => st(14));
+      await at(t0, 4600, () => st(11));
+      await at(t0, 5600, () => st(8));
+    } },
+  // park on the chat with the recommendations already shown (that is the first frame), then carry on from there at 4x: pick the item, size, Buy, Apple Pay, Face ID, order confirmed in the chat
+  'agentic-storefront': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '?park=1',
+    ready: 1500, q: 70,
+    run: async (p) => {
+      const t0 = Date.now();
+      await at(t0, 1300, () => p.evaluate(() => { fl.play({ from: 2, speed: 5.8, keep: true, loop: false }); }));
+      await sleep(5200);
+    } },
   // ten full-screen styles, each looping on its own with random events; click through five of them with the numbered switcher, ending back near the first
   'human-tech-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#c=1&t=2&clip', ready: 1000, q: 30, run: async (p) => {
     const t0 = Date.now(), st = (n) => domClick(p, '#sw button:nth-child(' + n + ')');
@@ -87,6 +121,8 @@ const APPS = {
   } },
   // the sequence starts part way in (#t=4.6): headline, sub-headline, then the logo fades in at the end
   'clearco-logistics-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#v=hero&t=4.6', ready: 1500, run: async () => {} },
+  // the globe turns and orders fly on their own; wait for the headline to fade in
+  'ilg-pixel-globe': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1300, q: 50, run: async () => {} },
   'clearco-terrain': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'clearco-target-frame': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'video-synopsis': { vp: [1280, 769], setup: cropOf('#vSyn'), run: async () => {} },
@@ -99,6 +135,11 @@ const APPS = {
     await at(t0, 3900, () => click(p, /^Icons$/));
     await at(t0, 5000, () => click(p, /^Spot illo$/));
     await at(t0, 5600, () => click(p, /^Pink$/));
+  } },
+  // the whole 23.8 s loop played at 3.6x from the middle of the scan: flags land, result fills in, reviewer requests changes, library updates, next audit starts
+  'brand-audit-engine': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1200, q: 40, run: async (p) => {
+    await p.evaluate(() => ba.play({ from: 9000, speed: 3.6 }));
+    await sleep(6600);
   } },
   'hero-banner-engine': { vp: [1280, 769], setup: cropOf('#cv'), run: async (p) => {
     const t0 = Date.now();
