@@ -309,9 +309,9 @@ function render(tt){
   $('spk').setAttribute('transform',tf(249.8,125,0,0,0,Math.max(sp,0)*tw));
   /* robot: the head turns to the card, then to the graph; arms lift as things are sent */
   var h1=eio(clamp((t-1.2)/.5))*(1-eio(clamp((t-2.9)/.5))), h2=eio(clamp((t-3.3)/.5))*(1-eio(clamp((t-7)/.7)));
-  var fl=1-2*eio(clamp((t-3.4)/.45))+2*eio(clamp((t-7)/.45));
+  var fl=(t>=3.4&&t<7)?-1:1;
   var ha=0, hx=0, bob=0;
-  for(i=0;i<hds.length;i++)hds[i].setAttribute('transform','translate('+hx+' '+bob+') translate(139 0) scale('+fl+' 1) translate(-139 0) rotate('+ha+' 145 160)');
+  for(i=0;i<hds.length;i++)hds[i].setAttribute('transform','translate('+hx+' '+bob+') translate(144 0) scale('+fl+' 1) translate(-144 0) rotate('+ha+' 145 160)');
   var la=-4*pulse(2.1,1.3)-3*pulse(3.0,.9)+1.2*Math.sin(2*Math.PI*t/T*3);
   for(i=0;i<las.length;i++)las[i].setAttribute('transform','rotate('+la+' 66 158)');
   var ra=1.2*Math.sin(2*Math.PI*t/T*3+1)-5*(pulse(3.4,.45)+pulse(3.8,.45)+pulse(4.1,.45)+pulse(4.4,.45)+pulse(4.7,.45)+pulse(5.0,.45)+pulse(5.9,.5));
