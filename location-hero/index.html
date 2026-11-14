@@ -39,10 +39,10 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:
 
 /* illustration */
 .stage{position:relative;aspect-ratio:1/1;width:100%;max-width:600px;justify-self:end;container-type:inline-size}
-.blurbs div.bl{position:absolute;width:60%;background:var(--card);border-radius:6px;padding:2.6cqw 3cqw;color:#fff;z-index:3;opacity:0;left:8%;top:26%;transform:scale(.8);transform-origin:50% 100%;transition:left .8s cubic-bezier(.34,1.3,.64,1),top .8s cubic-bezier(.34,1.3,.64,1),transform .6s cubic-bezier(.34,1.56,.64,1),opacity .45s}
+.blurbs div.bl{position:absolute;width:60%;height:15.8cqw;background:var(--card);border-radius:6px;padding:2.6cqw 3cqw;color:#fff;z-index:3;opacity:0;left:8%;top:26%;transform:scale(.8);transform-origin:50% 100%;transition:left 1.4s cubic-bezier(.34,1.3,.64,1),top 1.4s cubic-bezier(.34,1.3,.64,1),transform .7s cubic-bezier(.34,1.56,.64,1),opacity .45s}
 .blurbs .bl[data-s="1"]{left:8%;top:17%;opacity:1;transform:none}
 .blurbs .bl[data-s="0"]{left:26%;top:0;opacity:1;transform:none}
-.blurbs .bl[data-s="x"]{left:26%;top:-9%;opacity:0;transform:scale(.97);transition:left .8s,top .8s ease-in,transform .6s,opacity .45s .15s}
+.blurbs .bl[data-s="x"]{left:26%;top:-9%;opacity:0;transform:scale(.97);transition:left 1.4s,top 1.4s ease-in,transform .7s,opacity .6s .3s}
 .blurbs .bl[data-s="r"]{transition:none}
 .bi{transition:opacity .35s,transform .35s,filter .35s}
 .bi.out{opacity:0;transform:translateY(8px);filter:blur(5px)}
@@ -154,9 +154,9 @@ const bl={timer:null,st:null,
  reset(e){e.dataset.s='r';void e.offsetWidth;e.dataset.s='h';void e.offsetWidth},
  instant(){BL.forEach(e=>{e.dataset.s='r'});void BL[0].offsetWidth;this.order=[0,1,2];BL[0].dataset.s='0';BL[1].dataset.s='1';BL[2].dataset.s='h'},
  step(){const [top,low,nxt]=this.order;BL[top].dataset.s='x';BL[low].dataset.s='0';this.reset(BL[nxt]);BL[nxt].dataset.s='1';
-  const gone=top;this.order=[low,nxt,gone];setTimeout(()=>{if(this.order[2]===gone)this.reset(BL[gone])},1000)},
+  const gone=top;this.order=[low,nxt,gone];setTimeout(()=>{if(this.order[2]===gone)this.reset(BL[gone])},1700)},
  intro(){this.order=[0,1,2];BL.forEach(e=>{e.dataset.s='h'});setTimeout(()=>{BL[0].dataset.s='0'},150);setTimeout(()=>{BL[1].dataset.s='1'},650)},
- start(first){this.stop();this.st=setTimeout(()=>{this.step();this.timer=setInterval(()=>this.step(),2100)},first)},
+ start(first){this.stop();this.st=setTimeout(()=>{this.step();this.timer=setInterval(()=>this.step(),3400)},first)},
  stop(){clearTimeout(this.st);clearInterval(this.timer)}};
 const lp={i:0,timer:null,
  apply(i){const c=CITIES[i];$('city').textContent=c.region;$('h1').innerHTML=c.h;$('sub').textContent=c.sub;
