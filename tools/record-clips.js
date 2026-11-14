@@ -121,14 +121,6 @@ const APPS = {
       await at(t0, 700, () => p.evaluate(() => gc.play({ speed: 2.4, clip: true })));
       await sleep(5600);
     } },
-<<<<<<< HEAD
-  'location-hero': { vp: [1280, 769], crop: [0, 49, 1280, 720],
-    // park on the first two blurbs, let them drift up and a third pop in, and switch the copy to Miami halfway
-    setup: async (p) => { await p.evaluate(() => { lp.stop(); lp.set(0); bl.stop(); bl.instant(); }); },
-    ready: 1200,
-    run: async (p) => {
-      const t0 = Date.now();
-=======
   // the feed with the sponsored ad (viewer in San Diego), switch the viewer's metro to Miami so the creative follows, click the ad through to the landing page, then on to the performance dashboard
   'paid-ad-pipeline': { vp: [1280, 769], http: true, crop: [0, 49, 1280, 720], ready: 1200, q: 55,
     setup: async (p) => { await p.evaluate(() => window.scrollTo(0, 330)); },
@@ -145,7 +137,6 @@ const APPS = {
     ready: 1200,
     run: async (p) => {
       const t0 = Date.now();
->>>>>>> origin/claude/epic-pasteur-fsjjc8
       await p.evaluate(() => { bl.instant(); bl.start(1500); });
       await at(t0, 3200, () => p.evaluate(() => lp.set(1)));
       await sleep(5600);
