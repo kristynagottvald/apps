@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Conference Post Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Pinyon+Script&family=Playfair+Display:ital,wght@1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0e0e0e; --panel:#171717; --line:#2a2a2a; --text:#f3f2ea; --muted:#9a998d;
@@ -421,6 +421,17 @@ function star(ctx, cx, cy, r) {
   ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.42 : r; i ? ctx.lineTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)) : ctx.moveTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)); }
   ctx.closePath(); ctx.fill();
 }
+/* a 3D calligraphic capital: yellow extrusion with hairline contours behind, the letter itself in heavy black on the front */
+let LETTER_FONT = "'Pinyon Script', 'Instrument Serif', serif";
+function drawLetter3D(ctx, ch, cx, cy, size, ink, side) {
+  ctx.save(); ctx.font = size + 'px ' + LETTER_FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; setLS(ctx, 0);
+  const m = ctx.measureText(ch), depth = size * 0.15, steps = Math.max(4, Math.round(depth / 6)), hair = Math.max(1, size * 0.004);
+  const x0 = cx - (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2 - depth * 0.35, y0 = cy + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2 - depth * 0.35;
+  ctx.lineJoin = 'round'; ctx.strokeStyle = ink; ctx.fillStyle = side;
+  for (let k = steps; k >= 1; k--) { const o = depth * k / steps; ctx.lineWidth = hair; ctx.fillText(ch, x0 + o, y0 + o); ctx.strokeText(ch, x0 + o, y0 + o); }
+  ctx.fillStyle = ink; ctx.lineWidth = size * 0.034; ctx.fillText(ch, x0, y0); ctx.strokeText(ch, x0, y0);
+  ctx.restore();
+}
 /* h = badge height, centred on cx,cy. Emblem circle sits on the divider like the Commerce Council reference */
 function drawBadge(ctx, th, shape, cx, cy, h, rot, label, shadow) {
   const w = h * SHAPE_RATIO[shape], x = -w / 2, y = -h / 2, ink = DARK, lw = h * 0.014;
@@ -430,9 +441,8 @@ function drawBadge(ctx, th, shape, cx, cy, h, rot, label, shadow) {
   const outer = badgePath(shape, x, y, w, h); ctx.fill(outer); ctx.lineWidth = lw * 1.5; ctx.stroke(outer);
   const d = h * 0.04; ctx.lineWidth = lw; ctx.stroke(badgePath(shape, x + d, y + d, w - 2 * d, h - 2 * d));
   const ecy = y + h * 0.36, er = Math.min(h * 0.29, w * 0.4), dv = y + h * 0.665;
-  ctx.beginPath(); ctx.arc(0, ecy, er, 0, TAU); ctx.stroke();
-  ctx.save(); ctx.beginPath(); ctx.arc(0, ecy, er - lw, 0, TAU); ctx.clip();
-  const k = (er * 1.75) / 1587; drawSwash(ctx, -er * 0.875, ecy - 918 * k / 2, k, ink, 0); ctx.restore();
+  const first = (String(label || '').match(/[A-Za-z0-9]/) || ['T'])[0].toUpperCase();
+  drawLetter3D(ctx, first, 0, ecy + h * 0.01, h * 0.54, ink, th.accent);
   ctx.save(); ctx.clip(badgePath(shape, x + d, y + d, w - 2 * d, h - 2 * d)); ctx.beginPath(); ctx.moveTo(x, dv); ctx.lineTo(x + w, dv); ctx.lineWidth = lw; ctx.stroke(); ctx.restore();
   ctx.fillStyle = ink; star(ctx, -w * 0.36, dv - h * 0.06, h * 0.032); star(ctx, w * 0.36, dv - h * 0.06, h * 0.032);
   const lines = String(label || '').split('\n').filter(Boolean).slice(0, 2), fs0 = h * (lines.length > 1 ? 0.105 : 0.125);
@@ -493,16 +503,16 @@ function headlineBlock(ctx, c, box, o) {
   const { fu, th, t, W } = c, lines = parseLines(S.headline), sw = S.swashT && /^T/i.test(lines[0].s);
   const w100 = lines.map((l, i) => measureSlide(ctx, (i === 0 && sw) ? l.s.slice(1) : l.s, 100, l.it) / 100);
   const subH = (S.sub ? 64 * fu : 0) + (S.date ? 64 * fu : 0);
-  const mxMin = o.mx != null ? o.mx : 0.0985 * W, extra = sw ? 0.99 : 0, stackAt = (fs) => (lines.length - 1) * fs + 0.7 * fs + (sw ? 0.54 * fs : 0) + 76 * fu + subH;
+  const mxMin = o.mx != null ? o.mx : 0.0985 * W, extra = sw ? 0.99 : 0, stackAt = (fs) => (lines.length - 1) * fs * 0.88 + 0.7 * fs + (sw ? 0.54 * fs : 0) + 76 * fu + subH;
   let fs = o.maxFs;
   for (; fs > 24; fs *= 0.97) {
     const mx = Math.max(mxMin, extra * fs + 0.015 * W), right = Math.max(...w100.map((w, i) => (i === 0 && sw ? 0.53 : 0) + w)) * fs + mx;
     if (right <= box.x + box.w && stackAt(fs) <= box.h) break;
   }
-  const mx = Math.max(mxMin, extra * fs + 0.015 * W), top = box.y + (box.h - stackAt(fs)) / 2 + (sw ? 0.54 * fs : 0), b1 = top + 0.7 * fs, fl = (i) => 2 * fu * sway(t, i * 0.8 + 0);
+  const LH = 0.88, mx = Math.max(mxMin, extra * fs + 0.015 * W), top = box.y + (box.h - stackAt(fs)) / 2 + (sw ? 0.54 * fs : 0), b1 = top + 0.7 * fs, fl = (i) => 2 * fu * sway(t, i * 0.8 + 0);
   if (sw) drawSwash(ctx, mx + 0.53 * fs - 1.52 * fs, b1 - 1.24 * fs + fl(0), fs * 0.285 / 172, th.fg, 0.012 * sway(t, 0));
-  lines.forEach((l, i) => slide(ctx, (i === 0 && sw) ? l.s.slice(1) : l.s, mx + (i === 0 && sw ? 0.53 * fs : 0), b1 + i * fs + fl(i), fs, l.it, th.fg));
-  return { mx, fs, bottom: b1 + (lines.length - 1) * fs + 36 * fu };
+  lines.forEach((l, i) => slide(ctx, (i === 0 && sw) ? l.s.slice(1) : l.s, mx + (i === 0 && sw ? 0.53 * fs : 0), b1 + i * fs * LH + fl(i), fs, l.it, th.fg));
+  return { mx, fs, bottom: b1 + (lines.length - 1) * fs * LH + 36 * fu };
 }
 
 function tHeadline(ctx, c) {
@@ -690,7 +700,7 @@ new URLSearchParams(location.hash.slice(1)).forEach((v, k) => {
   else if (k === 'filter') S.photoFilter = v; else if (k === 'photos') S.photoCount = +v;
 });
 addEventListener('resize', fit);
-Promise.all([document.fonts.load("172px 'Instrument Serif'"), document.fonts.load("italic 60px 'Instrument Serif'"), document.fonts.load('600 40px Inter'), document.fonts.load('700 40px Inter')]).catch(() => {}).then(() => { dirty = true; });
+Promise.all([document.fonts.load("172px 'Instrument Serif'"), document.fonts.load("italic 60px 'Instrument Serif'"), document.fonts.load('600 40px Inter'), document.fonts.load("100px 'Pinyon Script'"), document.fonts.load("italic 700 100px 'Playfair Display'"), document.fonts.load('700 40px Inter')]).catch(() => {}).then(() => { dirty = true; });
 syncUI(); fit(); requestAnimationFrame(frame);
 </script>
 </body>
