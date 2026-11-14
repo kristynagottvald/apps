@@ -175,6 +175,14 @@ const APPS = {
   // the sequence starts part way in (#t=4.6): headline, sub-headline, then the logo fades in at the end
   'clearco-logistics-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#v=hero&t=4.6', ready: 1500, run: async () => {} },
   // the globe turns and orders fly on their own; wait for the headline to fade in
+  // hover three arms in turn; each breaks into particles and reforms
+  'asterisk': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async (p) => {
+    const t0 = Date.now();
+    await at(t0, 800, () => p.mouse.move(560, 300, { steps: 8 }));
+    await at(t0, 2600, () => p.mouse.move(760, 330, { steps: 8 }));
+    await at(t0, 4300, () => p.mouse.move(660, 520, { steps: 8 }));
+    await at(t0, 5400, () => p.mouse.move(1000, 700, { steps: 4 }));
+  } },
   'ilg-pixel-globe': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1300, q: 50, run: async () => {} },
   'clearco-terrain': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },
   'clearco-target-frame': { vp: [1280, 769], crop: [0, 49, 1280, 720], run: async () => {} },

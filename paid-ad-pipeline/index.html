@@ -44,6 +44,7 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .me select{width:100%;font:500 13px var(--sans);padding:7px 8px;border:1px solid #c7c5c1;border-radius:6px;background:#fff;color:#000;cursor:pointer}
 .me .geo em{display:block;font-style:normal;font-size:11px;color:rgba(0,0,0,.55);margin-top:6px;line-height:1.35}
 .post{margin-bottom:8px;overflow:hidden}
+.post:not(.ad),.start{opacity:.4;filter:saturate(.6)}
 .start{display:flex;gap:10px;padding:12px 16px;align-items:center;margin-bottom:8px}
 .start .av2{width:46px;height:46px;border-radius:50%;background:#c9d6e4;display:grid;place-items:center;font:600 16px var(--sans);color:#47607a;flex:none}
 .start div.in{flex:1;border:1px solid #c7c5c1;border-radius:99px;padding:13px 16px;font:600 14px var(--sans);color:rgba(0,0,0,.6)}
@@ -108,7 +109,7 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 @media(max-width:560px){.feed{padding:0;margin-top:8px}.pn{border-radius:0;border-left:0;border-right:0}.ad .bar .go{padding:6px 12px}.lh .search{width:auto;flex:1;max-width:none}}
 
 /* ---------- screen 2: the landing page ---------- */
-#s2{background:var(--deep);padding:24px 20px 40px}
+#s2{position:relative;background:var(--deep);padding:24px 20px 40px}
 .wrap{max-width:1280px;margin:0 auto}
 .crumb{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .crumb h2{font:500 20px var(--sans);letter-spacing:-.02em}
@@ -131,7 +132,9 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .next{display:flex;justify-content:space-between;gap:12px;margin-top:24px;flex-wrap:wrap}
 
 /* ---------- screen 3: performance ---------- */
-#s3{background:var(--deep);padding:24px 20px 56px}
+#s3{position:relative;background:var(--deep);padding:24px 20px 56px}
+.dotbg{position:absolute;left:0;right:0;bottom:0;width:100%;height:30%;pointer-events:none;z-index:0}
+#s2 .wrap,#s3 .wrap{position:relative;z-index:1}
 .dh{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:28px}
 .dh h2{font:500 26px var(--sans);letter-spacing:-.03em}.dh h2 i{font:italic 400 28px var(--serif);letter-spacing:0}
 .dh p{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px}
@@ -236,7 +239,7 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
 </section>
 
 <!-- 2: landing page -->
-<section class="scr" id="s2" aria-label="Landing page the ad links to"><div class="wrap">
+<section class="scr" id="s2" aria-label="Landing page the ad links to"><canvas class="dotbg" aria-hidden="true"></canvas><div class="wrap">
  <div class="crumb"><h2>Where the click lands</h2></div>
  <div class="browser"><div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url"><svg viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v3H5v14h14V9h-2V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3z"/></svg><b>lob.com</b></div></div>
   <div class="vp" id="vp"><iframe id="fr" title="Location Hero landing page" loading="lazy"></iframe></div></div>
@@ -245,7 +248,7 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
 </div></section>
 
 <!-- 3: performance -->
-<section class="scr" id="s3" aria-label="Campaign performance"><div class="wrap wide"><div class="split">
+<section class="scr" id="s3" aria-label="Campaign performance"><canvas class="dotbg" aria-hidden="true"></canvas><div class="wrap wide"><div class="split">
  <aside class="left"><div class="crumb" style="margin-bottom:12px"><h2 style="font-size:16px">Landing page</h2></div>
   <div class="browser"><div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>lob.com</b></div></div><div class="vp" id="vp2" data-split="1"><iframe id="fr2" title="Location Hero landing page" loading="lazy"></iframe></div></div></aside>
  <div class="dash">
@@ -283,7 +286,7 @@ function go(n,quiet){
  state.s=n;document.querySelectorAll('.scr').forEach(e=>e.classList.toggle('on',e.id==='s'+n));
  document.querySelectorAll('#tog button').forEach(b=>b.classList.toggle('on',+b.dataset.s===n));
  if(!quiet)history.replaceState(null,'','#'+['ad','page','perf'][n-1]);
- if(n===2)loadPage(FR[0]);if(n===3){loadPage(FR[1]);drawDash()}
+ drawDots();if(n===2)loadPage(FR[0]);if(n===3){loadPage(FR[1]);drawDash()}
  scrollTo(0,0);
 }
 document.querySelectorAll('#tog button').forEach(b=>b.onclick=()=>go(+b.dataset.s));
@@ -312,7 +315,10 @@ function syncFrame(o){try{const d=o.fr.contentDocument,w=o.fr.contentWindow;if(!
  if(!d.getElementById('ppx')){const s=d.createElement('style');s.id='ppx';s.textContent='nav.back{display:none!important}';d.head.appendChild(s)}
  const lp=w.eval('typeof lp!=="undefined"?lp:null');if(!lp)return;lp.stop();lp.set(state.m)}catch(e){/* cross-origin (file://): leave the page as it is */}}
 function loadPage(o){fit(o);if(!o.on){o.on=true;o.fr.onload=()=>{syncFrame(o);setTimeout(()=>syncFrame(o),400)};o.fr.src='../location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero'}else syncFrame(o)}
-addEventListener('resize',()=>{if(state.s===2)fit(FR[0]);if(state.s===3){fit(FR[1]);drawDash()}});
+/* dot grid on the bottom 30% of the landing page and performance screens, dots shrinking towards the top */
+function drawDots(){document.querySelectorAll('.scr.on .dotbg').forEach(c=>{const x=c.getContext('2d'),d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#10133a';
+ const g=22;for(let y=g/2;y<h;y+=g){const r=g*.48*Math.pow(y/h,1.1);if(r<.5)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}})}
+addEventListener('resize',()=>{drawDots();if(state.s===2)fit(FR[0]);if(state.s===3){fit(FR[1]);drawDash()}});
 
 /* ---------- 3: performance ---------- */
 const DAYS=14,DOW=[.45,1.1,1.2,1.15,1.1,.9,.5]; // Nov 1 2026 is a Sunday

@@ -9,6 +9,15 @@
     "alt": "A yellow and black landing page for the Thread 2026 SMS marketing conference with a countdown over a hairline grid, a dark register card, livestreamed keynotes and four track cards"
   },
   {
+    "id": "asterisk",
+    "title": "Asterisk",
+    "category": "Motion",
+    "url": "asterisk/",
+    "thumbnail": "asterisk/thumb.png",
+    "preview": "asterisk/thumb.webp",
+    "alt": "A pixel asterisk with six green arms on black; one arm breaks apart into drifting particles while the rest stays solid"
+  },
+  {
     "id": "paid-ad-pipeline",
     "title": "Paid Ad Pipeline",
     "category": "Tools",
