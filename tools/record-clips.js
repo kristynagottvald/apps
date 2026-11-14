@@ -9,7 +9,7 @@
  * See tools/README.md for how to add an app.
  */
 const { chromium } = require('playwright');
-const fs = require('fs'), os = require('os'), path = require('path'), cp = require('child_process');
+const fs = require('fs'), os = require('os'), path = require('path'), cp = require('child_process'), http = require('http');
 
 const ROOT = path.resolve(__dirname, '..') + '/';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -121,12 +121,31 @@ const APPS = {
       await at(t0, 700, () => p.evaluate(() => gc.play({ speed: 2.4, clip: true })));
       await sleep(5600);
     } },
+<<<<<<< HEAD
   'location-hero': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // park on the first two blurbs, let them drift up and a third pop in, and switch the copy to Miami halfway
     setup: async (p) => { await p.evaluate(() => { lp.stop(); lp.set(0); bl.stop(); bl.instant(); }); },
     ready: 1200,
     run: async (p) => {
       const t0 = Date.now();
+=======
+  // the feed with the sponsored ad (viewer in San Diego), switch the viewer's metro to Miami so the creative follows, click the ad through to the landing page, then on to the performance dashboard
+  'paid-ad-pipeline': { vp: [1280, 769], http: true, crop: [0, 49, 1280, 720], ready: 1200, q: 55,
+    setup: async (p) => { await p.evaluate(() => window.scrollTo(0, 330)); },
+    run: async (p) => {
+      const t0 = Date.now();
+      await at(t0, 1500, () => p.evaluate(() => __pp.setMarket(1)));
+      await at(t0, 2800, () => domClick(p, '#adCr'));
+      await at(t0, 4600, () => domClick(p, '#tog button[data-s="3"]'));
+      await sleep(1700);
+    } },
+  'location-hero': { vp: [1280, 769], crop: [0, 49, 1280, 720],
+    // park on the first two blurbs, let them drift up and a third pop in, and switch the copy to Miami halfway
+    setup: async (p) => { await p.evaluate(() => { lp.stop(); lp.set(0); bl.stop(); bl.instant(); }); },
+    ready: 1200,
+    run: async (p) => {
+      const t0 = Date.now();
+>>>>>>> origin/claude/epic-pasteur-fsjjc8
       await p.evaluate(() => { bl.instant(); bl.start(1500); });
       await at(t0, 3200, () => p.evaluate(() => lp.set(1)));
       await sleep(5600);
@@ -248,13 +267,19 @@ async function record(name) {
   const errs = [];
   page.on('pageerror', (e) => errs.push(e.message));
   if (A.p5 && process.env.P5_LIB) await page.route('**/p5.min.js', (r) => r.fulfill({ path: process.env.P5_LIB, contentType: 'application/javascript' }));
+  if (A.http) {   // apps that embed another app in an iframe need one origin, which file:// does not give
+    const srv = http.createServer((q, r) => { const f = path.join(ROOT, decodeURIComponent(q.url.split('?')[0]).replace(/\/$/, '/index.html'));
+      fs.readFile(f, (e, d) => { if (e) { r.statusCode = 404; return r.end(); } r.setHeader('content-type', { '.html': 'text/html', '.jpg': 'image/jpeg', '.png': 'image/png', '.js': 'text/javascript', '.css': 'text/css' }[path.extname(f)] || 'application/octet-stream'); r.end(d); }); });
+    await new Promise((ok) => srv.listen(0, ok)); A.srv = srv;
+    await page.goto('http://localhost:' + srv.address().port + '/' + name + '/' + (A.hash || ''));
+  } else
   await page.goto('file://' + ROOT + name + '/index.html' + (A.hash || ''));
   await page.waitForLoadState('networkidle').catch(() => {});
   if (A.setup) { const c = await A.setup(page); if (Array.isArray(c)) A.crop = c; }
   await page.waitForTimeout(A.ready || 600);
   const start = (Date.now() - t0) / 1000;
   await Promise.all([A.run(page), sleep(6900)]);
-  await ctx.close(); await browser.close();
+  await ctx.close(); await browser.close(); if (A.srv) A.srv.close();
   if (errs.length) console.log('  page errors:', errs.slice(0, 2));
   return { src: path.join(dir, fs.readdirSync(dir).find((f) => f.endsWith('.webm'))), start };
 }

@@ -21,6 +21,7 @@ Add an entry to the `APPS` table in `record-clips.js`:
 - `crop`: `[x, y, w, h]` in css pixels, 16:9, the part of the page that goes in the tile. An optional `setup(page)` can measure it and return the rectangle instead.
 - `run(page)`: the timeline of actions, in milliseconds after the page is ready. Apps that animate on their own just wait. The clip is about 6.5 seconds long, and the start of the clip is the page before the first action, so leave the first 700ms or so alone.
 - `q`: optional WebP quality (default 62); lower it for grainy apps to keep the clip small.
+- `http`: serve the repo over a local http server instead of file:// (for apps that embed another app in an iframe).
 - `ready`: extra milliseconds to wait before recording, for apps that need time to start.
 
 Then add the app to `apps.json` with `thumbnail` (`thumb.png`) and `preview` (`thumb.webp`).
