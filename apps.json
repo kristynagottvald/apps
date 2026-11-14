@@ -1,5 +1,14 @@
 [
   {
+    "id": "asterisk",
+    "title": "Asterisk",
+    "category": "Motion",
+    "url": "asterisk/",
+    "thumbnail": "asterisk/thumb.png",
+    "preview": "asterisk/thumb.webp",
+    "alt": "A pixel asterisk with six green arms on black; one arm breaks apart into drifting particles while the rest stays solid"
+  },
+  {
     "id": "paid-ad-pipeline",
     "title": "Paid Ad Pipeline",
     "category": "Tools",

@@ -44,12 +44,13 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .me select{width:100%;font:500 13px var(--sans);padding:7px 8px;border:1px solid #c7c5c1;border-radius:6px;background:#fff;color:#000;cursor:pointer}
 .me .geo em{display:block;font-style:normal;font-size:11px;color:rgba(0,0,0,.55);margin-top:6px;line-height:1.35}
 .post{margin-bottom:8px;overflow:hidden}
+.post:not(.ad),.start{opacity:.4;filter:saturate(.6)}
 .start{display:flex;gap:10px;padding:12px 16px;align-items:center;margin-bottom:8px}
 .start .av2{width:46px;height:46px;border-radius:50%;background:#c9d6e4;display:grid;place-items:center;font:600 16px var(--sans);color:#47607a;flex:none}
 .start div.in{flex:1;border:1px solid #c7c5c1;border-radius:99px;padding:13px 16px;font:600 14px var(--sans);color:rgba(0,0,0,.6)}
 .ph0{display:flex;gap:8px;padding:12px 16px 0;align-items:flex-start}
 .ph0 .ph-av{width:48px;height:48px;border-radius:50%;flex:none;display:grid;place-items:center;font:600 16px var(--sans);color:#fff}
-.ph0 .ph-av.sq{border-radius:3px;background:var(--purple);font:600 11px var(--sans);letter-spacing:-.2px}
+.ph0 .ph-av.sq{border-radius:3px;background:var(--purple);font:700 17px/1 var(--sans);letter-spacing:-.02em;text-align:center}
 .ph0 b{display:block;font:600 14px/1.3 var(--sans)}.ph0 small{display:block;font-size:12px;line-height:1.35;color:rgba(0,0,0,.6)}
 .ph0 .more{margin-left:auto;color:rgba(0,0,0,.6);font-size:18px;letter-spacing:2px;line-height:1}
 .ph0 .promo{display:inline-block}
@@ -66,22 +67,32 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .ad .cr{display:block;position:relative;aspect-ratio:1.91;background:var(--purple);overflow:hidden;container-type:inline-size;color:#fff;text-decoration:none;cursor:pointer}
 .ad .cr .sw,.ad .tx .sw{transition:opacity .3s,transform .3s,filter .3s;display:inline-block}
 .ad .out{opacity:0!important;filter:blur(4px)}
-.cr .l{position:absolute;left:6cqw;top:0;bottom:0;width:50cqw;display:flex;flex-direction:column;justify-content:center}
-.cr .chip{display:inline-flex;align-items:center;gap:1.6cqw;font:600 1.9cqw var(--sans);letter-spacing:.17em;text-transform:uppercase}
-.cr .chip svg{width:2.6cqw;height:2.6cqw;fill:var(--lime)}.cr .chip em{font-style:normal;color:var(--lime)}
-.cr h4{font:400 5.6cqw/1.05 var(--sans);letter-spacing:-.045em;margin:3.4cqw 0 3.4cqw;white-space:nowrap}
-.cr h4 i{font:italic 400 6cqw var(--serif);letter-spacing:-.01em}
-.cr .pill{align-self:flex-start;background:var(--lime);color:var(--ink);font:600 2.5cqw var(--sans);padding:1.7cqw 3.4cqw;border-radius:99px}
-.cr .r{position:absolute;right:-6cqw;top:12cqw;width:56cqw;height:60cqw;background:#fff;border-radius:3cqw;transform:rotate(-6deg)}
-.cr .t1{position:absolute;right:11cqw;top:10cqw;width:34cqw;background:var(--lav2);border-radius:2cqw;padding:3cqw;transform:rotate(-6deg);color:var(--ink)}
-.cr .t1 small{font:600 1.5cqw var(--sans);letter-spacing:.1em;color:#2a2b5c}
-.cr .t1 b{display:block;font:400 5cqw/1.1 var(--sans);letter-spacing:-.03em;margin:1.8cqw 0 .6cqw}.cr .t1 b i{font:italic 400 5.2cqw var(--serif)}
-.cr .t1 span{font:400 1.7cqw var(--sans)}
-.cr .pcard{position:absolute;right:4cqw;top:35cqw;width:30cqw;aspect-ratio:1.5;background:#a393f5;border-radius:1cqw;transform:rotate(5deg);box-shadow:0 1.4cqw 3cqw rgba(15,10,70,.35);overflow:hidden}
-.cr .pcard i{position:absolute;left:8%;height:5%;background:var(--purple);border-radius:9px}
-.cr .pcard u{position:absolute;right:8%;top:9%;background:var(--deep);border-radius:4px;font:600 1.7cqw/1 var(--sans);padding:1.3cqw 2cqw;text-decoration:none}
-.cr .pcard s{position:absolute;right:0;bottom:0;width:46%;height:70%;background:linear-gradient(135deg,#f6c99b,#d98a62);text-decoration:none}
-.cr .pcard em{position:absolute;left:8%;bottom:9%;width:36%;height:15%;background:var(--deep);border-radius:4px;font:italic 400 1.5cqw/1.15 var(--serif);display:flex;align-items:center;padding-left:6%}
+.ad .cr{background:var(--ink)}
+.cr .l{position:absolute;left:7cqw;top:0;bottom:0;width:40cqw;display:flex;flex-direction:column;justify-content:center}
+.cr .chip{display:inline-flex;align-items:center;gap:1.2cqw;white-space:nowrap;font:600 1.35cqw var(--sans);letter-spacing:.12em;text-transform:uppercase}
+.cr .chip svg{width:2.2cqw;height:2.2cqw;fill:var(--lime)}.cr .chip em{font-style:normal;color:var(--lime)}
+.cr h4{font:400 5.4cqw/1.04 var(--sans);letter-spacing:-.045em;margin:4cqw 0 3.6cqw;white-space:nowrap}
+.cr h4 i{font:italic 400 5.8cqw var(--serif);letter-spacing:-.01em}
+.cr .form{font:600 2.4cqw var(--sans);color:var(--lime);white-space:nowrap}
+.cr .stage{position:absolute;right:-10cqw;top:2cqw;width:62cqw;aspect-ratio:1;container-type:inline-size}
+.cr .stage>*{pointer-events:none}
+.cr .bl{position:absolute;width:60%;height:13.4%;display:flex;align-items:center;background:var(--card);border-radius:6px;padding:0 4.6cqw;color:#fff;z-index:3;opacity:0;left:8%;top:28%;transform:scale(.8);transform-origin:50% 100%;transition:left 1.9s cubic-bezier(.22,.8,.3,1),top 1.9s cubic-bezier(.22,.8,.3,1),transform .7s cubic-bezier(.34,1.56,.64,1),opacity .5s}
+.cr .bl[data-s="1"]{left:8%;top:20.4%;opacity:1;transform:none}
+.cr .bl[data-s="0"]{left:18%;top:5%;opacity:1;transform:none}
+.cr .bl[data-s="x"]{left:18%;top:-10.4%;opacity:0;transform:scale(.97);transition:left 1.9s,top 1.9s cubic-bezier(.22,.8,.3,1),transform .6s,opacity .9s .2s}
+.cr .bl[data-s="r"]{transition:none}
+@media(prefers-reduced-motion:reduce){.cr .bl{transition:none}}
+.cr .bl strong{display:block;font:400 3.6cqw/1.1 var(--sans);letter-spacing:-.02em}.cr .bl strong i{font:italic 400 3.8cqw var(--serif)}
+.ad .cr .bl .sw{display:block}
+.cr .bl p{white-space:nowrap;font:400 1.85cqw/1.4 var(--sans);color:rgba(255,255,255,.75);margin-top:.5cqw}
+.cr .box{position:absolute;left:0;right:0;top:15%;bottom:0;background:var(--purple);border-radius:32px;overflow:hidden}
+.cr .mail{position:absolute;z-index:2;left:25%;top:33%;width:50%;aspect-ratio:1.5;border-radius:3px;overflow:hidden;background:#a393f5}
+.cr .mail .el{position:absolute}
+.cr .mail .bar2{background:var(--purple);border-radius:99px}
+.cr .mail .tag{background:var(--deep);color:#fff;border-radius:2px;font:600 1.2cqw/1 var(--sans);display:flex;align-items:center;justify-content:center}
+.cr .mail .scan{background:var(--deep);color:#fff;border-radius:2px;font:italic 400 1.4cqw/1.15 var(--serif);display:flex;align-items:center;padding:0 5%}
+.cr .mail .qr{background:var(--deep);border-radius:2px}
+.cr .mail img{object-fit:cover}
 .ad .bar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#edf3f8}
 .ad .bar b{display:block;font:600 14px/1.3 var(--sans)}.ad .bar small{font-size:12px;color:rgba(0,0,0,.6)}
 .ad .bar a.go{margin-left:auto;flex:none;border:1px solid var(--li);color:var(--li);font:600 14px var(--sans);padding:6px 16px;border-radius:99px;text-decoration:none;background:#fff;white-space:nowrap}
@@ -98,7 +109,7 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 @media(max-width:560px){.feed{padding:0;margin-top:8px}.pn{border-radius:0;border-left:0;border-right:0}.ad .bar .go{padding:6px 12px}.lh .search{width:auto;flex:1;max-width:none}}
 
 /* ---------- screen 2: the landing page ---------- */
-#s2{background:var(--deep);padding:24px 20px 40px}
+#s2{position:relative;background:var(--deep);padding:24px 20px 40px}
 .wrap{max-width:1280px;margin:0 auto}
 .crumb{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .crumb h2{font:500 20px var(--sans);letter-spacing:-.02em}
@@ -121,21 +132,23 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .next{display:flex;justify-content:space-between;gap:12px;margin-top:24px;flex-wrap:wrap}
 
 /* ---------- screen 3: performance ---------- */
-#s3{background:var(--deep);padding:24px 20px 56px}
-.dh{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+#s3{position:relative;background:var(--deep);padding:24px 20px 56px}
+.dotbg{position:absolute;left:0;right:0;bottom:0;width:100%;height:30%;pointer-events:none;z-index:0}
+#s2 .wrap,#s3 .wrap{position:relative;z-index:1}
+.dh{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:28px}
 .dh h2{font:500 26px var(--sans);letter-spacing:-.03em}.dh h2 i{font:italic 400 28px var(--serif);letter-spacing:0}
 .dh p{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px}
 .dh .samp{margin-left:auto;font:500 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--yel2);border:1px solid rgba(251,201,61,.4);border-radius:99px;padding:5px 11px}
-.mk{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.mk{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px}
 .mk button{font:500 13px var(--sans);color:rgba(255,255,255,.75);background:none;border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:7px 14px;cursor:pointer}
 .mk button.on{background:var(--lime);color:var(--ink);border-color:var(--lime)}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:32px}
 .kpi,.box2{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:16px 18px}
 .kpi small{display:block;font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55)}
 .kpi b{display:block;font:400 34px/1.1 var(--sans);letter-spacing:-.04em;margin:10px 0 6px;font-variant-numeric:tabular-nums}
 .kpi span{font-size:12px;color:rgba(255,255,255,.55)}.kpi span em{font-style:normal;font-weight:600;color:var(--lime)}.kpi span em.dn{color:#ff9fb0}
 .kpi.hl{background:var(--purple);border-color:transparent}.kpi.hl small,.kpi.hl span{color:rgba(255,255,255,.8)}
-.row{display:grid;gap:12px;margin-bottom:12px}
+.row{display:grid;gap:20px;margin-bottom:32px}
 .r2{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}.r3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .box2 h3{font:600 14px var(--sans);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .box2 h3 small{font:400 12px var(--sans);color:rgba(255,255,255,.55);margin-left:auto}
@@ -173,6 +186,12 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
 .health{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin-top:14px}
 .health div small{display:block;font-size:11.5px;color:rgba(255,255,255,.55)}.health div b{font:400 24px var(--sans);letter-spacing:-.03em}
 .health div b u{text-decoration:none;font-size:13px;color:rgba(255,255,255,.55);margin-left:2px}
+#s3 .wrap.wide{max-width:1500px}
+.split{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:24px;align-items:start}
+.split .left{position:sticky;top:73px}
+.dash{container-type:inline-size;min-width:0}
+@container (max-width:860px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.r2,.r3{grid-template-columns:1fr}.kpi b{font-size:30px}}
+@media(max-width:1000px){.split{grid-template-columns:1fr}.split .left{position:static}}
 @media(max-width:980px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.r2,.r3{grid-template-columns:1fr}}
 @media(max-width:520px){#s2,#s3{padding:16px 12px 32px}.fun div{grid-template-columns:84px 1fr 62px}.kpi b{font-size:28px}}
 </style>
@@ -191,19 +210,22 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
   <main>
    <div class="pn start"><div class="av2">AR</div><div class="in">Start a post</div></div>
    <article class="pn post"><div class="ph0"><div class="ph-av" style="background:#6b8f71">PN</div><div><b>Priya Nair</b><small>Head of Growth at Fieldnote<br>3h · 🌐</small></div><span class="more">···</span></div>
-    <p class="txt">We spent a quarter testing offline channels against paid social. The surprise: the channel that won on cost per lead wasn't the one that won on pipeline. Thread on what we measured and why <span class="mr">…more</span></p>
+    <p class="txt">We tested offline channels against paid social for a quarter. The cost per lead winner wasn't the pipeline winner. <span class="mr">…more</span></p>
     <div class="cnt"><span class="rx"><i></i><i></i>&nbsp;212</span><span>31 comments</span></div></article>
 
-   <article class="pn post ad" id="ad"><div class="ph0"><div class="ph-av sq">// co.</div><div><b>co. Direct Mail</b><small>12,480 followers<br><span class="promo">Promoted</span></small></div><span class="more">··· &nbsp;✕</span></div>
+   <article class="pn post ad" id="ad"><div class="ph0"><div class="ph-av sq">Lob</div><div><b>Lob</b><small>12,480 followers<br><span class="promo">Promoted</span></small></div><span class="more">··· &nbsp;✕</span></div>
     <p class="txt" id="adtxt"><span class="sw" id="adIntro"></span></p>
     <a class="cr" id="adCr" href="https://kristynagottvald.github.io/sandbox/location-hero/?utm_source=linkedin&amp;utm_medium=paid_social&amp;utm_campaign=location_hero" aria-label="Direct mail that lands in your city in days. Opens the landing page">
-     <div class="r"></div>
-     <div class="t1"><small>DELIVERY TIME</small><b class="sw" id="crDays"></b><span class="sw" id="crScf"></span></div>
-     <div class="pcard"><i style="top:9%;width:34%"></i><i style="top:17%;width:24%"></i><u>// co.</u><s></s><em>Scan to accept your offer</em></div>
-     <div class="l"><div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.200 7 13 7 13s7-7.800 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg><span>Mailing near <em class="sw" id="crCity"></em></span></div>
-      <h4><span class="sw" id="crH"></span></h4><span class="pill">Start sending</span></div>
+     <div class="l"><div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.200 7 13 7 13s7-7.800 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg><span>Mailing in <em class="sw" id="crCity"></em></span></div>
+      <h4><span class="sw" id="crH"></span></h4><div class="form">Start sending</div></div>
+     <div class="stage"><div class="bl" id="bl1" data-s="h"><div><strong class="sw" id="b1h"></strong><p class="sw" id="b1p"></p></div></div><div class="bl" id="bl2" data-s="h"><div><strong class="sw" id="b2h"></strong><p class="sw" id="b2p"></p></div></div><div class="bl" id="bl3" data-s="h"><div><strong class="sw" id="b3h"></strong><p class="sw" id="b3p"></p></div></div>
+      <div class="box"></div>
+      <div class="mail"><div class="el bar2" style="left:7.7%;top:9%;width:34%;height:4.2%"></div><div class="el bar2" style="left:7.7%;top:16.5%;width:24%;height:4.2%"></div><div class="el tag" style="left:70%;top:8.5%;width:22%;height:10%">Lob</div>
+       <div class="el bar2" style="left:7.7%;top:37%;width:34%;height:3.6%"></div><div class="el bar2" style="left:7.7%;top:45%;width:26%;height:3.6%"></div><div class="el bar2" style="left:7.7%;top:53%;width:30%;height:3.6%"></div>
+       <div class="el qr" style="left:7.7%;top:70%;width:11.4%;height:17%"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" style="width:66%;height:66%;margin:17%;display:block"><path d="M2 7V2h5M17 2h5v5M22 17v5h-5M7 22H2v-5"/><rect x="6.5" y="6.5" width="4" height="4"/><rect x="13.5" y="6.5" width="4" height="4"/><rect x="6.5" y="13.5" width="4" height="4"/></svg></div><div class="el scan" style="left:20.6%;top:70%;width:28%;height:17%">Scan to accept your offer</div>
+       <img class="el" src="../location-hero/photo.jpg" alt="" style="left:52%;top:27%;width:48%;height:73%"></div></div>
     </a>
-    <div class="bar"><div class="tx"><b><span class="sw" id="barT"></span></b><small>kristynagottvald.github.io</small></div><a class="go" id="adGo" href="https://kristynagottvald.github.io/sandbox/location-hero/?utm_source=linkedin&amp;utm_medium=paid_social&amp;utm_campaign=location_hero">Learn more</a></div>
+    <div class="bar"><div class="tx"><b><span class="sw" id="barT"></span></b><small>lob.com</small></div><a class="go" id="adGo" href="https://kristynagottvald.github.io/sandbox/location-hero/?utm_source=linkedin&amp;utm_medium=paid_social&amp;utm_campaign=location_hero">Learn more</a></div>
     <div class="cnt"><span class="rx"><i></i><i></i>&nbsp;<span id="likes">184</span></span><span>12 comments · 9 reposts</span></div>
     <div class="act"><button id="like"><svg viewBox="0 0 24 24"><path d="M7 11v10H3V11zm0 0l4-8a2 2 0 0 1 2 2v4h6.500a2 2 0 0 1 2 2.300l-1.200 7A2 2 0 0 1 18.300 21H7"/></svg>Like</button><button><svg viewBox="0 0 24 24"><path d="M3 4h18v13H8l-5 4z"/></svg>Comment</button><button><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/></svg>Repost</button><button><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send</button></div></article>
 
@@ -217,30 +239,33 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
 </section>
 
 <!-- 2: landing page -->
-<section class="scr" id="s2" aria-label="Landing page the ad links to"><div class="wrap">
- <div class="crumb"><h2>Where the click lands</h2><p>The ad links to the live Location Hero page, which swaps its copy to the viewer's market. It is the real page, running below.</p>
-  <a class="btn ghost" id="openLive" href="https://kristynagottvald.github.io/sandbox/location-hero/?utm_source=linkedin&amp;utm_medium=paid_social&amp;utm_campaign=location_hero" target="_blank" rel="noopener">Open live page <svg viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg></a></div>
- <div class="browser"><div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url"><svg viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v3H5v14h14V9h-2V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3z"/></svg><b>kristynagottvald.github.io</b>/sandbox/location-hero/<u>?utm_source=linkedin&amp;utm_medium=paid_social&amp;utm_campaign=location_hero</u></div></div>
+<section class="scr" id="s2" aria-label="Landing page the ad links to"><canvas class="dotbg" aria-hidden="true"></canvas><div class="wrap">
+ <div class="crumb"><h2>Where the click lands</h2></div>
+ <div class="browser"><div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url"><svg viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v3H5v14h14V9h-2V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3z"/></svg><b>lob.com</b></div></div>
   <div class="vp" id="vp"><iframe id="fr" title="Location Hero landing page" loading="lazy"></iframe></div></div>
  <div class="utm" aria-label="Tracking parameters"><span>utm_source<b>linkedin</b></span><span>utm_medium<b>paid_social</b></span><span>utm_campaign<b>location_hero</b></span><span>Audience<b id="utmCity">San Diego, CA</b></span></div>
  <div class="next"><button class="btn ghost" data-go="1">← Back to the feed</button><button class="btn lime" data-go="3">See how it performed →</button></div>
 </div></section>
 
 <!-- 3: performance -->
-<section class="scr" id="s3" aria-label="Campaign performance"><div class="wrap">
- <div class="dh"><div><h2>Location Hero <i>performance</i></h2><p>LinkedIn Sponsored Content, Nov 1 – 14, 2026 · click-through, landing page and conversion by market</p></div><span class="samp">Sample data</span></div>
+<section class="scr" id="s3" aria-label="Campaign performance"><canvas class="dotbg" aria-hidden="true"></canvas><div class="wrap wide"><div class="split">
+ <aside class="left"><div class="crumb" style="margin-bottom:12px"><h2 style="font-size:16px">Landing page</h2></div>
+  <div class="browser"><div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>lob.com</b></div></div><div class="vp" id="vp2" data-split="1"><iframe id="fr2" title="Location Hero landing page" loading="lazy"></iframe></div></div></aside>
+ <div class="dash">
+ <div class="dh"><div><h2>Location Hero <i>Performance</i></h2><p>LinkedIn Sponsored Content, Nov 1 – 14, 2026</p></div><span class="samp">Sample data</span></div>
  <div class="mk" id="mk" role="group" aria-label="Market"></div>
  <div class="kpis" id="kpis"></div>
  <div class="row r2">
   <div class="box2"><h3><span id="chT">Clicks per day</span><span class="mt" id="mt"></span></h3><div class="chart" id="chart"><div class="tip" id="tip"></div></div></div>
   <div class="box2"><h3>Click to lead funnel<small id="funS"></small></h3><div class="fun" id="fun"></div></div>
  </div>
- <div class="box2" style="margin-bottom:12px"><h3>Market metrics<small>Click a row to filter the whole page</small></h3><div class="tw"><table id="tbl"></table></div></div>
+ <div class="box2" style="margin-bottom:32px"><h3>Market metrics<small>Click a row to filter the whole page</small></h3><div class="tw"><table id="tbl"></table></div></div>
  <div class="row r3">
   <div class="box2"><h3>Leads by job function<small>share of leads</small></h3><div class="bars" id="fn"></div></div>
   <div class="box2"><h3>Click-through by device<small>CTR</small></h3><div class="bars l" id="dv"></div></div>
   <div class="box2"><h3>Landing page health</h3><div class="health" id="hl"></div></div>
  </div>
+ </div></div>
  <div class="next"><button class="btn ghost" data-go="2">← Landing page</button><button class="btn lime" data-go="1">Replay from the feed ↺</button></div>
 </div></section>
 
@@ -249,11 +274,11 @@ const $=id=>document.getElementById(id);
 const LIVE='https://kristynagottvald.github.io/sandbox/location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero';
 /* one entry per market: ad copy (matches the landing page) and the sample campaign numbers */
 const M=[
- {k:'sd',city:'San Diego, CA',short:'San Diego',days:'2.0',scf:'Avg. First-Class time in your SCF, 919–921',hoods:'Gaslamp, La Jolla and North Park',intro:'Your next customer is already in San Diego. Print at our Southern California facility and land in Gaslamp, La Jolla and North Park mailboxes in days.',bar:'Reach 21,340 San Diego homes in days',impr:148200,ctr:.0094,cpc:7.84,lp:.88,cv:.062,homes:21340},
- {k:'mia',city:'Miami, FL',short:'Miami',days:'2.3',scf:'Avg. First-Class time in your SCF, 331–332',hoods:'Brickell, Wynwood and Coral Gables',intro:'Your next customer is already in Miami. Print at our Florida facility and land in Brickell, Wynwood and Coral Gables mailboxes in days.',bar:'Reach 24,760 Miami homes in days',impr:131500,ctr:.0081,cpc:8.41,lp:.86,cv:.051,homes:24760},
- {k:'nsh',city:'Nashville, TN',short:'Nashville',days:'2.1',scf:'Avg. First-Class time in your SCF, 370–372',hoods:'East Nashville, Gulch and Germantown',intro:'Your next customer is already in Nashville. Print at our Tennessee facility and land in East Nashville, Gulch and Germantown mailboxes in days.',bar:'Reach 19,880 Nashville homes in days',impr:96800,ctr:.0102,cpc:7.12,lp:.89,cv:.068,homes:19880},
- {k:'cmh',city:'Columbus, OH',short:'Columbus',days:'2.0',scf:'Avg. First-Class time in your SCF, 430–432',hoods:'Short North, German Village and Clintonville',intro:'Your next customer is already in Columbus. Print at our Ohio facility and land in Short North, German Village and Clintonville mailboxes in days.',bar:'Reach 22,410 Columbus homes in days',impr:88400,ctr:.0107,cpc:6.95,lp:.9,cv:.071,homes:22410},
- {k:'mci',city:'Kansas City, MO',short:'Kansas City',days:'2.4',scf:'Avg. First-Class time in your SCF, 640–641',hoods:'Westport, Crossroads and Brookside',intro:'Your next customer is already in Kansas City. Print at our Midwest facility and land in Westport, Crossroads and Brookside mailboxes in days.',bar:'Reach 17,950 Kansas City homes in days',impr:71300,ctr:.0088,cpc:7.3,lp:.87,cv:.057,homes:17950}];
+ {k:'sd',from:'Carlsbad, CA',fromSub:'36 mi from your delivery zone, 92101',city:'San Diego, CA',region:'Southern California',short:'San Diego',days:'2.0',scf:'Avg. First-Class time in your SCF, 919–921',hoods:'Gaslamp, La Jolla and North Park',intro:'Your next customer is already in San Diego. Print at our Southern California facility and land in Gaslamp, La Jolla and North Park mailboxes in days.',bar:'Reach 21,340 San Diego homes in days',impr:148200,ctr:.0094,cpc:7.84,lp:.88,cv:.062,homes:21340},
+ {k:'mia',from:'Orlando, FL',fromSub:'235 mi from your delivery zone, 33131',city:'Miami, FL',region:'South Florida',short:'Miami',days:'2.3',scf:'Avg. First-Class time in your SCF, 331–332',hoods:'Brickell, Wynwood and Coral Gables',intro:'Your next customer is already in Miami. Print at our Florida facility and land in Brickell, Wynwood and Coral Gables mailboxes in days.',bar:'Reach 24,760 Miami homes in days',impr:131500,ctr:.0081,cpc:8.41,lp:.86,cv:.051,homes:24760},
+ {k:'nsh',from:'Memphis, TN',fromSub:'210 mi from your delivery zone, 37203',city:'Nashville, TN',region:'Middle Tennessee',short:'Nashville',days:'2.1',scf:'Avg. First-Class time in your SCF, 370–372',hoods:'East Nashville, Gulch and Germantown',intro:'Your next customer is already in Nashville. Print at our Tennessee facility and land in East Nashville, Gulch and Germantown mailboxes in days.',bar:'Reach 19,880 Nashville homes in days',impr:96800,ctr:.0102,cpc:7.12,lp:.89,cv:.068,homes:19880},
+ {k:'cmh',from:'Dayton, OH',fromSub:'72 mi from your delivery zone, 43215',city:'Columbus, OH',region:'Central Ohio',short:'Columbus',days:'2.0',scf:'Avg. First-Class time in your SCF, 430–432',hoods:'Short North, German Village and Clintonville',intro:'Your next customer is already in Columbus. Print at our Ohio facility and land in Short North, German Village and Clintonville mailboxes in days.',bar:'Reach 22,410 Columbus homes in days',impr:88400,ctr:.0107,cpc:6.95,lp:.9,cv:.071,homes:22410},
+ {k:'mci',from:'Wichita, KS',fromSub:'200 mi from your delivery zone, 64105',city:'Kansas City, MO',region:'Kansas City Metro',short:'Kansas City',days:'2.4',scf:'Avg. First-Class time in your SCF, 640–641',hoods:'Westport, Crossroads and Brookside',intro:'Your next customer is already in Kansas City. Print at our Midwest facility and land in Westport, Crossroads and Brookside mailboxes in days.',bar:'Reach 17,950 Kansas City homes in days',impr:71300,ctr:.0088,cpc:7.3,lp:.87,cv:.057,homes:17950}];
 const state={s:1,m:0,f:-1,metric:'clicks'}; // m = viewer market in the feed, f = market filter on the dashboard (-1 all)
 
 /* ---------- navigation ---------- */
@@ -261,7 +286,7 @@ function go(n,quiet){
  state.s=n;document.querySelectorAll('.scr').forEach(e=>e.classList.toggle('on',e.id==='s'+n));
  document.querySelectorAll('#tog button').forEach(b=>b.classList.toggle('on',+b.dataset.s===n));
  if(!quiet)history.replaceState(null,'','#'+['ad','page','perf'][n-1]);
- if(n===2)loadPage();if(n===3)drawDash();
+ drawDots();if(n===2)loadPage(FR[0]);if(n===3){loadPage(FR[1]);drawDash()}
  scrollTo(0,0);
 }
 document.querySelectorAll('#tog button').forEach(b=>b.onclick=()=>go(+b.dataset.s));
@@ -270,27 +295,30 @@ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(+b.dataset.go
 /* ---------- 1: feed and ad ---------- */
 $('geo').innerHTML=M.map((m,i)=>`<option value="${i}">${m.city}</option>`).join('');
 $('geo').onchange=e=>setMarket(+e.target.value);
-const swEls=['adIntro','crCity','crH','crDays','crScf','barT'].map($);
+const swEls=['adIntro','crCity','crH','b1h','b1p','b2h','b2p','b3h','b3p','barT'].map($);
 function paintAd(){const m=M[state.m];
- $('adIntro').innerHTML=m.intro+' <span class="mr" style="color:rgba(0,0,0,.6)">…more</span>';$('crCity').textContent=m.city;
- $('crH').innerHTML=`Direct mail<br>that lands in<br><i>${m.short}</i><br>in days`;$('crDays').innerHTML=`${m.days} day <i>delivery</i>`;$('crScf').textContent=m.scf;$('barT').textContent=m.bar;
+ $('adIntro').innerHTML=m.intro+' <span class="mr" style="color:rgba(0,0,0,.6)">…more</span>';$('crCity').textContent=m.region;
+ $('crH').innerHTML=`Direct mail<br>that lands in<br><i>${m.short}</i><br>in days`;$('b1h').innerHTML=`${m.days} day <i>delivery time</i>`;$('b1p').textContent=m.scf;$('b2h').innerHTML=`Sending from <i>${m.from}</i>`;$('b2p').textContent=m.fromSub;$('b3h').innerHTML=`<i>${m.homes.toLocaleString('en-US')}</i> homes in your zone`;$('b3p').textContent=m.hoods;$('barT').textContent=m.bar;
  $('geo').value=state.m;$('utmCity').textContent=m.city}
 function setMarket(i,instant){state.m=i;if(instant){paintAd();return}
  swEls.forEach(e=>e.classList.add('out'));setTimeout(()=>{paintAd();swEls.forEach(e=>e.classList.remove('out'))},300);
- if(state.s===2)syncFrame()}
+ if(state.s>=2&&state.s<=3)syncFrame(FR[state.s-2])}
 $('like').onclick=function(){const on=this.classList.toggle('on');$('likes').textContent=on?185:184};
 /* a plain click follows the visitor into the landing page screen; modified clicks open the real URL */
 [$('adCr'),$('adGo')].forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;e.preventDefault();go(2)}));
 
 /* ---------- 2: landing page, the real one in an iframe scaled to fit ---------- */
-const fr=$('fr'),vp=$('vp');let frLoaded=false;
-function fit(){const w=vp.clientWidth,vw=w<760?420:1280,vh=w<760?820:720,sc=w/vw;
- fr.style.width=vw+'px';fr.style.height=vh+'px';fr.style.transform=`scale(${sc})`;vp.style.height=(vh*sc)+'px'}
-function syncFrame(){try{const d=fr.contentDocument,w=fr.contentWindow;if(!d||!d.head)return;
+const FR=[{fr:$('fr'),vp:$('vp'),on:false},{fr:$('fr2'),vp:$('vp2'),on:false}];
+function fit(o){const w=o.vp.clientWidth,mob=w<760,vw=mob?(o.vp.dataset.split?440:420):1280,vh=mob?(o.vp.dataset.split?720:820):720,sc=w/vw;
+ o.fr.style.width=vw+'px';o.fr.style.height=vh+'px';o.fr.style.transform=`scale(${sc})`;o.vp.style.height=(vh*sc)+'px'}
+function syncFrame(o){try{const d=o.fr.contentDocument,w=o.fr.contentWindow;if(!d||!d.head)return;
  if(!d.getElementById('ppx')){const s=d.createElement('style');s.id='ppx';s.textContent='nav.back{display:none!important}';d.head.appendChild(s)}
  const lp=w.eval('typeof lp!=="undefined"?lp:null');if(!lp)return;lp.stop();lp.set(state.m)}catch(e){/* cross-origin (file://): leave the page as it is */}}
-function loadPage(){fit();if(!frLoaded){frLoaded=true;fr.onload=()=>{syncFrame();setTimeout(syncFrame,400)};fr.src='../location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero'}else syncFrame()}
-addEventListener('resize',()=>{if(state.s===2)fit();if(state.s===3)drawDash()});
+function loadPage(o){fit(o);if(!o.on){o.on=true;o.fr.onload=()=>{syncFrame(o);setTimeout(()=>syncFrame(o),400)};o.fr.src='../location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero'}else syncFrame(o)}
+/* dot grid on the bottom 30% of the landing page and performance screens, dots shrinking towards the top */
+function drawDots(){document.querySelectorAll('.scr.on .dotbg').forEach(c=>{const x=c.getContext('2d'),d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#10133a';
+ const g=22;for(let y=g/2;y<h;y+=g){const r=g*.48*Math.pow(y/h,1.1);if(r<.5)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}})}
+addEventListener('resize',()=>{drawDots();if(state.s===2)fit(FR[0]);if(state.s===3){fit(FR[1]);drawDash()}});
 
 /* ---------- 3: performance ---------- */
 const DAYS=14,DOW=[.45,1.1,1.2,1.15,1.1,.9,.5]; // Nov 1 2026 is a Sunday
@@ -353,7 +381,18 @@ function drawChart(days){
 
 /* ---------- start ---------- */
 paintAd();
-window.__pp={go,setMarket:i=>setMarket(i)};
+/* the three blurbs drift up one after another, like the landing page */
+const BL=[1,2,3].map(n=>$('bl'+n));
+const bl={timer:null,st:null,order:[0,1,2],
+ reset(e){e.dataset.s='r';void e.offsetWidth;e.dataset.s='h';void e.offsetWidth},
+ instant(){BL.forEach(e=>{e.dataset.s='r'});void BL[0].offsetWidth;this.order=[0,1,2];BL[0].dataset.s='0';BL[1].dataset.s='1';BL[2].dataset.s='h'},
+ step(){const [top,low,nxt]=this.order;BL[top].dataset.s='x';BL[low].dataset.s='0';this.reset(BL[nxt]);BL[nxt].dataset.s='1';
+  const gone=top;this.order=[low,nxt,gone];setTimeout(()=>{if(this.order[2]===gone)this.reset(BL[gone])},2200)},
+ intro(){this.order=[0,1,2];BL.forEach(e=>{e.dataset.s='h'});setTimeout(()=>{BL[0].dataset.s='0'},150);setTimeout(()=>{BL[1].dataset.s='1'},650)},
+ start(first){this.stop();this.st=setTimeout(()=>{this.step();this.timer=setInterval(()=>this.step(),3400)},first)},
+ stop(){clearTimeout(this.st);clearInterval(this.timer)}};
+if(new URLSearchParams(location.search).has('hold')){bl.instant()}else{bl.intro();bl.start(2600)}
+window.__pp={go,setMarket:i=>setMarket(i),bl};
 const h=location.hash.slice(1),start={ad:1,page:2,perf:3}[h]||1;
 go(start,true);
 </script>
