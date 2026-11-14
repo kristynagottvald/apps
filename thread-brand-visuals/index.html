@@ -570,7 +570,7 @@ function drawNumbers(ctx, W, H, t) {
 function drawFramework(ctx, W, H, t) {
   /* hairline frame and flat blocks on ink: the rail and the top and bottom lines draw on, the panel wipes in, re-cuts into a block, an outline and a cream block, then everything draws off */
   ctx.fillStyle = DARK; ctx.fillRect(0, 0, W, H);
-  const u = (t % PERIOD) / PERIOD, seg = (a, b) => ease((u - a) / (b - a)), off = ease((u - 0.9) / 0.1), lw = Math.max(3, W * 0.005);
+  const u = (t % PERIOD) / PERIOD, seg = (a, b) => ease((u - a) / (b - a)), off = ease((u - 0.9) / 0.1), lw = Math.max(1.5, W * 0.0022);
   const L = W * 0.06, R = W * 0.95, T = H * 0.17, B = H * 0.87, rail = W * 0.16, cream = '#faf4de';
   ctx.strokeStyle = YEL; ctx.fillStyle = YEL; ctx.lineWidth = lw; ctx.lineCap = 'butt';
   const line = (x1, y1, x2, y2, p) => { if (p <= 0) return; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + (x2 - x1) * p, y1 + (y2 - y1) * p); ctx.stroke(); };
