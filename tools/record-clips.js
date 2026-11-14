@@ -26,7 +26,7 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
   // ten full-screen styles, each looping on its own with random events; click through five of them with the numbered switcher, ending back near the first
-  'human-tech-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#c=1&t=2', ready: 1000, q: 38, run: async (p) => {
+  'human-tech-motion': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#c=1&t=2&clip', ready: 1000, q: 30, run: async (p) => {
     const t0 = Date.now(), st = (n) => domClick(p, '#sw button:nth-child(' + n + ')');
     await at(t0, 1100, () => st(2));
     await at(t0, 2200, () => st(4));
