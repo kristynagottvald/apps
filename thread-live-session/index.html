@@ -319,25 +319,22 @@ const attentive = (ctx, th) => { const aw = 170, ah = aw * ATT_H / ATT_W; drawAt
 
 /* ===== 1. starting soon: 10 second count, mirrored calligraphy ===== */
 function sSoon(ctx, c) {
-  const { th, t, still } = c, tc = still ? STILL_T : ((t % PERIOD) + PERIOD) % PERIOD, live = tc >= COUNT;
+  const { th, t, still } = c, tc = still ? STILL_T : ((t % PERIOD) + PERIOD) % PERIOD;
   flourishPair(ctx, 0, GY0, W, GY1 - GY0, { color: th.fg, t, still, fw: penW() });
   grid(ctx, c);
   const pw = 700, ph = 620, px = W / 2 - pw / 2, py = H / 2 - ph / 2 + (still ? 0 : 4 * sway(t, 0.7));
-  const bg = live ? th.fg : th.bg, ink = live ? th.bg : th.fg;
+  const bg = th.bg, ink = th.fg;
   ctx.save(); ctx.fillStyle = bg; ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.lineJoin = 'miter'; ctx.fillRect(px, py, pw, ph); ctx.strokeRect(px, py, pw, ph); ctx.restore();
-  sansText(ctx, (live ? 'Going live' : S.soonTag).toUpperCase(), W / 2, py + 66, 22, ink, { wt: 700, ls: 6, align: 'center' });
+  sansText(ctx, S.soonTag.toUpperCase(), W / 2, py + 66, 22, ink, { wt: 700, ls: 6, align: 'center' });
   ctx.save(); ctx.strokeStyle = ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(px + 60, py + 96); ctx.lineTo(px + pw - 60, py + 96); ctx.stroke(); ctx.restore();
-  const lines = parseLines(live ? 'Here we\n*go*' : S.soonHead, 3), fs = fitLines(ctx, lines, pw - 100, 190, 104, 0.9);
+  const lines = parseLines(S.soonHead, 3), fs = fitLines(ctx, lines, pw - 100, 190, 104, 0.9);
   lines.forEach((l, i) => slideC(ctx, l.s, W / 2, py + 96 + fs * 0.95 + i * fs * 0.9, fs, l.it, ink));
   const base = py + ph - 96;
-  if (live) slideC(ctx, 'Live', W / 2, base - 8, 190, true, ink);
-  else {
-    const n = cl(Math.ceil(COUNT - tc), 1, COUNT), u = tc - Math.floor(tc), e = still ? 1 : easeOut(u / 0.3);
-    ctx.save(); ctx.globalAlpha = 0.35 + 0.65 * e; slideC(ctx, String(n), W / 2, base + (1 - e) * 36, 212, false, ink); ctx.restore();
-  }
+  const n = Math.max(0, Math.ceil(COUNT - tc)), u = tc - Math.floor(tc), e = still || tc >= COUNT ? 1 : easeOut(u / 0.3);   // counts 10 to 1, rests on 0 for the last 2 s of the loop
+  ctx.save(); ctx.globalAlpha = 0.35 + 0.65 * e; slideC(ctx, String(n), W / 2, base + (1 - e) * 36, 212, false, ink); ctx.restore();
   const cw = 52, gap = (pw - 120 - 10 * cw) / 9, ty = py + ph - 62;   // ten cells, one fills every second
   for (let i = 0; i < COUNT; i++) {
-    const x = px + 60 + i * (cw + gap), f = live ? 1 : i < Math.floor(tc) ? 1 : i === Math.floor(tc) ? tc - Math.floor(tc) : 0;
+    const x = px + 60 + i * (cw + gap), f = i < Math.floor(tc) ? 1 : i === Math.floor(tc) ? tc - Math.floor(tc) : 0;
     ctx.save(); ctx.strokeStyle = ink; ctx.lineWidth = 2; ctx.lineCap = 'butt'; ctx.globalAlpha = 0.28; ctx.beginPath(); ctx.moveTo(x, ty + 9); ctx.lineTo(x + cw, ty + 9); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 3; if (f > 0) { ctx.beginPath(); ctx.moveTo(x, ty + 9); ctx.lineTo(x + cw * f, ty + 9); ctx.stroke(); } ctx.restore();
   }
 }
