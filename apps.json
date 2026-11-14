@@ -9,6 +9,24 @@
     "alt": "Thread LinkedIn Live screens: a yellow stream-starts-soon card with a 10 second countdown between mirrored looping calligraphy, a black intro title with a centred Thread logo and side tickers, an audience question about SMS over three framed speaker tiles, a breakout session title card and a statement card, all on a hairline grid"
   },
   {
+    "id": "grid-alphabet",
+    "title": "Grid Alphabet",
+    "category": "Motion",
+    "url": "grid-alphabet/",
+    "thumbnail": "grid-alphabet/thumb.png",
+    "preview": "grid-alphabet/thumb.webp",
+    "alt": "A bold black block letter on a 12 by 12 white grid over grey, whose cells wave in and out to morph from one letter to the next, starting with an S"
+  },
+  {
+    "id": "location-hero",
+    "title": "Location Hero",
+    "category": "Tools",
+    "url": "location-hero/",
+    "thumbnail": "location-hero/thumb.png",
+    "preview": "location-hero/thumb.webp",
+    "alt": "A Lob style purple hero with a direct mail platform and postcard illustration under USPS delivery and print location blurbs, switching from San Francisco to Miami"
+  },
+  {
     "id": "conference-post-generator",
     "title": "Conference Post Generator",
     "category": "Tools",

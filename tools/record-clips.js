@@ -33,6 +33,8 @@ const APPS = {
     await at(t0, 4200, () => scr(4));
     await at(t0, 5300, () => scr(5));
   } },
+  // a block letter on the 12x12 grid: starts on a finished S, then the cells wave through the letters of SANDBOX and back to S
+  'grid-alphabet': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#w=SANDBOX&clip', ready: 500, q: 55, run: async (p) => { const t0 = Date.now(); await at(t0, 700, () => p.evaluate(() => __ga.start())); await sleep(5600); } },
   'conference-post-generator': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 40, run: async (p) => {
     // the headline post plays on its own, then step through the speaker, badges and pattern templates
     const t0 = Date.now(), tpl = (n) => domClick(p, '#tpl button:nth-child(' + n + ')');
@@ -103,6 +105,15 @@ const APPS = {
     run: async (p) => {
       const t0 = Date.now();
       await at(t0, 700, () => p.evaluate(() => gc.play({ speed: 2.4, clip: true })));
+      await sleep(5600);
+    } },
+  'location-hero': { vp: [1280, 769], crop: [0, 49, 1280, 720],
+    // hold on San Francisco, then switch the hero copy, blurbs and mailpiece to Miami
+    ready: 600,
+    run: async (p) => {
+      const t0 = Date.now();
+      await p.evaluate(() => { lp.stop(); lp.set(0); });
+      await at(t0, 3200, () => p.evaluate(() => lp.set(1)));
       await sleep(5600);
     } },
   'grubclub-end-card': { vp: [1280, 769], crop: [0, 49, 1280, 720],
