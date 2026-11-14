@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Conference Post Generator</title>
+<title>Conference Post Creator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Pinyon+Script&family=Playfair+Display:ital,wght@1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -79,14 +79,14 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
 </style>
 </head>
 <body>
-<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Conference Post Generator</b></nav>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Conference Post Creator</b></nav>
 <div class="app">
   <main class="stage">
     <div id="box"><canvas id="cv" role="img" aria-label="Live preview of the conference social post"></canvas></div>
     <div class="meta"><span id="dims"></span><span>8 s loop</span></div>
   </main>
   <aside class="panel">
-    <div class="brand"><h1>Conference <em>posts</em></h1><p>Social posts for an SMS marketing conference. Yellow and black, calligraphy loops, outlined photos and badges.</p></div>
+    <div class="brand"><h1>Conference <em>Post</em> Creator</h1><p>Social posts for an SMS marketing conference. Yellow and black, calligraphy loops, outlined photos and badges.</p></div>
 
     <section>
       <h2>Template</h2>
@@ -204,7 +204,7 @@ const titleCase = (str) => String(str || '').replace(/\s+/g, ' ').trim().split('
 const SHAPE_RATIO = { arch: 0.76, circle: 1, scallop: 1, hexagon: 1.1, shield: 0.84 };
 
 const S = {
-  tpl: 'headline', fmt: 'landscape', theme: 'yellow', seed: 7,
+  tpl: 'badges', fmt: 'landscape', theme: 'cream', seed: 7,
   headline: 'Thread 2026\nin under\n10 minutes', sub: 'The SMS marketing conference', bHeadline: 'Tickets\non sale now', bSub: 'Pick your pass for Thread 2026', date: 'May 12–14 · New York',
   chip: 'Keynote', speaker: 'Maya Chen', role: 'VP of Growth, Brand Co.', talk: 'What texting taught us about talking to customers',
   swashT: true, badgeShape: 'arch', badgeText: SHAPE_DEFAULTS.arch, showBadge: true, badgeCount: 3,
@@ -331,15 +331,15 @@ function drawStroke(ctx, pts, a, b, t) {
 const flourCache = new Map();
 /* left set anchored to the left edge of the rect, mirrored set on the right; o: color, t, still, fw (pen scale), off (timing shift) */
 function flourish(ctx, x, y, w, h, o) {
-  const s = Math.min(h / 800, w * 0.55 / 600), copies = Math.max(1, Math.round(h / (800 * s))), space = h - 770 * s, step = copies > 1 ? space / (copies - 1) : space / 2;
-  const key = [x, y, w, h, o.fw].map((v) => Math.round(v * 100)).join('|'); let sets = flourCache.get(key);
+  const s = Math.min(h / 800, w * 0.55 / 600) * (o.k || 1), copies = o.one ? 1 : Math.max(1, Math.round(h / (800 * s))), space = h - 770 * s, step = copies > 1 ? space / (copies - 1) : space / 2;
+  const key = [x, y, w, h, o.fw, o.k || 1, o.one ? 1 : 0].map((v) => Math.round(v * 100)).join('|'); let sets = flourCache.get(key);
   if (!sets) {
     if (flourCache.size > 10) flourCache.clear(); sets = [];
-    for (let c = 0; c < copies; c++) { const y0 = y + (copies > 1 ? c * step : step); sets.push([FDEFS.map((d) => buildStroke(d, (px) => x + px * s, (py) => y0 + py * s, o.fw)), FDEFS.map((d) => buildStroke(d, (px) => x + w - px * s, (py) => y0 + py * s, o.fw))]); }
+    for (let c = 0; c < copies; c++) { const y0 = y + (o.one ? 0 : copies > 1 ? c * step : step); sets.push([FDEFS.map((d) => buildStroke(d, (px) => x + px * s, (py) => y0 + py * s, o.fw)), FDEFS.map((d) => buildStroke(d, (px) => x + w - px * s, (py) => y0 + py * s, o.fw))]); }
     flourCache.set(key, sets);
   }
   ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.fillStyle = o.color;
-  sets.forEach((pair, c) => pair.forEach((set, side) => (o.side === 'R' && !side) ? 0 : set.forEach((pts, i) => { const [a, b] = o.still ? [0, 1] : strokeSpan(i, o.t + (o.off || 0) + c * 2.7); drawStroke(ctx, pts, a, b, o.t); })));
+  sets.forEach((pair, c) => pair.forEach((set, side) => ((o.side === 'R' && !side) || (o.side === 'L' && side)) ? 0 : set.forEach((pts, i) => { const [a, b] = o.still ? [0, 1] : strokeSpan(i, o.t + (o.off || 0) + c * 2.7); drawStroke(ctx, pts, a, b, o.t); })));
   ctx.restore();
 }
 
@@ -493,9 +493,9 @@ function hairline(ctx, c, i, x1, y1, x2, y2) {
   ctx.strokeStyle = c.th.fg; ctx.lineWidth = Math.max(1.5, 2 * c.fu); ctx.lineCap = 'butt';
   ctx.beginPath(); ctx.moveTo(x1 + (x2 - x1) * a, y1 + (y2 - y1) * a); ctx.lineTo(x1 + (x2 - x1) * b, y1 + (y2 - y1) * b); ctx.stroke();
 }
-function frameLines(ctx, c, v2) {
+function frameLines(ctx, c, v2, noLeft) {
   if (!S.lines) return; const { W, H, fu } = c;
-  hairline(ctx, c, 0, 131 * fu, 0, 131 * fu, H);
+  if (!noLeft) hairline(ctx, c, 0, 131 * fu, 0, 131 * fu, H);
   if (v2 != null) hairline(ctx, c, 1, v2, 0, v2, H);
   hairline(ctx, c, 2, 0, 45 * fu, W, 45 * fu);
   hairline(ctx, c, 3, 0, H - 47 * fu, W, H - 47 * fu);
@@ -512,10 +512,10 @@ function panelRect(c, pos) {
   if (c.land) return { x: W * 0.604, y: 45 * fu, w: W - W * 0.604, h: H - 92 * fu };
   return pos === 'top' ? { x: 0, y: 45 * fu, w: W, h: H * 0.46 } : { x: 0, y: H * 0.6, w: W, h: H - 215 * fu - H * 0.6 };
 }
-function drawPanel(ctx, c, r, seed, plain, side) {
+function drawPanel(ctx, c, r, seed, plain, side, opt) {
   ctx.save(); ctx.fillStyle = c.th.accent; ctx.fillRect(r.x, r.y, r.w, r.h);
   ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip();
-  if (!plain) flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9, side });
+  if (!plain) flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9, side, one: opt && opt.one, k: opt && opt.k });
   ctx.restore();
 }
 function subLines(ctx, c, x, y, text) {
@@ -539,10 +539,10 @@ function headlineBlock(ctx, c, box, o) {
   const mxMin = o.mx != null ? o.mx : 0.0985 * W, extra = sw ? 0.99 : 0, stackAt = (fs) => (lines.length - 1) * fs * 0.88 + 0.7 * fs + (sw ? 0.54 * fs : 0) + 124 * fu + subH;
   let fs = o.maxFs;
   for (; fs > 24; fs *= 0.97) {
-    const mx = Math.max(mxMin, extra * fs + 0.015 * W), right = Math.max(...w100.map((w, i) => (i === 0 && sw ? 0.53 : 0) + w)) * fs + mx;
+    const mx = o.bleed ? mxMin : Math.max(mxMin, extra * fs + 0.015 * W), right = Math.max(...w100.map((w, i) => (i === 0 && sw ? 0.53 : 0) + w)) * fs + mx;
     if (right <= box.x + box.w && stackAt(fs) <= box.h && (!o.lockMx || extra * fs + 0.015 * W <= mxMin + 0.5)) break;
   }
-  const LH = 0.88, mx = Math.max(mxMin, extra * fs + 0.015 * W), top = box.y + (box.h - stackAt(fs)) / 2 + (sw ? 0.54 * fs : 0), b1 = top + 0.7 * fs, fl = (i) => 2 * fu * sway(t, i * 0.8 + 0);
+  const LH = 0.88, mx = o.bleed ? mxMin : Math.max(mxMin, extra * fs + 0.015 * W), top = box.y + (box.h - stackAt(fs)) / 2 + (sw ? 0.54 * fs : 0), b1 = top + 0.7 * fs, fl = (i) => 2 * fu * sway(t, i * 0.8 + 0);
   if (sw) drawSwash(ctx, mx + 0.53 * fs - 1.52 * fs, b1 - 1.24 * fs + fl(0), fs * 0.285 / 172, th.fg, 0.012 * sway(t, 0));
   lines.forEach((l, i) => slide(ctx, (i === 0 && sw) ? l.s.slice(1) : l.s, mx + (i === 0 && sw ? 0.53 * fs : 0), b1 + i * fs * LH + fl(i), fs, l.it, th.fg));
   return { mx, fs, bottom: b1 + (lines.length - 1) * fs * LH + 36 * fu };
@@ -575,10 +575,17 @@ function wrapSlide(ctx, str, fs, maxW) {
 }
 function tSpeaker(ctx, c) {
   const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'top');
-  drawPanel(ctx, c, pr, S.seed + 3, false, 'R');  // loops on the right side only
-  const ph = pr.h * (land ? 0.56 : 0.74), pw = ph * 0.8, dx = land ? 0 : -0.045 * W, dy = land ? 0 : 0.07 * pr.h;  // stacked: print and badge sit lower and a little left
-  photoFrame(ctx, 0, pr.x + pr.w / 2 + dx, pr.y + pr.h / 2 + dy + 4 * sway(t, 0.4), pw, ph, -0.05 + 0.012 * sway(t, 0.2), th, 12 * fu);
-  if (S.showBadge) { const bh = land ? H * 0.3 : pr.h * 0.44, bw = bh * SHAPE_RATIO[S.badgeShape]; drawBadge(ctx, th, S.badgeShape, Math.min(pr.x + pr.w / 2 + pw * 0.62 + dx, W - bw / 2 - 36 * fu), pr.y + pr.h * (land ? 0.8 : 0.86) + dy + 5 * sway(t, 1.2), bh, 0.1 + 0.015 * sway(t, 0.9), S.badgeText, 10 * fu); }
+  drawPanel(ctx, c, pr, S.seed + 3, false, 'L', { one: true, k: 1.3 });  // calligraphy in the top-left corner
+  const sq = S.fmt === 'square' || S.fmt === 'portrait';  // feed and portrait: big badge on the left, the print overlaps it on the right, text stays still
+  if (sq) {
+    const bh = pr.h * 0.72, bw = bh * SHAPE_RATIO[S.badgeShape], ph = pr.h * 0.66, pw = ph * 0.8, cy = pr.y + pr.h * 0.54;
+    if (S.showBadge) drawBadge(ctx, th, S.badgeShape, W * 0.36, cy + 5 * sway(t, 1.2), bh, -0.08 + 0.015 * sway(t, 0.9), S.badgeText, 10 * fu);
+    photoFrame(ctx, 0, W * 0.36 + bw / 2 + pw * 0.47, cy + pr.h * 0.05 + 4 * sway(t, 0.4), pw, ph, 0.06 + 0.012 * sway(t, 0.2), th, 12 * fu);
+  } else {
+    const ph = pr.h * (land ? 0.56 : 0.74), pw = ph * 0.8, dx = land ? 0 : -0.045 * W, dy = land ? 0 : 0.07 * pr.h;  // stacked: print and badge sit lower and a little left
+    photoFrame(ctx, 0, pr.x + pr.w / 2 + dx, pr.y + pr.h / 2 + dy + 4 * sway(t, 0.4), pw, ph, -0.05 + 0.012 * sway(t, 0.2), th, 12 * fu);
+    if (S.showBadge) { const bh = land ? H * 0.3 : pr.h * 0.44, bw = bh * SHAPE_RATIO[S.badgeShape]; drawBadge(ctx, th, S.badgeShape, Math.min(pr.x + pr.w / 2 + pw * 0.62 + dx, W - bw / 2 - 36 * fu), pr.y + pr.h * (land ? 0.8 : 0.86) + dy + 5 * sway(t, 1.2), bh, 0.1 + 0.015 * sway(t, 0.9), S.badgeText, 10 * fu); }
+  }
   frameLines(ctx, c, land ? pr.x : null);
   const mx = 0.0985 * W, rightB = land ? pr.x - 60 * fu : W - mx, k = land ? 1 : 1.5;
   // tag = the outlined REGISTER NOW button: sharp corners, hairline stroke, tracked bold capitals (bigger on stacked formats)
@@ -601,7 +608,7 @@ function tSpeaker(ctx, c) {
     ctx.restore(); y += tagH + 44 * fu * k;
   }
   y += 0.72 * fs;
-  lines.forEach((l, i) => slide(ctx, l, mx, y + i * 0.92 * fs + 2 * fu * sway(t, i * 0.8), fs, false, th.fg));
+  lines.forEach((l, i) => slide(ctx, l, mx, y + i * 0.92 * fs + (sq ? 0 : 2 * fu * sway(t, i * 0.8)), fs, false, th.fg));
   y += (lines.length - 1) * 0.92 * fs + 0.28 * fs + 48 * fu;
   if (inline) {
     y += nameFs * 0.8; let x = mx;
@@ -616,11 +623,12 @@ function tSpeaker(ctx, c) {
 
 function tBadges(ctx, c) {
   const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'bottom');
-  frameLines(ctx, c, land ? pr.x : null);
+  frameLines(ctx, c, land ? pr.x : null, land);  // 16:9: no left line, the text and swash run past it
   const box = land ? { x: 0, y: 100 * fu, w: pr.x - 60 * fu, h: H - 350 * fu } : { x: 0, y: 60 * fu, w: W - 0.06 * W, h: H * 0.37 };
-  const hb = headlineBlock(ctx, c, box, { maxFs: 172 * fu * (land ? 1 : 2), text: S.bHeadline, sub: S.bSub });
-  subLines(ctx, c, hb.mx, hb.bottom + 88 * fu, S.bSub);
-  footer(ctx, c); footerDate(ctx, c, pr.x - 60 * fu);
+  const hb = headlineBlock(ctx, c, box, land ? { maxFs: 172 * fu, text: S.bHeadline, sub: S.bSub, mx: 0.055 * W, bleed: true } : { maxFs: 172 * fu * 2, text: S.bHeadline, sub: S.bSub });  // 16:9: text moves left and the T swash bleeds off the edge
+  const yy = subLines(ctx, c, hb.mx, hb.bottom + 88 * fu, S.bSub);
+  if (!land && S.date) sansText(ctx, dateTxt(), hb.mx, yy + 4 * fu, 38 * fu, th.fg, { wt: 700, ls: 4 * fu });  // stacked: the date sits under the sub line
+  footer(ctx, c); if (land) footerDate(ctx, c, pr.x - 60 * fu);
   // the badge cluster, pushed to the right; the chosen shape leads and one badge bleeds slightly off the right edge
   const n = S.badgeCount <= 1 ? 1 : S.badgeCount >= 5 ? 5 : 3, order = ['arch', 'circle', 'scallop', 'hexagon', 'shield'].filter((x) => x !== S.badgeShape);
   let L, base, X, Y;
@@ -631,12 +639,12 @@ function tBadges(ctx, c) {
     X = (fx) => pr.x + pr.w * fx; Y = (fy) => pr.y + pr.h * fy;
   } else {
     const ar = { y: H * 0.42, h: H - 215 * fu - H * 0.5 }; base = ar.h;  // moved up so nothing sits on the logos
-    L = { 1: [[0.66, 0.5, 1.0, 0.02]], 3: [[0.68, 0.52, 0.8, 0.02], [0.4, 0.8, 0.46, -0.1], [0.97, 0.2, 0.5, 0.1]],
-      5: [[0.64, 0.46, 0.66, 0.02], [0.36, 0.8, 0.42, -0.1], [0.97, 0.18, 0.46, 0.1], [0.9, 0.82, 0.4, 0.06], [0.4, 0.2, 0.34, 0.08]] }[n];
+    L = { 1: [[0.6, 0.5, 1.0, 0.02]], 3: [[0.62, 0.52, 0.8, 0.02], [0.34, 0.8, 0.46, -0.1], [0.93, 0.2, 0.5, 0.1]],
+      5: [[0.58, 0.46, 0.66, 0.02], [0.3, 0.8, 0.42, -0.1], [0.93, 0.18, 0.46, 0.1], [0.84, 0.82, 0.4, 0.06], [0.34, 0.2, 0.34, 0.08]] }[n];
     X = (fx) => W * fx; Y = (fy) => ar.y + ar.h * fy;
   }
   L.forEach((p, i) => {
-    const shape = i ? order[i - 1] : S.badgeShape, bh = base * p[2] * (land ? 1 : 1.18);
+    const shape = i ? order[i - 1] : S.badgeShape, bh = base * p[2] * (land ? 1 : 1.32);
     drawBadge(ctx, th, shape, X(p[0]), Y(p[1]) + 6 * fu * sway(t, i * 1.3), bh, p[3] + 0.015 * sway(t, i), i ? SHAPE_DEFAULTS[shape] : S.badgeText, 10 * fu);
   });
 }
