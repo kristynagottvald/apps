@@ -72,16 +72,14 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .cr .chip svg{width:2.2cqw;height:2.2cqw;fill:var(--lime)}.cr .chip em{font-style:normal;color:var(--lime)}
 .cr h4{font:400 5.4cqw/1.04 var(--sans);letter-spacing:-.045em;margin:4cqw 0 3.6cqw;white-space:nowrap}
 .cr h4 i{font:italic 400 5.8cqw var(--serif);letter-spacing:-.01em}
-.cr .form{display:flex;padding:.8cqw;border-radius:99px;background:rgba(255,255,255,.1);width:40cqw}
-.cr .form span{flex:1;font:400 1.9cqw var(--sans);color:rgba(255,255,255,.55);padding:0 2cqw;align-self:center;white-space:nowrap;overflow:hidden}
-.cr .form b{background:var(--lime);color:var(--ink);font:600 1.9cqw var(--sans);padding:1.6cqw 2.6cqw;border-radius:99px;white-space:nowrap}
+.cr .form{font:600 2.4cqw var(--sans);color:var(--lime);white-space:nowrap}
 .cr .stage{position:absolute;right:-10cqw;top:2cqw;width:62cqw;aspect-ratio:1;container-type:inline-size}
 .cr .stage>*{pointer-events:none}
 .cr .bl{position:absolute;width:60%;background:var(--card);border-radius:6px;padding:2.6cqw 3cqw;color:#fff;z-index:3}
 .cr .bl strong{display:block;font:400 3.6cqw/1.1 var(--sans);letter-spacing:-.02em}.cr .bl strong i{font:italic 400 3.8cqw var(--serif)}
 .cr .bl p{font:400 1.85cqw/1.4 var(--sans);color:rgba(255,255,255,.75);margin-top:1.2cqw}
 .cr .box{position:absolute;left:0;right:0;top:7%;bottom:0;background:var(--purple);border-radius:32px;overflow:hidden}
-.cr .mail{position:absolute;z-index:2;left:22%;top:41%;width:58%;aspect-ratio:1.5;border-radius:3px;overflow:hidden;background:#a393f5}
+.cr .mail{position:absolute;z-index:2;left:15%;top:46%;width:50%;aspect-ratio:1.5;border-radius:3px;overflow:hidden;background:#a393f5}
 .cr .mail .el{position:absolute}
 .cr .mail .bar2{background:var(--purple);border-radius:99px}
 .cr .mail .tag{background:var(--deep);color:#fff;border-radius:6px;font:600 1.2cqw/1 var(--sans);display:flex;align-items:center;justify-content:center}
@@ -179,6 +177,12 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
 .health{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin-top:14px}
 .health div small{display:block;font-size:11.5px;color:rgba(255,255,255,.55)}.health div b{font:400 24px var(--sans);letter-spacing:-.03em}
 .health div b u{text-decoration:none;font-size:13px;color:rgba(255,255,255,.55);margin-left:2px}
+#s3 .wrap.wide{max-width:1500px}
+.split{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:24px;align-items:start}
+.split .left{position:sticky;top:73px}
+.dash{container-type:inline-size;min-width:0}
+@container (max-width:860px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.r2,.r3{grid-template-columns:1fr}.kpi b{font-size:30px}}
+@media(max-width:1000px){.split{grid-template-columns:1fr}.split .left{position:static}}
 @media(max-width:980px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.r2,.r3{grid-template-columns:1fr}}
 @media(max-width:520px){#s2,#s3{padding:16px 12px 32px}.fun div{grid-template-columns:84px 1fr 62px}.kpi b{font-size:28px}}
 </style>
@@ -197,15 +201,15 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
   <main>
    <div class="pn start"><div class="av2">AR</div><div class="in">Start a post</div></div>
    <article class="pn post"><div class="ph0"><div class="ph-av" style="background:#6b8f71">PN</div><div><b>Priya Nair</b><small>Head of Growth at Fieldnote<br>3h · 🌐</small></div><span class="more">···</span></div>
-    <p class="txt">We spent a quarter testing offline channels against paid social. The surprise: the channel that won on cost per lead wasn't the one that won on pipeline. Thread on what we measured and why <span class="mr">…more</span></p>
+    <p class="txt">We tested offline channels against paid social for a quarter. The cost per lead winner wasn't the pipeline winner. <span class="mr">…more</span></p>
     <div class="cnt"><span class="rx"><i></i><i></i>&nbsp;212</span><span>31 comments</span></div></article>
 
    <article class="pn post ad" id="ad"><div class="ph0"><div class="ph-av sq">MAIL</div><div><b>MAIL</b><small>12,480 followers<br><span class="promo">Promoted</span></small></div><span class="more">··· &nbsp;✕</span></div>
     <p class="txt" id="adtxt"><span class="sw" id="adIntro"></span></p>
     <a class="cr" id="adCr" href="https://kristynagottvald.github.io/sandbox/location-hero/?utm_source=linkedin&amp;utm_medium=paid_social&amp;utm_campaign=location_hero" aria-label="Direct mail that lands in your city in days. Opens the landing page">
      <div class="l"><div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.200 7 13 7 13s7-7.800 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg><span>Mailing near <em class="sw" id="crCity"></em></span></div>
-      <h4><span class="sw" id="crH"></span></h4><div class="form"><span>Work email</span><b>Start sending</b></div></div>
-     <div class="stage"><div class="bl" style="left:26%;top:0"><strong class="sw" id="b1h"></strong><p class="sw" id="b1p"></p></div><div class="bl" style="left:8%;top:17%"><strong class="sw" id="b2h"></strong><p class="sw" id="b2p"></p></div>
+      <h4><span class="sw" id="crH"></span></h4><div class="form">Start sending</div></div>
+     <div class="stage"><div class="bl" style="left:26%;top:0"><strong class="sw" id="b1h"></strong><p class="sw" id="b1p"></p></div><div class="bl" style="left:8%;top:25%"><strong class="sw" id="b2h"></strong><p class="sw" id="b2p"></p></div>
       <div class="box"></div>
       <div class="mail"><div class="el bar2" style="left:7.7%;top:9%;width:34%;height:4.2%"></div><div class="el bar2" style="left:7.7%;top:16.5%;width:24%;height:4.2%"></div><div class="el tag" style="left:70%;top:8.5%;width:22%;height:10%">MAIL</div>
        <div class="el bar2" style="left:7.7%;top:37%;width:34%;height:3.6%"></div><div class="el bar2" style="left:7.7%;top:45%;width:26%;height:3.6%"></div><div class="el bar2" style="left:7.7%;top:53%;width:30%;height:3.6%"></div>
@@ -236,7 +240,10 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
 </div></section>
 
 <!-- 3: performance -->
-<section class="scr" id="s3" aria-label="Campaign performance"><div class="wrap">
+<section class="scr" id="s3" aria-label="Campaign performance"><div class="wrap wide"><div class="split">
+ <aside class="left"><div class="crumb" style="margin-bottom:12px"><h2 style="font-size:16px">Landing page</h2><a class="btn ghost" style="padding:7px 14px;font-size:13px;margin-left:auto" href="https://kristynagottvald.github.io/sandbox/location-hero/?utm_source=linkedin&amp;utm_medium=paid_social&amp;utm_campaign=location_hero" target="_blank" rel="noopener">Open live page <svg viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg></a></div>
+  <div class="browser"><div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>kristynagottvald.github.io</b>/sandbox/location-hero/</div></div><div class="vp" id="vp2" data-split="1"><iframe id="fr2" title="Location Hero landing page" loading="lazy"></iframe></div></div></aside>
+ <div class="dash">
  <div class="dh"><div><h2>Location Hero <i>performance</i></h2><p>LinkedIn Sponsored Content, Nov 1 – 14, 2026 · click-through, landing page and conversion by market</p></div><span class="samp">Sample data</span></div>
  <div class="mk" id="mk" role="group" aria-label="Market"></div>
  <div class="kpis" id="kpis"></div>
@@ -250,6 +257,7 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
   <div class="box2"><h3>Click-through by device<small>CTR</small></h3><div class="bars l" id="dv"></div></div>
   <div class="box2"><h3>Landing page health</h3><div class="health" id="hl"></div></div>
  </div>
+ </div></div>
  <div class="next"><button class="btn ghost" data-go="2">← Landing page</button><button class="btn lime" data-go="1">Replay from the feed ↺</button></div>
 </div></section>
 
@@ -270,7 +278,7 @@ function go(n,quiet){
  state.s=n;document.querySelectorAll('.scr').forEach(e=>e.classList.toggle('on',e.id==='s'+n));
  document.querySelectorAll('#tog button').forEach(b=>b.classList.toggle('on',+b.dataset.s===n));
  if(!quiet)history.replaceState(null,'','#'+['ad','page','perf'][n-1]);
- if(n===2)loadPage();if(n===3)drawDash();
+ if(n===2)loadPage(FR[0]);if(n===3){loadPage(FR[1]);drawDash()}
  scrollTo(0,0);
 }
 document.querySelectorAll('#tog button').forEach(b=>b.onclick=()=>go(+b.dataset.s));
@@ -286,20 +294,20 @@ function paintAd(){const m=M[state.m];
  $('geo').value=state.m;$('utmCity').textContent=m.city}
 function setMarket(i,instant){state.m=i;if(instant){paintAd();return}
  swEls.forEach(e=>e.classList.add('out'));setTimeout(()=>{paintAd();swEls.forEach(e=>e.classList.remove('out'))},300);
- if(state.s===2)syncFrame()}
+ if(state.s>=2&&state.s<=3)syncFrame(FR[state.s-2])}
 $('like').onclick=function(){const on=this.classList.toggle('on');$('likes').textContent=on?185:184};
 /* a plain click follows the visitor into the landing page screen; modified clicks open the real URL */
 [$('adCr'),$('adGo')].forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;e.preventDefault();go(2)}));
 
 /* ---------- 2: landing page, the real one in an iframe scaled to fit ---------- */
-const fr=$('fr'),vp=$('vp');let frLoaded=false;
-function fit(){const w=vp.clientWidth,vw=w<760?420:1280,vh=w<760?820:720,sc=w/vw;
- fr.style.width=vw+'px';fr.style.height=vh+'px';fr.style.transform=`scale(${sc})`;vp.style.height=(vh*sc)+'px'}
-function syncFrame(){try{const d=fr.contentDocument,w=fr.contentWindow;if(!d||!d.head)return;
+const FR=[{fr:$('fr'),vp:$('vp'),on:false},{fr:$('fr2'),vp:$('vp2'),on:false}];
+function fit(o){const w=o.vp.clientWidth,mob=w<760,vw=mob?(o.vp.dataset.split?440:420):1280,vh=mob?(o.vp.dataset.split?720:820):720,sc=w/vw;
+ o.fr.style.width=vw+'px';o.fr.style.height=vh+'px';o.fr.style.transform=`scale(${sc})`;o.vp.style.height=(vh*sc)+'px'}
+function syncFrame(o){try{const d=o.fr.contentDocument,w=o.fr.contentWindow;if(!d||!d.head)return;
  if(!d.getElementById('ppx')){const s=d.createElement('style');s.id='ppx';s.textContent='nav.back{display:none!important}';d.head.appendChild(s)}
  const lp=w.eval('typeof lp!=="undefined"?lp:null');if(!lp)return;lp.stop();lp.set(state.m)}catch(e){/* cross-origin (file://): leave the page as it is */}}
-function loadPage(){fit();if(!frLoaded){frLoaded=true;fr.onload=()=>{syncFrame();setTimeout(syncFrame,400)};fr.src='../location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero'}else syncFrame()}
-addEventListener('resize',()=>{if(state.s===2)fit();if(state.s===3)drawDash()});
+function loadPage(o){fit(o);if(!o.on){o.on=true;o.fr.onload=()=>{syncFrame(o);setTimeout(()=>syncFrame(o),400)};o.fr.src='../location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero'}else syncFrame(o)}
+addEventListener('resize',()=>{if(state.s===2)fit(FR[0]);if(state.s===3){fit(FR[1]);drawDash()}});
 
 /* ---------- 3: performance ---------- */
 const DAYS=14,DOW=[.45,1.1,1.2,1.15,1.1,.9,.5]; // Nov 1 2026 is a Sunday
