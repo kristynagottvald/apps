@@ -129,7 +129,7 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
         <button class="chip" data-v="shield">Shield</button>
       </div>
       <label class="f"><span>Badge name (one line, Title Case)</span><input type="text" id="badgeText"></label>
-      <label class="chk" data-for="headline speaker"><input type="checkbox" id="showBadge"> Show the badge</label>
+      <label class="chk" data-for="speaker"><input type="checkbox" id="showBadge"> Show the badge</label>
       <div class="rng" data-for="badges"><span>Badges shown</span><input type="range" id="badgeCount" min="3" max="5" step="1"><output id="badgeCountO"></output></div>
     </section>
 
@@ -391,7 +391,7 @@ function photoFrame(ctx, i, cx, cy, w, h, rot, th, shadow) {
 function photoCluster(ctx, c, r, n, t, stack) {
   if (stack) {  // wide, short bar: prints stand taller than the bar and poke out over its top edge
     const sw2 = (k) => 0.012 * Math.sin(TAU * t / PERIOD + k * 1.7);
-    const P = { 1: [[0.62, 0.95, 0.14, -0.05]], 2: [[0.5, 0.95, 0.14, -0.06], [0.78, 0.85, 0.08, 0.06]], 3: [[0.4, 0.95, 0.14, -0.06], [0.63, 0.85, 0.06, 0.05], [0.86, 0.92, 0.1, -0.03]] }[n];
+    const P = { 1: [[0.5, 0.97, 0.14, -0.05]], 2: [[0.38, 0.97, 0.14, -0.06], [0.64, 0.88, 0.08, 0.06]], 3: [[0.27, 0.95, 0.14, -0.06], [0.5, 0.86, 0.06, 0.05], [0.73, 0.92, 0.1, -0.03]] }[n];
     if (P) P.forEach((q, k) => { const ph = r.h * q[1], pw = ph * 0.8; photoFrame(ctx, k, r.x + r.w * q[0], r.y + ph * (0.5 - q[2]) + r.h * 0.0 , pw, ph, q[3] + sw2(k), c.th, c.fu * 10); });
     return;
   }
@@ -490,10 +490,10 @@ function panelRect(c, pos) {
   if (c.land) return { x: W * 0.604, y: 45 * fu, w: W - W * 0.604, h: H - 92 * fu };
   return pos === 'top' ? { x: 0, y: 45 * fu, w: W, h: H * 0.46 } : { x: 0, y: H * 0.6, w: W, h: H - 215 * fu - H * 0.6 };
 }
-function drawPanel(ctx, c, r, seed) {
+function drawPanel(ctx, c, r, seed, plain) {
   ctx.save(); ctx.fillStyle = c.th.accent; ctx.fillRect(r.x, r.y, r.w, r.h);
   ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip();
-  flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9 });
+  if (!plain) flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9 });
   ctx.restore();
 }
 function subLines(ctx, c, x, y) {
@@ -527,15 +527,11 @@ function headlineBlock(ctx, c, box, o) {
 
 function tHeadline(ctx, c) {
   const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'bottom');
-  drawPanel(ctx, c, pr, S.seed);
+  drawPanel(ctx, c, pr, S.seed, true);  // plain bar, photos only
   const n = S.photoCount;
   if (n) photoCluster(ctx, c, land ? { x: pr.x + pr.w * 0.04, y: pr.y - pr.h * 0.1, w: pr.w * 0.92, h: pr.h } : pr, n, t, !land);
-  if (S.showBadge) {
-    const bh = land ? H * (n ? 0.34 : 0.56) : pr.h * (n ? 0.62 : 0.86);
-    const bx = n ? (land ? pr.x + pr.w * 0.74 : pr.x + pr.w * 0.18) : pr.x + pr.w / 2, by = n ? (land ? pr.y + pr.h * 0.78 : pr.y + pr.h * 0.62) : pr.y + pr.h / 2;
-    drawBadge(ctx, th, S.badgeShape, bx, by + 6 * sway(t, 1), bh, -0.08 + 0.015 * sway(t, 0.6), S.badgeText, fu * 10);
-  }
   frameLines(ctx, c, land ? pr.x : null);
+  if (!land && S.lines) { ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.beginPath(); ctx.moveTo(0, pr.y); ctx.lineTo(W, pr.y); ctx.stroke(); ctx.restore(); }
   const box = land ? { x: 0, y: 100 * fu, w: pr.x - 60 * fu, h: H - 350 * fu } : { x: 0, y: 110 * fu, w: W - 0.06 * W, h: pr.y - 300 * fu };
   const hb = headlineBlock(ctx, c, box, { maxFs: 172 * fu * (land ? 1 : 2) });
   subLines(ctx, c, hb.mx, hb.bottom + 88 * fu);
