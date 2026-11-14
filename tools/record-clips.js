@@ -25,6 +25,12 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  // the finished composition, then the whole 9 s cycle at 1.4x: the query is typed, matches appear, the query and context notes fly onto the graph, the result lands
+  'search-robot': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#clip', ready: 900, run: async (p) => {
+    const t0 = Date.now();
+    await at(t0, 700, () => p.evaluate(() => __rb.play({ from: 0, speed: 1.4, loop: false })));
+    await sleep(5600);
+  } },
   // starts on the hero post, then scrolls the way a visitor would: the colour mosaic, the badges and the motion timeline, and back up to the hero
   'thread-brand-guidelines': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1800, q: 55, run: async (p) => {
     const t0 = Date.now(), to = (sel, off) => p.evaluate(([s, o]) => window.scrollTo({ top: document.querySelector(s).getBoundingClientRect().top + scrollY - 56 + o, behavior: 'smooth' }), [sel, off]);

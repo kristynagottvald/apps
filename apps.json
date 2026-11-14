@@ -1,5 +1,14 @@
 [
   {
+    "id": "search-robot",
+    "title": "Search Robot",
+    "category": "Motion",
+    "url": "search-robot/",
+    "thumbnail": "search-robot/thumb.png",
+    "preview": "search-robot/thumb.webp",
+    "alt": "An illustrated robot between a support search card and a graph: the query 'sander is scratching' is typed, matching questions appear, and yellow context notes and the chosen result land on the graph"
+  },
+  {
     "id": "thread-brand-guidelines",
     "title": "Thread Brand Guidelines",
     "category": "Tools",
