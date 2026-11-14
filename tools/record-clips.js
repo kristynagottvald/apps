@@ -70,10 +70,10 @@ const APPS = {
   // starts on the tile mosaic hero, then opens the Badges tile (it grows to fill the screen), the Thread logo shrinks it back, and the Motion tile opens and shrinks back
   'thread-brand-guidelines': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1800, q: 55, run: async (p) => {
     const t0 = Date.now(), k = (sel) => domClick(p, sel);
-    await at(t0, 900, () => k('.tile[data-sec="badges"]'));
-    await at(t0, 2900, () => k('.site .logo'));
-    await at(t0, 4300, () => k('.tile[data-sec="motion"]'));
-    await at(t0, 5900, () => k('.site .logo'));
+    await at(t0, 800, () => k('.tile[data-sec="badges"]'));
+    await at(t0, 2600, () => k('.site .logo'));
+    await at(t0, 4000, () => k('.tile[data-sec="motion"]'));
+    await at(t0, 5300, () => k('.site .logo'));
   } },
   // the starting soon countdown, then the intro title, the audience question, the session title and the statement card, switched the way a visitor would with the screen chips
   'thread-live-session': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 50, run: async (p) => {
