@@ -1,21 +1,12 @@
 [
   {
-    "id": "sander-troubleshoot-flow",
-    "title": "Sander Troubleshoot Flow",
-    "category": "Tools",
-    "url": "sander-troubleshoot-flow/",
-    "thumbnail": "sander-troubleshoot-flow/thumb.png",
-    "preview": "sander-troubleshoot-flow/thumb.webp",
-    "alt": "An illustrated troubleshooting flow for a scratching sander: the goggled worker from Sander Troubleshoot beside a support screen, recoloured in four looks (monochrome, fill and line, pale, bold yellow) while the questions lead to a fix with numbered steps"
-  },
-  {
     "id": "sander-troubleshoot",
     "title": "Sander Troubleshoot",
-    "category": "Motion",
+    "category": "Tools",
     "url": "sander-troubleshoot/",
     "thumbnail": "sander-troubleshoot/thumb.png",
     "preview": "sander-troubleshoot/thumb.webp",
-    "alt": "A blue frame with a product picker with Prep tools chosen, a search card where 'sander is scratching' is typed and 'Sander scratches into wood surface' is picked from the matches, and an illustrated worker in goggles sanding a board"
+    "alt": "A blue frame with a product picker with Prep tools chosen, a search card where 'sander is scratching' is typed and 'Sander scratches into wood surface' is picked from the matches, and an illustrated worker in goggles sanding a board. Scroll on for a step-by-step sander troubleshooting flow with the same worker, recoloured in four looks"
   },
   {
     "id": "thread-brand-visuals",
