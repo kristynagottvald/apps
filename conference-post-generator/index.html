@@ -515,7 +515,7 @@ function panelRect(c, pos) {
 }
 function drawPanel(ctx, c, r, seed, plain, side, opt) {
   ctx.save(); ctx.fillStyle = c.th.accent; ctx.fillRect(r.x, r.y, r.w, r.h);
-  ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip();
+  if (!(opt && opt.ext)) { ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip(); }  // no clip when the loops are meant to run on past the panel
   if (!plain) flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9, side, one: opt && opt.one, k: opt && opt.k, dy: opt && opt.dy, ext: opt && opt.ext });
   ctx.restore();
 }
