@@ -24,6 +24,7 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .chip svg{width:14px;height:14px;fill:var(--lime)}
 .chip em{font-style:normal;color:var(--lime)}
 h1{font-weight:400;font-size:calc(clamp(34px,4.4vw,58px) - 2px);line-height:1.04;letter-spacing:-2px;margin:30px 0 34px;white-space:nowrap}
+h1 br.mo{display:none}
 h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:clamp(34px,4.4vw,58px);line-height:0}
 .sw{display:inline-block;transition:opacity .35s,transform .35s,filter .35s}
 .sw.out{opacity:0;transform:translateY(10px);filter:blur(6px)}
@@ -71,7 +72,7 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:
 .qr svg{width:66%;height:66%}
 .scan{background:var(--deep);color:#fff;border-radius:6px;font:italic 400 1.4cqw/1.15 var(--serif);display:flex;align-items:center;padding:0 5%}
 .ph{object-fit:cover;border-radius:0}
-@media(max-width:900px){.hero{grid-template-columns:1fr;padding:24px 20px 28px}.stage{justify-self:center}.sub{min-height:0}h1{white-space:normal}}
+@media(max-width:900px){.hero{grid-template-columns:minmax(0,1fr);padding:24px 20px 28px}.stage{justify-self:center}.sub{min-height:0}h1{white-space:normal;font-size:clamp(30px,9.4vw,56px);letter-spacing:-.05em;margin:24px 0 26px}h1 i{font-size:1.06em}h1 br.dk{display:none}h1 br.mo{display:inline}}
 @media(prefers-reduced-motion:reduce){.sw,.bl,.bi{transition:none}}
 </style>
 </head>
@@ -80,7 +81,7 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:
 <div class="tog" id="tog" role="group" aria-label="Preview location"></div></nav>
 <main class="hero">
   <section>
-    <div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg><span>Mailing near <em class="sw" id="city">San Diego County, CA</em></span></div>
+    <div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg><span>Mailing in <em class="sw" id="city">Southern California</em></span></div>
     <h1><span class="sw" id="h1">Direct mail that<br>lands in <i>San Diego</i><br>in days</span></h1>
     <p class="sub sw" id="sub">Print at our Southern California facility and reach every Gaslamp, La Jolla and North Park mailbox fast.</p>
     <form class="form" onsubmit="return false"><input type="email" placeholder="What's your work email?" aria-label="Work email"><button>Start sending</button></form>
@@ -114,23 +115,23 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:
 </main>
 <script>
 const CITIES=[
- {city:'San Diego, CA',region:'San Diego County, CA',h:'Direct mail that<br>lands in <i>San Diego</i><br>in days',sub:"Print at our Southern California facility and reach every Gaslamp, La Jolla and North Park mailbox fast.",
+ {city:'San Diego, CA',region:'Southern California',h:'Direct mail that<br class="dk"> lands<br class="mo"> in <i>San Diego</i><br class="dk"> in days',sub:"Print at our Southern California facility and reach every Gaslamp, La Jolla and North Park mailbox fast.",
   b:[['2.0 day <i>delivery time</i>','Avg. First-Class time in your SCF, 919–921'],
      ['Sending from <i>Carlsbad, CA</i>','36 mi from your delivery zone, 92101'],
      ['<i>21,340</i> homes in your zone','Gaslamp, La Jolla and North Park, mapped to carrier routes']]},
- {city:'Miami, FL',region:'Miami-Dade County, FL',h:'Direct mail that<br>lands in <i>Miami</i><br>in days',sub:"Print at our Florida facility and reach every Brickell, Wynwood and Coral Gables mailbox fast.",
+ {city:'Miami, FL',region:'South Florida',h:'Direct mail that<br class="dk"> lands<br class="mo"> in <i>Miami</i><br class="dk"> in days',sub:"Print at our Florida facility and reach every Brickell, Wynwood and Coral Gables mailbox fast.",
   b:[['2.3 day <i>delivery time</i>','Avg. First-Class time in your SCF, 331–332'],
      ['Sending from <i>Orlando, FL</i>','235 mi from your delivery zone, 33131'],
      ['<i>24,760</i> homes in your zone','Brickell, Wynwood and Coral Gables, mapped to carrier routes']]},
- {city:'Nashville, TN',region:'Davidson County, TN',h:'Direct mail that<br>lands in <i>Nashville</i><br>in days',sub:"Print at our Tennessee facility and reach every East Nashville, Gulch and Germantown mailbox fast.",
+ {city:'Nashville, TN',region:'Middle Tennessee',h:'Direct mail that<br class="dk"> lands<br class="mo"> in <i>Nashville</i><br class="dk"> in days',sub:"Print at our Tennessee facility and reach every East Nashville, Gulch and Germantown mailbox fast.",
   b:[['2.1 day <i>delivery time</i>','Avg. First-Class time in your SCF, 370–372'],
      ['Sending from <i>Memphis, TN</i>','210 mi from your delivery zone, 37203'],
      ['<i>19,880</i> homes in your zone','East Nashville, Gulch and Germantown, mapped to carrier routes']]},
- {city:'Columbus, OH',region:'Franklin County, OH',h:'Direct mail that<br>lands in <i>Columbus</i><br>in days',sub:"Print at our Ohio facility and reach every Short North, German Village and Clintonville mailbox fast.",
+ {city:'Columbus, OH',region:'Central Ohio',h:'Direct mail that<br class="dk"> lands<br class="mo"> in <i>Columbus</i><br class="dk"> in days',sub:"Print at our Ohio facility and reach every Short North, German Village and Clintonville mailbox fast.",
   b:[['2.0 day <i>delivery time</i>','Avg. First-Class time in your SCF, 430–432'],
      ['Sending from <i>Dayton, OH</i>','72 mi from your delivery zone, 43215'],
      ['<i>22,410</i> homes in your zone','Short North, German Village and Clintonville, mapped to carrier routes']]},
- {city:'Kansas City, MO',region:'Jackson County, MO',h:'Direct mail that<br>lands in <i>Kansas City</i><br>in days',sub:"Print at our Midwest facility and reach every Westport, Crossroads and Brookside mailbox fast.",
+ {city:'Kansas City, MO',region:'Kansas City Metro',h:'Direct mail that<br class="dk"> lands<br class="mo"> in <i>Kansas City</i><br class="dk"> in days',sub:"Print at our Midwest facility and reach every Westport, Crossroads and Brookside mailbox fast.",
   b:[['2.4 day <i>delivery time</i>','Avg. First-Class time in your SCF, 640–641'],
      ['Sending from <i>Wichita, KS</i>','200 mi from your delivery zone, 64105'],
      ['<i>17,950</i> homes in your zone','Westport, Crossroads and Brookside, mapped to carrier routes']]}];
