@@ -16,7 +16,7 @@ nav.back{flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0
 nav.back a{color:#8d8d8d;text-decoration:none}nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
 nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:640px){nav.back{padding:0 16px}}
-.top{display:flex;justify-content:space-between;align-items:center;padding:20px 56px 0;height:62px}
+.top{display:flex;justify-content:center;gap:16px;align-items:center;padding:20px 56px 0;height:62px}
 .logo{font:700 28px/1 var(--sans);letter-spacing:-.04em}
 .top a{color:#fff;font-size:14px;font-weight:500;text-decoration:none;opacity:.85}
 .hero{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;padding:8px 56px 32px;max-width:1360px;width:100%;margin:0 auto}
@@ -25,7 +25,7 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .chip em{font-style:normal;color:var(--lime)}
 .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(228,238,92,.6);animation:pulse 2s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 7px rgba(228,238,92,0)}100%{box-shadow:0 0 0 0 rgba(228,238,92,0)}}
-h1{font-weight:400;font-size:clamp(34px,4.3vw,58px);line-height:1.06;letter-spacing:-.025em;margin:22px 0 18px}
+h1{font-weight:400;font-size:clamp(34px,4.3vw,58px);line-height:1.22;letter-spacing:-.01em;margin:30px 0 28px}
 h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 .sw{display:inline-block;transition:opacity .35s,transform .35s,filter .35s}
 .sw.out{opacity:0;transform:translateY(10px);filter:blur(6px)}
@@ -38,7 +38,7 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 .proof{display:flex;gap:26px;margin-top:34px;font-size:13px;color:rgba(255,255,255,.6)}
 .proof b{display:block;font:400 26px/1.1 var(--sans);color:#fff;letter-spacing:-.02em;margin-bottom:3px}
 .proof b i{font:italic 400 26px var(--serif)}
-.tog{display:flex;gap:6px;margin-top:22px}
+.tog{display:flex;gap:6px}
 .tog button{font:500 12px var(--sans);color:rgba(255,255,255,.7);background:none;border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:6px 12px;cursor:pointer}
 .tog button.on{background:#fff;color:var(--ink);border-color:#fff}
 
@@ -65,30 +65,18 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 .t3{left:16.5%;top:46%;width:77.5%;height:60%;background:var(--pink)}
 .t3 svg{position:absolute;left:0;bottom:0;width:100%;height:80%}
 
-.mail{position:absolute;left:38.5%;top:31%;width:50%;aspect-ratio:1.8;display:flex;border-radius:3px;overflow:hidden;box-shadow:0 .6cqw 2cqw rgba(20,10,120,.25)}
-.mp{flex:0 0 40%;background:var(--lav);padding:4.5% 4.8%;position:relative}
-.mp .tag{display:inline-block;background:var(--deep);color:#fff;font:600 1.1cqw var(--sans);padding:.7cqw 1.4cqw;border-radius:2px;margin-bottom:5%}
-.mp .ln{height:1.15cqw;background:var(--purple);border-radius:1px;margin-bottom:1.6cqw}
-.mp .ck{display:flex;align-items:center;gap:1.4cqw;margin-top:1.6cqw}
-.mp .ck:first-of-type{margin-top:5.5cqw}
-.mp .ck:before{content:"";width:1.5cqw;height:1.5cqw;border-radius:50%;background:var(--deep)}
-.mp .ck u{display:block;height:.95cqw;background:var(--purple);border-radius:1px;flex:1;text-decoration:none}
-.ph{flex:1;position:relative;background:#444}
-.ph svg{position:absolute;inset:0;width:100%;height:100%;transition:opacity .5s}
-.ph .sf{opacity:1}.ph .mi{opacity:0}
-.stage.mia .ph .sf{opacity:0}.stage.mia .ph .mi{opacity:1}
-.scan{position:absolute;left:0;right:0;bottom:0;height:28%;background:var(--deep);display:flex;align-items:center;justify-content:space-between;padding:0 6%;color:#fff;font:italic 400 1.7cqw/1.2 var(--serif)}
-.scan svg{position:static;width:3.4cqw;height:3.4cqw}
-.crop{position:absolute;left:38.5%;top:31%;width:50%;aspect-ratio:1.8;pointer-events:none}
+.mail{position:absolute;left:38.5%;top:31%;width:50%;aspect-ratio:1.665;display:flex;border-radius:3px;overflow:hidden;box-shadow:0 .6cqw 2cqw rgba(20,10,120,.25)}
+.mail img{display:block;width:100%;height:100%;object-fit:cover}
+.crop{position:absolute;left:38.5%;top:31%;width:50%;aspect-ratio:1.665;pointer-events:none}
 .crop:before{content:"";position:absolute;inset:-7% -5%;background:linear-gradient(#9d95ff,#9d95ff) 0 0/8% 1px,linear-gradient(#9d95ff,#9d95ff) 0 0/1px 14%,linear-gradient(#9d95ff,#9d95ff) 100% 0/8% 1px,linear-gradient(#9d95ff,#9d95ff) 100% 0/1px 14%,linear-gradient(#9d95ff,#9d95ff) 0 100%/8% 1px,linear-gradient(#9d95ff,#9d95ff) 0 100%/1px 14%,linear-gradient(#9d95ff,#9d95ff) 100% 100%/8% 1px,linear-gradient(#9d95ff,#9d95ff) 100% 100%/1px 14%;background-repeat:no-repeat}
 
 @media(max-width:900px){.hero{grid-template-columns:1fr;padding:8px 20px 28px}.top{padding:20px 20px 0}.stage{justify-self:center}.sub{min-height:0}}
-@media(prefers-reduced-motion:reduce){.sw,.bl,.ph svg{transition:none}.chip .dot{animation:none}}
+@media(prefers-reduced-motion:reduce){.sw,.bl.chip .dot{animation:none}}
 </style>
 </head>
 <body>
 <nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Location Hero</b></nav>
-<header class="top"><div class="logo">Lob</div><a href="#">Sign in</a></header>
+<header class="top"><div class="tog" role="group" aria-label="Preview location"><button class="on" data-i="0">San Francisco</button><button data-i="1">Miami</button></div></header>
 <main class="hero">
   <section>
     <div class="chip"><span class="dot"></span><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg><span>Mailing near <em class="sw" id="city">San Francisco, CA</em></span></div>
@@ -96,7 +84,6 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
     <p class="sub sw" id="sub">Print at our Bay Area facility and hit every Mission, SoMa and Sunset mailbox fast. Automated mail that's timed for conversion.</p>
     <form class="form" onsubmit="return false"><input type="email" placeholder="What's your work email?" aria-label="Work email"><button>Get started for free</button></form>
     <div class="proof"><div><b>2.7<i> days</i></b>avg. delivery speed</div><div><b>250,000</b>mail pieces sent</div><div><b>87%</b>faster lead time</div></div>
-    <div class="tog" role="group" aria-label="Preview location"><button class="on" data-i="0">San Francisco</button><button data-i="1">Miami</button></div>
   </section>
 
   <div class="stage" id="stage">
@@ -110,23 +97,7 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
       <div class="t t2"><i style="left:12%;height:26%"></i><i style="left:26%;height:42%"></i><i style="left:40%;height:56%"></i><i style="left:54%;height:74%"></i><i style="left:68%;height:92%"></i></div>
       <div class="t t3"><small style="color:#fff">AUDIENCE ENGAGEMENT</small><svg viewBox="0 0 300 100" preserveAspectRatio="none"><polyline fill="none" stroke="#fff" stroke-width="1.5" vector-effect="non-scaling-stroke" points="20,92 60,78 100,84 140,58 180,70 220,34 260,52 300,40"/><g fill="#fff"><circle cx="60" cy="78" r="2.5"/><circle cx="100" cy="84" r="2.5"/><circle cx="140" cy="58" r="2.5"/><circle cx="180" cy="70" r="2.5"/></g></svg></div>
     </div>
-    <div class="mail">
-      <div class="mp"><span class="tag">// co.</span><div class="ln" style="width:92%"></div><div class="ln" style="width:70%"></div><div class="ln" style="width:82%"></div><div class="ck"><u></u></div><div class="ck"><u style="max-width:70%"></u></div><div class="ck"><u style="max-width:85%"></u></div></div>
-      <div class="ph">
-        <svg class="sf" viewBox="0 0 200 180" preserveAspectRatio="xMidYMid slice"><rect width="200" height="180" fill="#c9d9e6"/><path d="M0 110 L200 110 L200 180 L0 180Z" fill="#6c8a52"/><path d="M0 95 L25 60 L50 95Z" fill="#e8d6c2"/><rect x="0" y="95" width="50" height="40" fill="#e8d6c2"/><rect x="60" y="60" width="140" height="50" fill="#f3e7d6"/><path d="M55 60 L130 25 L200 60Z" fill="#8a4b3a"/><rect x="95" y="75" width="14" height="22" fill="#6f95b3"/><rect x="130" y="75" width="14" height="22" fill="#6f95b3"/><path d="M0 40 Q40 20 90 40" stroke="#d85a3a" stroke-width="3" fill="none"/>
-          <circle cx="62" cy="88" r="9" fill="#e3b08c"/><rect x="52" y="97" width="20" height="45" rx="6" fill="#33406a"/>
-          <circle cx="96" cy="94" r="9" fill="#e9bf9d"/><rect x="85" y="103" width="22" height="45" rx="6" fill="#d96a7c"/>
-          <circle cx="130" cy="110" r="7" fill="#e3b08c"/><rect x="122" y="117" width="16" height="35" rx="5" fill="#f2c94c"/>
-          <circle cx="152" cy="116" r="6.500" fill="#e9bf9d"/><rect x="145" y="122" width="14" height="30" rx="5" fill="#6aa6d8"/></svg>
-        <svg class="mi" viewBox="0 0 200 180" preserveAspectRatio="xMidYMid slice"><rect width="200" height="180" fill="#8fd3e8"/><circle cx="165" cy="32" r="16" fill="#ffd36a"/><path d="M0 120 L200 120 L200 180 L0 180Z" fill="#7fb85a"/><rect x="55" y="68" width="145" height="52" fill="#fbe7e0"/><rect x="55" y="62" width="145" height="8" fill="#26b0a6"/><rect x="95" y="82" width="16" height="22" fill="#26b0a6"/><rect x="135" y="82" width="16" height="22" fill="#26b0a6"/>
-          <rect x="22" y="60" width="4" height="62" fill="#8c6a43"/><path d="M24 62 Q4 48 -4 60 M24 62 Q44 46 54 58 M24 62 Q10 40 22 34 M24 62 Q40 40 30 32" stroke="#2f8f4e" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <circle cx="62" cy="94" r="9" fill="#d9a07a"/><rect x="52" y="103" width="20" height="45" rx="6" fill="#ff8a65"/>
-          <circle cx="96" cy="100" r="9" fill="#e9bf9d"/><rect x="85" y="109" width="22" height="45" rx="6" fill="#2f6fb3"/>
-          <circle cx="130" cy="114" r="7" fill="#d9a07a"/><rect x="122" y="121" width="16" height="35" rx="5" fill="#f2c94c"/>
-          <circle cx="152" cy="120" r="6.500" fill="#e9bf9d"/><rect x="145" y="126" width="14" height="30" rx="5" fill="#ff6fa8"/></svg>
-        <div class="scan"><span id="scan">Scan to accept<br>your offer</span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M2 8V2h6M16 2h6v6M22 16v6h-6M8 22H2v-6"/><rect x="8" y="8" width="3" height="3"/><rect x="13" y="8" width="3" height="3"/><rect x="8" y="13" width="3" height="3"/></svg></div>
-      </div>
-    </div>
+    <div class="mail"><img src="mailpiece.png" alt="Direct mail postcard with a family in front of their home and a scan to accept your offer code"></div>
     <div class="crop"></div>
   </div>
 </main>
@@ -134,16 +105,16 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 const CITIES=[
  {city:'San Francisco, CA',h:'Direct mail that lands in <i>San Francisco</i> in days',sub:"Print at our Bay Area facility and reach every Mission, SoMa and Sunset mailbox fast. Automated mail that's timed for conversion.",
   b1:['USPS mailing data','1.9 <i>day</i> delivery','Avg. First-Class time in your SCF, 940–941'],
-  b2:['Your print location','Concord, <i>CA</i>','42 mi from your delivery zone, 94110 · 18,420 homes'],scan:'Scan for your<br>Bay Area offer'},
+  b2:['Your print location','Concord, <i>CA</i>','42 mi from your delivery zone, 94110 · 18,420 homes']},
  {city:'Miami, FL',h:'Direct mail that lands in <i>Miami</i> in days',sub:"Print at our Florida facility and reach every Brickell, Wynwood and Coral Gables mailbox fast. Automated mail that's timed for conversion.",
   b1:['USPS mailing data','2.3 <i>day</i> delivery','Avg. First-Class time in your SCF, 331–332'],
-  b2:['Your print location','Orlando, <i>FL</i>','235 mi from your delivery zone, 33131 · 24,760 homes'],scan:'Scan for your<br>Miami offer'}];
+  b2:['Your print location','Orlando, <i>FL</i>','235 mi from your delivery zone, 33131 · 24,760 homes']}];
 const $=id=>document.getElementById(id);
 const sw=['city','h1','sub','b1','b2'];
 const lp={i:0,timer:null,
  apply(i){const c=CITIES[i];$('city').textContent=c.city;$('h1').innerHTML=c.h;$('sub').textContent=c.sub;
   [['b1',c.b1],['b2',c.b2]].forEach(([k,v])=>{$(k+'k').textContent=v[0];$(k+'h').innerHTML=v[1];$(k+'p').textContent=v[2]});
-  $('scan').innerHTML=c.scan;$('stage').classList.toggle('mia',i===1);
+  
   document.querySelectorAll('.tog button').forEach((b,j)=>b.classList.toggle('on',j===i));},
  set(i){if(i===this.i&&this.ready)return;this.i=i;this.ready=true;sw.forEach(k=>$(k).classList.add('out'));
   setTimeout(()=>{this.apply(i);sw.forEach(k=>$(k).classList.remove('out'))},350);},
