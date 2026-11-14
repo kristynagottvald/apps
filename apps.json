@@ -1,5 +1,14 @@
 [
   {
+    "id": "location-hero",
+    "title": "Location Hero",
+    "category": "Tools",
+    "url": "location-hero/",
+    "thumbnail": "location-hero/thumb.png",
+    "preview": "location-hero/thumb.webp",
+    "alt": "A Lob style purple hero with a direct mail platform and postcard illustration under USPS delivery and print location blurbs, switching from San Francisco to Miami"
+  },
+  {
     "id": "conference-post-generator",
     "title": "Conference Post Generator",
     "category": "Tools",
