@@ -406,14 +406,14 @@ function barBadges(ctx, c, pr, t) {
     for (let i = L.length - 1; i >= 0; i--) { const q = L[i], shape = i ? order[i - 1] : S.badgeShape; drawBadge(ctx, th, shape, pr.x + pr.w * q[0], pr.y + pr.h * q[1] + 5 * fu * sway(t, i * 1.3), pr.h * q[2], q[3] + 0.015 * sway(t, i), i ? SHAPE_DEFAULTS[shape] : S.badgeText, 10 * fu); }
     return;
   }
-  const spec = [[0.95, 0.4, 0.07], [0.66, 0.5, -0.05], [0.54, 0.62, 0.04]], items = []; let left = 0;  // lead badge bleeds a sliver off the top and right, the rest step back left
+  const spec = [[1.24, 0.33, 0.07], [0.86, 0.52, -0.05], [0.7, 0.6, 0.04]], items = []; let left = 0;  // bigger badges;  // lead badge bleeds a sliver off the top and right, the rest step back left
   for (let k = 0; k < 3; k++) { const shape = k ? order[k - 1] : S.badgeShape, bh = pr.h * spec[k][0], bw = bh * SHAPE_RATIO[shape], cx = k ? left - bw / 2 + bw * 0.22 : pr.x + pr.w - bw / 2 + bw * 0.08; left = cx - bw / 2; items.push([shape, cx, pr.y + pr.h * spec[k][1], bh, spec[k][2], k ? SHAPE_DEFAULTS[shape] : S.badgeText]); }
   items.reverse().forEach((q, i) => drawBadge(ctx, th, q[0], q[1], q[2] + 5 * fu * sway(t, i * 1.3), q[3], q[4] + 0.015 * sway(t, i), q[5], 10 * fu));
 }
 function photoCluster(ctx, c, r, n, t, stack) {
   if (stack) {  // wide, short bar: prints stand taller than the bar and poke out over its top edge
     const sw2 = (k) => 0.012 * Math.sin(TAU * t / PERIOD + k * 1.7);
-    const spec = [[0.95, 0.38, 0.07], [0.68, 0.52, -0.05], [0.6, 0.62, 0.04]], items = []; let left = 0;  // lead print bleeds a sliver off the top and right, the rest step back left and overlap
+    const spec = [[1.24, 0.33, 0.07], [0.88, 0.51, -0.05], [0.78, 0.56, 0.04]], items = []; let left = 0;  // bigger prints; lead print bleeds a sliver off the top and right, the rest step back left and overlap
     for (let k = 0; k < n; k++) { const ph = r.h * spec[k][0], pw = ph * 0.8, cx = k ? left - pw / 2 + pw * 0.28 : r.x + r.w * 0.87 - pw / 2; left = cx - pw / 2; items.push([n - 1 - k, cx, r.y + r.h * spec[k][1], pw, ph, spec[k][2]]); }
     items.reverse().forEach((q, i) => photoFrame(ctx, q[0], q[1], q[2], q[3], q[4], q[5] + sw2(i), c.th, c.fu * 10));
     return;
