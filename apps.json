@@ -1,5 +1,14 @@
 [
   {
+    "id": "grid-alphabet",
+    "title": "Grid Alphabet",
+    "category": "Motion",
+    "url": "grid-alphabet/",
+    "thumbnail": "grid-alphabet/thumb.png",
+    "preview": "grid-alphabet/thumb.webp",
+    "alt": "A bold black block letter on a 12 by 12 white grid over grey, whose cells wave in and out to morph from one letter to the next, starting with an S"
+  },
+  {
     "id": "location-hero",
     "title": "Location Hero",
     "category": "Tools",
