@@ -1,5 +1,14 @@
 [
   {
+    "id": "sander-troubleshoot",
+    "title": "Sander Troubleshoot",
+    "category": "Motion",
+    "url": "sander-troubleshoot/",
+    "thumbnail": "sander-troubleshoot/thumb.png",
+    "preview": "sander-troubleshoot/thumb.webp",
+    "alt": "A blue frame with a product picker with Prep tools chosen, a search card where 'sander is scratching' is typed and 'Sander scratches into wood surface' is picked from the matches, and an illustrated worker in goggles sanding a board"
+  },
+  {
     "id": "asterisk",
     "title": "Asterisk",
     "category": "Motion",
@@ -18,12 +27,12 @@
     "alt": "A LinkedIn feed with a sponsored direct mail ad for San Diego that follows the viewer's metro, then the live Location Hero landing page it links to, then a dark performance dashboard with clicks, click-through rate, leads, a funnel and market metrics"
   },
   {
-    "id": "search-robot",
-    "title": "Search Robot",
+    "id": "nlp-diagram",
+    "title": "NLP Diagram",
     "category": "Motion",
-    "url": "search-robot/",
-    "thumbnail": "search-robot/thumb.png",
-    "preview": "search-robot/thumb.webp",
+    "url": "nlp-diagram/",
+    "thumbnail": "nlp-diagram/thumb.png",
+    "preview": "nlp-diagram/thumb.webp",
     "alt": "An illustrated robot between a support search card and a graph: the query 'sander is scratching' is typed, matching questions appear, and yellow context notes and the chosen result land on the graph"
   },
   {
