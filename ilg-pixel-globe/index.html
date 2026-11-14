@@ -200,70 +200,46 @@ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 
 
 
-/* ---------- ILG logo: three extruded square letters that build an isometric cube; the lit right-hand walls are the white "shadow" ---------- */
-const LN=5,GAP=.2,G2=GAP/2;
-const LETTERS={
-  I:["#####","..#..","..#..","..#..","#####"],
-  L:["#....","#....","#....","#....","#####"],
-  G:["#####","#....","#.###","#...#","#####"]
+/* ---------- ILG logo: three separate extruded square letters in a pinwheel (I left, L right, G on top), each 4x4 and 1 deep,
+   with a hairline gap between them so no letter blends into another. Front faces are black (white on the right-hand one),
+   the walls that face right or up are solid white, the ones that face the left-front are black, every shape has a thin outline. ---------- */
+const A=4,DEP=.6,GAPW=.2,E=A+GAPW+DEP;
+const SHAPES={
+  I:[[0,0],[1,0],[1,.26],[.67,.26],[.67,.74],[1,.74],[1,1],[0,1],[0,.74],[.33,.74],[.33,.26],[0,.26]],
+  L:[[0,0],[.36,0],[.36,.68],[1,.68],[1,1],[0,1]],
+  G:[[0,0],[1,0],[1,.3],[.36,.3],[.36,.7],[.64,.7],[.64,.5],[1,.5],[1,1],[0,1]]
 };
-const VOX=new Set(),vk=(x,y,z)=>x+','+y+','+z,has=(x,y,z)=>VOX.has(vk(x,y,z));
-for(let j=0;j<LN;j++)for(let i=0;i<LN;i++){
-  if(LETTERS.I[j][i]==='#')VOX.add(vk(i,LN-1-j,LN-1));       /* I on the left face (+z) */
-  if(LETTERS.L[j][i]==='#')VOX.add(vk(LN-1,LN-1-j,LN-1-i));  /* L on the right face (+x) */
-  if(LETTERS.G[j][i]==='#')VOX.add(vk(i,LN-1,j));            /* G on the top (+y) */
-}
+const F0=A+GAPW,F1=F0+DEP;     /* back and front plane of every slab */
+const LETTERS=[
+  {pts:SHAPES.I,at:(u,v,d)=>[u*A,A-v*A,d],n:(a,b)=>[a,-b,0],back:F0,front:F1,fill:'#000'},   /* left face, looks along +z */
+  {pts:SHAPES.L,at:(u,v,d)=>[d,A-v*A,A-u*A],n:(a,b)=>[0,-b,-a],back:F0,front:F1,fill:'#fff'}, /* right face, looks along +x */
+  {pts:SHAPES.G,at:(u,v,d)=>[u*A,d,v*A],n:(a,b)=>[a,0,b],back:F0,front:F1,fill:'#000'}      /* top face, looks along +y */
+];
 function drawLogo(){
   const L=document.getElementById('logo'),r=L.getBoundingClientRect(),dp=Math.min(3,(window.devicePixelRatio||1)*1.5);
   L.width=Math.round(r.width*dp);L.height=Math.round(r.height*dp);
   const c=L.getContext('2d');c.setTransform(dp,0,0,dp,0,0);
   const ph=Math.atan(1/Math.SQRT2),cp=Math.cos(ph),sp=Math.sin(ph),q=Math.SQRT1_2;
-  const k=Math.min((r.width-3)/(LN*Math.SQRT2),(r.height-3)/(LN*(cp+Math.SQRT2*sp)));
-  /* screen position of a cube-space point (x toward the right-back, y up, z toward the left-front) */
-  const P=(x,y,z)=>{const xr=(x-z)*q,zr=(x+z)*q;return [r.width/2+xr*k,r.height/2-(y*cp-zr*sp)*k]};
-  const lw=Math.max(1,r.width*.008);
+  const k=Math.min((r.width-3)/(E*Math.SQRT2),(r.height-3)/(E*(cp+Math.SQRT2*sp)));
+  /* the cube is centred on its own middle, so the hollow corner stays in the middle of the mark */
+  const P=(p)=>{const x=p[0]-E/2,y=p[1]-E/2,z=p[2]-E/2,xr=(x-z)*q,zr=(x+z)*q;return [r.width/2+xr*k,r.height/2-(y*cp-zr*sp)*k]};
+  const lw=Math.max(.9,r.width*.0075);
   c.lineJoin='miter';
-  const poly=(pts,fill)=>{c.beginPath();pts.forEach((p,n)=>n?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fillStyle=fill;c.fill();c.strokeStyle=fill;c.lineWidth=.8;c.stroke()};
-  const seg=(a,b)=>{c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.strokeStyle='rgba(255,255,255,.88)';c.lineWidth=lw;c.stroke()};
-  const topOk=(x,y,z)=>has(x,y,z)&&!has(x,y+1,z),leftOk=(x,y,z)=>has(x,y,z)&&!has(x,y,z+1),rightOk=(x,y,z)=>has(x,y,z)&&!has(x+1,y,z);
-  /* faint pixel world on the black faces */
-  const SH=-75,W=4;
-  const dots=(face,x,y,z)=>{
-    for(let b=0;b<W;b++)for(let a=0;a<W;a++){
-      const u=(a+.5)/W,v=(b+.5)/W;let X,Y,Z,cr;
-      if(face==='top'){X=x+u;Y=y+1;Z=z+v;cr=[[x+(a+.15)/W,y+1,z+(b+.15)/W],[x+(a+.85)/W,y+1,z+(b+.15)/W],[x+(a+.85)/W,y+1,z+(b+.85)/W],[x+(a+.15)/W,y+1,z+(b+.85)/W]]}
-      else{X=x+u;Y=y+1-v;Z=z+1;cr=[[x+(a+.15)/W,y+1-(b+.15)/W,z+1],[x+(a+.85)/W,y+1-(b+.15)/W,z+1],[x+(a+.85)/W,y+1-(b+.85)/W,z+1],[x+(a+.15)/W,y+1-(b+.85)/W,z+1]]}
-      /* world position relative to the cube centre */
-      const cx=X/LN*2-1,cy=Y/LN*2-1,cz=Z/LN*2-1,m=Math.hypot(cx,cy,cz);
-      if(land(Math.asin(cy/m)/D,Math.atan2(cx,cz)/D+SH))poly(cr.map(p=>P(p[0],p[1],p[2])),'rgba(255,255,255,.3)');
+  const poly=(pts,fill)=>{c.beginPath();pts.forEach((p,n)=>n?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fillStyle=fill;c.fill();c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=lw;c.stroke()};
+  for(const t of LETTERS){
+    const pts=t.pts,n=pts.length;
+    let a2=0;for(let i=0;i<n;i++){const p=pts[i],q2=pts[(i+1)%n];a2+=p[0]*q2[1]-q2[0]*p[1]}
+    const walls=[];
+    for(let i=0;i<n;i++){
+      const p=pts[i],q2=pts[(i+1)%n],du=q2[0]-p[0],dv=q2[1]-p[1];
+      const nn=a2>0?[dv,-du]:[-dv,du],l=Math.hypot(nn[0],nn[1]),n3=t.n(nn[0]/l,nn[1]/l);
+      if(n3[0]+n3[1]+n3[2]<=.001)continue;                       /* wall faces away from us */
+      const f0=t.at(p[0],p[1],t.front),f1=t.at(q2[0],q2[1],t.front),b1=t.at(q2[0],q2[1],t.back),b0=t.at(p[0],p[1],t.back);
+      walls.push({q:[f0,f1,b1,b0].map(P),col:n3[2]>.5?'#000':'#fff',key:(f0[0]+f1[0]+f0[1]+f1[1]+f0[2]+f1[2])});
     }
-  };
-  for(let x=0;x<LN;x++)for(let y=0;y<LN;y++)for(let z=0;z<LN;z++){
-    if(!has(x,y,z))continue;
-    if(topOk(x,y,z)){
-      const a=x,b=x+1-(x===LN-1?G2:0),e=z,f=z+1-(z===LN-1?G2:0);   /* G meets L at x=4 and I at z=4 */
-      poly([P(a,y+1,e),P(b,y+1,e),P(b,y+1,f),P(a,y+1,f)],'#000');dots('top',x,y,z);
-      if(!topOk(x-1,y,z))seg(P(a,y+1,e),P(a,y+1,f));
-      if(!topOk(x+1,y,z))seg(P(b,y+1,e),P(b,y+1,f));
-      if(!topOk(x,y,z-1))seg(P(a,y+1,e),P(b,y+1,e));
-      if(!topOk(x,y,z+1))seg(P(a,y+1,f),P(b,y+1,f));
-    }
-    if(leftOk(x,y,z)){
-      const a=x,b=x+1-(x===LN-1?G2:0),e=y,f=y+1-(y===LN-1?G2:0);   /* I meets L at x=4 and G at y=4 */
-      poly([P(a,e,z+1),P(b,e,z+1),P(b,f,z+1),P(a,f,z+1)],'#000');dots('left',x,y,z);
-      if(!leftOk(x-1,y,z))seg(P(a,e,z+1),P(a,f,z+1));
-      if(!leftOk(x+1,y,z))seg(P(b,e,z+1),P(b,f,z+1));
-      if(!leftOk(x,y-1,z))seg(P(a,e,z+1),P(b,e,z+1));
-      if(!leftOk(x,y+1,z))seg(P(a,f,z+1),P(b,f,z+1));
-    }
-    if(rightOk(x,y,z)){
-      const a=z,b=z+1-(z===LN-1?G2:0),e=y,f=y+1-(y===LN-1?G2:0);   /* L meets I at z=4 and G at y=4 */
-      poly([P(x+1,e,a),P(x+1,e,b),P(x+1,f,b),P(x+1,f,a)],'#fff');
-      if(!rightOk(x,y,z-1))seg(P(x+1,e,a),P(x+1,f,a));
-      if(!rightOk(x,y,z+1))seg(P(x+1,e,b),P(x+1,f,b));
-      if(!rightOk(x,y-1,z))seg(P(x+1,e,a),P(x+1,e,b));
-      if(!rightOk(x,y+1,z))seg(P(x+1,f,a),P(x+1,f,b));
-    }
+    walls.sort((u,v)=>u.key-v.key);                              /* far walls first */
+    for(const w of walls)poly(w.q,w.col);
+    poly(pts.map(p=>P(t.at(p[0],p[1],t.front))),t.fill);        /* the letter's own face on top */
   }
 }
 
