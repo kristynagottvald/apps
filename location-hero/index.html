@@ -38,10 +38,9 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 
 /* illustration */
 .stage{position:relative;aspect-ratio:1/1;width:100%;max-width:600px;justify-self:end;container-type:inline-size}
-.blurbs div.bl{position:absolute;width:60%;background:var(--card);border-radius:20px;padding:2.6cqw 3cqw;color:#fff;transition:opacity .35s,transform .35s,filter .35s}
+.blurbs div.bl{position:absolute;width:60%;background:var(--card);border-radius:6px;padding:2.6cqw 3cqw;color:#fff;transition:opacity .35s,transform .35s,filter .35s}
 #b1{left:26%;top:0}#b2{left:2%;top:16.5%}
 .bl.out{opacity:0;transform:translateY(8px);filter:blur(5px)}
-.bl small{display:block;font:600 1.5cqw/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--lime);margin-bottom:1.4cqw}
 .bl strong{display:block;font:400 3.6cqw/1.1 var(--sans);letter-spacing:-.02em}
 .bl strong i{font:italic 400 3.8cqw var(--serif)}
 .bl p{font:400 1.85cqw/1.4 var(--sans);color:rgba(255,255,255,.75);margin-top:1.2cqw}
@@ -85,8 +84,8 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 
   <div class="stage" id="stage">
     <div class="blurbs">
-      <div class="bl" id="b1"><small id="b1k"></small><strong id="b1h"></strong><p id="b1p"></p></div>
-      <div class="bl" id="b2"><small id="b2k"></small><strong id="b2h"></strong><p id="b2p"></p></div>
+      <div class="bl" id="b1"><strong id="b1h"></strong><p id="b1p"></p></div>
+      <div class="bl" id="b2"><strong id="b2h"></strong><p id="b2p"></p></div>
     </div>
     <div class="box"><div class="plat">
       <div class="side"><i></i></div>
@@ -131,7 +130,7 @@ $('g2').innerHTML=BADGES.map((b,n)=>{
 const sw=['city','h1','sub','b1','b2'];
 const lp={i:0,timer:null,
  apply(i){const c=CITIES[i];$('city').textContent=c.city;$('h1').innerHTML=c.h;$('sub').textContent=c.sub;
-  [['b1',c.b1],['b2',c.b2]].forEach(([k,v])=>{$(k+'k').textContent=v[0];$(k+'h').innerHTML=v[1];$(k+'p').textContent=v[2]});
+  [['b1',c.b1],['b2',c.b2]].forEach(([k,v])=>{$(k+'h').innerHTML=v[1];$(k+'p').textContent=v[2]});
   document.querySelectorAll('.tog button').forEach((b,j)=>b.classList.toggle('on',j===i));},
  set(i){if(i===this.i)return;this.i=i;sw.forEach(k=>$(k).classList.add('out'));
   setTimeout(()=>{this.apply(i);sw.forEach(k=>$(k).classList.remove('out'))},350);},
