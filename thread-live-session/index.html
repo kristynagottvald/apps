@@ -437,7 +437,7 @@ function sSession(ctx, c) {
   // the card: yellow, hard black shadow, the title on two lines in the serif, the session label bottom left
   const kx = X(1), ky = Y(0), kw = 5 * cw, kh = 3 * rh, sx = 10;
   ctx.save(); ctx.fillStyle = DARK; ctx.fillRect(kx + sx, ky + sx, kw, kh); ctx.fillStyle = hi; ctx.fillRect(kx, ky, kw, kh); ctx.strokeStyle = DARK; ctx.lineWidth = 2; ctx.strokeRect(kx + 1, ky + 1, kw - 2, kh - 2); ctx.restore();
-  const lines = parseLines(S.sTitle, 3), fs = fitLines(ctx, lines, kw - 100, kh - 190, 240, 0.9);
+  const lines = parseLines(S.sTitle, 3), fs = fitLines(ctx, lines, kw - 260, kh - 190, 240, 0.9);
   lines.forEach((l, i) => slide(ctx, l.s, kx + 48, ky + 40 + fs * 0.8 + i * fs * 0.9 + (still ? 0 : 2 * sway(t, i * 0.8)), fs, l.it, DARK));
   tag(ctx, (S.sKick || '').toUpperCase(), kx + 48, ky + kh - 48 - 60, 60, 22, DARK, { pad: 28, ls: 4.5 });
 }
