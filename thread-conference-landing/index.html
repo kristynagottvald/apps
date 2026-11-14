@@ -89,14 +89,17 @@ header.site .btn{padding:11px 16px;box-shadow:none}
 .tg{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.8vw,24px);margin-top:clamp(30px,4vw,56px)}
 .tr{text-decoration:none;display:block}
 .tr .ph{aspect-ratio:1.25;border:1.5px solid var(--ink);display:grid;place-items:center;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
-.tr:hover .ph{transform:translate(-4px,-4px);box-shadow:8px 8px 0 var(--ink)}
-.tr .ph svg{width:62%;height:auto;overflow:visible}
-.tr h3{font:400 clamp(28px,2.6vw,40px)/1 var(--serif);margin:16px 0 6px}
-.tr p{font-size:14px;opacity:.85;max-width:22em}
+.tr:hover .ph,.tr:focus-visible .ph{transform:translate(-4px,-4px);box-shadow:8px 8px 0 var(--ink)}
+@property --d{syntax:"<number>";inherits:true;initial-value:1.5}
+.tr .ph{--side:var(--yellow);--line:var(--ink);--front:var(--yellow);--d:1.5;transition:transform .3s var(--ease),box-shadow .3s var(--ease),--d .5s var(--ease)}
+.tr .ph.c2{--side:var(--ink);--line:var(--yellow);--front:var(--ink)}
+.tr .ph.c3{--front:var(--cream)}
+.tr:hover .ph,.tr:focus-visible .ph{--d:2.1}
+.tr .ph svg{width:68%;height:auto;overflow:visible}
+.tr .ph svg use{stroke-linejoin:round}
+.tr .ph svg .x{fill:var(--side);stroke:var(--line);stroke-width:.55;transform:translate(calc(var(--d) * var(--k) * 1px),calc(var(--d) * var(--k) * 1px))}
+.tr .ph svg .f{fill:var(--front);stroke:var(--line);stroke-width:3.4}
 .c1{background:var(--yellow)}.c2{background:var(--ink);color:var(--yellow)}.c3{background:var(--cream)}.c4{background:var(--yellow)}
-.dr{stroke-dasharray:1;stroke-dashoffset:0}
-.tr:hover .dr{animation:dr 1s var(--ease) both}
-@keyframes dr{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 @media (max-width:760px){.hd h2 span{white-space:normal}}
 @media (max-width:900px){.tg{grid-template-columns:1fr 1fr}}
 @media (max-width:520px){.tg{grid-template-columns:1fr}}
@@ -168,10 +171,10 @@ footer .r{margin-left:auto;display:flex;gap:16px}
 <section class="sec tracks" id="tracks">
   <div class="hd"><h2><span>What are you building for?</span></h2><a href="#tracks">View all content</a></div>
   <div class="tg">
-    <a class="tr" href="#tracks"><div class="ph c1"><svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.8"><rect class="dr" pathLength="1" x="30" y="5" width="60" height="80"/><circle class="dr" pathLength="1" cx="60" cy="38" r="16"/><path class="dr" pathLength="1" d="M42 66h36"/></svg></div><h3>Growth</h3><p>Grow a compliant list and turn first texts into first orders.</p></a>
-    <a class="tr" href="#tracks"><div class="ph c2"><svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.8"><path class="dr" pathLength="1" d="M10 45h25l12-30 18 60 12-30h33"/><circle cx="10" cy="45" r="4" fill="currentColor"/><circle cx="110" cy="45" r="4" fill="currentColor"/></svg></div><h3>Lifecycle</h3><p>Flows, triggers and timing that feel like a text from a friend.</p></a>
-    <a class="tr" href="#tracks"><div class="ph c3"><svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.8"><path class="dr" pathLength="1" d="M60 5 110 45 60 85 10 45Z"/><path class="dr" pathLength="1" d="M60 22 90 45 60 68 30 45Z"/><path d="M60 5v80M10 45h100"/></svg></div><h3>Creative</h3><p>Copy, MMS and short links that earn a reply.</p></a>
-    <a class="tr" href="#tracks"><div class="ph c4"><svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.8"><rect class="dr" pathLength="1" x="8" y="8" width="104" height="74"/><path class="dr" pathLength="1" d="M8 30h104M40 30v52"/><path d="M52 46h46M52 58h30"/></svg></div><h3>Compliance</h3><p>Consent, carriers and the rules, explained in plain English.</p></a>
+    <a class="tr" href="#tracks"><div class="ph c1"><svg viewBox="0 0 130 100" data-art role="img" aria-hidden="true"><rect x="30" y="5" width="60" height="80"/><circle cx="60" cy="38" r="16"/><path fill="none" d="M42 66h36"/></svg></div><h3>Growth</h3><p>Grow a compliant list and turn first texts into first orders.</p></a>
+    <a class="tr" href="#tracks"><div class="ph c2"><svg viewBox="0 0 130 100" data-art role="img" aria-hidden="true"><path fill="none" d="M10 45h25l12-30 18 60 12-30h33"/><circle cx="10" cy="45" r="4"/><circle cx="110" cy="45" r="4"/></svg></div><h3>Lifecycle</h3><p>Flows, triggers and timing that feel like a text from a friend.</p></a>
+    <a class="tr" href="#tracks"><div class="ph c3"><svg viewBox="0 0 130 100" data-art role="img" aria-hidden="true"><path d="M60 5 110 45 60 85 10 45Z"/><path d="M60 22 90 45 60 68 30 45Z"/><path fill="none" d="M60 5v80M10 45h100"/></svg></div><h3>Creative</h3><p>Copy, MMS and short links that earn a reply.</p></a>
+    <a class="tr" href="#tracks"><div class="ph c4"><svg viewBox="0 0 130 100" data-art role="img" aria-hidden="true"><rect x="8" y="8" width="104" height="74"/><path fill="none" d="M8 30h104M40 30v52"/><path fill="none" d="M52 46h46M52 58h30"/></svg></div><h3>Compliance</h3><p>Consent, carriers and the rules, explained in plain English.</p></a>
   </div>
 </section>
 
@@ -200,6 +203,10 @@ const EV=nextEvent(),cnt=document.getElementById('count'),pad=v=>String(v).padSt
 function tick(){let s=Math.max(0,Math.floor((EV-Date.now())/1000));const v={d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),s:s%60};
  for(const k in v)cnt.querySelector('[data-u='+k+']').textContent=pad(v[k])}
 tick();setInterval(tick,1000);
+/* tracks: each illustration is stacked as stepped copies behind a heavy front, like the badge capitals */
+document.querySelectorAll('svg[data-art]').forEach((s,n)=>{const g=s.innerHTML,id='art'+n;let u='';
+ for(let k=7;k>=1;k--)u+='<use href="#'+id+'" class="x" style="--k:'+k+'"/>';
+ s.innerHTML='<defs><g id="'+id+'" transform="translate(-4 -4)">'+g+'</g></defs>'+u+'<use href="#'+id+'" class="f"/>'});
 /* ticker */
 const w=['Thread 2026','May 12–14','New York','The SMS marketing conference'];
 document.getElementById('tk').innerHTML=Array(16).fill(w).flat().map(t=>'<span>'+t+'</span>').join('');
