@@ -593,9 +593,9 @@ function tSpeaker(ctx, c) {
   const tagFs = 22 * fu * k, tagSp = 4 * fu * k, tagH = 58 * fu * k, tagPad = 30 * fu * k, tagFont = 'bold ' + tagFs + 'px Helvetica, Arial, sans-serif';
   ctx.save(); ctx.font = tagFont; setLS(ctx, tagSp);
   const tag = (S.chip || '').toUpperCase(), tw = ctx.measureText(tag).width - tagSp + 2 * tagPad; ctx.restore();
-  const title = (S.talk || S.speaker || ' ').trim(), roleFs = 36 * fu * (land ? 1 : 1.15), inline = !land;  // stacked: role sits on the name's line, in the same type
+  const title = (S.talk || S.speaker || ' ').trim(), roleFs = 36 * fu * (land ? 1 : 1.15), inline = true;  // role sits on the name's line, in the same type, after a comma
   let nameFs = 64 * fu * (land ? 1 : 1.15);
-  if (inline && S.speaker && S.role) { ctx.save(); ctx.font = serifFont(nameFs, false); const tot = ctx.measureText(S.speaker).width + 44 * fu + ctx.measureText(S.role).width; ctx.restore(); if (tot > rightB - mx) nameFs *= (rightB - mx) / tot; }
+  if (inline && S.speaker && S.role) { ctx.save(); ctx.font = serifFont(nameFs, false); const tot = ctx.measureText(S.speaker + ',').width + 22 * fu + ctx.measureText(S.role).width; ctx.restore(); if (tot > rightB - mx) nameFs *= (rightB - mx) / tot; }
   const topY = land ? 100 * fu : pr.y + pr.h * 1.18, botY = land ? H - 250 * fu : H - 240 * fu - (S.fmt === 'story' ? 0.06 * H : 0);  // the group sits just above the logos on stacked formats; 9:16 lifts it higher, logos stay
   const groupH = (fs, n) => (S.chip ? tagH + 44 * fu * k : 0) + 0.72 * fs + (n - 1) * 0.92 * fs + 0.28 * fs + 48 * fu + (S.speaker || S.role ? nameFs : 0) + (!inline && S.speaker && S.role ? 30 * fu + roleFs : 0);
   let fs = (land ? 150 : 190) * fu, lines = wrapSlide(ctx, title, fs, rightB - mx);
@@ -613,7 +613,7 @@ function tSpeaker(ctx, c) {
   y += (lines.length - 1) * 0.92 * fs + 0.28 * fs + 48 * fu;
   if (inline) {
     y += nameFs * 0.8; let x = mx;
-    if (S.speaker) { serifText(ctx, S.speaker, x, y, nameFs, th.fg); ctx.save(); ctx.font = serifFont(nameFs, false); x += ctx.measureText(S.speaker).width + 44 * fu; ctx.restore(); }
+    if (S.speaker) { const nm = S.speaker + (S.role ? ',' : ''); serifText(ctx, nm, x, y, nameFs, th.fg); ctx.save(); ctx.font = serifFont(nameFs, false); x += ctx.measureText(nm).width + 22 * fu; ctx.restore(); }
     if (S.role) serifText(ctx, S.role, x, y, nameFs, th.fg);
   } else {
     if (S.speaker) { y += nameFs * 0.8; serifText(ctx, S.speaker, mx, y, nameFs, th.fg); y += nameFs * 0.2; }
