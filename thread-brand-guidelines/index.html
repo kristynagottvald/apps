@@ -112,7 +112,10 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 .panel{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;background:var(--bg);color:var(--fg)}
 .panel.open{display:block}
 .panel>.sec{min-height:100%}
-.ghost{position:absolute;z-index:40;pointer-events:none;margin:0;transform:none!important;box-shadow:none!important;transition:left .8s var(--ease),top .8s var(--ease),width .8s var(--ease),height .8s var(--ease),opacity .45s}
+.ghost{position:absolute;inset:0;z-index:40;pointer-events:none;will-change:clip-path;transition:clip-path .85s var(--ease),opacity .3s}
+.sec .wrap .in>*{opacity:0;transform:translateY(18px);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.sec.in .wrap .in>*{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.sec.in .wrap .in>*:nth-child(2){transition-delay:.08s}.sec.in .wrap .in>*:nth-child(3){transition-delay:.16s}.sec.in .wrap .in>*:nth-child(4){transition-delay:.24s}.sec.in .wrap .in>*:nth-child(5){transition-delay:.32s}.sec.in .wrap .in>*:nth-child(n+6){transition-delay:.4s}
 .intro{padding:clamp(40px,5vw,72px) 0;display:flex;flex-direction:column}
 .intro>.wrap{flex:1;display:flex;flex-direction:column;width:100%}
 .intro .in{flex:1;display:flex;flex-direction:column;max-width:none}
@@ -1161,17 +1164,16 @@ const app = $('#app'), home = $('#home'), links = $$('#links a'), panels = {};
 let cur = null, busy = false, homeOn = true;
 $$('#app > section.sec').forEach((sec) => { const P = document.createElement('div'); P.className = 'panel ' + ([...sec.classList].find((c) => c.startsWith('t-')) || ''); P.id = 'p-' + sec.id; app.insertBefore(P, sec); P.appendChild(sec); panels[sec.id] = P; });
 const rectOf = (id) => { const a = app.getBoundingClientRect(), t = $('.tile[data-sec="' + id + '"]'); if (t) { const b = t.getBoundingClientRect(); return { l: b.left - a.left, t: b.top - a.top, w: b.width, h: b.height }; } const w = a.width * 0.3, h = a.height * 0.3; return { l: (a.width - w) / 2, t: (a.height - h) / 2, w, h }; };
-const place = (g, r) => { g.style.left = r.l + 'px'; g.style.top = r.t + 'px'; g.style.width = r.w + 'px'; g.style.height = r.h + 'px'; };
-const FULL = () => ({ l: 0, t: 0, w: app.clientWidth, h: app.clientHeight });
-function ghostFor(id) {
-  const t = $('.tile[data-sec="' + id + '"]'); let g;
-  if (t) { g = t.cloneNode(true); g.removeAttribute('href'); g.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id')); const sc = $$('canvas', t), dc = $$('canvas', g); dc.forEach((c, i) => { c.width = sc[i].width; c.height = sc[i].height; c.getContext('2d').drawImage(sc[i], 0, 0); }); }
-  else { g = document.createElement('div'); g.className = 'tile ' + ([...panels[id].classList].find((c) => c.startsWith('t-')) || ''); }
-  g.classList.add('ghost'); g.setAttribute('aria-hidden', 'true'); g.tabIndex = -1; return g;
+const clipOf = (r) => 'inset(' + r.t + 'px ' + (app.clientWidth - r.l - r.w) + 'px ' + (app.clientHeight - r.t - r.h) + 'px ' + r.l + 'px)';
+const FULLCLIP = 'inset(0px 0px 0px 0px)';
+/* a plain block of the tile's colour; its clip-path grows from the tile to the whole stage, so nothing but colour has to move */
+function makeGhost(id) {
+  const t = $('.tile[data-sec="' + id + '"]'), g = document.createElement('div'); g.className = 'ghost'; g.setAttribute('aria-hidden', 'true');
+  g.style.background = t ? getComputedStyle(t).backgroundColor : getComputedStyle(panels[id]).backgroundColor; return g;
 }
 function showPanel(id, fade) {
   const P = panels[id], sec = P.firstElementChild; P.classList.add('open'); P.scrollTop = 0; sec.classList.remove('in');
-  if (fade) { P.style.transition = 'none'; P.style.opacity = 0; P.getBoundingClientRect(); P.style.transition = 'opacity .45s'; P.style.opacity = 1; } else { P.style.opacity = 1; }
+  P.style.opacity = 1;
   void sec.offsetWidth; sec.classList.add('in'); if (id === 'voice') { toneStarted = true; animTone(); }
 }
 function hidePanel(id) { const P = panels[id]; P.classList.remove('open'); P.firstElementChild.classList.remove('in'); }
@@ -1182,15 +1184,18 @@ function openSec(id, instant) {
   const prev = cur; cur = id; markNav();
   if (instant) { if (prev) hidePanel(prev); showPanel(id); home.style.visibility = 'hidden'; homeOn = false; return; }
   busy = true; homeOn = true; home.style.visibility = 'visible';
-  const g = ghostFor(id); g.style.transition = 'none'; place(g, rectOf(id)); app.appendChild(g); g.getBoundingClientRect(); g.style.transition = ''; place(g, FULL());
-  setTimeout(() => { if (prev) hidePanel(prev); showPanel(id, true); g.style.opacity = 0; }, 650);
-  setTimeout(() => { g.remove(); home.style.visibility = 'hidden'; homeOn = false; busy = false; }, 1150);
+  const g = makeGhost(id); g.style.transition = 'none'; g.style.clipPath = clipOf(rectOf(id)); g.style.opacity = 0; app.appendChild(g); g.getBoundingClientRect();
+  g.style.transition = ''; g.style.opacity = 1; g.style.clipPath = FULLCLIP;                       // 1. the colour grows to fill the stage
+  setTimeout(() => { if (prev) hidePanel(prev); showPanel(id); g.remove(); home.style.visibility = 'hidden'; homeOn = false; busy = false; }, 900);  // 2. same colour underneath, so the swap is invisible and the content fades up
 }
 function closeHome() {
-  if (!cur || busy) return; busy = true; const id = cur; cur = null; markNav(); homeOn = true; home.style.visibility = 'visible';
-  const g = ghostFor(id); g.style.transition = 'none'; place(g, FULL()); g.style.opacity = 0; app.appendChild(g); g.getBoundingClientRect(); g.style.transition = ''; g.style.opacity = 1;
-  setTimeout(() => { hidePanel(id); place(g, rectOf(id)); }, 420);
-  setTimeout(() => { g.remove(); busy = false; }, 1300);
+  if (!cur || busy) return; busy = true; const id = cur; cur = null; markNav(); homeOn = true;
+  panels[id].firstElementChild.classList.remove('in');                                             // 1. content fades out
+  setTimeout(() => {
+    home.style.visibility = 'visible'; const g = makeGhost(id); g.style.transition = 'none'; g.style.clipPath = FULLCLIP; app.appendChild(g); g.getBoundingClientRect();
+    hidePanel(id); g.style.transition = ''; g.style.clipPath = clipOf(rectOf(id));               // 2. the colour shrinks into its tile
+    setTimeout(() => { g.style.opacity = 0; }, 800); setTimeout(() => { g.remove(); busy = false; }, 1150);
+  }, 380);
 }
 links.forEach((a) => { a.dataset.sec = a.getAttribute('href').slice(1); });
 document.addEventListener('click', (e) => {
