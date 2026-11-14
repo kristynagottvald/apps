@@ -327,6 +327,9 @@ const items = [];
     });
   }
 }
+/* the two real campaign posts shared for the library replace two generated tiles */
+Object.assign(items[0], {file: 'assets/b01-1x1.webp', asp: '1x1', name: 'LOB_Connector_1x1_v3.png'});
+Object.assign(items[3], {file: 'assets/b02-1x1.webp', asp: '1x1', name: 'LOB_HeadStart_1x1_v3.png'});
 const statusAt = (it, t) => it.post && t >= 18000 ? 'changes' : it.status;
 const countsAt = t => { const c = {all:items.length, scan:0, needs:0, changes:0, approved:0}; items.forEach(it => { const s = statusAt(it, t); if(s === 'queued' || s === 'scanning') c.scan++; else c[s]++; }); return c; };
 
