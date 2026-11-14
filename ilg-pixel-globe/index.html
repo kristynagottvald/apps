@@ -22,7 +22,7 @@ main{flex:1;min-height:0;position:relative;overflow:hidden}
 canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
 canvas.drag{cursor:grabbing}
 .copy{position:absolute;left:4.7vw;top:50%;transform:translateY(-50%);width:min(70vw,980px);pointer-events:none}
-.logo{display:block;width:clamp(84px,9.5vw,150px);height:auto;margin-bottom:clamp(16px,2.6vw,44px);overflow:visible}
+.logo{position:static;inset:auto;cursor:default;display:block;width:clamp(104px,11.5vw,180px);height:auto;aspect-ratio:1.4142/1.633;margin-bottom:clamp(16px,2.6vw,44px)}
 h1{font:400 clamp(30px,3.55vw,64px)/1.06 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:-.035em}
 p{margin-top:clamp(14px,1.8vw,30px);max-width:31em;font:400 clamp(14px,1.55vw,28px)/1.38 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:-.012em;color:var(--mute)}
 .copy>*{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
@@ -37,13 +37,7 @@ p{margin-top:clamp(14px,1.8vw,30px);max-width:31em;font:400 clamp(14px,1.55vw,28
 <main>
 <canvas id="c" role="img" aria-label="A globe made of white pixels with glowing arcs of orders flying between warehouses and customers on every continent. Drag to turn it."></canvas>
 <div class="copy">
-  <svg class="logo" viewBox="4 0 92 100" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="miter" role="img" aria-label="ILG">
-    <defs><clipPath id="cl-top"><polygon points="0.030 0.030 0.368 0.030 0.368 0.669 0.970 0.669 0.970 0.970 0.030 0.970"/></clipPath><clipPath id="cl-left"><polygon points="0.030 0.030 0.970 0.030 0.970 0.274 0.660 0.274 0.660 0.726 0.970 0.726 0.970 0.970 0.030 0.970 0.030 0.726 0.340 0.726 0.340 0.274 0.030 0.274"/></clipPath><clipPath id="cl-right"><polygon points="0.030 0.030 0.970 0.030 0.970 0.312 0.368 0.312 0.368 0.688 0.632 0.688 0.632 0.500 0.970 0.500 0.970 0.970 0.030 0.970"/></clipPath></defs>
-    <g class="shadow" transform="translate(3.2 0)" fill="#5c5c5c" stroke="#5c5c5c"><g transform="matrix(38 22 -38 22 50 6)"><polygon points="0.030 0.030 0.368 0.030 0.368 0.669 0.970 0.669 0.970 0.970 0.030 0.970" vector-effect="non-scaling-stroke"/></g><g transform="matrix(38 22 0 44 12 28)"><polygon points="0.030 0.030 0.970 0.030 0.970 0.274 0.660 0.274 0.660 0.726 0.970 0.726 0.970 0.970 0.030 0.970 0.030 0.726 0.340 0.726 0.340 0.274 0.030 0.274" vector-effect="non-scaling-stroke"/></g><g transform="matrix(38 -22 0 44 50 50)"><polygon points="0.030 0.030 0.970 0.030 0.970 0.312 0.368 0.312 0.368 0.688 0.632 0.688 0.632 0.500 0.970 0.500 0.970 0.970 0.030 0.970" vector-effect="non-scaling-stroke"/></g></g>
-    <g transform="matrix(38 22 -38 22 50 6)"><rect width="1" height="1" fill="#050505" clip-path="url(#cl-top)" stroke="none"/><g id="tx-top" clip-path="url(#cl-top)" stroke="none"></g><polygon points="0.030 0.030 0.368 0.030 0.368 0.669 0.970 0.669 0.970 0.970 0.030 0.970" vector-effect="non-scaling-stroke"/></g>
-    <g transform="matrix(38 22 0 44 12 28)"><rect width="1" height="1" fill="#050505" clip-path="url(#cl-left)" stroke="none"/><g id="tx-left" clip-path="url(#cl-left)" stroke="none"></g><polygon points="0.030 0.030 0.970 0.030 0.970 0.274 0.660 0.274 0.660 0.726 0.970 0.726 0.970 0.970 0.030 0.970 0.030 0.726 0.340 0.726 0.340 0.274 0.030 0.274" vector-effect="non-scaling-stroke"/></g>
-    <g transform="matrix(38 -22 0 44 50 50)"><rect width="1" height="1" fill="#050505" clip-path="url(#cl-right)" stroke="none"/><g id="tx-right" clip-path="url(#cl-right)" stroke="none"></g><polygon points="0.030 0.030 0.970 0.030 0.970 0.312 0.368 0.312 0.368 0.688 0.632 0.688 0.632 0.500 0.970 0.500 0.970 0.970 0.030 0.970" vector-effect="non-scaling-stroke"/></g>
-  </svg>
+  <canvas class="logo" id="logo" role="img" aria-label="ILG"></canvas>
   <h1>Get the guide navigating the<br>world’s inventory logistics</h1>
   <p>The Inventory Logistics Guide is a resource for founders that keeps your stock right-sized: forecast demand, replenish before the next shipment lands, and avoid overstocking and understocking.</p>
 </div>
@@ -206,22 +200,71 @@ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 
 
 
-/* the world wrapped around the cube (cube-sphere projection), shown through the letter shapes */
-(()=>{
-  const NS='http://www.w3.org/2000/svg',N=26,SH=-75;
-  const F={top:{O:[-1,1,-1],U:[2,0,0],V:[0,0,2]},left:{O:[-1,1,1],U:[2,0,0],V:[0,-2,0]},right:{O:[1,1,1],U:[0,0,-2],V:[0,-2,0]}};
-  for(const n in F){
-    const f=F[n],g=document.getElementById('tx-'+n);let h='';
-    for(let j=0;j<N;j++)for(let i=0;i<N;i++){
-      const u=(i+.5)/N,v=(j+.5)/N,x=f.O[0]+f.U[0]*u+f.V[0]*v,y=f.O[1]+f.U[1]*u+f.V[1]*v,z=f.O[2]+f.U[2]*u+f.V[2]*v,m=Math.hypot(x,y,z);
-      if(!land(Math.asin(y/m)/D,Math.atan2(x,z)/D+SH))continue;const s=.84;
-      h+='<rect x="'+((i+(1-s)/2)/N).toFixed(4)+'" y="'+((j+(1-s)/2)/N).toFixed(4)+'" width="'+(s/N).toFixed(4)+'" height="'+(s/N).toFixed(4)+'" fill="#fff" fill-opacity=".6"/>';
+/* ---------- ILG logo: three extruded square letters that build an isometric cube; the lit right-hand walls are the white "shadow" ---------- */
+const LN=5;
+const LETTERS={
+  I:["#####","..#..","..#..","..#..","#####"],
+  L:["#....","#....","#....","#....","#####"],
+  G:["#####","#....","#.###","#...#","#####"]
+};
+const VOX=new Set(),vk=(x,y,z)=>x+','+y+','+z,has=(x,y,z)=>VOX.has(vk(x,y,z));
+for(let j=0;j<LN;j++)for(let i=0;i<LN;i++){
+  if(LETTERS.I[j][i]==='#')VOX.add(vk(i,LN-1-j,LN-1));       /* I on the left face (+z) */
+  if(LETTERS.L[j][i]==='#')VOX.add(vk(LN-1,LN-1-j,LN-1-i));  /* L on the right face (+x) */
+  if(LETTERS.G[j][i]==='#')VOX.add(vk(i,LN-1,j));            /* G on the top (+y) */
+}
+function drawLogo(){
+  const L=document.getElementById('logo'),r=L.getBoundingClientRect(),dp=Math.min(3,(window.devicePixelRatio||1)*1.5);
+  L.width=Math.round(r.width*dp);L.height=Math.round(r.height*dp);
+  const c=L.getContext('2d');c.setTransform(dp,0,0,dp,0,0);
+  const ph=Math.atan(1/Math.SQRT2),cp=Math.cos(ph),sp=Math.sin(ph),q=Math.SQRT1_2;
+  const k=Math.min((r.width-3)/(LN*Math.SQRT2),(r.height-3)/(LN*(cp+Math.SQRT2*sp)));
+  /* screen position of a cube-space point (x toward the right-back, y up, z toward the left-front) */
+  const P=(x,y,z)=>{const xr=(x-z)*q,zr=(x+z)*q;return [r.width/2+xr*k,r.height/2-(y*cp-zr*sp)*k]};
+  const lw=Math.max(1,r.width*.008);
+  c.lineJoin='miter';
+  const poly=(pts,fill)=>{c.beginPath();pts.forEach((p,n)=>n?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fillStyle=fill;c.fill();c.strokeStyle=fill;c.lineWidth=.8;c.stroke()};
+  const seg=(a,b)=>{c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.strokeStyle='rgba(255,255,255,.88)';c.lineWidth=lw;c.stroke()};
+  const topOk=(x,y,z)=>has(x,y,z)&&!has(x,y+1,z),leftOk=(x,y,z)=>has(x,y,z)&&!has(x,y,z+1),rightOk=(x,y,z)=>has(x,y,z)&&!has(x+1,y,z);
+  /* faint pixel world on the black faces */
+  const SH=-75,W=4;
+  const dots=(face,x,y,z)=>{
+    for(let b=0;b<W;b++)for(let a=0;a<W;a++){
+      const u=(a+.5)/W,v=(b+.5)/W;let X,Y,Z,cr;
+      if(face==='top'){X=x+u;Y=y+1;Z=z+v;cr=[[x+(a+.15)/W,y+1,z+(b+.15)/W],[x+(a+.85)/W,y+1,z+(b+.15)/W],[x+(a+.85)/W,y+1,z+(b+.85)/W],[x+(a+.15)/W,y+1,z+(b+.85)/W]]}
+      else{X=x+u;Y=y+1-v;Z=z+1;cr=[[x+(a+.15)/W,y+1-(b+.15)/W,z+1],[x+(a+.85)/W,y+1-(b+.15)/W,z+1],[x+(a+.85)/W,y+1-(b+.85)/W,z+1],[x+(a+.15)/W,y+1-(b+.85)/W,z+1]]}
+      /* world position relative to the cube centre */
+      const cx=X/LN*2-1,cy=Y/LN*2-1,cz=Z/LN*2-1,m=Math.hypot(cx,cy,cz);
+      if(land(Math.asin(cy/m)/D,Math.atan2(cx,cz)/D+SH))poly(cr.map(p=>P(p[0],p[1],p[2])),'rgba(255,255,255,.3)');
     }
-    g.innerHTML=h;
+  };
+  for(let x=0;x<LN;x++)for(let y=0;y<LN;y++)for(let z=0;z<LN;z++){
+    if(!has(x,y,z))continue;
+    if(topOk(x,y,z)){
+      poly([P(x,y+1,z),P(x+1,y+1,z),P(x+1,y+1,z+1),P(x,y+1,z+1)],'#000');dots('top',x,y,z);
+      if(!topOk(x-1,y,z))seg(P(x,y+1,z),P(x,y+1,z+1));
+      if(!topOk(x+1,y,z))seg(P(x+1,y+1,z),P(x+1,y+1,z+1));
+      if(!topOk(x,y,z-1))seg(P(x,y+1,z),P(x+1,y+1,z));
+      if(!topOk(x,y,z+1))seg(P(x,y+1,z+1),P(x+1,y+1,z+1));
+    }
+    if(leftOk(x,y,z)){
+      poly([P(x,y,z+1),P(x+1,y,z+1),P(x+1,y+1,z+1),P(x,y+1,z+1)],'#000');dots('left',x,y,z);
+      if(!leftOk(x-1,y,z))seg(P(x,y,z+1),P(x,y+1,z+1));
+      if(!leftOk(x+1,y,z))seg(P(x+1,y,z+1),P(x+1,y+1,z+1));
+      if(!leftOk(x,y-1,z))seg(P(x,y,z+1),P(x+1,y,z+1));
+      if(!leftOk(x,y+1,z))seg(P(x,y+1,z+1),P(x+1,y+1,z+1));
+    }
+    if(rightOk(x,y,z)){
+      poly([P(x+1,y,z),P(x+1,y,z+1),P(x+1,y+1,z+1),P(x+1,y+1,z)],'#fff');
+      if(!rightOk(x,y,z-1))seg(P(x+1,y,z),P(x+1,y+1,z));
+      if(!rightOk(x,y,z+1))seg(P(x+1,y,z+1),P(x+1,y+1,z+1));
+      if(!rightOk(x,y-1,z))seg(P(x+1,y,z),P(x+1,y,z+1));
+      if(!rightOk(x,y+1,z))seg(P(x+1,y+1,z),P(x+1,y+1,z+1));
+    }
   }
-})();
+}
 
-resize();setView();
+resize();setView();drawLogo();addEventListener("resize",drawLogo);
 for(let i=0;i<150;i++){step(1/30);lon0-=SPEED/30}        /* start with orders already in flight */
 if(reduce){frame(0)}
 else{let last=performance.now();const loop=(t)=>{const dt=Math.min(.05,(t-last)/1000);last=t;step(dt);frame(dt);requestAnimationFrame(loop)};requestAnimationFrame(loop)}
