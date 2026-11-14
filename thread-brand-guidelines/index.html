@@ -1176,15 +1176,16 @@ surface($('#tMo'), { W: 800, H: 520, draw: (ctx, W, H, t, still) => flourish(ctx
 
 /* ---------- 01 framework ---------- */
 const FW = { tpl: 'headline', measure: true, lines: true };
+const MEASURE_RED = '#e5231b';  // measurements sit outside the yellow, ink and cream palette on purpose, so they read as annotation
 function plate(ctx, fu, th, txt, x, y, al) {
   ctx.save(); ctx.setLineDash([]); ctx.font = '700 ' + 19 * fu + 'px Inter, Arial, sans-serif'; setLS(ctx, 3 * fu);
   const w = ctx.measureText(txt).width + 22 * fu, h = 38 * fu, x0 = al === 'c' ? x - w / 2 : x;
-  ctx.fillStyle = th.bg; ctx.fillRect(x0, y - h / 2, w, h); ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.strokeRect(x0, y - h / 2, w, h);
-  ctx.fillStyle = th.fg; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(txt, x0 + 11 * fu, y + 6.5 * fu); ctx.restore();
+  ctx.fillStyle = MEASURE_RED; ctx.fillRect(x0, y - h / 2, w, h);
+  ctx.fillStyle = '#ffffff'; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(txt, x0 + 11 * fu, y + 6.5 * fu); ctx.restore();
 }
 function measures(ctx, W, H, tpl) {
   const fu = Math.max(W / 2000, 0.7), th = THEMES[S.theme], land = W > H;
-  ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.setLineDash([12 * fu, 9 * fu]);
+  ctx.save(); ctx.strokeStyle = MEASURE_RED; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.setLineDash([12 * fu, 9 * fu]);
   const v = (x) => { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }, h = (y) => { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); };
   v(0.0985 * W); if (land && tpl !== 'pattern') v(0.604 * W);
   if (!FW.lines) { v(131 * fu); h(45 * fu); h(H - 47 * fu); }
