@@ -187,7 +187,8 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 .spec.it{font-style:italic}
 .spec.caps{text-transform:uppercase;letter-spacing:.18em}
 .spec.f-sans.caps{font-weight:700;font-size:clamp(24px,3.6vw,56px)}
-.cur{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--fg);background:var(--bg);color:var(--fg);padding:9px 13px;font:700 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;margin-top:18px}
+.toolrow{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.cur{display:inline-flex;align-items:center;gap:8px;color:var(--fg);padding:0;font:700 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase}
 .cur svg{width:14px;height:14px}
 .tscale{margin-top:clamp(44px,6vw,80px);border-top:1.5px solid var(--fg)}
 .tscale .r{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:baseline;padding:16px 0 14px;border-bottom:1.5px solid var(--fg)}
@@ -463,14 +464,16 @@ footer.end .row a{text-decoration:none}
     <h2 class="display"><span class="slide">Typography</span></h2>
     <p class="lede">Two families do the work. Instrument Serif carries the headlines, stretched 16% wide and tightened up. Inter carries everything small: sub lines, tags, dates. A script, Pinyon, is kept for the one big capital on a badge. Type your own below.</p>
     <div style="margin-top:clamp(28px,4vw,48px)">
+      <div class="toolrow">
       <div class="tools" role="toolbar" aria-label="Type controls">
         <button class="chip" data-f="serif">Serif</button><button class="chip" data-f="sans">Sans</button><button class="chip" data-f="script">Script</button>
         <button class="chip" id="tIt" aria-label="Italic"><i style="font-family:var(--serif);font-size:15px;letter-spacing:0;text-transform:none">I</i></button>
         <button class="chip" id="tWide" aria-label="Stretch 116%">↔ 116%</button>
         <button class="chip" id="tCaps">Caps</button>
       </div>
-      <div class="spec f-serif wide" id="spec" contenteditable="true" spellcheck="false" role="textbox" aria-label="Type specimen, editable">Thread 2026 in under 10 minutes</div>
       <span class="cur"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 1l12 4.4-5 2.2-2.2 5z" fill="currentColor"/></svg>Type Designer</span>
+      </div>
+      <div class="spec f-serif wide" id="spec" contenteditable="true" spellcheck="false" role="textbox" aria-label="Type specimen, editable">Thread 2026 in under 10 minutes</div>
     </div>
     <div class="tscale" id="tscale">
       <div class="r"><div>Headline<small>Instrument Serif · 172 · 116% wide · −3 tracking · 0.88 leading</small></div><div class="samp" style="font:400 var(--b)/.9 var(--serif);letter-spacing:-.0174em"><span style="display:inline-block;transform:scaleX(1.16);transform-origin:0 0">in under</span></div></div>
