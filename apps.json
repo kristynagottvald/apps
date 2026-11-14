@@ -1,5 +1,14 @@
 [
   {
+    "id": "thread-conference-landing",
+    "title": "Thread Conference Landing Page",
+    "category": "Tools",
+    "url": "thread-conference-landing/",
+    "thumbnail": "thread-conference-landing/thumb.png",
+    "preview": "thread-conference-landing/thumb.webp",
+    "alt": "A yellow and black landing page for the Thread 2026 SMS marketing conference with a countdown over a hairline grid, a dark register card, livestreamed keynotes and four track cards"
+  },
+  {
     "id": "asterisk",
     "title": "Asterisk",
     "category": "Motion",
