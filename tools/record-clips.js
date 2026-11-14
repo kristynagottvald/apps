@@ -25,6 +25,13 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  // red lattice on black, then the orange flow and the grey arches as the generator cycles on its own (lines draw in first, then morph)
+  'arrow-line-generator': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '?still', ready: 800, q: 48, run: async (p) => {
+    const t0 = Date.now(), go = (n) => p.evaluate((k) => __alg.go(k), n);
+    await at(t0, 1500, () => go(1));
+    await at(t0, 3300, () => go(2));
+    await at(t0, 5100, () => go(0));
+  } },
   'workout-year-reels': { vp: [1280, 769], crop: [0, 49, 1280, 720],
     // the cycle starts on the circles; step through the newest styles and one older one the way a visitor would with the switcher
     ready: 1500,
