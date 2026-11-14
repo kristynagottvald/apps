@@ -925,7 +925,7 @@ function drawBadge(ctx, th, shape, cx, cy, h, rot, label, shadow) {
   let fs = fs0; ctx.font = serifFont(fs, false); setLS(ctx, 0);
   const maxW = w * (shape === 'shield' ? 0.58 : shape === 'circle' || shape === 'scallop' ? 0.66 : 0.78);
   lines.forEach((l) => { const mw = ctx.measureText(l).width; if (mw > maxW) fs = Math.min(fs, fs0 * maxW / mw); });
-  const gap = fs * 1.0, top = dv + (y + h - dv) * (shape === 'shield' ? 0.4 : 0.5) - ((lines.length - 1) * gap) / 2;
+  const gap = fs * 1.0, top = dv + (y + h - dv) * (shape === 'shield' ? 0.3 : 0.36) - ((lines.length - 1) * gap) / 2;
   lines.forEach((l, i) => serifText(ctx, l, 0, top + i * gap + fs * 0.34, fs, ink, { align: 'center' }));
   ctx.restore();
 }
