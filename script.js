@@ -6,8 +6,9 @@
     String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
-  /* ---------- Grid: two columns of 16:9 tiles, rendered from apps.json (newest first) ---------- */
+  /* ---------- Grid: three columns (two on narrow screens) of 16:9 tiles, rendered from apps.json (newest first) ---------- */
 
+  const wide = matchMedia('(min-width: 900px)');
   async function load() {
     const grid = $('#pj-grid');
     let apps = [];
@@ -22,27 +23,29 @@
       grid.innerHTML = '<p class="load-error">Could not load apps.json.</p>';
       return;
     }
-    const cols = [[], []];
+    const n = wide.matches ? 3 : 2;
+    const cols = Array.from({ length: n }, () => []);
     apps.forEach((a, i) => {
-      cols[i % 2].push(`<a class="pj-tile" href="${esc(a.url)}" style="--o:${i}" data-i="${i}" aria-label="${esc(a.title)}">
+      cols[i % n].push(`<a class="pj-tile" href="${esc(a.url)}" style="--o:${i}" data-i="${i}" aria-label="${esc(a.title)}">
         <div class="pj-media"><img class="is-active" src="${esc(a.thumbnail)}" data-still="${esc(a.thumbnail)}" data-preview="${esc(a.preview || '')}" alt="${esc(a.alt || '')}" loading="lazy"></div>
         <div class="pj-cap"><span>${esc(a.title)}</span><span class="grey">${esc(a.category || '')}</span></div>
       </a>`);
     });
     grid.innerHTML = cols.map((col) => `<div class="pj-col">${col.join('')}</div>`).join('');
-    bindClipHover(grid);
+    bindClipHover(grid, n);
   }
+  wide.addEventListener('change', load);
 
   /* ---------- Looping clips: a checkerboard of tiles plays, then the other half takes over ---------- */
 
   const CLIP_MS = 6000;   // one full loop of every clip per turn
   let clipTimer = null;
-  function bindClipHover(grid) {
+  function bindClipHover(grid, n) {
     clearInterval(clipTimer);
     if (reduceMotion.matches) return;
     const imgs = [...grid.querySelectorAll('.pj-tile')].sort((a, b) => a.dataset.i - b.dataset.i).map((tile) => tile.querySelector('img[data-preview]'));
     let phase = 0, active = 0, hoverI = -1;
-    const checker = (i) => ((i % 2) + Math.floor(i / 2)) % 2;   // tile i sits in column i % 2, row floor(i / 2)
+    const checker = (i) => ((i % n) + Math.floor(i / n)) % 2;   // tile i sits in column i % n, row floor(i / n)
     const want = (i) => checker(i) === active || i === hoverI;   // the hovered tile keeps looping
     const set = (i, play) => {
       const im = imgs[i];
