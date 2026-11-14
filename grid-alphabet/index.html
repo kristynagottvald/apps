@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grid Alphabet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#cbc9ca;color:#1f1f1f;overflow:hidden;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column}
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}nav.back>span:nth-of-type(2),nav.back>b{display:none}}
+main{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;padding:18px 16px 14px;gap:14px}
+.stage{flex:1;min-height:0;width:100%;display:flex;justify-content:center}
+svg{height:100%;max-width:100%;aspect-ratio:1/1;display:block}
+.panel{flex:none;width:100%;max-width:760px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.row{display:flex;flex-wrap:wrap;gap:6px 6px;justify-content:center;align-items:center}
+.az button{min-width:30px;padding:5px 0;text-align:center}
+button,select,input[type=text]{font:inherit;color:#1f1f1f;background:transparent;border:1px solid rgba(31,31,31,.4);border-radius:8px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+input[type=text]{cursor:text;width:170px}
+input::placeholder{color:rgba(31,31,31,.5)}
+button:hover,select:hover,input:hover{border-color:#1f1f1f}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #1f1f1f;outline-offset:2px}
+button[aria-pressed="true"]{background:#1f1f1f;color:#cbc9ca;border-color:#1f1f1f}
+label{display:flex;align-items:center;gap:8px}
+.clip .panel{display:none}.clip main{padding:14px 16px}
+@media (max-width:640px){.az button{min-width:26px;padding:5px 0}input[type=text]{width:130px}}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Grid Alphabet</b></nav>
+<main>
+<div class="stage">
+<svg id="svg" viewBox="0 0 120 120" role="img" aria-label="A bold block letter built from cells of a twelve by twelve grid, morphing from one letter of the alphabet to the next">
+  <defs>
+    <filter id="goo" filterUnits="userSpaceOnUse" x="-10" y="-10" width="140" height="140" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="1.6"/>
+      <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9.5"/>
+    </filter>
+  </defs>
+  <g id="cells" fill="#1f1f1f" filter="url(#goo)"></g>
+  <g id="grid" stroke="#f1f0f0" stroke-opacity=".82" stroke-width=".32" fill="none"></g>
+</svg>
+</div>
+<div class="panel">
+  <div class="row az" id="az" role="group" aria-label="Letters"></div>
+  <div class="row">
+    <button id="play" aria-pressed="true">Playing</button>
+    <input type="text" id="word" maxlength="24" placeholder="Type a word…" aria-label="Type a word to spell" autocomplete="off" spellcheck="false">
+    <label>Wave <select id="mode" aria-label="Transition style">
+      <option value="mix">Mixed</option><option value="diag">Diagonal</option><option value="rows">Rows</option><option value="cols">Columns</option><option value="radial">Radial</option><option value="rand">Scatter</option>
+    </select></label>
+  </div>
+</div>
+</main>
+<script>
+/* A 12 x 12 grid; the S in the reference spans columns 2-9 and all 12 rows, so every glyph is 8 wide (6 for I, 10 for M and W) and centred.
+   '#' = a filled cell. Cells are drawn as squares and blurred + thresholded (the goo filter), which gives the rounded outer corners
+   and the soft concave fillets where two blocks meet on a stair step. */
+const N = 12;
+const G = {
+  A:['..####..','..####..','.##..##.','.##..##.','##....##','##....##','########','########','##....##','##....##','##....##','##....##'],
+  B:['######..','######..','##....##','##....##','##....##','######..','######..','##....##','##....##','##....##','######..','######..'],
+  C:['..######','..######','##......','##......','##......','##......','##......','##......','##......','##......','..######','..######'],
+  D:['######..','######..','##....##','##....##','##....##','##....##','##....##','##....##','##....##','##....##','######..','######..'],
+  E:['########','########','##......','##......','##......','######..','######..','##......','##......','##......','########','########'],
+  F:['########','########','##......','##......','##......','######..','######..','##......','##......','##......','##......','##......'],
+  G:['..######','..######','##......','##......','##......','##..####','##..####','##....##','##....##','##....##','..####..','..####..'],
+  H:['##....##','##....##','##....##','##....##','##....##','########','########','##....##','##....##','##....##','##....##','##....##'],
+  I:['######','######','..##..','..##..','..##..','..##..','..##..','..##..','..##..','..##..','######','######'],
+  J:['....####','....####','......##','......##','......##','......##','......##','......##','##....##','##....##','..####..','..####..'],
+  K:['##....##','##....##','##..##..','##..##..','####....','####....','####....','####....','##..##..','##..##..','##....##','##....##'],
+  L:['##......','##......','##......','##......','##......','##......','##......','##......','##......','##......','########','########'],
+  M:['##......##','##......##','####..####','####..####','##..##..##','##..##..##','##......##','##......##','##......##','##......##','##......##','##......##'],
+  N:['###...##','###...##','####..##','####..##','##.##.##','##.##.##','##..####','##..####','##...###','##...###','##....##','##....##'],
+  O:['..####..','..####..','##....##','##....##','##....##','##....##','##....##','##....##','##....##','##....##','..####..','..####..'],
+  P:['######..','######..','##....##','##....##','##....##','######..','######..','##......','##......','##......','##......','##......'],
+  Q:['..####..','..####..','##....##','##....##','##....##','##....##','##....##','##....##','##..####','##..####','..######','..######'],
+  R:['######..','######..','##....##','##....##','##....##','######..','######..','##..##..','##..##..','##....##','##....##','##....##'],
+  S:['..#####.','..#####.','##......','##......','##......','..####..','..####..','......##','......##','......##','.#####..','.#####..'],
+  T:['########','########','...##...','...##...','...##...','...##...','...##...','...##...','...##...','...##...','...##...','...##...'],
+  U:['##....##','##....##','##....##','##....##','##....##','##....##','##....##','##....##','##....##','##....##','..####..','..####..'],
+  V:['##....##','##....##','##....##','##....##','.##..##.','.##..##.','..####..','..####..','..####..','...##...','...##...','...##...'],
+  W:['##......##','##......##','##......##','##......##','##......##','##......##','##..##..##','##..##..##','####..####','####..####','##......##','##......##'],
+  X:['##....##','##....##','.##..##.','.##..##.','..####..','..####..','..####..','..####..','.##..##.','.##..##.','##....##','##....##'],
+  Y:['##....##','##....##','.##..##.','.##..##.','..####..','..####..','...##...','...##...','...##...','...##...','...##...','...##...'],
+  Z:['########','########','.....###','.....###','..####..','..####..','..####..','..####..','###.....','###.....','########','########']
+};
+/* glyph -> list of filled cell indices (row * 12 + col) */
+const CELLS = {};
+for (const k in G) {
+  const rows = G[k], w = rows[0].length, off = (N - w) >> 1, a = [];
+  rows.forEach((s, r) => { for (let c = 0; c < w; c++) if (s[c] === '#') a.push(r * N + off + c); });
+  CELLS[k] = a;
+}
+CELLS[' '] = [];
+
+const hash = location.hash;
+const CLIP = /clip/.test(hash);
+if (CLIP) document.documentElement.classList.add('clip');
+const q = (k) => { const m = hash.match(new RegExp('[#&]' + k + '=([^&]*)')); return m ? decodeURIComponent(m[1]) : null; };
+
+/* ---- build the svg ---- */
+const NS = 'http://www.w3.org/2000/svg', U = 120 / N;
+const cg = document.getElementById('cells'), gg = document.getElementById('grid');
+const rects = [];
+for (let i = 0; i < N * N; i++) {
+  const r = document.createElementNS(NS, 'rect');
+  r.setAttribute('width', 0); r.setAttribute('height', 0); r.style.display = 'none';
+  cg.appendChild(r); rects.push(r);
+}
+/* a small square on every grid corner where two filled cells only touch diagonally: the blur turns it into the concave fillet of the stair step */
+const bridges = [];
+for (let r = 0; r < N - 1; r++) for (let c = 0; c < N - 1; c++) {
+  const b = document.createElementNS(NS, 'rect'); b.style.display = 'none'; cg.appendChild(b);
+  bridges.push({ el: b, tl: r * N + c, tr: r * N + c + 1, bl: (r + 1) * N + c, br: (r + 1) * N + c + 1, x: (c + 1) * U, y: (r + 1) * U });
+}
+{ let d = '';
+  for (let i = 0; i <= N; i++) d += 'M' + i * U + ' 0V120M0 ' + i * U + 'H120';
+  const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); gg.appendChild(p); }
+
+/* ---- per-cell animation state ---- */
+const v = new Float32Array(N * N), from = new Float32Array(N * N), to = new Float32Array(N * N);
+const t0 = new Float64Array(N * N), dur = new Float64Array(N * N);
+const easeOut = (x) => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const BR = 4.2; // size of the corner bridge squares
+const easeIn = (x) => x * x * x;
+const SPAN = CLIP ? 330 : 520, DUR = CLIP ? 340 : 460, HOLD = CLIP ? 280 : 1050;
+
+const MODES = ['diag', 'rows', 'cols', 'radial', 'rand'];
+let modeSel = 'mix', counter = 0, current = ' ';
+function delayOf(mode, i, rev) {
+  const c = i % N, r = (i / N) | 0;
+  let d;
+  if (mode === 'diag') d = (c + r) / (2 * (N - 1));
+  else if (mode === 'rows') d = r / (N - 1);
+  else if (mode === 'cols') d = c / (N - 1);
+  else if (mode === 'radial') d = Math.hypot(c - 5.5, r - 5.5) / 7.8;
+  else d = ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1;
+  return rev ? 1 - d : d;
+}
+function go(ch, now) {
+  ch = CELLS[ch] ? ch : ' ';
+  const set = new Set(CELLS[ch]);
+  const mode = modeSel === 'mix' ? MODES[counter % MODES.length] : modeSel;
+  const rev = modeSel === 'mix' && (counter >> 2) % 2 === 1;
+  counter++;
+  for (let i = 0; i < N * N; i++) {
+    const tg = set.has(i) ? 1 : 0;
+    if (tg === to[i]) continue;
+    from[i] = v[i]; to[i] = tg;
+    t0[i] = now + delayOf(mode, i, rev) * SPAN;
+    dur[i] = DUR * (tg ? 1 : .8);
+  }
+  current = ch; mark();
+}
+function jump(ch) { // no animation: used for the first frame of the clip
+  const set = new Set(CELLS[ch] || []);
+  for (let i = 0; i < N * N; i++) { v[i] = from[i] = to[i] = set.has(i) ? 1 : 0; t0[i] = -1e9; }
+  current = ch; mark();
+}
+function draw(now) {
+  for (let i = 0; i < N * N; i++) {
+    const s0 = t0[i];
+    if (now >= s0 && v[i] !== to[i]) {
+      const k = Math.min(1, (now - s0) / dur[i]);
+      v[i] = to[i] ? from[i] + (to[i] - from[i]) * easeOut(k) : from[i] + (to[i] - from[i]) * easeIn(k);
+      if (k >= 1) v[i] = to[i];
+    }
+    const r = rects[i], s = Math.max(0, Math.min(v[i], 1.1)) * U;
+    if (s < .05) { if (r.style.display !== 'none') r.style.display = 'none'; continue; }
+    const cx = (i % N + .5) * U, cy = ((i / N | 0) + .5) * U;
+    r.style.display = '';
+    r.setAttribute('x', (cx - s / 2).toFixed(2)); r.setAttribute('y', (cy - s / 2).toFixed(2));
+    r.setAttribute('width', s.toFixed(2)); r.setAttribute('height', s.toFixed(2));
+  }
+  for (const b of bridges) {
+    const a = Math.min(v[b.tl], v[b.br]) * (1 - Math.max(v[b.tr], v[b.bl])), d = Math.min(v[b.tr], v[b.bl]) * (1 - Math.max(v[b.tl], v[b.br]));
+    const s = Math.min(1, Math.max(a, d)) * BR;
+    if (s < .05) { if (b.el.style.display !== 'none') b.el.style.display = 'none'; continue; }
+    b.el.style.display = '';
+    b.el.setAttribute('x', (b.x - s / 2).toFixed(2)); b.el.setAttribute('y', (b.y - s / 2).toFixed(2));
+    b.el.setAttribute('width', s.toFixed(2)); b.el.setAttribute('height', s.toFixed(2));
+  }
+}
+
+/* ---- sequence ---- */
+const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+let seq = (q('w') || ALPHA).toUpperCase().replace(/[^A-Z ]/g, ' ').split('');
+let idx = 0, nextAt = 0, playing = true;
+if (matchMedia('(prefers-reduced-motion: reduce)').matches && !CLIP) playing = false;
+
+const az = document.getElementById('az'), btns = {};
+const playEl = document.getElementById('play'), wordEl = document.getElementById('word'), modeEl = document.getElementById('mode');
+for (const ch of ALPHA) {
+  const b = document.createElement('button'); b.textContent = ch; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', 'Letter ' + ch);
+  b.onclick = () => pick(ch);
+  az.appendChild(b); btns[ch] = b;
+}
+function pick(ch) { seq = ALPHA.split(''); wordEl.value = ''; idx = ALPHA.indexOf(ch); show(performance.now()); }
+function mark() { for (const k in btns) btns[k].setAttribute('aria-pressed', k === current ? 'true' : 'false'); }
+function show(now) { go(seq[idx], now); nextAt = now + SPAN + DUR + HOLD; }
+function tick(now) {
+  if (playing && now >= nextAt) { idx = (idx + 1) % seq.length; show(now); }
+  draw(now); requestAnimationFrame(tick);
+}
+function setPlay(p) { playing = p; playEl.setAttribute('aria-pressed', p); playEl.textContent = p ? 'Playing' : 'Paused'; if (p) nextAt = performance.now() + 200; }
+playEl.onclick = () => setPlay(!playing);
+wordEl.oninput = () => {
+  const s = wordEl.value.toUpperCase().replace(/[^A-Z ]/g, '');
+  seq = s ? s.split('') : ALPHA.split(''); idx = 0; show(performance.now());
+};
+modeEl.onchange = () => { modeSel = modeEl.value; };
+addEventListener('keydown', (e) => {
+  if (e.target === wordEl || e.metaKey || e.ctrlKey || e.altKey) return;
+  const ch = e.key.toUpperCase();
+  if (ch.length === 1 && ALPHA.includes(ch)) pick(ch);
+  else if (e.key === ' ') { e.preventDefault(); setPlay(!playing); }
+});
+setPlay(playing);
+
+/* first frame: the clip starts on a finished letter (the S of the reference); otherwise the S builds in and the alphabet carries on from there */
+if (CLIP) { jump(seq[0]); playing = false; }  /* the clip recorder calls __ga.start() */
+else { idx = q('w') ? 0 : ALPHA.indexOf('S'); show(performance.now() + 300); }
+requestAnimationFrame(tick);
+window.__ga = { pick, start: () => { idx = 0; setPlay(true); nextAt = performance.now() + 300; } };
+</script>
+</body>
+</html>
