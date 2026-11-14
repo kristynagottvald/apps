@@ -50,13 +50,14 @@ const APPS = {
   // a block letter on the 12x12 grid: starts on a finished S, then the cells wave through the letters of SANDBOX and back to S
   'grid-alphabet': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#w=SANDBOX&clip', ready: 500, q: 55, run: async (p) => { const t0 = Date.now(); await at(t0, 700, () => p.evaluate(() => __ga.start())); await sleep(5600); } },
   'conference-post-generator': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 40, run: async (p) => {
-    // the headline post plays on its own, then step through the speaker, badges and pattern templates
+    // it opens on the badges post (16:9, cream); step through the headline, speaker and pattern templates and come back to the badges
     const t0 = Date.now(), tpl = (n) => domClick(p, '#tpl button:nth-child(' + n + ')');
-    await at(t0, 1300, () => tpl(2));
-    await at(t0, 2700, () => tpl(3));
-    await at(t0, 4000, () => tpl(4));
-    await at(t0, 5000, () => tpl(1));
+    await at(t0, 1300, () => tpl(1));
+    await at(t0, 2600, () => tpl(2));
+    await at(t0, 3900, () => tpl(4));
+    await at(t0, 5100, () => tpl(3));
   } },
+
   // red lattice on black, then the orange flow and the grey arches as the generator cycles on its own (lines draw in first, then morph)
   'arrow-line-generator': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '?still', ready: 800, q: 48, run: async (p) => {
     const t0 = Date.now(), go = (n) => p.evaluate((k) => __alg.go(k), n);
