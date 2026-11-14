@@ -110,7 +110,9 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
     <section id="textsec">
       <h2>Text</h2>
       <label class="f" data-for="headline"><span>Headline, one line per row (wrap a line in *stars* for italic)</span><textarea id="headline" rows="3"></textarea></label>
-      <label class="f" data-for="headline pattern badges"><span>Sub line</span><input type="text" id="sub"></label>
+      <label class="f" data-for="badges"><span>Headline, one line per row</span><textarea id="bHeadline" rows="3"></textarea></label>
+      <label class="f" data-for="badges"><span>Sub line</span><input type="text" id="bSub"></label>
+      <label class="f" data-for="headline pattern"><span>Sub line</span><input type="text" id="sub"></label>
       <label class="f" data-for="headline pattern badges speaker"><span>Date and place</span><input type="text" id="date"></label>
       <label class="f" data-for="speaker"><span>Tag</span><input type="text" id="chip"></label>
       <label class="f" data-for="speaker"><span>Speaker name</span><input type="text" id="speaker"></label>
@@ -196,7 +198,7 @@ const SHAPE_RATIO = { arch: 0.76, circle: 1, scallop: 1, hexagon: 1.1, shield: 0
 
 const S = {
   tpl: 'headline', fmt: 'landscape', theme: 'yellow', seed: 7,
-  headline: 'Thread 2026\nin under\n10 minutes', sub: 'The SMS marketing conference', date: 'May 12–14 · New York',
+  headline: 'Thread 2026\nin under\n10 minutes', sub: 'The SMS marketing conference', bHeadline: 'Tickets\non sale\nnow', bSub: 'Pick your pass for Thread 2026', date: 'May 12–14 · New York',
   chip: 'Keynote', speaker: 'Maya Chen', role: 'VP of Growth, Brand Co.', talk: 'What texting taught us about talking to customers',
   swashT: true, badgeShape: 'arch', badgeText: SHAPE_DEFAULTS.arch, showBadge: true, badgeCount: 4,
   photoFilter: 'color', photoCount: 2, weight: 5, lines: true, anim: true,
@@ -496,9 +498,9 @@ function drawPanel(ctx, c, r, seed, plain) {
   if (!plain) flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9 });
   ctx.restore();
 }
-function subLines(ctx, c, x, y) {
-  const { fu, th } = c; let yy = y;
-  if (S.sub) { sansText(ctx, S.sub, x, yy, 46 * fu, th.fg, { wt: 500 }); yy += 64 * fu; }
+function subLines(ctx, c, x, y, text) {
+  const { fu, th } = c; let yy = y; if (text == null) text = S.sub;
+  if (text) { sansText(ctx, text, x, yy, 46 * fu, th.fg, { wt: 500 }); yy += 64 * fu; }
   return yy;
 }
 function footerDate(ctx, c, rightX) {
@@ -510,9 +512,9 @@ const sway = (t, ph) => Math.sin(TAU * t / PERIOD + ph);
 /* ===== templates ===== */
 /* autofit the original lock-up (swash T + stretched serif lines) into box; returns where the sub lines start */
 function headlineBlock(ctx, c, box, o) {
-  const { fu, th, t, W } = c, lines = parseLines(S.headline), sw = S.swashT && /^T/i.test(lines[0].s);
+  const { fu, th, t, W } = c, lines = parseLines(o.text != null ? o.text : S.headline), sw = S.swashT && /^T/i.test(lines[0].s);
   const w100 = lines.map((l, i) => measureSlide(ctx, (i === 0 && sw) ? l.s.slice(1) : l.s, 100, l.it) / 100);
-  const subH = S.sub ? 64 * fu : 0;
+  const subH = (o.sub != null ? o.sub : S.sub) ? 64 * fu : 0;
   const mxMin = o.mx != null ? o.mx : 0.0985 * W, extra = sw ? 0.99 : 0, stackAt = (fs) => (lines.length - 1) * fs * 0.88 + 0.7 * fs + (sw ? 0.54 * fs : 0) + 124 * fu + subH;
   let fs = o.maxFs;
   for (; fs > 24; fs *= 0.97) {
@@ -578,18 +580,28 @@ function tBadges(ctx, c) {
   const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'bottom');
   frameLines(ctx, c, land ? pr.x : null);
   const box = land ? { x: 0, y: 100 * fu, w: pr.x - 60 * fu, h: H - 350 * fu } : { x: 0, y: 110 * fu, w: W - 0.06 * W, h: pr.y - 150 * fu };
-  const hb = headlineBlock(ctx, c, box, { maxFs: 172 * fu * (land ? 1 : 2) });
-  subLines(ctx, c, hb.mx, hb.bottom + 88 * fu);
+  const hb = headlineBlock(ctx, c, box, { maxFs: 172 * fu * (land ? 1 : 2), text: S.bHeadline, sub: S.bSub });
+  subLines(ctx, c, hb.mx, hb.bottom + 88 * fu, S.bSub);
   footer(ctx, c); footerDate(ctx, c, land ? pr.x - 60 * fu : W - 0.0985 * W);
-  // the badge cluster: the chosen shape leads, the others follow in a fixed order
-  const n = cl(S.badgeCount, 3, 5), base = land ? Math.min(pr.h, pr.w * 1.05) : Math.min(pr.h * 1.3, pr.w * 0.9);
-  const L = { 3: [[0.5, 0.36, 0.64, 0.02], [0.2, 0.78, 0.38, -0.1], [0.8, 0.74, 0.4, 0.09]],
-    4: [[0.46, 0.34, 0.58, 0.02], [0.82, 0.2, 0.34, 0.1], [0.18, 0.76, 0.38, -0.1], [0.72, 0.78, 0.4, 0.07]],
-    5: [[0.45, 0.33, 0.5, 0.02], [0.84, 0.2, 0.3, 0.1], [0.16, 0.74, 0.34, -0.1], [0.5, 0.82, 0.3, 0.05], [0.86, 0.62, 0.3, -0.08]] }[n];
-  const order = ['arch', 'circle', 'scallop', 'hexagon', 'shield'].filter((x) => x !== S.badgeShape);
+  // the badge cluster, pushed to the right; the chosen shape leads and one badge bleeds slightly off the right edge
+  const n = cl(S.badgeCount, 3, 5), order = ['arch', 'circle', 'scallop', 'hexagon', 'shield'].filter((x) => x !== S.badgeShape);
+  let L, base, X, Y;
+  if (land) {
+    base = Math.min(pr.h, pr.w * 1.05);
+    L = { 3: [[0.56, 0.4, 0.66, 0.02], [0.3, 0.8, 0.38, -0.1], [0.97, 0.7, 0.42, 0.09]],
+      4: [[0.54, 0.36, 0.6, 0.02], [0.98, 0.2, 0.34, 0.1], [0.24, 0.78, 0.38, -0.1], [0.74, 0.8, 0.4, 0.07]],
+      5: [[0.5, 0.34, 0.52, 0.02], [0.98, 0.18, 0.32, 0.1], [0.2, 0.74, 0.34, -0.1], [0.54, 0.82, 0.3, 0.05], [0.93, 0.62, 0.3, -0.08]] }[n];
+    X = (fx) => pr.x + pr.w * fx; Y = (fy) => pr.y + pr.h * fy;
+  } else {
+    const ar = { y: H * 0.5, h: H - 215 * fu - H * 0.5 }; base = ar.h;
+    L = { 3: [[0.68, 0.52, 0.8, 0.02], [0.4, 0.8, 0.46, -0.1], [0.97, 0.2, 0.5, 0.1]],
+      4: [[0.66, 0.5, 0.74, 0.02], [0.38, 0.82, 0.44, -0.1], [0.97, 0.2, 0.5, 0.1], [0.93, 0.84, 0.4, 0.07]],
+      5: [[0.64, 0.46, 0.66, 0.02], [0.36, 0.8, 0.42, -0.1], [0.97, 0.18, 0.46, 0.1], [0.9, 0.82, 0.4, 0.06], [0.4, 0.2, 0.34, 0.08]] }[n];
+    X = (fx) => W * fx; Y = (fy) => ar.y + ar.h * fy;
+  }
   L.forEach((p, i) => {
-    const shape = i ? order[i - 1] : S.badgeShape, bh = base * p[2];
-    drawBadge(ctx, th, shape, pr.x + pr.w * p[0], pr.y + pr.h * p[1] + 6 * fu * sway(t, i * 1.3), bh, p[3] + 0.015 * sway(t, i), i ? SHAPE_DEFAULTS[shape] : S.badgeText, 10 * fu);
+    const shape = i ? order[i - 1] : S.badgeShape, bh = base * p[2] * (land ? 1 : 1.18);
+    drawBadge(ctx, th, shape, X(p[0]), Y(p[1]) + 6 * fu * sway(t, i * 1.3), bh, p[3] + 0.015 * sway(t, i), i ? SHAPE_DEFAULTS[shape] : S.badgeText, 10 * fu);
   });
 }
 
@@ -632,7 +644,7 @@ function frame(now) {
   }
   requestAnimationFrame(frame);
 }
-const TEXTS = ['headline', 'sub', 'date', 'chip', 'speaker', 'role', 'talk', 'badgeText'], CHECKS = ['swashT', 'showBadge', 'lines', 'anim'], RANGES = ['weight', 'photoCount', 'badgeCount'];
+const TEXTS = ['headline', 'bHeadline', 'bSub', 'sub', 'date', 'chip', 'speaker', 'role', 'talk', 'badgeText'], CHECKS = ['swashT', 'showBadge', 'lines', 'anim'], RANGES = ['weight', 'photoCount', 'badgeCount'];
 function syncUI() {
   [['tpl', S.tpl], ['fmt', S.fmt], ['shape', S.badgeShape], ['pfilter', S.photoFilter]].forEach(([id, v]) => document.querySelectorAll('#' + id + ' .chip').forEach((b) => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-pressed', b.dataset.v === v); }));
   document.querySelectorAll('#theme .sw').forEach((b) => b.classList.toggle('on', b.dataset.v === S.theme));
