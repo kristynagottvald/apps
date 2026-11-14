@@ -339,7 +339,7 @@ function flourish(ctx, x, y, w, h, o) {
     flourCache.set(key, sets);
   }
   const cy0 = Math.max(0, Math.min(y, y + (o.dy || 0)));  // the clip grows upward when the drawing is nudged up
-  ctx.save(); ctx.beginPath(); ctx.rect(x, cy0, w, y + h - cy0); ctx.clip(); ctx.fillStyle = o.color;
+  ctx.save(); ctx.beginPath(); ctx.rect(x, cy0, w, y + h - cy0 + (o.ext || 0)); ctx.clip(); ctx.fillStyle = o.color;
   sets.forEach((pair, c) => pair.forEach((set, side) => ((o.side === 'R' && !side) || (o.side === 'L' && side)) ? 0 : set.forEach((pts, i) => { const [a, b] = o.still ? [0, 1] : strokeSpan(i, o.t + (o.off || 0) + c * 2.7); drawStroke(ctx, pts, a, b, o.t); })));
   ctx.restore();
 }
@@ -516,7 +516,7 @@ function panelRect(c, pos) {
 function drawPanel(ctx, c, r, seed, plain, side, opt) {
   ctx.save(); ctx.fillStyle = c.th.accent; ctx.fillRect(r.x, r.y, r.w, r.h);
   ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip();
-  if (!plain) flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9, side, one: opt && opt.one, k: opt && opt.k, dy: opt && opt.dy });
+  if (!plain) flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9, side, one: opt && opt.one, k: opt && opt.k, dy: opt && opt.dy, ext: opt && opt.ext });
   ctx.restore();
 }
 function subLines(ctx, c, x, y, text) {
@@ -555,7 +555,7 @@ function tHeadline(ctx, c) {
   if (S.callig) {  // calligraphy in the bottom-right corner, kept inside the area above the footer so the date stays clear
     const cr = land ? pr : { x: W * 0.1, y: pr.y - H * 0.2, w: W * 0.9, h: pr.h + H * 0.2 };  // bigger than the prints so it shows around them
     ctx.save(); if (S.barOn && th.bg === DARK) { ctx.beginPath(); ctx.rect(pr.x, pr.y, pr.w, pr.h); ctx.clip(); }  // dark theme: keep it on the yellow bar
-    flourish(ctx, cr.x, cr.y, cr.w, cr.h, { color: S.barOn ? DARK : th.fg, t, still: c.still, fw: 1.2 * S.weight / 5 * fu, off: S.seed * 0.9, side: land ? null : 'R' });
+    flourish(ctx, cr.x, cr.y, cr.w, cr.h, { color: S.barOn ? DARK : th.fg, t, still: c.still, fw: 1.2 * S.weight / 5 * fu, off: S.seed * 0.9, side: land ? null : 'R', ext: !land && !S.barOn ? 215 * fu : 0 });  // bar off: let the strokes finish; bar on: stay inside it
     ctx.restore();
   }
   const n = S.photoCount;
@@ -576,7 +576,7 @@ function wrapSlide(ctx, str, fs, maxW) {
 }
 function tSpeaker(ctx, c) {
   const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'top');
-  drawPanel(ctx, c, pr, S.seed + 3, false, 'R', { one: true, k: 1.3, dy: -44 * fu });  // calligraphy in the top-right corner, on every format
+  drawPanel(ctx, c, pr, S.seed + 3, false, 'R', { one: true, k: land || th.accent !== th.bg ? 1.3 : 1.0, dy: -44 * fu, ext: land || th.accent !== th.bg ? 0 : 80 * fu });  // no visible bar: sized to fit and allowed to run on so the strokes finish; visible bar: clipped to it  // calligraphy in the top-right corner, on every format
   const sq = S.fmt === 'square' || S.fmt === 'portrait';  // feed and portrait: big badge on the left, the print overlaps it on the right, text stays still
   if (sq) {
     const bh = pr.h * 0.72, bw = bh * SHAPE_RATIO[S.badgeShape], ph = pr.h * 0.66, pw = ph * 0.8, cy = pr.y + pr.h * 0.54;
