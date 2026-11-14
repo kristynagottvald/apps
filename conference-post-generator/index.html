@@ -147,11 +147,10 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
 
     <section>
       <h2>Loops and motion</h2>
-      <div class="rng"><span>Strokes</span><input type="range" id="density" min="2" max="14" step="1"><output id="densityO"></output></div>
       <div class="rng"><span>Pen weight</span><input type="range" id="weight" min="1" max="10" step="1"><output id="weightO"></output></div>
-      <label class="chk" data-for="headline speaker"><input type="checkbox" id="lines"> Hairline frame</label>
+      <label class="chk" data-for="headline speaker badges pattern"><input type="checkbox" id="lines"> Hairline frame</label>
       <label class="chk"><input type="checkbox" id="anim"> Animate</label>
-      <div class="row"><button class="btn" id="shuffle">Shuffle loops</button></div>
+      <div class="row"><button class="btn" id="shuffle">Shuffle timing</button></div>
     </section>
 
     <section>
@@ -198,7 +197,7 @@ const S = {
   headline: 'Thread 2026\nin under\n10 minutes', sub: 'The SMS marketing conference', date: 'May 12–14 · New York',
   chip: 'Keynote', speaker: 'Maya Chen', role: 'VP of Growth, Brand Co.', talk: 'What texting taught us about talking to customers',
   swashT: true, badgeShape: 'arch', badgeText: SHAPE_DEFAULTS.arch, showBadge: true, badgeCount: 4,
-  photoFilter: 'color', photoCount: 2, density: 7, weight: 5, lines: true, anim: true,
+  photoFilter: 'color', photoCount: 2, weight: 5, lines: true, anim: true,
 };
 
 /* ===== logo paths ===== */
@@ -259,50 +258,77 @@ function wrapText(ctx, str, maxW) {
   if (cur) out.push(cur); return out;
 }
 
-/* ===== calligraphy loops =====
-   Each stroke is a trochoid: a point travelling along a gentle S-curve while orbiting, so it throws loops.
-   The "pen" is a broad nib held at a fixed angle, so strokes swell and thin as they turn, like the reference flourishes.
-   Orbit phases advance once per PERIOD, so a clip loops seamlessly. */
-function loops(ctx, x, y, w, h, o) {
-  const S0 = Math.max(w, h), nibA = -0.8, nx = Math.cos(nibA), ny = Math.sin(nibA);
-  const ph0 = TAU * (o.t || 0) / PERIOD;
-  ctx.save(); ctx.fillStyle = o.color; ctx.strokeStyle = o.color; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  const passes = o.mirror ? 2 : 1, N = 150;
-  for (let pass = 0; pass < passes; pass++) {
-    ctx.save();
-    if (pass) { ctx.translate(x + w / 2, 0); ctx.scale(-1, 1); ctx.translate(-(x + w / 2), 0); }
-    const rnd = mulberry32(o.seed * 7919 + 101);
-    for (let i = 0; i < o.n; i++) {
-      const a = (i % 2 ? 1 : -1) * (0.22 + rnd() * 0.5), dx = Math.sin(a), dy = Math.cos(a), px = -dy, py = dx;
-      const L = S0 * (1.05 + rnd() * 0.55), cx = x + w * (rnd() * 1.1 - 0.05), cy = y + h * (0.2 + rnd() * 0.6);
-      const m = 2 + Math.floor(rnd() * 4), rr = L / (TAU * m) * (1.35 + rnd() * 0.9);
-      const ph = rnd() * TAU, ph2 = rnd() * TAU, B = S0 * rnd() * 0.12, g = 0.5 + rnd() * 1.0, dir = rnd() > 0.5 ? 1 : -1;
-      const wmax = S0 * 0.0042 * (0.3 + o.wt * 1.2) * (0.6 + rnd() * 0.8), thin = rnd() < 0.4;
-      const pts = [];
-      for (let k = 0; k <= N; k++) {
-        const u = k / N, e = Math.pow(Math.sin(Math.PI * u), 0.6), al = dir * (TAU * m * u) + ph + dir * ph0;
-        const along = (u - 0.5) * L, perp = B * Math.sin(TAU * g * u + ph2 + ph0 * (i % 2 ? 1 : -1));
-        pts.push(cx + dx * along + px * perp + rr * e * Math.cos(al), cy + dy * along + py * perp + rr * e * Math.sin(al));
+/* ===== calligraphy flourish =====
+   Hand-set control points, joined with a centripetal Catmull-Rom spline so the loops stay round, then drawn with a pen that
+   starts thick and thins out. Each stroke writes itself on, then un-writes from its tail. All timing repeats every PERIOD,
+   so an exported clip loops seamlessly. A left set and a mirrored right set are drawn, stacked when the area is tall. */
+const FDEFS = [
+  { w0: 15, w1: 3, taper: 0.45, pts: [[-20,200],[60,215],[200,238],[300,248],[370,270],[412,310],[405,350],[360,370],[320,350],[295,310]] },
+  { w0: 16, w1: 3, taper: 0.3, pts: [[-20,340],[100,360],[230,385],[380,415],[500,470],[570,540],[595,610],[570,670],[500,712],[430,700],[370,665],[310,600],[262,520],[228,420],[207,320],[203,230],[195,120],[165,55],[125,32],[92,60],[92,110],[130,150],[190,170],[260,172],[340,150],[405,117]] },
+  { w0: 13, w1: 3, taper: 0.3, pts: [[-20,432],[100,448],[200,468],[290,500],[360,550],[410,610],[425,665],[400,710],[340,745],[270,740],[245,712]] },
+  { w0: 14, w1: 3, taper: 0.45, pts: [[-20,535],[60,545],[140,568],[205,605],[238,660],[235,715],[195,745],[150,752],[115,730]] },
+  { w0: 3.5, w1: 3.5, taper: 1, pts: [[85,365],[100,450],[140,550],[215,680]] },
+  { w0: 3.5, w1: 3.5, taper: 1, pts: [[15,5],[32,50],[52,130],[68,230],[70,280]] },
+  { w0: 3, w1: 3, taper: 1, pts: [[-2,350],[8,430],[18,540]] },
+  { w0: 4, w1: 4, taper: 1, pts: [[5,650],[22,680],[20,715],[2,740]] },
+];
+const FN = 420, lerp = (a, b, t) => a + (b - a) * t;
+function buildStroke(def, fx, fy, fw) {
+  const p = def.pts, dense = [];
+  for (let i = 0; i < p.length - 1; i++) {
+    const P0 = p[Math.max(i - 1, 0)], P1 = p[i], P2 = p[i + 1], P3 = p[Math.min(i + 2, p.length - 1)];
+    const t0 = 0, t1 = t0 + Math.pow(Math.hypot(P1[0] - P0[0], P1[1] - P0[1]) || 1e-3, 0.5);
+    const t2 = t1 + Math.pow(Math.hypot(P2[0] - P1[0], P2[1] - P1[1]) || 1e-3, 0.5), t3 = t2 + Math.pow(Math.hypot(P3[0] - P2[0], P3[1] - P2[1]) || 1e-3, 0.5);
+    for (let k = 0; k < 24; k++) {
+      const t = lerp(t1, t2, k / 24), pt = [0, 0];
+      for (let d = 0; d < 2; d++) {
+        const A1 = ((t1 - t) * P0[d] + (t - t0) * P1[d]) / (t1 - t0), A2 = ((t2 - t) * P1[d] + (t - t1) * P2[d]) / (t2 - t1), A3 = ((t3 - t) * P2[d] + (t - t2) * P3[d]) / (t3 - t2);
+        const B1 = ((t2 - t) * A1 + (t - t0) * A2) / (t2 - t0), B2 = ((t3 - t) * A2 + (t - t1) * A3) / (t3 - t1);
+        pt[d] = ((t2 - t) * B1 + (t - t1) * B2) / (t2 - t1);
       }
-      if (thin) {
-        ctx.lineWidth = Math.max(1.2, S0 * 0.0014); ctx.beginPath(); ctx.moveTo(pts[0], pts[1]);
-        for (let k = 2; k < pts.length; k += 2) ctx.lineTo(pts[k], pts[k + 1]);
-        ctx.stroke();
-      } else {
-        const hw = wmax / 2, ox = nx * hw, oy = ny * hw;
-        ctx.beginPath();
-        for (let k = 0; k < pts.length - 2; k += 2) {
-          const x0 = pts[k], y0 = pts[k + 1], x1 = pts[k + 2], y1 = pts[k + 3];
-          const cr = (x1 - x0) * ny - (y1 - y0) * nx;  // keep every quad the same winding so crossings never cut holes
-          if (cr >= 0) { ctx.moveTo(x0 + ox, y0 + oy); ctx.lineTo(x1 + ox, y1 + oy); ctx.lineTo(x1 - ox, y1 - oy); ctx.lineTo(x0 - ox, y0 - oy); }
-          else { ctx.moveTo(x0 + ox, y0 + oy); ctx.lineTo(x0 - ox, y0 - oy); ctx.lineTo(x1 - ox, y1 - oy); ctx.lineTo(x1 + ox, y1 + oy); }
-          ctx.closePath();
-        }
-        ctx.fill();
-      }
+      dense.push(pt);
     }
-    ctx.restore();
   }
+  dense.push(p[p.length - 1]);
+  const cum = [0];
+  for (let i = 1; i < dense.length; i++) cum.push(cum[i - 1] + Math.hypot(dense[i][0] - dense[i - 1][0], dense[i][1] - dense[i - 1][1]));
+  const total = cum[cum.length - 1], out = []; let j = 0;
+  for (let i = 0; i < FN; i++) {
+    const sd = (i / (FN - 1)) * total; while (j < cum.length - 2 && cum[j + 1] < sd) j++;
+    const u = (sd - cum[j]) / (cum[j + 1] - cum[j] || 1), t = i / (FN - 1), sm = cl(t / def.taper, 0, 1), k = sm * sm * (3 - 2 * sm);
+    out.push({ x: fx(lerp(dense[j][0], dense[j + 1][0], u)), y: fy(lerp(dense[j][1], dense[j + 1][1], u)), w: lerp(def.w0, def.w1, k) * fw });
+  }
+  return out;
+}
+function strokeSpan(i, t) { const u = ((((t + i * 0.55) % PERIOD) + PERIOD) % PERIOD) / PERIOD; return [ease((u - 0.72) / 0.26), ease(u / 0.4)]; }
+function drawStroke(ctx, pts, a, b, t) {
+  const i0 = Math.floor(a * (FN - 1)), i1 = Math.ceil(b * (FN - 1)); if (i1 - i0 < 1) return;
+  const Lp = [], Rp = [];
+  for (let i = i0; i <= i1; i++) {
+    const p = pts[i], q = pts[Math.min(i + 1, FN - 1)], o = pts[Math.max(i - 1, 0)];
+    let dx = q.x - o.x, dy = q.y - o.y; const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m;
+    const h = p.w * (1 + 0.06 * Math.sin(2 * TAU * t / PERIOD + i * 0.12)) / 2;
+    Lp.push(p.x - dy * h, p.y + dx * h); Rp.push(p.x + dy * h, p.y - dx * h);
+  }
+  ctx.beginPath(); ctx.moveTo(Lp[0], Lp[1]);
+  for (let k = 2; k < Lp.length; k += 2) ctx.lineTo(Lp[k], Lp[k + 1]);
+  for (let k = Rp.length - 2; k >= 0; k -= 2) ctx.lineTo(Rp[k], Rp[k + 1]);
+  ctx.closePath(); ctx.fill();
+  const e = pts[i1], st = pts[i0];
+  ctx.beginPath(); ctx.arc(e.x, e.y, e.w / 2, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(st.x, st.y, st.w / 2, 0, TAU); ctx.fill();
+}
+const flourCache = new Map();
+/* left set anchored to the left edge of the rect, mirrored set on the right; o: color, t, still, fw (pen scale), off (timing shift) */
+function flourish(ctx, x, y, w, h, o) {
+  const s = Math.min(h / 800, w * 0.55 / 600), copies = Math.max(1, Math.round(h / (800 * s))), space = h - 770 * s, step = copies > 1 ? space / (copies - 1) : space / 2;
+  const key = [x, y, w, h, o.fw].map((v) => Math.round(v * 100)).join('|'); let sets = flourCache.get(key);
+  if (!sets) {
+    if (flourCache.size > 10) flourCache.clear(); sets = [];
+    for (let c = 0; c < copies; c++) { const y0 = y + (copies > 1 ? c * step : step); sets.push([FDEFS.map((d) => buildStroke(d, (px) => x + px * s, (py) => y0 + py * s, o.fw)), FDEFS.map((d) => buildStroke(d, (px) => x + w - px * s, (py) => y0 + py * s, o.fw))]); }
+    flourCache.set(key, sets);
+  }
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.fillStyle = o.color;
+  sets.forEach((pair, c) => pair.forEach((set) => set.forEach((pts, i) => { const [a, b] = o.still ? [0, 1] : strokeSpan(i, o.t + (o.off || 0) + c * 2.7); drawStroke(ctx, pts, a, b, o.t); })));
   ctx.restore();
 }
 
@@ -377,18 +403,17 @@ function roundedPoly(p, pts, r) {
 function badgePath(shape, x, y, w, h) {
   const p = new Path2D(), cx = x + w / 2, cy = y + h / 2;
   if (shape === 'arch') {
-    const r = w / 2, rb = w * 0.16; p.moveTo(x, y + r); p.arc(cx, y + r, r, Math.PI, 0); p.lineTo(x + w, y + h - rb); p.arcTo(x + w, y + h, x + w - rb, y + h, rb);
-    p.lineTo(x + rb, y + h); p.arcTo(x, y + h, x, y + h - rb, rb); p.closePath();
+    const r = w / 2; p.moveTo(x, y + r); p.arc(cx, y + r, r, Math.PI, 0); p.lineTo(x + w, y + h); p.lineTo(x, y + h); p.closePath();
   } else if (shape === 'circle') p.ellipse(cx, cy, w / 2, h / 2, 0, 0, TAU);
   else if (shape === 'scallop') {
     const R = Math.min(w, h) / 2, n = 16;
     for (let k = 0; k <= 360; k++) { const a = k / 360 * TAU, r = R * (0.925 + 0.075 * Math.abs(Math.cos(n * a / 2))); const X = cx + r * Math.cos(a), Y = cy + r * Math.sin(a); k ? p.lineTo(X, Y) : p.moveTo(X, Y); }
     p.closePath();
-  } else if (shape === 'hexagon') roundedPoly(p, [[x + w * 0.25, y], [x + w * 0.75, y], [x + w, cy], [x + w * 0.75, y + h], [x + w * 0.25, y + h], [x, cy]], w * 0.06);
+  } else if (shape === 'hexagon') { [[x + w * 0.25, y], [x + w * 0.75, y], [x + w, cy], [x + w * 0.75, y + h], [x + w * 0.25, y + h], [x, cy]].forEach((v, i) => (i ? p.lineTo(v[0], v[1]) : p.moveTo(v[0], v[1]))); p.closePath(); }
   else { // shield
-    const rt = w * 0.1; p.moveTo(x + rt, y); p.lineTo(x + w - rt, y); p.arcTo(x + w, y, x + w, y + rt, rt); p.lineTo(x + w, y + h * 0.58);
+    p.moveTo(x, y); p.lineTo(x + w, y); p.lineTo(x + w, y + h * 0.58);
     p.bezierCurveTo(x + w, y + h * 0.84, cx + w * 0.2, y + h * 0.93, cx, y + h); p.bezierCurveTo(cx - w * 0.2, y + h * 0.93, x, y + h * 0.84, x, y + h * 0.58);
-    p.lineTo(x, y + rt); p.arcTo(x, y, x + rt, y, rt); p.closePath();
+    p.closePath();
   }
   return p;
 }
@@ -401,7 +426,7 @@ function drawBadge(ctx, th, shape, cx, cy, h, rot, label, shadow) {
   const w = h * SHAPE_RATIO[shape], x = -w / 2, y = -h / 2, ink = DARK, lw = h * 0.014;
   ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
   if (shadow) { ctx.save(); ctx.translate(shadow, shadow); ctx.fillStyle = ink; ctx.fill(badgePath(shape, x, y, w, h)); ctx.restore(); }
-  ctx.fillStyle = th.accent; ctx.strokeStyle = ink; ctx.lineJoin = 'round';
+  ctx.fillStyle = th.accent; ctx.strokeStyle = ink; ctx.lineJoin = 'miter'; ctx.miterLimit = 10;
   const outer = badgePath(shape, x, y, w, h); ctx.fill(outer); ctx.lineWidth = lw * 1.5; ctx.stroke(outer);
   const d = h * 0.04; ctx.lineWidth = lw; ctx.stroke(badgePath(shape, x + d, y + d, w - 2 * d, h - 2 * d));
   const ecy = y + h * 0.36, er = Math.min(h * 0.29, w * 0.4), dv = y + h * 0.665;
@@ -447,18 +472,19 @@ function panelRect(c, pos) {
   if (c.land) return { x: W * 0.604, y: 45 * fu, w: W - W * 0.604, h: H - 92 * fu };
   return pos === 'top' ? { x: 0, y: 45 * fu, w: W, h: H * 0.46 } : { x: 0, y: H * 0.6, w: W, h: H - 215 * fu - H * 0.6 };
 }
-function drawPanel(ctx, c, r, seed, density) {
+function drawPanel(ctx, c, r, seed) {
   ctx.save(); ctx.fillStyle = c.th.accent; ctx.fillRect(r.x, r.y, r.w, r.h);
   ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip();
-  loops(ctx, r.x, r.y, r.w, r.h, { seed, n: density, color: DARK, t: c.t, mirror: true, wt: S.weight / 5 });
+  flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9 });
   ctx.restore();
 }
 function subLines(ctx, c, x, y) {
   const { fu, th } = c; let yy = y;
   if (S.sub) { sansText(ctx, S.sub, x, yy, 46 * fu, th.fg, { wt: 500 }); yy += 64 * fu; }
-  if (S.date) { sansText(ctx, S.date, x, yy, 46 * fu, th.fg, { wt: 700 }); yy += 64 * fu; }
+  if (S.date) { sansText(ctx, dateTxt(), x, yy, 42 * fu, th.fg, { wt: 700, ls: 4 * fu }); yy += 64 * fu; }
   return yy;
 }
+const dateTxt = () => (S.date || '').toUpperCase();
 const sway = (t, ph) => Math.sin(TAU * t / PERIOD + ph);
 
 /* ===== templates ===== */
@@ -481,7 +507,7 @@ function headlineBlock(ctx, c, box, o) {
 
 function tHeadline(ctx, c) {
   const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'bottom');
-  drawPanel(ctx, c, pr, S.seed, Math.round(S.density * 0.7));
+  drawPanel(ctx, c, pr, S.seed);
   const n = S.photoCount;
   if (n) photoCluster(ctx, c, { x: pr.x + pr.w * (land ? 0.04 : 0.3), y: pr.y + pr.h * 0.05, w: pr.w * (land ? 0.92 : 0.66), h: pr.h * 0.9 }, n, t);
   if (S.showBadge) {
@@ -498,34 +524,37 @@ function tHeadline(ctx, c) {
 
 function tSpeaker(ctx, c) {
   const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'top');
-  drawPanel(ctx, c, pr, S.seed + 3, Math.round(S.density * 0.6));
+  drawPanel(ctx, c, pr, S.seed + 3);
   const ph = pr.h * 0.74, pw = ph * 0.8;
   photoFrame(ctx, 0, pr.x + pr.w / 2, pr.y + pr.h / 2 + 4 * sway(t, 0.4), pw, ph, -0.05 + 0.012 * sway(t, 0.2), th, 12 * fu);
   if (S.showBadge) { const bh = land ? H * 0.3 : pr.h * 0.44, bw = bh * SHAPE_RATIO[S.badgeShape]; drawBadge(ctx, th, S.badgeShape, Math.min(pr.x + pr.w / 2 + pw * 0.62, W - bw / 2 - 36 * fu), pr.y + pr.h * (land ? 0.8 : 0.86) + 5 * sway(t, 1.2), bh, 0.1 + 0.015 * sway(t, 0.9), S.badgeText, 10 * fu); }
   frameLines(ctx, c, land ? pr.x : null);
   const mx = 0.0985 * W, rightB = land ? pr.x - 60 * fu : W - mx, topY = land ? 100 * fu : pr.y + pr.h + 60 * fu, botY = H - 250 * fu;
-  ctx.save(); ctx.font = sansFont(26 * fu, 700); setLS(ctx, 3 * fu);
-  const tag = (S.chip || '').toUpperCase(), tw = ctx.measureText(tag).width + 44 * fu; ctx.restore();
-  const nameLines = (() => { const p = S.speaker.trim().split(/\s+/); return p.length > 1 ? [p[0], p.slice(1).join(' ')] : [p[0] || ' ']; })();
+  // tag = the outlined REGISTER NOW button from the site: sharp corners, hairline stroke, tracked bold capitals
+  const tagFs = 22 * fu, tagSp = 4 * fu, tagH = 58 * fu, tagPad = 30 * fu, tagFont = 'bold ' + tagFs + 'px Helvetica, Arial, sans-serif';
+  ctx.save(); ctx.font = tagFont; setLS(ctx, tagSp);
+  const tag = (S.chip || '').toUpperCase(), tw = ctx.measureText(tag).width - tagSp + 2 * tagPad; ctx.restore();
+  const nameLines = [S.speaker.trim() || ' '];  // the name always sits on one line
   const w100 = nameLines.map((s) => measureSlide(ctx, s, 100, false) / 100);
   ctx.save(); ctx.font = serifFont(60 * fu, true);
   const talk = (S.talk ? wrapText(ctx, S.talk, rightB - mx) : []).slice(0, 3); ctx.restore();
-  const extraH = (S.chip ? 96 * fu : 0) + (S.role ? 70 * fu : 0) + talk.length * 62 * fu + (S.date ? 70 * fu : 0) + 40 * fu;
+  const extraH = (S.chip ? 100 * fu : 0) + (S.role ? 100 * fu : 0) + talk.length * 62 * fu + 40 * fu;
   let fs = 300 * fu * (land ? 0.8 : 1);
   for (; fs > 30; fs *= 0.97) { if (Math.max(...w100) * fs + mx <= rightB && (nameLines.length - 1) * fs + 0.7 * fs + extraH <= botY - topY) break; }
   const stack = (nameLines.length - 1) * fs + 0.7 * fs + extraH;
   let y = topY + Math.max(0, (botY - topY - stack) / 2);
   if (S.chip) {
-    ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 3 * fu; ctx.beginPath(); ctx.roundRect(mx, y, tw, 52 * fu, 26 * fu); ctx.stroke(); ctx.restore();
-    sansText(ctx, tag, mx + 22 * fu, y + 35 * fu, 26 * fu, th.fg, { wt: 700, ls: 3 * fu }); y += 96 * fu;
+    ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.lineJoin = 'miter'; ctx.strokeRect(mx + 1, y + 1, tw - 2, tagH - 2);
+    ctx.fillStyle = th.fg; ctx.font = tagFont; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; setLS(ctx, tagSp); ctx.fillText(tag, mx + tagPad, y + tagH / 2 + tagFs * 0.375); ctx.restore();
+    if (S.date) sansText(ctx, dateTxt(), mx + tw + 36 * fu, y + tagH / 2 + 15 * fu, 40 * fu, th.fg, { wt: 700, ls: 4 * fu });
+    y += 100 * fu;
   }
   y += 0.7 * fs;
   nameLines.forEach((s, i) => slide(ctx, s, mx, y + i * fs + 2 * fu * sway(t, i * 0.8), fs, false, th.fg));
-  y += (nameLines.length - 1) * fs + 30 * fu;
+  y += (nameLines.length - 1) * fs + 62 * fu;
   if (S.role) { y += 40 * fu; sansText(ctx, S.role, mx, y, 38 * fu, th.fg, { wt: 600 }); y += 30 * fu; }
   talk.forEach((l, i) => serifText(ctx, l, mx, y + 54 * fu + i * 62 * fu, 60 * fu, th.fg, { it: true }));
   y += talk.length * 62 * fu + 40 * fu;
-  if (S.date) sansText(ctx, S.date, mx, y + 36 * fu, 40 * fu, th.fg, { wt: 700 });
   footer(ctx, c);
 }
 
@@ -550,16 +579,16 @@ function tBadges(ctx, c) {
 
 function tPattern(ctx, c) {
   const { W, H, fu, th, t, land } = c;
-  loops(ctx, -W * 0.05, -H * 0.05, W * 1.1, H * 1.1, { seed: S.seed, n: S.density, color: th.fg, t, mirror: true, wt: S.weight / 5 });
-  // sticker plate in the middle: the only text on a post that is mostly pattern
-  const pw = W * (land ? 0.42 : 0.7), k = pw * 0.76 / 2485, logoH = 918 * k, pad = pw * 0.12;
-  const lines = [S.sub, S.date].filter(Boolean), ph = pad * 2 + logoH + lines.length * 60 * fu + (lines.length ? 26 * fu : 0);
+  flourish(ctx, 0, 45 * fu, W, H - 92 * fu, { color: th.fg, t, still: c.still, fw: 1.2 * S.weight / 5 * fu, off: S.seed * 0.9 });
+  // plate in the middle: sharp corners, the same hairline weight as the frame
+  const pw = W * (land ? 0.4 : 0.66), k = pw * 0.76 / 2485, logoH = 918 * k, pad = pw * 0.12;
+  const lines = [S.sub, dateTxt()].filter(Boolean), ph = pad * 2 + logoH + lines.length * 60 * fu + (lines.length ? 26 * fu : 0);
   const px = W / 2 - pw / 2, py = H / 2 - ph / 2 + 5 * sway(t, 0.7);
-  ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 7 * fu;
-  ctx.beginPath(); ctx.roundRect(px + 12 * fu, py + 12 * fu, pw, ph, 36 * fu); ctx.fillStyle = th.fg; ctx.fill();
-  ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 36 * fu); ctx.fillStyle = th.bg; ctx.fill(); ctx.stroke(); ctx.restore();
+  ctx.save(); ctx.fillStyle = th.bg; ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.lineJoin = 'miter';
+  ctx.fillRect(px, py, pw, ph); ctx.strokeRect(px, py, pw, ph); ctx.restore();
   drawThreadLogo(ctx, W / 2 - 2485 * k / 2, py + pad, k, th.fg);
-  lines.forEach((l, i) => sansText(ctx, l, W / 2, py + pad + logoH + 46 * fu + i * 60 * fu, 42 * fu, th.fg, { wt: i ? 700 : 500, align: 'center' }));
+  lines.forEach((l, i) => sansText(ctx, l, W / 2, py + pad + logoH + 46 * fu + i * 60 * fu, 42 * fu, th.fg, { wt: i ? 700 : 500, align: 'center', ls: i ? 3 * fu : 0 }));
+  frameLines(ctx, c, W - 131 * fu);
 }
 
 const TPL = { headline: tHeadline, speaker: tSpeaker, badges: tBadges, pattern: tPattern };
@@ -587,7 +616,7 @@ function frame(now) {
   }
   requestAnimationFrame(frame);
 }
-const TEXTS = ['headline', 'sub', 'date', 'chip', 'speaker', 'role', 'talk', 'badgeText'], CHECKS = ['swashT', 'showBadge', 'lines', 'anim'], RANGES = ['density', 'weight', 'photoCount', 'badgeCount'];
+const TEXTS = ['headline', 'sub', 'date', 'chip', 'speaker', 'role', 'talk', 'badgeText'], CHECKS = ['swashT', 'showBadge', 'lines', 'anim'], RANGES = ['weight', 'photoCount', 'badgeCount'];
 function syncUI() {
   [['tpl', S.tpl], ['fmt', S.fmt], ['shape', S.badgeShape], ['pfilter', S.photoFilter]].forEach(([id, v]) => document.querySelectorAll('#' + id + ' .chip').forEach((b) => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-pressed', b.dataset.v === v); }));
   document.querySelectorAll('#theme .sw').forEach((b) => b.classList.toggle('on', b.dataset.v === S.theme));
