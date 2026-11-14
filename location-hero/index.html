@@ -57,14 +57,14 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 .t2 i{position:absolute;bottom:0;width:6%;background:var(--yel2);border-radius:3px 3px 0 0}
 .t3{left:16.5%;top:40%;width:77.5%;height:60%;background:var(--pink)}
 .t3 svg{position:absolute;left:0;top:22%;width:100%;height:42%}
-.mail{position:absolute;left:47%;top:35%;width:50%;aspect-ratio:1.5;border-radius:3px;overflow:hidden}
+.mail{position:absolute;left:40%;top:35%;width:50%;aspect-ratio:1.5;border-radius:3px;overflow:hidden}
 .pc{position:absolute;inset:0;background:#a393f5}
 .el{position:absolute}
-.bar{background:var(--purple);border-radius:1px}
-.tag{background:var(--deep);color:#fff;border-radius:2px;font:600 1.2cqw/1 var(--sans);display:flex;align-items:center;justify-content:center}
-.qr{background:var(--deep);border-radius:2px;display:grid;place-items:center}
+.bar{background:var(--purple);border-radius:99px}
+.tag{background:var(--deep);color:#fff;border-radius:6px;font:600 1.2cqw/1 var(--sans);display:flex;align-items:center;justify-content:center}
+.qr{background:var(--deep);border-radius:6px;display:grid;place-items:center}
 .qr svg{width:66%;height:66%}
-.scan{background:var(--deep);color:#fff;border-radius:2px;font:italic 400 1.4cqw/1.15 var(--serif);display:flex;align-items:center;padding:0 5%}
+.scan{background:var(--deep);color:#fff;border-radius:6px;font:italic 400 1.4cqw/1.15 var(--serif);display:flex;align-items:center;padding:0 5%}
 .ph{object-fit:cover;border-radius:0}
 @media(max-width:900px){.hero{grid-template-columns:1fr;padding:24px 20px 28px}.stage{justify-self:center}.sub{min-height:0}h1{white-space:normal}}
 @media(prefers-reduced-motion:reduce){.sw,.bl{transition:none}}
@@ -109,11 +109,11 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 <script>
 const CITIES=[
  {city:'San Diego, CA',h:'Direct mail that<br>lands in <i>San Diego</i><br>in days',sub:"Print at our Southern California facility and reach every Gaslamp, La Jolla and North Park mailbox fast. Automated mail that's timed for conversion.",
-  b1:['USPS mailing data','2.0 <i>day</i> delivery','Avg. First-Class time in your SCF, 919–921'],
-  b2:['Your print location','Carlsbad, <i>CA</i>','36 mi from your delivery zone, 92101 · 21,340 homes']},
+  b1:['USPS mailing data','2.0 day <i>delivery</i> time','Avg. First-Class time in your SCF, 919–921'],
+  b2:['Your print location','Sending from Carlsbad, <i>CA</i>','36 mi from your delivery zone, 92101 · 21,340 homes']},
  {city:'Miami, FL',h:'Direct mail that<br>lands in <i>Miami</i><br>in days',sub:"Print at our Florida facility and reach every Brickell, Wynwood and Coral Gables mailbox fast. Automated mail that's timed for conversion.",
-  b1:['USPS mailing data','2.3 <i>day</i> delivery','Avg. First-Class time in your SCF, 331–332'],
-  b2:['Your print location','Orlando, <i>FL</i>','235 mi from your delivery zone, 33131 · 24,760 homes']}];
+  b1:['USPS mailing data','2.3 day <i>delivery</i> time','Avg. First-Class time in your SCF, 331–332'],
+  b2:['Your print location','Sending from Orlando, <i>FL</i>','235 mi from your delivery zone, 33131 · 24,760 homes']}];
 const $=id=>document.getElementById(id);
 // G2 style badges
 const BADGES=[
