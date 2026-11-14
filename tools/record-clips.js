@@ -31,6 +31,14 @@ const APPS = {
     await at(t0, 700, () => p.evaluate(() => __rb.play({ from: 0, speed: 1.4, loop: false })));
     await sleep(5600);
   } },
+  // the landing page: hero with the live countdown and the hairline grid lighting up, then a scroll through the keynotes, tracks and community cards and back up
+  'thread-conference-landing': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1500, q: 55, run: async (p) => {
+    const t0 = Date.now(), to = (sel, off) => p.evaluate(([s, o]) => window.scrollTo({ top: document.querySelector(s).getBoundingClientRect().top + scrollY - 60 + o, behavior: 'smooth' }), [sel, off]);
+    await at(t0, 1000, () => to('#agenda', 0));
+    await at(t0, 2600, () => to('#tracks', 0));
+    await at(t0, 4000, () => to('#community', -120));
+    await at(t0, 5200, () => p.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' })));
+  } },
   // starts on the hero post, then scrolls the way a visitor would: the colour mosaic, the badges and the motion timeline, and back up to the hero
   'thread-brand-guidelines': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1800, q: 55, run: async (p) => {
     const t0 = Date.now(), to = (sel, off) => p.evaluate(([s, o]) => window.scrollTo({ top: document.querySelector(s).getBoundingClientRect().top + scrollY - 56 + o, behavior: 'smooth' }), [sel, off]);
