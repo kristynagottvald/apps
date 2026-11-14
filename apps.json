@@ -1,5 +1,14 @@
 [
   {
+    "id": "thread-brand-visuals",
+    "title": "Thread Brand Visuals",
+    "category": "Motion",
+    "url": "thread-brand-visuals/",
+    "thumbnail": "thread-brand-visuals/thumb.png",
+    "preview": "thread-brand-visuals/thumb.webp",
+    "alt": "Three animated Thread brand visuals side by side: a yellow 3D calligraphic number with a ribbon extrusion, a dark frame of yellow hairlines and blocks drawing on, and black calligraphy loops writing on a yellow ground, each with a caption underneath"
+  },
+  {
     "id": "paid-ad-pipeline",
     "title": "Paid Ad Pipeline",
     "category": "Tools",
