@@ -428,7 +428,7 @@ function sSession(ctx, c) {
   // the speaker block (bottom left) hides the cells under it and keeps its right and top edge
   const by = Y(3);
   ctx.save(); ctx.fillStyle = th.bg; ctx.fillRect(X(0) + 1, by + 1, 2 * cw - 1, 2 * rh - 2); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath(); line(X(2), by, X(2), Y(5)); line(X(0), by, X(2), by); ctx.stroke(); ctx.restore();
-  const nl = [{ s: String(S.sSpeaker || ' ').trim(), it: false }], nf = fitLines(ctx, nl, 2 * cw - 72, 190, 110, 0.92), nb = by + rh - nf * 0.15 + (still ? 0 : 2 * sway(t, 0.4));
+  const nl = [{ s: String(S.sSpeaker || ' ').trim(), it: false }], nf = fitLines(ctx, nl, 2 * cw - 72, 190, 84, 0.92), nb = by + rh - nf * 0.15 + (still ? 0 : 2 * sway(t, 0.4));
   nl.forEach((l, i) => slide(ctx, l.s, X(0) + 28, nb + i * nf * 0.92, nf, false, th.fg));
   ctx.save(); ctx.font = sansFont(17, 600); setLS(ctx, 3); const rl = wrapText(ctx, (S.sRole || '').toUpperCase(), 2 * cw - 72); ctx.restore();
   rl.slice(0, 4).forEach((l, i) => sansText(ctx, l, X(0) + 30, nb + (nl.length - 1) * nf * 0.92 + 46 + i * 26, 17, th.fg, { wt: 600, ls: 3 }));
