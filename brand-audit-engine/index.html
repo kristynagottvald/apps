@@ -25,18 +25,13 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:640px){nav.back{padding:0 16px}}
 
 .app{flex:1;min-height:0;display:flex;flex-direction:column}
-.bar{flex:none;display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:var(--navy);border-bottom:2px solid var(--line)}
-.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;white-space:nowrap}
-.brand i{width:20px;height:20px;background:var(--magenta);position:relative;display:block}
-.brand i::after{content:"";position:absolute;right:0;bottom:0;width:10px;height:10px;background:var(--lime)}
-.tabs{display:flex;gap:4px;margin-left:8px}
-.tabs button{background:none;border:0;border-radius:6px;padding:7px 12px;font-size:13px;font-weight:500;color:var(--muted)}
-.tabs button.on{background:var(--indigo);color:#fff}
-.tabs button:hover:not(.on){color:var(--text)}
-.sp{flex:1}
-.scrub{width:min(300px,28vw);accent-color:var(--lime)}
-.pp{width:34px;height:34px;border-radius:8px;border:2px solid var(--line);background:var(--ink);display:grid;place-items:center}
-.pp:hover{border-color:var(--lav)}
+.tools{margin-left:auto;display:flex;align-items:center;gap:10px}
+.sw{display:flex;gap:3px;border:1px solid #333;border-radius:999px;padding:2px}
+.sw button{font:500 12px/1 "Inter",Arial,sans-serif;color:#8d8d8d;background:none;border:0;border-radius:999px;padding:6px 11px}
+.sw button:hover{color:#fff}.sw button.on{background:#fff;color:#000}
+.scrub{width:150px;accent-color:#E6EA9C}
+.tools #pp{font:500 12px/1 "Inter","Helvetica Neue",Arial,sans-serif;color:#d0d0d0;background:none;border:1px solid #333;border-radius:999px;padding:7px 13px;min-width:62px}
+.tools #pp:hover{color:#000;background:#fff;border-color:#fff}
 button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 
 .stage{flex:1;min-height:0;position:relative;overflow:hidden;background:var(--ink)}
@@ -122,7 +117,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
 .acc svg{width:104px;height:104px;flex:none;transform:rotate(-90deg)}
 .acc big{display:block;font-size:46px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
 .acc p{font-size:13px;color:#C9C6F2;margin-top:6px;line-height:1.3}
-.decide{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;margin-top:auto}
+.decide{display:grid;grid-template-columns:1fr;gap:8px;margin-top:auto}
+.decide .btn{position:relative}
+.env{position:absolute;right:14px;top:50%;width:30px;height:22px;margin-top:-11px;opacity:0;pointer-events:none;will-change:transform,opacity;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
 .decide .btn{margin:0}
 .decide .btn.ghost{padding:11px 8px}
 .res hr.div{border:0;border-top:1px solid var(--line);margin:0}
@@ -134,7 +131,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
 
 @media (max-width:1100px){.detail{display:none}.res{width:290px;padding:18px 20px}}
 @media (max-width:860px){
-  .bar{gap:10px;padding:0 12px}.brand span{display:none}.scrub{display:none}.sp{display:none}.tabs{margin-left:0;flex:1}.pp{margin-left:auto}
+  nav.back>span:nth-of-type(2),nav.back>b{display:none}.scrub{display:none}.tools{gap:6px}.sw button{padding:6px 8px}.tools #pp{min-width:0;padding:7px 10px}nav.back>a:first-child,nav.back>span:first-of-type{display:none}
   .libtop .avs,.search{display:none}
   .grid{grid-template-columns:repeat(2,1fr);padding:2px 14px 14px;gap:10px}.chips{padding:12px 14px 10px}
   #aud{flex-direction:column}
@@ -147,17 +144,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
 </style>
 </head>
 <body>
-<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Brand Audit Engine</b></nav>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Brand Audit Engine</b>
+<div class="tools"><div class="sw" id="sw" role="group" aria-label="Screen"><button class="on" data-go="1600">Library</button><button data-go="9000">Audit</button><button data-go="16800">Decision</button></div><input class="scrub" id="scrub" type="range" min="0" max="23800" step="10" value="0" aria-label="Timeline"><button type="button" id="pp" title="Pause / play">Pause</button></div></nav>
 <div class="app">
-  <div class="bar">
-    <div class="brand"><i></i><span>Brand Audit Engine</span></div>
-    <div class="tabs" role="tablist">
-      <button class="on" data-go="0">Library</button><button data-go="9000">Audit</button><button data-go="14600">Decision</button>
-    </div>
-    <div class="sp"></div>
-    <input class="scrub" id="scrub" type="range" min="0" max="21000" step="10" value="0" aria-label="Timeline">
-    <button class="pp" id="pp" aria-label="Play or pause"></button>
-  </div>
   <div class="stage" id="stage">
     <!-- LIBRARY -->
     <section class="scene" id="lib" aria-label="Asset library">
@@ -199,7 +188,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
             <svg viewBox="0 0 104 104"><circle cx="52" cy="52" r="42" fill="none" stroke="#3b3b6b" stroke-width="12"/><circle id="ring" cx="52" cy="52" r="42" fill="none" stroke="#FF6F5B" stroke-width="12" stroke-dasharray="263.9" stroke-dashoffset="263.9"/></svg>
             <div><big id="accN">0%</big><p>A person makes the final call.</p></div>
           </div></div>
-        <div class="decide" id="decide"><button class="btn ghost" id="bApprove">Approve</button><button class="btn" id="bChanges">Request changes</button></div>
+        <div class="decide" id="decide"><button class="btn ghost" id="bApprove">Approve</button><button class="btn" id="bChanges"><span id="bcT">Request changes</span><svg class="env" id="env" viewBox="0 0 30 22"><rect x="1" y="1" width="28" height="20" rx="2.5" fill="#fff" stroke="#0D0D2B" stroke-width="2"/><path d="M2 3l13 10L28 3" fill="none" stroke="#FF6F5B" stroke-width="2.2" stroke-linejoin="round"/></svg></button></div>
       </aside>
     </section>
     <div class="cursor" id="cursor"><svg width="22" height="22" viewBox="0 0 22 22"><path d="M3 2l15 8.5-6.6 1.6L8.2 19z" fill="#fff" stroke="#0D0D2B" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
@@ -214,7 +203,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
    Scenes: library (0-6.1s) -> audit scan + flags + result (5.4-17.1s) -> library again,
    with the audited asset moved from "Needs review" to "Changes".
    ===================================================================== */
-const LOOP = 21000;
+const LOOP = 23800;
 const REF = 1293, CELL = 213;
 const $ = s => document.querySelector(s);
 const clamp01 = x => Math.min(1, Math.max(0, x));
@@ -338,7 +327,7 @@ const items = [];
     });
   }
 }
-const statusAt = (it, t) => it.post && t >= 15800 ? 'changes' : it.status;
+const statusAt = (it, t) => it.post && t >= 18000 ? 'changes' : it.status;
 const countsAt = t => { const c = {all:items.length, scan:0, needs:0, changes:0, approved:0}; items.forEach(it => { const s = statusAt(it, t); if(s === 'queued' || s === 'scanning') c.scan++; else c[s]++; }); return c; };
 
 /* ---------- build library DOM ---------- */
@@ -443,11 +432,11 @@ function updateCursor(t){
     else p = seg(4300, 5200, {x: cc.x + 10, y: cc.y + 10}, rb);
     down = (t > 3750 && t < 3900) || (t > 5250 && t < 5400);
     o = Math.min(prog(t, 2200, 2500), 1 - prog(t, 5450, 5700));
-  } else if(t > 14300 && t < 16500){
+  } else if(t > 16500 && t < 18900){
     const b = centerOf($('#bChanges')) || {x: W * .8, y: H * .8};
-    p = seg(14400, 15700, {x: b.x - 120, y: b.y - 170}, b);
-    down = t > 15750 && t < 15900;
-    o = Math.min(prog(t, 14300, 14600), 1 - prog(t, 16100, 16400));
+    p = seg(16600, 17900, {x: b.x - 120, y: b.y - 170}, b);
+    down = t > 17950 && t < 18100;
+    o = Math.min(prog(t, 16500, 16800), 1 - prog(t, 18500, 18800));
   }
   cursor.style.opacity = p ? o : 0;
   if(p) cursor.style.transform = `translate(${p.x - 3}px,${p.y - 2}px)`;
@@ -484,16 +473,17 @@ const sceneLib = $('#lib'), sceneAud = $('#aud');
 const SCAN_LABELS = [[0, 'palette'], [.18, 'typography'], [.32, 'logo zone'], [.64, 'contrast'], [.82, 'brand colours']];
 const cache = {};
 const setTxt = (id, el, v) => { if(cache[id] !== v){ cache[id] = v; el.textContent = v; } };
+const envEl = $('#env');
 const el = {estatus: $('#estatus'), eleft: $('#eleft'), eright: $('#eright'), cn: $('#cn'), cf: $('#cf'), lblG: $('#lblG'), lblO: $('#lblO'), accN: $('#accN'), barG: $('#barG'), barO: $('#barO'), ring: $('#ring'), decide: $('#decide'), bC: $('#bChanges'), bA: $('#bApprove'), accBox: $('#accBox')};
 
 function render(t){
   t = ((t % LOOP) + LOOP) % LOOP;
-  stageEl.style.opacity = 1 - prog(t, 19900, 20900);
+  stageEl.style.opacity = 1 - prog(t, 22800, 23800);
 
   /* scene visibility */
-  const toAud = ease(prog(t, 5400, 6100)), toLib = ease(prog(t, 16400, 17100));
-  const libV = t < 5400 ? 1 : t < 6100 ? 1 - toAud : t < 16400 ? 0 : toLib;
-  const audV = t < 5400 ? 0 : t < 6100 ? toAud : t < 16400 ? 1 : 1 - toLib;
+  const toAud = ease(prog(t, 5400, 6100)), toLib = ease(prog(t, 19100, 19800));
+  const libV = t < 5400 ? 1 : t < 6100 ? 1 - toAud : t < 19100 ? 0 : toLib;
+  const audV = t < 5400 ? 0 : t < 6100 ? toAud : t < 19100 ? 1 : 1 - toLib;
   sceneLib.style.opacity = libV; sceneLib.style.visibility = libV > 0 ? 'visible' : 'hidden';
   sceneLib.style.transform = `translateX(${(t < 10000 ? -toAud : -1 + toLib) * 36 * (t < 10000 ? 1 : 1)}px)`;
   sceneAud.style.opacity = audV; sceneAud.style.visibility = audV > 0 ? 'visible' : 'hidden';
@@ -529,7 +519,7 @@ function render(t){
     let lab = 'palette'; for(const [q, n] of SCAN_LABELS) if(sp >= q) lab = n;
     const scanning = t >= SCAN_A && t < SCAN_B + 300, done = t >= SCAN_B + 300;
     let started = 0; FLAGS.forEach(f => { if(t >= f.t) started++; });
-    const decided = t >= 15800;
+    const decided = t >= 18000;
     setTxt('es', el.estatus, decided ? 'Changes requested' : done ? 'Sent to reviewer' : t < SCAN_A ? 'Loading' : 'Scanning');
     setTxt('el', el.eleft, done ? 'Reviewer decides' : t < SCAN_A ? 'Preparing' : `Scanning · ${lab} · ${Math.round(sp * 100)}%`);
     setTxt('er', el.eright, `${started} flag${started === 1 ? '' : 's'} to review`);
@@ -549,9 +539,12 @@ function render(t){
     el.ring.style.strokeDashoffset = (263.9 * (1 - .91 * a)).toFixed(1);
     setTxt('an', el.accN, Math.round(91 * a) + '%');
     el.accBox.style.opacity = prog(t, 13100, 13500);
-    const dv = easeOut(prog(t, 14300, 14800)); el.decide.style.opacity = dv; el.decide.style.transform = `translateY(${(1 - dv) * 10}px)`;
-    el.bC.classList.toggle('press', t > 15750 && t < 15900);
-    setTxt('bc', el.bC, decided ? '✓ Changes requested' : 'Request changes');
+    const dv = easeOut(prog(t, 16500, 17000)); el.decide.style.opacity = dv; el.decide.style.transform = `translateY(${(1 - dv) * 10}px)`;
+    el.bC.classList.toggle('press', t > 17950 && t < 18100);
+    setTxt('bc', $('#bcT'), decided ? 'Changes requested' : 'Request changes');
+    const ep = prog(t, 17980, 18950), pop = prog(t, 17980, 18080), fly = Math.pow(ep, 1.7);
+    envEl.style.opacity = ep <= 0 || ep >= 1 ? 0 : pop * (1 - prog(ep, .75, 1));
+    envEl.style.transform = `translate(${fly * 150}px,${-fly * 170 + Math.sin(ep * 9) * 6 * ep}px) rotate(${-10 + ep * 38}deg) scale(${(.5 + .5 * pop) * (1 - .4 * ep)})`;
   }
   updateCursor(t);
 }
@@ -559,10 +552,10 @@ function render(t){
 /* ---------- clock ---------- */
 const scrub = $('#scrub'), pp = $('#pp');
 let T = 0, playing = true, speed = 1, looping = true, last = 0, userDrag = false;
-const ICON = {pause: '<svg width="14" height="14" viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12" fill="#fff"/><rect x="8.5" y="1" width="3.5" height="12" fill="#fff"/></svg>', play: '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1l10 6-10 6z" fill="#fff"/></svg>'};
-function sync(){ pp.innerHTML = playing ? ICON.pause : ICON.play; }
+const ICON_OLD = {pause: '<svg width="14" height="14" viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12" fill="#fff"/><rect x="8.5" y="1" width="3.5" height="12" fill="#fff"/></svg>', play: '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1l10 6-10 6z" fill="#fff"/></svg>'};
+function sync(){ pp.textContent = playing ? 'Pause' : 'Play'; }
 function seek(ms){ T = ms; render(T); if(!userDrag) scrub.value = T; tabsSync(); }
-function tabsSync(){ document.querySelectorAll('.tabs button').forEach((b, i) => b.classList.toggle('on', i === (T >= 14300 && T < 16400 ? 2 : T >= 5400 && T < 16400 ? 1 : 0))); }
+function tabsSync(){ document.querySelectorAll('.sw button').forEach((b, i) => b.classList.toggle('on', i === (T >= 16500 && T < 19100 ? 2 : T >= 5400 && T < 19100 ? 1 : 0))); }
 function frame(now){
   if(playing){
     T += (now - last) * speed;
@@ -573,7 +566,7 @@ function frame(now){
 }
 pp.onclick = () => { playing = !playing; sync(); };
 scrub.addEventListener('input', () => { userDrag = true; playing = false; sync(); T = +scrub.value; render(T); tabsSync(); userDrag = false; });
-document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { playing = false; sync(); seek(+b.dataset.go); });
+document.querySelectorAll('.sw button').forEach(b => b.onclick = () => { playing = false; sync(); seek(+b.dataset.go); });
 window.ba = {
   seek: ms => { playing = false; sync(); seek(ms); },
   play: (o = {}) => { if(o.from != null) T = o.from; speed = o.speed || 1; looping = o.loop !== false; playing = true; sync(); },
@@ -582,7 +575,7 @@ window.ba = {
 
 function boot(){
   layoutAudit(); layoutLib(); sync();
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ playing = false; sync(); seek(14900); }
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ playing = false; sync(); seek(17100); }
   requestAnimationFrame(t => { last = t; frame(t); });
 }
 const imgs = [...grid.querySelectorAll('img')];
