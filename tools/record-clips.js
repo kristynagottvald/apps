@@ -25,6 +25,14 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
 /* vp: viewport, crop: [x, y, w, h] in css px (16:9, becomes 960x540), run: timeline of actions (ms after the page is ready).
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
+  // starts on the hero post, then scrolls the way a visitor would: the colour mosaic, the badges and the motion timeline, and back up to the hero
+  'thread-brand-guidelines': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1800, q: 55, run: async (p) => {
+    const t0 = Date.now(), to = (sel, off) => p.evaluate(([s, o]) => window.scrollTo({ top: document.querySelector(s).getBoundingClientRect().top + scrollY - 56 + o, behavior: 'smooth' }), [sel, off]);
+    await at(t0, 900, () => to('#mosaic', 24));
+    await at(t0, 2500, () => to('#badges', 600));
+    await at(t0, 3900, () => to('#motion', 640));
+    await at(t0, 5200, () => p.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' })));
+  } },
   'conference-post-generator': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 40, run: async (p) => {
     // the headline post plays on its own, then step through the speaker, badges and pattern templates
     const t0 = Date.now(), tpl = (n) => domClick(p, '#tpl button:nth-child(' + n + ')');
