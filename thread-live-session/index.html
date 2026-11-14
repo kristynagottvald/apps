@@ -171,7 +171,7 @@ const S = {
   q2: 'Should SMS replace email in our welcome flow, or just sit on top of it?', qn2: 'Marcus Lee',
   q3: 'What is a realistic opt-in rate from a popup, and how do we keep it compliant?', qn3: 'Tomás Rivera',
   n1: 'Maya Chen', n2: 'Jordan Ellis', n3: 'Priya Raman',
-  sKick: 'Breakout session', sTitle: 'Supercharge\nyour list\ngrowth', sSpeaker: 'Maya Chen', sRole: 'VP of Growth, Northwind',
+  sKick: 'Breakout session', sTitle: 'Supercharge your\nlist growth', sSpeaker: 'Maya Chen', sRole: 'VP of Growth, Northwind',
   stKick: 'Why is list growth important?', stText: 'You can’t text\nanyone if you\ndon’t have\nsubscribers',
   date: 'May 12–14 · New York',
 };
@@ -409,31 +409,37 @@ function sLive(ctx, c) {
 }
 
 /* ===== 4. session title card: the brand guidelines grid ===== */
-/* a 6 x 5 grid of hairline cells; the speaker block and a hard-shadow yellow card holding the title sit over it, and the free cells light up one after another */
+const HOVER_VIS = [[0, 0], [1, 0], [2, 0], [3, 4], [4, 4], [3, 5], [4, 5]];   // the cells the cursor visits: the ones nothing covers
+const HOVER_SEQ = (() => { const o = []; let seed = 7, prev = -1; for (let k = 0; k < 20; k++) { seed = (seed * 1103515245 + 12345) & 0x7fffffff; let i = (seed >> 8) % HOVER_VIS.length; if (i === prev) i = (i + 1) % HOVER_VIS.length; o.push(i); prev = i; } return o; })();
+let HOVERS = [];
+/* a 6 x 5 grid of hairline cells; the hard-shadow yellow card holding the title sits at the top, the speaker block below it, and cells light up as a cursor passes over them */
 function sSession(ctx, c) {
   const { th, t, still } = c, x0 = GX, cw = (W - 2 * GX) / 6, y0 = GY0, rh = (GY1 - GY0) / 5, X = (i) => x0 + i * cw, Y = (j) => y0 + j * rh;
   const hi = th.bg === YEL ? th.paper : YEL, line = (x1, y1, x2, y2) => { ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); };
-  const free = [[1, 5], [2, 0], [3, 0], [4, 0]];   // cells not covered by the speaker block or the card
-  free.forEach(([r, col], k) => { const u = ((((t - 3 * k) % PERIOD) + PERIOD) % PERIOD) / 2; if (u < 1) { ctx.save(); ctx.globalAlpha = Math.sin(Math.PI * u); ctx.fillStyle = hi; ctx.fillRect(X(col), Y(r), cw, rh); ctx.restore(); } });
+  // the brand guidelines hover: a cell lights up at once and fades out over 0.9 s. A cursor wanders over the visible cells on a loop, and the mouse does the same.
+  const lit = new Map(), fade = (dt) => (dt >= 0 && dt < 0.9 ? 1 - ease(dt / 0.9) : 0), mark = (key, a) => { if (a > (lit.get(key) || 0)) lit.set(key, a); };
+  HOVER_SEQ.forEach((vi, k) => { const [r, col] = HOVER_VIS[vi]; mark(r * 6 + col, fade((((t - 0.6 * k) % PERIOD) + PERIOD) % PERIOD)); });
+  const now = performance.now(); HOVERS = HOVERS.filter((h) => now - h.at < 900); HOVERS.forEach((h) => mark(h.key, fade((now - h.at) / 1000))); if (HOVERS.length) dirty = true;
+  lit.forEach((a, key) => { if (a <= 0) return; ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = hi; ctx.fillRect(X(key % 6), Y(Math.floor(key / 6)), cw, rh); ctx.restore(); });
   ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath();
   for (let i = 0; i <= 6; i++) { const edge = i === 0 || i === 6; line(X(i), edge ? 0 : y0, X(i), edge ? H : GY1); }
   for (let j = 0; j <= 5; j++) { const edge = j === 0 || j === 5; line(edge ? 0 : x0, Y(j), edge ? W : W - GX, Y(j)); }
   ctx.stroke(); ctx.restore();
-  // the speaker block hides the cells under it and keeps its right and bottom edge
-  ctx.save(); ctx.fillStyle = th.bg; ctx.fillRect(X(0) + 1, Y(0) + 1, 5 * cw - 1, 2 * rh - 1); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath(); line(X(5), Y(0), X(5), Y(2)); line(X(0), Y(2), X(5), Y(2)); ctx.stroke(); ctx.restore();
-  tag(ctx, (S.sKick || '').toUpperCase(), X(0) + 46, Y(0) + 44, 60, 22, th.fg, { pad: 28, ls: 4.5 });
-  const nl = [{ s: S.sSpeaker || ' ', it: false }], nf = fitLines(ctx, nl, 5 * cw - 100, 150, 150, 1), nb = Y(0) + 44 + 60 + 34 + nf * 0.78 + (still ? 0 : 2 * sway(t, 0.4));
+  // the speaker block (bottom left) hides the cells under it and keeps its right and top edge
+  const by = Y(3);
+  ctx.save(); ctx.fillStyle = th.bg; ctx.fillRect(X(0) + 1, by + 1, 4 * cw - 1, 2 * rh - 2); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath(); line(X(4), by, X(4), Y(5)); line(X(0), by, X(4), by); ctx.stroke(); ctx.restore();
+  const nl = [{ s: S.sSpeaker || ' ', it: false }], nf = fitLines(ctx, nl, 4 * cw - 100, 140, 140, 1), nb = by + rh - nf * 0.2 + (still ? 0 : 2 * sway(t, 0.4));
   slide(ctx, nl[0].s, X(0) + 46, nb, nf, false, th.fg);
-  sansText(ctx, (S.sRole || '').toUpperCase(), X(0) + 50, nb + 52, 22, th.fg, { wt: 600, ls: 4.5 });
-  // logo in the top right cell, Attentive in the bottom left cell
-  const lk = 190 / 2485; drawLogo(ctx, X(5) + (cw - 190) / 2, Y(0) + rh / 2 - 918 * lk / 2, lk, th.fg, still ? 0 : 0.012 * sway(t, 0));
-  drawAttentive(ctx, X(0) + 54, GY1 - 76, 170, th.fg);
-  // the card: yellow, hard black shadow, the title in the serif, swash T bottom left
-  const kx = X(1), ky = Y(2), kw = 5 * cw, kh = 3 * rh, sx = 10;
+  sansText(ctx, (S.sRole || '').toUpperCase(), X(0) + 50, nb + 54, 22, th.fg, { wt: 600, ls: 4.5 });
+  // logo and Attentive in the two bottom right cells
+  const lk = 190 / 2485; drawLogo(ctx, X(5) + (cw - 190) / 2, Y(3) + rh / 2 - 918 * lk / 2, lk, th.fg, still ? 0 : 0.012 * sway(t, 0));
+  drawAttentive(ctx, X(5) + (cw - 170) / 2, Y(4) + rh / 2 - 14, 170, th.fg);
+  // the card: yellow, hard black shadow, the title on two lines in the serif, the session label bottom left
+  const kx = X(1), ky = Y(0), kw = 5 * cw, kh = 3 * rh, sx = 10;
   ctx.save(); ctx.fillStyle = DARK; ctx.fillRect(kx + sx, ky + sx, kw, kh); ctx.fillStyle = hi; ctx.fillRect(kx, ky, kw, kh); ctx.strokeStyle = DARK; ctx.lineWidth = 2; ctx.strokeRect(kx + 1, ky + 1, kw - 2, kh - 2); ctx.restore();
-  const lines = parseLines(S.sTitle, 4), fs = fitLines(ctx, lines, kw - 100, kh - 205, 170, 0.9);
-  lines.forEach((l, i) => slide(ctx, l.s, kx + 48, ky + 34 + fs * 0.8 + i * fs * 0.9 + (still ? 0 : 2 * sway(t, i * 0.8)), fs, l.it, DARK));
-  const sk = 0.075; ctx.save(); ctx.translate(kx + 50 - 673 * sk, ky + kh - 44 - 918 * sk - 5 * sk); ctx.scale(sk, sk); fillStroke(ctx, pSwash, DARK, 10.5); ctx.restore();
+  const lines = parseLines(S.sTitle, 3), fs = fitLines(ctx, lines, kw - 100, kh - 190, 240, 0.9);
+  lines.forEach((l, i) => slide(ctx, l.s, kx + 48, ky + 40 + fs * 0.8 + i * fs * 0.9 + (still ? 0 : 2 * sway(t, i * 0.8)), fs, l.it, DARK));
+  tag(ctx, (S.sKick || '').toUpperCase(), kx + 48, ky + kh - 48 - 60, 60, 22, DARK, { pad: 28, ls: 4.5 });
 }
 
 /* ===== 5. statement card ===== */
@@ -488,6 +494,13 @@ $('#theme').addEventListener('click', (e) => { const b = e.target.closest('[data
 TEXTS.forEach((k) => $('#' + k).addEventListener('input', (e) => { S[k] = e.target.value; dirty = true; }));
 CHECKS.forEach((k) => $('#' + k).addEventListener('change', (e) => { S[k] = e.target.checked; if (k !== 'lines') t0 = performance.now(); dirty = true; }));
 RANGES.forEach((k) => $('#' + k).addEventListener('input', (e) => { S[k] = +e.target.value; $('#' + k + 'O').textContent = S[k]; dirty = true; }));
+cv.addEventListener('pointermove', (e) => {
+  if (S.layout !== 'session') return;
+  const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * W, y = (e.clientY - r.top) / r.height * H, cw = (W - 2 * GX) / 6, rh = (GY1 - GY0) / 5;
+  if (x < GX || x >= W - GX || y < GY0 || y >= GY1) return;
+  const key = Math.floor((y - GY0) / rh) * 6 + Math.floor((x - GX) / cw), last = HOVERS[HOVERS.length - 1];
+  if (!last || last.key !== key) { HOVERS.push({ key, at: performance.now() }); dirty = true; }
+});
 $('#restart').addEventListener('click', () => { t0 = performance.now(); dirty = true; });
 
 /* export */
