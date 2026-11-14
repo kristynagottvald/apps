@@ -28,22 +28,22 @@ const APPS = {
   // the finished scene in the monochrome look, then step through the other looks and scenes with the pickers, and back to the first
   'variant-tryon-engine': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1200, run: async (p) => {
     const t0 = Date.now(), look = (n) => domClick(p, '#looks button:nth-child(' + n + ')'), sc = (n) => domClick(p, '#scenes button:nth-child(' + n + ')');
-    await at(t0, 900, () => look(2));
-    await at(t0, 1800, () => look(3));
-    await at(t0, 2700, () => look(4));
-    await at(t0, 3600, () => sc(2));
-    await at(t0, 4500, () => sc(3));
-    await at(t0, 5300, () => look(1));
-    await at(t0, 5400, () => sc(1));
+    await at(t0, 1700, () => look(2));
+    await at(t0, 2500, () => look(3));
+    await at(t0, 3300, () => look(4));
+    await at(t0, 4100, () => sc(2));
+    await at(t0, 4800, () => sc(3));
+    await at(t0, 5500, () => look(1));
+    await at(t0, 5550, () => sc(1));
   } },
   // the first question, then answer the way a visitor would: scratching, pad looks fine, medium grit, clean surface, and the fix with its steps
   'sander-troubleshoot-flow': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1200, run: async (p) => {
     const t0 = Date.now(), opt = (n) => domClick(p, '.opt:nth-child(' + n + ')');
-    await at(t0, 900, () => opt(1));
-    await at(t0, 1900, () => opt(2));
-    await at(t0, 2900, () => opt(2));
-    await at(t0, 3900, () => opt(1));
-    await at(t0, 5000, () => domClick(p, '[data-act=yes]'));
+    await at(t0, 1700, () => opt(1));
+    await at(t0, 2600, () => opt(2));
+    await at(t0, 3500, () => opt(2));
+    await at(t0, 4400, () => opt(1));
+    await at(t0, 5300, () => domClick(p, '[data-act=yes]'));
   } },
   // the finished composition, then the whole 9 s cycle at 1.4x: the query is typed, matches appear, the query and context notes fly onto the graph, the result lands
   'search-robot': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#clip', ready: 900, run: async (p) => {
