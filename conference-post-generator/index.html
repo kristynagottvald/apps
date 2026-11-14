@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Conference Post Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Pinyon+Script&family=Playfair+Display:ital,wght@1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0e0e0e; --panel:#171717; --line:#2a2a2a; --text:#f3f2ea; --muted:#9a998d;
-  --yellow:#fff383; --gold:#f9d84a; --ink:#141414;
+  --yellow:#fff383; --ink:#141414;
   --font:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
   --serif:"Instrument Serif",Georgia,serif;
 }
@@ -95,7 +95,6 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
         <button class="chip" data-v="speaker">Speaker</button>
         <button class="chip" data-v="badges">Badges</button>
         <button class="chip" data-v="pattern">Pattern</button>
-        <button class="chip" data-v="grid">Loop grid</button>
       </div>
       <h2>Format</h2>
       <div class="row" id="fmt">
@@ -110,9 +109,11 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
 
     <section id="textsec">
       <h2>Text</h2>
-      <label class="f" data-for="headline grid"><span>Headline, one line per row (wrap a line in *stars* for italic)</span><textarea id="headline" rows="3"></textarea></label>
-      <label class="f" data-for="headline grid pattern badges"><span>Sub line</span><input type="text" id="sub"></label>
-      <label class="f" data-for="headline grid pattern badges speaker"><span>Date and place</span><input type="text" id="date"></label>
+      <label class="f" data-for="headline"><span>Headline, one line per row (wrap a line in *stars* for italic)</span><textarea id="headline" rows="3"></textarea></label>
+      <label class="f" data-for="badges"><span>Headline, one line per row</span><textarea id="bHeadline" rows="3"></textarea></label>
+      <label class="f" data-for="badges"><span>Sub line</span><input type="text" id="bSub"></label>
+      <label class="f" data-for="headline pattern"><span>Sub line</span><input type="text" id="sub"></label>
+      <label class="f" data-for="headline pattern badges speaker"><span>Date and place</span><input type="text" id="date"></label>
       <label class="f" data-for="speaker"><span>Tag</span><input type="text" id="chip"></label>
       <label class="f" data-for="speaker"><span>Speaker name</span><input type="text" id="speaker"></label>
       <label class="f" data-for="speaker"><span>Role</span><input type="text" id="role"></label>
@@ -129,30 +130,36 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
         <button class="chip" data-v="hexagon">Hexagon</button>
         <button class="chip" data-v="shield">Shield</button>
       </div>
-      <label class="f"><span>Badge label, two lines max</span><textarea id="badgeText" rows="2"></textarea></label>
-      <label class="chk" data-for="headline speaker grid"><input type="checkbox" id="showBadge"> Show the badge</label>
-      <label class="chk" data-for="badges"><input type="checkbox" id="badgeSet"> Show all five shapes</label>
+      <label class="f"><span>Badge name (one line, Title Case)</span><input type="text" id="badgeText"></label>
+      <label class="chk" data-for="speaker"><input type="checkbox" id="showBadge"> Show the badge</label>
+      <div class="rng" data-for="badges"><span>Badges shown</span><input type="range" id="badgeCount" min="3" max="5" step="1"><output id="badgeCountO"></output></div>
+    </section>
+
+    <section data-for="headline">
+      <h2>Bar shows</h2>
+      <div class="row" id="panelMode"><button class="chip" data-v="photos">Photos</button><button class="chip" data-v="badges">Badges</button></div>
+      <label class="chk"><input type="checkbox" id="barOn"> Yellow bar behind them</label>
+      <label class="chk"><input type="checkbox" id="callig"> Calligraphy in the bottom-right corner</label>
     </section>
 
     <section id="photosec">
       <h2>Photos</h2>
       <div class="photos" id="photos"></div>
-      <p class="hint">Click or drop an image on a slot. Photos get the outline and the cream mat.</p>
+      <p class="hint">Black and white portraits from Unsplash. Click or drop your own image on a slot to replace one.</p>
       <div class="row" id="pfilter">
-        <button class="chip" data-v="color">Colour</button>
-        <button class="chip" data-v="bw">Black and white</button>
+        <button class="chip" data-v="color">Original</button>
+        <button class="chip" data-v="bw">High-contrast B&amp;W</button>
         <button class="chip" data-v="duo">Yellow duotone</button>
       </div>
-      <div class="rng" data-for="headline grid"><span>Photos shown</span><input type="range" id="photoCount" min="0" max="3" step="1"><output id="photoCountO"></output></div>
+      <div class="rng" data-for="headline"><span>Photos shown</span><input type="range" id="photoCount" min="0" max="3" step="1"><output id="photoCountO"></output></div>
     </section>
 
     <section>
       <h2>Loops and motion</h2>
-      <div class="rng"><span>Strokes</span><input type="range" id="density" min="2" max="14" step="1"><output id="densityO"></output></div>
       <div class="rng"><span>Pen weight</span><input type="range" id="weight" min="1" max="10" step="1"><output id="weightO"></output></div>
-      <label class="chk" data-for="headline speaker"><input type="checkbox" id="lines"> Hairline frame</label>
+      <label class="chk" data-for="headline speaker badges pattern"><input type="checkbox" id="lines"> Hairline frame</label>
       <label class="chk"><input type="checkbox" id="anim"> Animate</label>
-      <div class="row"><button class="btn" id="shuffle">Shuffle loops</button></div>
+      <div class="row"><button class="btn" id="shuffle">Shuffle timing</button></div>
     </section>
 
     <section>
@@ -181,9 +188,8 @@ const ease = (u) => 0.5 - 0.5 * Math.cos(Math.PI * cl(u, 0, 1));
 const mulberry32 = (a) => () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 
 const THEMES = {
-  yellow: { name: 'Yellow', bg: '#fff383', fg: '#141414', accent: '#f9d84a', paper: '#faf4de' },
+  yellow: { name: 'Yellow', bg: '#fff383', fg: '#141414', accent: '#fff383', paper: '#faf4de' },
   ink:    { name: 'Ink',    bg: '#141414', fg: '#fff383', accent: '#fff383', paper: '#faf4de' },
-  gold:   { name: 'Gold',   bg: '#f9d84a', fg: '#141414', accent: '#fff383', paper: '#faf4de' },
   cream:  { name: 'Cream',  bg: '#faf4de', fg: '#141414', accent: '#fff383', paper: '#ffffff' },
 };
 const FMT = {
@@ -192,15 +198,17 @@ const FMT = {
   portrait:  [1600, 2000, '4:5 · 1600 × 2000'],
   story:     [1125, 2000, '9:16 · 1125 × 2000'],
 };
-const SHAPE_DEFAULTS = { arch: 'Early\nbird', circle: 'Speaker', scallop: 'Sold\nout', hexagon: 'Workshop', shield: 'VIP' };
+const SHAPE_DEFAULTS = { arch: 'Early Bird', circle: 'Speaker', scallop: 'Sold Out', hexagon: 'Workshop', shield: 'VIP' };
+/* badge names: always one line, Title Case (short all-caps words like VIP stay as typed) */
+const titleCase = (str) => String(str || '').replace(/\s+/g, ' ').trim().split(' ').map((w) => (w && w === w.toUpperCase() && w.length <= 4 ? w : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())).join(' ');
 const SHAPE_RATIO = { arch: 0.76, circle: 1, scallop: 1, hexagon: 1.1, shield: 0.84 };
 
 const S = {
   tpl: 'headline', fmt: 'landscape', theme: 'yellow', seed: 7,
-  headline: 'Thread 2026\nin under\n10 minutes', sub: 'The SMS marketing conference', date: 'May 12–14 · New York',
-  chip: 'Keynote', speaker: 'Jordan Lee', role: 'VP of Growth, Brand Co.', talk: 'What texting taught us about talking to customers',
-  swashT: true, badgeShape: 'arch', badgeText: SHAPE_DEFAULTS.arch, showBadge: true, badgeSet: true,
-  photoFilter: 'color', photoCount: 2, density: 7, weight: 5, lines: true, anim: true,
+  headline: 'Thread 2026\nin under\n10 minutes', sub: 'The SMS marketing conference', bHeadline: 'Tickets\non sale\nnow', bSub: 'Pick your pass for Thread 2026', date: 'May 12–14 · New York',
+  chip: 'Keynote', speaker: 'Maya Chen', role: 'VP of Growth, Brand Co.', talk: 'What texting taught us about talking to customers',
+  swashT: true, badgeShape: 'arch', badgeText: SHAPE_DEFAULTS.arch, showBadge: true, badgeCount: 4,
+  panelMode: 'photos', barOn: true, callig: false, photoFilter: 'color', photoCount: 2, weight: 5, lines: true, anim: true,
 };
 
 /* ===== logo paths ===== */
@@ -261,50 +269,77 @@ function wrapText(ctx, str, maxW) {
   if (cur) out.push(cur); return out;
 }
 
-/* ===== calligraphy loops =====
-   Each stroke is a trochoid: a point travelling along a gentle S-curve while orbiting, so it throws loops.
-   The "pen" is a broad nib held at a fixed angle, so strokes swell and thin as they turn, like the reference flourishes.
-   Orbit phases advance once per PERIOD, so a clip loops seamlessly. */
-function loops(ctx, x, y, w, h, o) {
-  const S0 = Math.max(w, h), nibA = -0.8, nx = Math.cos(nibA), ny = Math.sin(nibA);
-  const ph0 = TAU * (o.t || 0) / PERIOD;
-  ctx.save(); ctx.fillStyle = o.color; ctx.strokeStyle = o.color; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  const passes = o.mirror ? 2 : 1, N = 150;
-  for (let pass = 0; pass < passes; pass++) {
-    ctx.save();
-    if (pass) { ctx.translate(x + w / 2, 0); ctx.scale(-1, 1); ctx.translate(-(x + w / 2), 0); }
-    const rnd = mulberry32(o.seed * 7919 + 101);
-    for (let i = 0; i < o.n; i++) {
-      const a = (i % 2 ? 1 : -1) * (0.22 + rnd() * 0.5), dx = Math.sin(a), dy = Math.cos(a), px = -dy, py = dx;
-      const L = S0 * (1.05 + rnd() * 0.55), cx = x + w * (rnd() * 1.1 - 0.05), cy = y + h * (0.2 + rnd() * 0.6);
-      const m = 2 + Math.floor(rnd() * 4), rr = L / (TAU * m) * (1.35 + rnd() * 0.9);
-      const ph = rnd() * TAU, ph2 = rnd() * TAU, B = S0 * rnd() * 0.12, g = 0.5 + rnd() * 1.0, dir = rnd() > 0.5 ? 1 : -1;
-      const wmax = S0 * 0.0042 * (0.3 + o.wt * 1.2) * (0.6 + rnd() * 0.8), thin = rnd() < 0.4;
-      const pts = [];
-      for (let k = 0; k <= N; k++) {
-        const u = k / N, e = Math.pow(Math.sin(Math.PI * u), 0.6), al = dir * (TAU * m * u) + ph + dir * ph0;
-        const along = (u - 0.5) * L, perp = B * Math.sin(TAU * g * u + ph2 + ph0 * (i % 2 ? 1 : -1));
-        pts.push(cx + dx * along + px * perp + rr * e * Math.cos(al), cy + dy * along + py * perp + rr * e * Math.sin(al));
+/* ===== calligraphy flourish =====
+   Hand-set control points, joined with a centripetal Catmull-Rom spline so the loops stay round, then drawn with a pen that
+   starts thick and thins out. Each stroke writes itself on, then un-writes from its tail. All timing repeats every PERIOD,
+   so an exported clip loops seamlessly. A left set and a mirrored right set are drawn, stacked when the area is tall. */
+const FDEFS = [
+  { w0: 15, w1: 3, taper: 0.45, pts: [[-20,200],[60,215],[200,238],[300,248],[370,270],[412,310],[405,350],[360,370],[320,350],[295,310]] },
+  { w0: 16, w1: 3, taper: 0.3, pts: [[-20,340],[100,360],[230,385],[380,415],[500,470],[570,540],[595,610],[570,670],[500,712],[430,700],[370,665],[310,600],[262,520],[228,420],[207,320],[203,230],[195,120],[165,55],[125,32],[92,60],[92,110],[130,150],[190,170],[260,172],[340,150],[405,117]] },
+  { w0: 13, w1: 3, taper: 0.3, pts: [[-20,432],[100,448],[200,468],[290,500],[360,550],[410,610],[425,665],[400,710],[340,745],[270,740],[245,712]] },
+  { w0: 14, w1: 3, taper: 0.45, pts: [[-20,535],[60,545],[140,568],[205,605],[238,660],[235,715],[195,745],[150,752],[115,730]] },
+  { w0: 3.5, w1: 3.5, taper: 1, pts: [[85,365],[100,450],[140,550],[215,680]] },
+  { w0: 3.5, w1: 3.5, taper: 1, pts: [[15,5],[32,50],[52,130],[68,230],[70,280]] },
+  { w0: 3, w1: 3, taper: 1, pts: [[-2,350],[8,430],[18,540]] },
+  { w0: 4, w1: 4, taper: 1, pts: [[5,650],[22,680],[20,715],[2,740]] },
+];
+const FN = 420, lerp = (a, b, t) => a + (b - a) * t;
+function buildStroke(def, fx, fy, fw) {
+  const p = def.pts, dense = [];
+  for (let i = 0; i < p.length - 1; i++) {
+    const P0 = p[Math.max(i - 1, 0)], P1 = p[i], P2 = p[i + 1], P3 = p[Math.min(i + 2, p.length - 1)];
+    const t0 = 0, t1 = t0 + Math.pow(Math.hypot(P1[0] - P0[0], P1[1] - P0[1]) || 1e-3, 0.5);
+    const t2 = t1 + Math.pow(Math.hypot(P2[0] - P1[0], P2[1] - P1[1]) || 1e-3, 0.5), t3 = t2 + Math.pow(Math.hypot(P3[0] - P2[0], P3[1] - P2[1]) || 1e-3, 0.5);
+    for (let k = 0; k < 24; k++) {
+      const t = lerp(t1, t2, k / 24), pt = [0, 0];
+      for (let d = 0; d < 2; d++) {
+        const A1 = ((t1 - t) * P0[d] + (t - t0) * P1[d]) / (t1 - t0), A2 = ((t2 - t) * P1[d] + (t - t1) * P2[d]) / (t2 - t1), A3 = ((t3 - t) * P2[d] + (t - t2) * P3[d]) / (t3 - t2);
+        const B1 = ((t2 - t) * A1 + (t - t0) * A2) / (t2 - t0), B2 = ((t3 - t) * A2 + (t - t1) * A3) / (t3 - t1);
+        pt[d] = ((t2 - t) * B1 + (t - t1) * B2) / (t2 - t1);
       }
-      if (thin) {
-        ctx.lineWidth = Math.max(1.2, S0 * 0.0014); ctx.beginPath(); ctx.moveTo(pts[0], pts[1]);
-        for (let k = 2; k < pts.length; k += 2) ctx.lineTo(pts[k], pts[k + 1]);
-        ctx.stroke();
-      } else {
-        const hw = wmax / 2, ox = nx * hw, oy = ny * hw;
-        ctx.beginPath();
-        for (let k = 0; k < pts.length - 2; k += 2) {
-          const x0 = pts[k], y0 = pts[k + 1], x1 = pts[k + 2], y1 = pts[k + 3];
-          const cr = (x1 - x0) * ny - (y1 - y0) * nx;  // keep every quad the same winding so crossings never cut holes
-          if (cr >= 0) { ctx.moveTo(x0 + ox, y0 + oy); ctx.lineTo(x1 + ox, y1 + oy); ctx.lineTo(x1 - ox, y1 - oy); ctx.lineTo(x0 - ox, y0 - oy); }
-          else { ctx.moveTo(x0 + ox, y0 + oy); ctx.lineTo(x0 - ox, y0 - oy); ctx.lineTo(x1 - ox, y1 - oy); ctx.lineTo(x1 + ox, y1 + oy); }
-          ctx.closePath();
-        }
-        ctx.fill();
-      }
+      dense.push(pt);
     }
-    ctx.restore();
   }
+  dense.push(p[p.length - 1]);
+  const cum = [0];
+  for (let i = 1; i < dense.length; i++) cum.push(cum[i - 1] + Math.hypot(dense[i][0] - dense[i - 1][0], dense[i][1] - dense[i - 1][1]));
+  const total = cum[cum.length - 1], out = []; let j = 0;
+  for (let i = 0; i < FN; i++) {
+    const sd = (i / (FN - 1)) * total; while (j < cum.length - 2 && cum[j + 1] < sd) j++;
+    const u = (sd - cum[j]) / (cum[j + 1] - cum[j] || 1), t = i / (FN - 1), sm = cl(t / def.taper, 0, 1), k = sm * sm * (3 - 2 * sm);
+    out.push({ x: fx(lerp(dense[j][0], dense[j + 1][0], u)), y: fy(lerp(dense[j][1], dense[j + 1][1], u)), w: lerp(def.w0, def.w1, k) * fw });
+  }
+  return out;
+}
+function strokeSpan(i, t) { const u = ((((t + i * 0.55) % PERIOD) + PERIOD) % PERIOD) / PERIOD; return [ease((u - 0.72) / 0.26), ease(u / 0.4)]; }
+function drawStroke(ctx, pts, a, b, t) {
+  const i0 = Math.floor(a * (FN - 1)), i1 = Math.ceil(b * (FN - 1)); if (i1 - i0 < 1) return;
+  const Lp = [], Rp = [];
+  for (let i = i0; i <= i1; i++) {
+    const p = pts[i], q = pts[Math.min(i + 1, FN - 1)], o = pts[Math.max(i - 1, 0)];
+    let dx = q.x - o.x, dy = q.y - o.y; const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m;
+    const h = p.w * (1 + 0.06 * Math.sin(2 * TAU * t / PERIOD + i * 0.12)) / 2;
+    Lp.push(p.x - dy * h, p.y + dx * h); Rp.push(p.x + dy * h, p.y - dx * h);
+  }
+  ctx.beginPath(); ctx.moveTo(Lp[0], Lp[1]);
+  for (let k = 2; k < Lp.length; k += 2) ctx.lineTo(Lp[k], Lp[k + 1]);
+  for (let k = Rp.length - 2; k >= 0; k -= 2) ctx.lineTo(Rp[k], Rp[k + 1]);
+  ctx.closePath(); ctx.fill();
+  const e = pts[i1], st = pts[i0];
+  ctx.beginPath(); ctx.arc(e.x, e.y, e.w / 2, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(st.x, st.y, st.w / 2, 0, TAU); ctx.fill();
+}
+const flourCache = new Map();
+/* left set anchored to the left edge of the rect, mirrored set on the right; o: color, t, still, fw (pen scale), off (timing shift) */
+function flourish(ctx, x, y, w, h, o) {
+  const s = Math.min(h / 800, w * 0.55 / 600), copies = Math.max(1, Math.round(h / (800 * s))), space = h - 770 * s, step = copies > 1 ? space / (copies - 1) : space / 2;
+  const key = [x, y, w, h, o.fw].map((v) => Math.round(v * 100)).join('|'); let sets = flourCache.get(key);
+  if (!sets) {
+    if (flourCache.size > 10) flourCache.clear(); sets = [];
+    for (let c = 0; c < copies; c++) { const y0 = y + (copies > 1 ? c * step : step); sets.push([FDEFS.map((d) => buildStroke(d, (px) => x + px * s, (py) => y0 + py * s, o.fw)), FDEFS.map((d) => buildStroke(d, (px) => x + w - px * s, (py) => y0 + py * s, o.fw))]); }
+    flourCache.set(key, sets);
+  }
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.fillStyle = o.color;
+  sets.forEach((pair, c) => pair.forEach((set, side) => (o.side === 'R' && !side) ? 0 : set.forEach((pts, i) => { const [a, b] = o.still ? [0, 1] : strokeSpan(i, o.t + (o.off || 0) + c * 2.7); drawStroke(ctx, pts, a, b, o.t); })));
   ctx.restore();
 }
 
@@ -314,7 +349,7 @@ const photoVer = [0, 0, 0];
 const photoCache = {};                           // processed canvases
 function placeholder(i) {
   const c = document.createElement('canvas'); c.width = 600; c.height = 750; const x = c.getContext('2d');
-  const bgs = ['#f9d84a', '#e7dfc4', '#fff383'], skins = ['#c98e6a', '#8a5a3c', '#e8b996'], hairs = ['#2a1a12', '#141414', '#7b4a2a'], shirts = ['#141414', '#faf4de', '#141414'];
+  const bgs = ['#fff383', '#e7dfc4', '#fff383'], skins = ['#c98e6a', '#8a5a3c', '#e8b996'], hairs = ['#2a1a12', '#141414', '#7b4a2a'], shirts = ['#141414', '#faf4de', '#141414'];
   x.fillStyle = bgs[i]; x.fillRect(0, 0, 600, 750);
   x.fillStyle = shirts[i]; x.beginPath(); x.ellipse(300, 790, 270, 250, 0, Math.PI, TAU); x.fill();
   x.fillStyle = skins[i]; x.fillRect(262, 470, 76, 110);
@@ -336,17 +371,17 @@ function getPhoto(i) {
   const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height, k = Math.min(1, 900 / Math.max(sw, sh));
   const c = document.createElement('canvas'); c.width = Math.round(sw * k); c.height = Math.round(sh * k);
   const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(src, 0, 0, c.width, c.height);
-  if (S.photoFilter !== 'color') {
+  if (S.photoFilter !== 'color') try {
     const d = x.getImageData(0, 0, c.width, c.height), px = d.data;
     const lo = [20, 20, 20], hi = [255, 243, 131];
     for (let p = 0; p < px.length; p += 4) {
       let l = (0.299 * px[p] + 0.587 * px[p + 1] + 0.114 * px[p + 2]) / 255;
-      l = cl((l - 0.5) * 1.15 + 0.52, 0, 1);
+      l = cl((l - 0.5) * 1.5 + 0.5, 0, 1);
       if (S.photoFilter === 'bw') { px[p] = px[p + 1] = px[p + 2] = l * 255; }
       else { px[p] = lo[0] + (hi[0] - lo[0]) * l; px[p + 1] = lo[1] + (hi[1] - lo[1]) * l; px[p + 2] = lo[2] + (hi[2] - lo[2]) * l; }
     }
     x.putImageData(d, 0, 0);
-  }
+  } catch (e) { /* tainted canvas on file://: show the photo as is */ }
   return (photoCache[key] = c);
 }
 /* an outlined print: cream mat, dark outline, optional hard shadow */
@@ -362,8 +397,27 @@ function photoFrame(ctx, i, cx, cy, w, h, rot, th, shadow) {
   ctx.restore();
 }
 /* n prints tilted around a centre, like the podcast cover reference */
-function photoCluster(ctx, c, r, n, t) {
-  const sw = (k) => 0.012 * Math.sin(TAU * t / PERIOD + k * 1.7), base = Math.min(r.w * 0.62, r.h * 0.62);
+/* the bar's other option: three badges in the same spots, the lead badge bleeding off the top and right edges */
+function barBadges(ctx, c, pr, t) {
+  const { land, fu, th } = c, order = ['arch', 'circle', 'scallop', 'hexagon', 'shield'].filter((x) => x !== S.badgeShape);
+  if (land) {
+    const L = [[0.55, 0.34, 0.6, 0.02], [0.26, 0.78, 0.36, -0.1], [0.9, 0.72, 0.4, 0.09]];
+    for (let i = L.length - 1; i >= 0; i--) { const q = L[i], shape = i ? order[i - 1] : S.badgeShape; drawBadge(ctx, th, shape, pr.x + pr.w * q[0], pr.y + pr.h * q[1] + 5 * fu * sway(t, i * 1.3), pr.h * q[2], q[3] + 0.015 * sway(t, i), i ? SHAPE_DEFAULTS[shape] : S.badgeText, 10 * fu); }
+    return;
+  }
+  const spec = [[0.95, 0.4, 0.07], [0.66, 0.5, -0.05], [0.54, 0.62, 0.04]], items = []; let left = 0;  // lead badge bleeds a sliver off the top and right, the rest step back left
+  for (let k = 0; k < 3; k++) { const shape = k ? order[k - 1] : S.badgeShape, bh = pr.h * spec[k][0], bw = bh * SHAPE_RATIO[shape], cx = k ? left - bw / 2 + bw * 0.22 : pr.x + pr.w - bw / 2 + bw * 0.08; left = cx - bw / 2; items.push([shape, cx, pr.y + pr.h * spec[k][1], bh, spec[k][2], k ? SHAPE_DEFAULTS[shape] : S.badgeText]); }
+  items.reverse().forEach((q, i) => drawBadge(ctx, th, q[0], q[1], q[2] + 5 * fu * sway(t, i * 1.3), q[3], q[4] + 0.015 * sway(t, i), q[5], 10 * fu));
+}
+function photoCluster(ctx, c, r, n, t, stack) {
+  if (stack) {  // wide, short bar: prints stand taller than the bar and poke out over its top edge
+    const sw2 = (k) => 0.012 * Math.sin(TAU * t / PERIOD + k * 1.7);
+    const spec = [[0.95, 0.38, 0.07], [0.68, 0.52, -0.05], [0.6, 0.62, 0.04]], items = []; let left = 0;  // lead print bleeds a sliver off the top and right, the rest step back left and overlap
+    for (let k = 0; k < n; k++) { const ph = r.h * spec[k][0], pw = ph * 0.8, cx = k ? left - pw / 2 + pw * 0.28 : r.x + r.w - pw / 2 + pw * 0.07; left = cx - pw / 2; items.push([n - 1 - k, cx, r.y + r.h * spec[k][1], pw, ph, spec[k][2]]); }
+    items.reverse().forEach((q, i) => photoFrame(ctx, q[0], q[1], q[2], q[3], q[4], q[5] + sw2(i), c.th, c.fu * 10));
+    return;
+  }
+  const sw = (k) => 0.012 * Math.sin(TAU * t / PERIOD + k * 1.7), base = Math.min(r.w * 0.8, r.h * 0.78);
   const L = { 1: [[0.5, 0.5, 1.0, -0.06]], 2: [[0.34, 0.4, 0.82, -0.1], [0.68, 0.62, 0.74, 0.08]], 3: [[0.3, 0.34, 0.74, -0.09], [0.7, 0.4, 0.7, 0.07], [0.46, 0.76, 0.66, -0.03]] }[n];
   if (!L) return;
   L.forEach((p, k) => { const pw = base * p[2] * 0.72, ph = pw * 1.25; photoFrame(ctx, k, r.x + r.w * p[0], r.y + r.h * p[1], pw, ph, p[3] + sw(k), c.th, c.fu * 10); });
@@ -379,18 +433,17 @@ function roundedPoly(p, pts, r) {
 function badgePath(shape, x, y, w, h) {
   const p = new Path2D(), cx = x + w / 2, cy = y + h / 2;
   if (shape === 'arch') {
-    const r = w / 2, rb = w * 0.16; p.moveTo(x, y + r); p.arc(cx, y + r, r, Math.PI, 0); p.lineTo(x + w, y + h - rb); p.arcTo(x + w, y + h, x + w - rb, y + h, rb);
-    p.lineTo(x + rb, y + h); p.arcTo(x, y + h, x, y + h - rb, rb); p.closePath();
+    const r = w / 2; p.moveTo(x, y + r); p.arc(cx, y + r, r, Math.PI, 0); p.lineTo(x + w, y + h); p.lineTo(x, y + h); p.closePath();
   } else if (shape === 'circle') p.ellipse(cx, cy, w / 2, h / 2, 0, 0, TAU);
   else if (shape === 'scallop') {
     const R = Math.min(w, h) / 2, n = 16;
     for (let k = 0; k <= 360; k++) { const a = k / 360 * TAU, r = R * (0.925 + 0.075 * Math.abs(Math.cos(n * a / 2))); const X = cx + r * Math.cos(a), Y = cy + r * Math.sin(a); k ? p.lineTo(X, Y) : p.moveTo(X, Y); }
     p.closePath();
-  } else if (shape === 'hexagon') roundedPoly(p, [[x + w * 0.25, y], [x + w * 0.75, y], [x + w, cy], [x + w * 0.75, y + h], [x + w * 0.25, y + h], [x, cy]], w * 0.06);
+  } else if (shape === 'hexagon') { [[x + w * 0.25, y], [x + w * 0.75, y], [x + w, cy], [x + w * 0.75, y + h], [x + w * 0.25, y + h], [x, cy]].forEach((v, i) => (i ? p.lineTo(v[0], v[1]) : p.moveTo(v[0], v[1]))); p.closePath(); }
   else { // shield
-    const rt = w * 0.1; p.moveTo(x + rt, y); p.lineTo(x + w - rt, y); p.arcTo(x + w, y, x + w, y + rt, rt); p.lineTo(x + w, y + h * 0.58);
+    p.moveTo(x, y); p.lineTo(x + w, y); p.lineTo(x + w, y + h * 0.58);
     p.bezierCurveTo(x + w, y + h * 0.84, cx + w * 0.2, y + h * 0.93, cx, y + h); p.bezierCurveTo(cx - w * 0.2, y + h * 0.93, x, y + h * 0.84, x, y + h * 0.58);
-    p.lineTo(x, y + rt); p.arcTo(x, y, x + rt, y, rt); p.closePath();
+    p.closePath();
   }
   return p;
 }
@@ -398,21 +451,31 @@ function star(ctx, cx, cy, r) {
   ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.42 : r; i ? ctx.lineTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)) : ctx.moveTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)); }
   ctx.closePath(); ctx.fill();
 }
+/* a 3D calligraphic capital: yellow extrusion with hairline contours behind, the letter itself in heavy black on the front */
+let LETTER_FONT = "'Pinyon Script', 'Instrument Serif', serif";
+function drawLetter3D(ctx, ch, cx, cy, size, ink, side) {
+  ctx.save(); ctx.font = size + 'px ' + LETTER_FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; setLS(ctx, 0);
+  const m = ctx.measureText(ch), depth = size * 0.15, steps = Math.max(4, Math.round(depth / 6)), hair = Math.max(1, size * 0.004);
+  const x0 = cx - (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2 - depth * 0.35, y0 = cy + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2 - depth * 0.35;
+  ctx.lineJoin = 'round'; ctx.strokeStyle = ink; ctx.fillStyle = side;
+  for (let k = steps; k >= 1; k--) { const o = depth * k / steps; ctx.lineWidth = hair; ctx.fillText(ch, x0 + o, y0 + o); ctx.strokeText(ch, x0 + o, y0 + o); }
+  ctx.fillStyle = ink; ctx.lineWidth = size * 0.034; ctx.fillText(ch, x0, y0); ctx.strokeText(ch, x0, y0);
+  ctx.restore();
+}
 /* h = badge height, centred on cx,cy. Emblem circle sits on the divider like the Commerce Council reference */
 function drawBadge(ctx, th, shape, cx, cy, h, rot, label, shadow) {
   const w = h * SHAPE_RATIO[shape], x = -w / 2, y = -h / 2, ink = DARK, lw = h * 0.014;
   ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
   if (shadow) { ctx.save(); ctx.translate(shadow, shadow); ctx.fillStyle = ink; ctx.fill(badgePath(shape, x, y, w, h)); ctx.restore(); }
-  ctx.fillStyle = th.accent; ctx.strokeStyle = ink; ctx.lineJoin = 'round';
+  ctx.fillStyle = th.accent; ctx.strokeStyle = ink; ctx.lineJoin = 'miter'; ctx.miterLimit = 10;
   const outer = badgePath(shape, x, y, w, h); ctx.fill(outer); ctx.lineWidth = lw * 1.5; ctx.stroke(outer);
   const d = h * 0.04; ctx.lineWidth = lw; ctx.stroke(badgePath(shape, x + d, y + d, w - 2 * d, h - 2 * d));
   const ecy = y + h * 0.36, er = Math.min(h * 0.29, w * 0.4), dv = y + h * 0.665;
-  ctx.beginPath(); ctx.arc(0, ecy, er, 0, TAU); ctx.stroke();
-  ctx.save(); ctx.beginPath(); ctx.arc(0, ecy, er - lw, 0, TAU); ctx.clip();
-  const k = (er * 1.75) / 1587; drawSwash(ctx, -er * 0.875, ecy - 918 * k / 2, k, ink, 0); ctx.restore();
+  const first = (titleCase(label).match(/[A-Za-z0-9]/) || ['T'])[0].toUpperCase();
+  drawLetter3D(ctx, first, 0, ecy + h * 0.01, h * 0.54, ink, th.accent);
   ctx.save(); ctx.clip(badgePath(shape, x + d, y + d, w - 2 * d, h - 2 * d)); ctx.beginPath(); ctx.moveTo(x, dv); ctx.lineTo(x + w, dv); ctx.lineWidth = lw; ctx.stroke(); ctx.restore();
   ctx.fillStyle = ink; star(ctx, -w * 0.36, dv - h * 0.06, h * 0.032); star(ctx, w * 0.36, dv - h * 0.06, h * 0.032);
-  const lines = String(label || '').split('\n').filter(Boolean).slice(0, 2), fs0 = h * (lines.length > 1 ? 0.105 : 0.125);
+  const lines = [titleCase(label)].filter(Boolean), fs0 = h * 0.12;
   let fs = fs0; ctx.font = serifFont(fs, false); setLS(ctx, 0);
   const maxW = w * (shape === 'shield' ? 0.58 : shape === 'circle' || shape === 'scallop' ? 0.66 : 0.78);
   lines.forEach((l) => { const mw = ctx.measureText(l).width; if (mw > maxW) fs = Math.min(fs, fs0 * maxW / mw); });
@@ -449,160 +512,142 @@ function panelRect(c, pos) {
   if (c.land) return { x: W * 0.604, y: 45 * fu, w: W - W * 0.604, h: H - 92 * fu };
   return pos === 'top' ? { x: 0, y: 45 * fu, w: W, h: H * 0.46 } : { x: 0, y: H * 0.6, w: W, h: H - 215 * fu - H * 0.6 };
 }
-function drawPanel(ctx, c, r, seed, density) {
+function drawPanel(ctx, c, r, seed, plain) {
   ctx.save(); ctx.fillStyle = c.th.accent; ctx.fillRect(r.x, r.y, r.w, r.h);
   ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip();
-  loops(ctx, r.x, r.y, r.w, r.h, { seed, n: density, color: DARK, t: c.t, mirror: true, wt: S.weight / 5 });
+  if (!plain) flourish(ctx, r.x, r.y, r.w, r.h, { color: DARK, t: c.t, still: c.still, fw: 1.2 * S.weight / 5 * c.fu, off: seed * 0.9 });
   ctx.restore();
 }
-function subLines(ctx, c, x, y) {
-  const { fu, th } = c; let yy = y;
-  if (S.sub) { sansText(ctx, S.sub, x, yy, 46 * fu, th.fg, { wt: 500 }); yy += 64 * fu; }
-  if (S.date) { sansText(ctx, S.date, x, yy, 46 * fu, th.fg, { wt: 700 }); yy += 64 * fu; }
+function subLines(ctx, c, x, y, text) {
+  const { fu, th } = c; let yy = y; if (text == null) text = S.sub;
+  if (text) { sansText(ctx, text, x, yy, 46 * fu, th.fg, { wt: 500 }); yy += 64 * fu; }
   return yy;
 }
+function footerDate(ctx, c, rightX) {
+  // 16:9: the footer row is cramped beside the logos, so the date goes at the top of the text column; stacked formats keep it bottom right
+  if (S.date) sansText(ctx, dateTxt(), c.land ? rightX + 20 * c.fu : rightX, c.land ? 45 * c.fu + 58 * c.fu : c.H - 142 * c.fu + 9 * c.fu, 24 * c.fu, c.th.fg, { wt: 700, ls: 4 * c.fu, align: 'right' });
+}
+const dateTxt = () => (S.date || '').toUpperCase();
 const sway = (t, ph) => Math.sin(TAU * t / PERIOD + ph);
 
 /* ===== templates ===== */
 /* autofit the original lock-up (swash T + stretched serif lines) into box; returns where the sub lines start */
 function headlineBlock(ctx, c, box, o) {
-  const { fu, th, t, W } = c, lines = parseLines(S.headline), sw = S.swashT && /^T/i.test(lines[0].s);
+  const { fu, th, t, W } = c, lines = parseLines(o.text != null ? o.text : S.headline), sw = S.swashT && /^T/i.test(lines[0].s);
   const w100 = lines.map((l, i) => measureSlide(ctx, (i === 0 && sw) ? l.s.slice(1) : l.s, 100, l.it) / 100);
-  const subH = (S.sub ? 64 * fu : 0) + (S.date ? 64 * fu : 0);
-  const mxMin = o.mx != null ? o.mx : 0.0985 * W, extra = sw ? 0.99 : 0, stackAt = (fs) => (lines.length - 1) * fs + 0.7 * fs + (sw ? 0.54 * fs : 0) + 76 * fu + subH;
+  const subH = (o.sub != null ? o.sub : S.sub) ? 64 * fu : 0;
+  const mxMin = o.mx != null ? o.mx : 0.0985 * W, extra = sw ? 0.99 : 0, stackAt = (fs) => (lines.length - 1) * fs * 0.88 + 0.7 * fs + (sw ? 0.54 * fs : 0) + 124 * fu + subH;
   let fs = o.maxFs;
   for (; fs > 24; fs *= 0.97) {
     const mx = Math.max(mxMin, extra * fs + 0.015 * W), right = Math.max(...w100.map((w, i) => (i === 0 && sw ? 0.53 : 0) + w)) * fs + mx;
     if (right <= box.x + box.w && stackAt(fs) <= box.h) break;
   }
-  const mx = Math.max(mxMin, extra * fs + 0.015 * W), top = box.y + (box.h - stackAt(fs)) / 2 + (sw ? 0.54 * fs : 0), b1 = top + 0.7 * fs, fl = (i) => 2 * fu * sway(t, i * 0.8 + 0);
+  const LH = 0.88, mx = Math.max(mxMin, extra * fs + 0.015 * W), top = box.y + (box.h - stackAt(fs)) / 2 + (sw ? 0.54 * fs : 0), b1 = top + 0.7 * fs, fl = (i) => 2 * fu * sway(t, i * 0.8 + 0);
   if (sw) drawSwash(ctx, mx + 0.53 * fs - 1.52 * fs, b1 - 1.24 * fs + fl(0), fs * 0.285 / 172, th.fg, 0.012 * sway(t, 0));
-  lines.forEach((l, i) => slide(ctx, (i === 0 && sw) ? l.s.slice(1) : l.s, mx + (i === 0 && sw ? 0.53 * fs : 0), b1 + i * fs + fl(i), fs, l.it, th.fg));
-  return { mx, fs, bottom: b1 + (lines.length - 1) * fs + 36 * fu };
+  lines.forEach((l, i) => slide(ctx, (i === 0 && sw) ? l.s.slice(1) : l.s, mx + (i === 0 && sw ? 0.53 * fs : 0), b1 + i * fs * LH + fl(i), fs, l.it, th.fg));
+  return { mx, fs, bottom: b1 + (lines.length - 1) * fs * LH + 36 * fu };
 }
 
 function tHeadline(ctx, c) {
   const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'bottom');
-  drawPanel(ctx, c, pr, S.seed, Math.round(S.density * 0.7));
-  const n = S.photoCount;
-  if (n) photoCluster(ctx, c, { x: pr.x + pr.w * (land ? 0.04 : 0.3), y: pr.y + pr.h * 0.05, w: pr.w * (land ? 0.92 : 0.66), h: pr.h * 0.9 }, n, t);
-  if (S.showBadge) {
-    const bh = land ? H * (n ? 0.34 : 0.56) : pr.h * (n ? 0.62 : 0.86);
-    const bx = n ? (land ? pr.x + pr.w * 0.74 : pr.x + pr.w * 0.18) : pr.x + pr.w / 2, by = n ? (land ? pr.y + pr.h * 0.78 : pr.y + pr.h * 0.62) : pr.y + pr.h / 2;
-    drawBadge(ctx, th, S.badgeShape, bx, by + 6 * sway(t, 1), bh, -0.08 + 0.015 * sway(t, 0.6), S.badgeText, fu * 10);
+  if (S.barOn) drawPanel(ctx, c, pr, S.seed, true);  // plain yellow bar (optional)
+  if (S.callig) {  // calligraphy in the bottom-right corner, kept inside the area above the footer so the date stays clear
+    const cr = land ? pr : { x: W * 0.1, y: pr.y - H * 0.2, w: W * 0.9, h: pr.h + H * 0.2 };  // bigger than the prints so it shows around them
+    ctx.save(); if (S.barOn && th.bg === DARK) { ctx.beginPath(); ctx.rect(pr.x, pr.y, pr.w, pr.h); ctx.clip(); }  // dark theme: keep it on the yellow bar
+    flourish(ctx, cr.x, cr.y, cr.w, cr.h, { color: S.barOn ? DARK : th.fg, t, still: c.still, fw: 1.2 * S.weight / 5 * fu, off: S.seed * 0.9, side: land ? null : 'R' });
+    ctx.restore();
   }
+  const n = S.photoCount;
+  if (S.panelMode === 'badges') barBadges(ctx, c, pr, t);
+  else if (n) photoCluster(ctx, c, land ? { x: pr.x + pr.w * 0.04, y: pr.y - pr.h * 0.1, w: pr.w * 0.92, h: pr.h } : pr, n, t, !land);
   frameLines(ctx, c, land ? pr.x : null);
-  const box = land ? { x: 0, y: 100 * fu, w: pr.x - 60 * fu, h: H - 350 * fu } : { x: 0, y: 110 * fu, w: W - 0.06 * W, h: pr.y - 150 * fu };
+  if (!land && S.lines && S.barOn) { ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.beginPath(); ctx.moveTo(0, pr.y); ctx.lineTo(W, pr.y); ctx.stroke(); ctx.restore(); }
+  const box = land ? { x: 0, y: 100 * fu, w: pr.x - 60 * fu, h: H - 350 * fu } : { x: 0, y: 110 * fu, w: W - 0.06 * W, h: pr.y - 300 * fu };
   const hb = headlineBlock(ctx, c, box, { maxFs: 172 * fu * (land ? 1 : 2) });
-  subLines(ctx, c, hb.mx, hb.bottom + 40 * fu);
-  footer(ctx, c);
+  subLines(ctx, c, hb.mx, hb.bottom + 88 * fu);
+  footer(ctx, c); footerDate(ctx, c, land ? pr.x - 60 * fu : W - 0.0985 * W);
 }
 
 function tSpeaker(ctx, c) {
   const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'top');
-  drawPanel(ctx, c, pr, S.seed + 3, Math.round(S.density * 0.6));
-  const ph = pr.h * 0.74, pw = ph * 0.8;
+  drawPanel(ctx, c, pr, S.seed + 3);
+  const ph = pr.h * (land ? 0.56 : 0.74), pw = ph * 0.8;  // smaller on 16:9 (LinkedIn) so the print sits well inside the panel
   photoFrame(ctx, 0, pr.x + pr.w / 2, pr.y + pr.h / 2 + 4 * sway(t, 0.4), pw, ph, -0.05 + 0.012 * sway(t, 0.2), th, 12 * fu);
   if (S.showBadge) { const bh = land ? H * 0.3 : pr.h * 0.44, bw = bh * SHAPE_RATIO[S.badgeShape]; drawBadge(ctx, th, S.badgeShape, Math.min(pr.x + pr.w / 2 + pw * 0.62, W - bw / 2 - 36 * fu), pr.y + pr.h * (land ? 0.8 : 0.86) + 5 * sway(t, 1.2), bh, 0.1 + 0.015 * sway(t, 0.9), S.badgeText, 10 * fu); }
   frameLines(ctx, c, land ? pr.x : null);
   const mx = 0.0985 * W, rightB = land ? pr.x - 60 * fu : W - mx, topY = land ? 100 * fu : pr.y + pr.h + 60 * fu, botY = H - 250 * fu;
-  ctx.save(); ctx.font = sansFont(26 * fu, 700); setLS(ctx, 3 * fu);
-  const tag = (S.chip || '').toUpperCase(), tw = ctx.measureText(tag).width + 44 * fu; ctx.restore();
-  const nameLines = (() => { const p = S.speaker.trim().split(/\s+/); return p.length > 1 ? [p[0], p.slice(1).join(' ')] : [p[0] || ' ']; })();
+  // tag = the outlined REGISTER NOW button from the site: sharp corners, hairline stroke, tracked bold capitals
+  const tagFs = 22 * fu, tagSp = 4 * fu, tagH = 58 * fu, tagPad = 30 * fu, tagFont = 'bold ' + tagFs + 'px Helvetica, Arial, sans-serif';
+  ctx.save(); ctx.font = tagFont; setLS(ctx, tagSp);
+  const tag = (S.chip || '').toUpperCase(), tw = ctx.measureText(tag).width - tagSp + 2 * tagPad; ctx.restore();
+  const nameLines = [S.speaker.trim() || ' '];  // the name always sits on one line
   const w100 = nameLines.map((s) => measureSlide(ctx, s, 100, false) / 100);
   ctx.save(); ctx.font = serifFont(60 * fu, true);
   const talk = (S.talk ? wrapText(ctx, S.talk, rightB - mx) : []).slice(0, 3); ctx.restore();
-  const extraH = (S.chip ? 96 * fu : 0) + (S.role ? 70 * fu : 0) + talk.length * 62 * fu + (S.date ? 70 * fu : 0) + 40 * fu;
+  const extraH = (S.chip ? 100 * fu : 0) + (S.role ? 150 * fu : 0) + talk.length * 62 * fu + 40 * fu;
   let fs = 300 * fu * (land ? 0.8 : 1);
   for (; fs > 30; fs *= 0.97) { if (Math.max(...w100) * fs + mx <= rightB && (nameLines.length - 1) * fs + 0.7 * fs + extraH <= botY - topY) break; }
   const stack = (nameLines.length - 1) * fs + 0.7 * fs + extraH;
   let y = topY + Math.max(0, (botY - topY - stack) / 2);
   if (S.chip) {
-    ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 3 * fu; ctx.beginPath(); ctx.roundRect(mx, y, tw, 52 * fu, 26 * fu); ctx.stroke(); ctx.restore();
-    sansText(ctx, tag, mx + 22 * fu, y + 35 * fu, 26 * fu, th.fg, { wt: 700, ls: 3 * fu }); y += 96 * fu;
+    ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.lineJoin = 'miter'; ctx.strokeRect(mx + 1, y + 1, tw - 2, tagH - 2);
+    ctx.fillStyle = th.fg; ctx.font = tagFont; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; setLS(ctx, tagSp); ctx.fillText(tag, mx + tagPad, y + tagH / 2 + tagFs * 0.375); ctx.restore();
+    if (S.date) { ctx.save(); ctx.fillStyle = th.fg; ctx.font = tagFont; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; setLS(ctx, tagSp); ctx.fillText(dateTxt(), mx + tw + 30 * fu, y + tagH / 2 + tagFs * 0.375); ctx.restore(); }  // same type as the tag
+    y += 100 * fu;
   }
   y += 0.7 * fs;
   nameLines.forEach((s, i) => slide(ctx, s, mx, y + i * fs + 2 * fu * sway(t, i * 0.8), fs, false, th.fg));
-  y += (nameLines.length - 1) * fs + 30 * fu;
-  if (S.role) { y += 40 * fu; sansText(ctx, S.role, mx, y, 38 * fu, th.fg, { wt: 600 }); y += 30 * fu; }
+  y += (nameLines.length - 1) * fs + 62 * fu;
+  if (S.role) { y += 40 * fu; sansText(ctx, S.role, mx, y, 38 * fu, th.fg, { wt: 600 }); y += 78 * fu; }
   talk.forEach((l, i) => serifText(ctx, l, mx, y + 54 * fu + i * 62 * fu, 60 * fu, th.fg, { it: true }));
   y += talk.length * 62 * fu + 40 * fu;
-  if (S.date) sansText(ctx, S.date, mx, y + 36 * fu, 40 * fu, th.fg, { wt: 700 });
   footer(ctx, c);
 }
 
 function tBadges(ctx, c) {
-  const { W, H, fu, th, t } = c, lw = 7 * fu, m = Math.min(W, H), stripH = c.land ? 86 * fu : 100 * fu;
-  ctx.fillStyle = th.fg; ctx.fillRect(0, stripH, W, lw); ctx.fillRect(0, H - stripH - lw, W, lw);
-  drawThreadLogo(ctx, 0.0985 * W, stripH / 2 - 918 * 0.05 * fu / 2 + 2, 0.05 * fu, th.fg);
-  if (S.date) sansText(ctx, S.date, W - 0.0985 * W, stripH / 2 + 9 * fu, 30 * fu, th.fg, { wt: 700, align: 'right', ls: 1 * fu });
-  const aw = 190 * fu; drawAttentive(ctx, 0.0985 * W, H - stripH / 2 - (aw * ATT_H / ATT_W) / 2 - 2, aw, th.fg);
-  if (S.sub) sansText(ctx, S.sub, W - 0.0985 * W, H - stripH / 2 + 9 * fu, 30 * fu, th.fg, { wt: 500, align: 'right' });
-  const order = ['arch', 'circle', 'scallop', 'hexagon', 'shield'], midY = H / 2;
-  if (!S.badgeSet) { const bh = Math.min(H - 2 * stripH - 80 * fu, W * 0.8 / SHAPE_RATIO[S.badgeShape]) * 0.92; drawBadge(ctx, th, S.badgeShape, W / 2, midY + 6 * sway(t, 0), bh, 0.015 * sway(t, 0.5), S.badgeText, 0); return; }
-  const others = order.filter((s) => s !== S.badgeShape), pos = [[0.2, 0.32, -0.12], [0.82, 0.31, 0.1], [0.18, 0.69, 0.08], [0.83, 0.69, -0.09]];
-  const sm = m * (c.land ? 0.36 : 0.3), big = c.land ? (H - 2 * stripH) * 0.74 : m * 0.56;
-  others.forEach((s, i) => drawBadge(ctx, th, s, W * pos[i][0], H * pos[i][1] + 7 * sway(t, i * 1.3), sm * (0.9 + (i % 2) * 0.12), pos[i][2] + 0.015 * sway(t, i), SHAPE_DEFAULTS[s], 0));
-  drawBadge(ctx, th, S.badgeShape, W / 2, midY + 6 * sway(t, 0), big, 0.02 * sway(t, 0.5), S.badgeText, 0);
+  const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'bottom');
+  frameLines(ctx, c, land ? pr.x : null);
+  const box = land ? { x: 0, y: 100 * fu, w: pr.x - 60 * fu, h: H - 350 * fu } : { x: 0, y: 110 * fu, w: W - 0.06 * W, h: pr.y - 150 * fu };
+  const hb = headlineBlock(ctx, c, box, { maxFs: 172 * fu * (land ? 1 : 2), text: S.bHeadline, sub: S.bSub });
+  subLines(ctx, c, hb.mx, hb.bottom + 88 * fu, S.bSub);
+  footer(ctx, c); footerDate(ctx, c, land ? pr.x - 60 * fu : W - 0.0985 * W);
+  // the badge cluster, pushed to the right; the chosen shape leads and one badge bleeds slightly off the right edge
+  const n = cl(S.badgeCount, 3, 5), order = ['arch', 'circle', 'scallop', 'hexagon', 'shield'].filter((x) => x !== S.badgeShape);
+  let L, base, X, Y;
+  if (land) {
+    base = Math.min(pr.h, pr.w * 1.05);
+    L = { 3: [[0.56, 0.4, 0.66, 0.02], [0.3, 0.8, 0.38, -0.1], [0.97, 0.7, 0.42, 0.09]],
+      4: [[0.54, 0.36, 0.6, 0.02], [0.98, 0.2, 0.34, 0.1], [0.24, 0.78, 0.38, -0.1], [0.74, 0.8, 0.4, 0.07]],
+      5: [[0.5, 0.34, 0.52, 0.02], [0.98, 0.18, 0.32, 0.1], [0.2, 0.74, 0.34, -0.1], [0.54, 0.82, 0.3, 0.05], [0.93, 0.62, 0.3, -0.08]] }[n];
+    X = (fx) => pr.x + pr.w * fx; Y = (fy) => pr.y + pr.h * fy;
+  } else {
+    const ar = { y: H * 0.5, h: H - 215 * fu - H * 0.5 }; base = ar.h;
+    L = { 3: [[0.68, 0.52, 0.8, 0.02], [0.4, 0.8, 0.46, -0.1], [0.97, 0.2, 0.5, 0.1]],
+      4: [[0.66, 0.5, 0.74, 0.02], [0.38, 0.82, 0.44, -0.1], [0.97, 0.2, 0.5, 0.1], [0.93, 0.84, 0.4, 0.07]],
+      5: [[0.64, 0.46, 0.66, 0.02], [0.36, 0.8, 0.42, -0.1], [0.97, 0.18, 0.46, 0.1], [0.9, 0.82, 0.4, 0.06], [0.4, 0.2, 0.34, 0.08]] }[n];
+    X = (fx) => W * fx; Y = (fy) => ar.y + ar.h * fy;
+  }
+  L.forEach((p, i) => {
+    const shape = i ? order[i - 1] : S.badgeShape, bh = base * p[2] * (land ? 1 : 1.18);
+    drawBadge(ctx, th, shape, X(p[0]), Y(p[1]) + 6 * fu * sway(t, i * 1.3), bh, p[3] + 0.015 * sway(t, i), i ? SHAPE_DEFAULTS[shape] : S.badgeText, 10 * fu);
+  });
 }
 
 function tPattern(ctx, c) {
   const { W, H, fu, th, t, land } = c;
-  loops(ctx, -W * 0.05, -H * 0.05, W * 1.1, H * 1.1, { seed: S.seed, n: S.density, color: th.fg, t, mirror: true, wt: S.weight / 5 });
-  // sticker plate in the middle: the only text on a post that is mostly pattern
-  const pw = W * (land ? 0.42 : 0.7), k = pw * 0.76 / 2485, logoH = 918 * k, pad = pw * 0.12;
-  const lines = [S.sub, S.date].filter(Boolean), ph = pad * 2 + logoH + lines.length * 60 * fu + (lines.length ? 26 * fu : 0);
+  flourish(ctx, 0, 45 * fu, W, H - 92 * fu, { color: th.fg, t, still: c.still, fw: 1.2 * S.weight / 5 * fu, off: S.seed * 0.9 });
+  // plate in the middle: sharp corners, the same hairline weight as the frame
+  const pw = W * (land ? 0.4 : 0.66), k = pw * 0.76 / 2485, logoH = 918 * k, pad = pw * 0.12;
+  const lines = [S.sub, dateTxt()].filter(Boolean), ph = pad * 2 + logoH + lines.length * 60 * fu + (lines.length ? 26 * fu : 0);
   const px = W / 2 - pw / 2, py = H / 2 - ph / 2 + 5 * sway(t, 0.7);
-  ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 7 * fu;
-  ctx.beginPath(); ctx.roundRect(px + 12 * fu, py + 12 * fu, pw, ph, 36 * fu); ctx.fillStyle = th.fg; ctx.fill();
-  ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 36 * fu); ctx.fillStyle = th.bg; ctx.fill(); ctx.stroke(); ctx.restore();
+  ctx.save(); ctx.fillStyle = th.bg; ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.lineJoin = 'miter';
+  ctx.fillRect(px, py, pw, ph); ctx.strokeRect(px, py, pw, ph); ctx.restore();
   drawThreadLogo(ctx, W / 2 - 2485 * k / 2, py + pad, k, th.fg);
-  lines.forEach((l, i) => sansText(ctx, l, W / 2, py + pad + logoH + 46 * fu + i * 60 * fu, 42 * fu, th.fg, { wt: i ? 700 : 500, align: 'center' }));
+  lines.forEach((l, i) => sansText(ctx, l, W / 2, py + pad + logoH + 46 * fu + i * 60 * fu, 42 * fu, th.fg, { wt: i ? 700 : 500, align: 'center', ls: i ? 3 * fu : 0 }));
+  frameLines(ctx, c, W - 131 * fu);
 }
 
-function tGrid(ctx, c) {
-  const { W, H, fu, th, t, land } = c, rnd = mulberry32(S.seed * 31 + 5);
-  const cols = land ? 6 : (W < 1200 ? 3 : 4), rows = Math.max(2, Math.round(H / (W / cols))), tw = W / cols, tth = H / rows;
-  const card = land ? { x: 0.055 * W, y: 0.12 * H, w: 0.5 * W, h: 0.76 * H }
-    : { x: 0.07 * W, y: H * (S.fmt === 'story' ? 0.4 : S.fmt === 'portrait' ? 0.36 : 0.3), w: 0.86 * W, h: H * (S.fmt === 'story' ? 0.52 : S.fmt === 'portrait' ? 0.56 : 0.62) };
-  const cand = [], tiles = [];
-  for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
-    const cx = (q + 0.5) * tw, cy = (r + 0.5) * tth, hidden = cx > card.x - tw * 0.4 && cx < card.x + card.w + tw * 0.45 && cy > card.y - tth * 0.4 && cy < card.y + card.h + tth * 0.4;
-    const tl = { q, r, cx, cy, seed: Math.floor(rnd() * 1e6), kind: rnd(), fill: Math.floor(rnd() * 4), z: rnd(), jx: (rnd() - 0.5) * 0.12, jy: (rnd() - 0.5) * 0.12, flip: rnd() > 0.5, rot: Math.floor(rnd() * 4) };
-    tiles.push(tl); if (!hidden) cand.push(tl);
-  }
-  const fills = [th.bg, th.accent, th.paper, th.fg], on = (f) => (f === DARK || f === th.fg && th.fg === DARK ? YEL : (f === th.bg && th.bg === DARK ? YEL : DARK));
-  const photoT = cand.slice().sort((a, b) => a.z - b.z).slice(0, S.photoCount); photoT.forEach((p) => { p.kind = -1; });
-  const ov = 0.14;
-  tiles.slice().sort((a, b) => a.z - b.z).forEach((tl) => {
-    const iw = tw * (1 + ov), ih = tth * (1 + ov), x = tl.cx - iw / 2 + tl.jx * tw, y = tl.cy - ih / 2 + tl.jy * tth;
-    const f = tl.kind < 0 ? th.accent : fills[(tl.q + tl.r * 2 + tl.fill + (tl.kind >= 0.8 ? 1 : 0)) % 4];
-    ctx.save(); ctx.beginPath(); ctx.rect(x, y, iw, ih); ctx.clip();
-    ctx.fillStyle = f; ctx.fillRect(x, y, iw, ih);
-    if (tl.kind >= 0 && tl.kind < 0.5) loops(ctx, x, y, iw, ih, { seed: tl.seed, n: Math.max(3, Math.round(S.density * 0.7)), color: on(f), t, mirror: tl.flip, wt: S.weight / 5 });
-    else if (tl.kind >= 0.5 && tl.kind < 0.8) { // quarter-circle motif from the colour-grid reference
-      const rr = mulberry32(tl.seed), pal = fills.filter((p) => p !== f), cw = iw / 2, chh = ih / 2;
-      for (let a = 0; a < 2; a++) for (let b = 0; b < 2; b++) {
-        ctx.fillStyle = pal[Math.floor(rr() * pal.length)]; ctx.beginPath();
-        ctx.ellipse(x + a * cw + (rr() > 0.5 ? 0 : cw), y + b * chh + (rr() > 0.5 ? 0 : chh), cw, chh, 0, 0, TAU); ctx.fill();
-      }
-    } else if (tl.kind >= 0.8) { ctx.save(); ctx.translate(tl.cx, tl.cy); ctx.rotate(tl.rot * Math.PI / 2); if (tl.flip) ctx.scale(-1, 1); const k = Math.min(iw, ih) * 0.9 / 1587; drawSwash(ctx, -1587 * k / 2, -918 * k / 2, k, on(f), 0); ctx.restore(); }
-    ctx.restore();
-    ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(2, 3 * fu); ctx.strokeRect(x, y, iw, ih);
-  });
-  photoT.forEach((p, i) => { const pw = Math.min(tth * 0.69, tw * 0.8); photoFrame(ctx, i, p.cx, p.cy + 4 * sway(t, i), pw, pw * 1.25, (i % 2 ? 0.07 : -0.07) + 0.012 * sway(t, i * 1.3), th, 8 * fu); });
-  // headline card
-  ctx.save(); ctx.fillStyle = DARK; ctx.fillRect(card.x + 16 * fu, card.y + 16 * fu, card.w, card.h);
-  ctx.fillStyle = th.paper; ctx.fillRect(card.x, card.y, card.w, card.h); ctx.strokeStyle = DARK; ctx.lineWidth = 6 * fu; ctx.strokeRect(card.x, card.y, card.w, card.h); ctx.restore();
-  const cc = { ...c, th: { ...th, fg: DARK } }, pad = card.w * 0.075, footH = 130 * fu;
-  const hb = headlineBlock(ctx, cc, { x: card.x, y: card.y + 20 * fu, w: card.w - pad, h: card.h - footH - 30 * fu }, { maxFs: 172 * fu * (land ? 0.85 : 1.5), mx: card.x + pad });
-  subLines(ctx, cc, hb.mx, hb.bottom + 36 * fu);
-  const fy = card.y + card.h - footH / 2, aw = 200 * fu; drawAttentive(ctx, card.x + pad, fy - (aw * ATT_H / ATT_W) / 2, aw, DARK);
-  drawThreadLogo(ctx, card.x + pad + aw + 40 * fu, fy - 918 * 0.075 * fu / 2, 0.075 * fu, DARK);
-  if (S.showBadge) drawBadge(ctx, th, S.badgeShape, card.x + card.w + (land ? 0.005 * W : -0.02 * W), card.y + (land ? 0.07 * card.h : 0), land ? H * 0.34 : tth * 0.95, 0.1 + 0.015 * sway(t, 0.9), S.badgeText, 8 * fu);
-}
-
-const TPL = { headline: tHeadline, speaker: tSpeaker, badges: tBadges, pattern: tPattern, grid: tGrid };
+const TPL = { headline: tHeadline, speaker: tSpeaker, badges: tBadges, pattern: tPattern };
 function render(ctx, W, H, t, still) {
   const c = ctxBase(W, H, t, still);
   ctx.save(); ctx.fillStyle = c.th.bg; ctx.fillRect(0, 0, W, H);
@@ -627,9 +672,9 @@ function frame(now) {
   }
   requestAnimationFrame(frame);
 }
-const TEXTS = ['headline', 'sub', 'date', 'chip', 'speaker', 'role', 'talk', 'badgeText'], CHECKS = ['swashT', 'showBadge', 'badgeSet', 'lines', 'anim'], RANGES = ['density', 'weight', 'photoCount'];
+const TEXTS = ['headline', 'bHeadline', 'bSub', 'sub', 'date', 'chip', 'speaker', 'role', 'talk', 'badgeText'], CHECKS = ['swashT', 'showBadge', 'lines', 'anim', 'barOn', 'callig'], RANGES = ['weight', 'photoCount', 'badgeCount'];
 function syncUI() {
-  [['tpl', S.tpl], ['fmt', S.fmt], ['shape', S.badgeShape], ['pfilter', S.photoFilter]].forEach(([id, v]) => document.querySelectorAll('#' + id + ' .chip').forEach((b) => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-pressed', b.dataset.v === v); }));
+  [['tpl', S.tpl], ['fmt', S.fmt], ['panelMode', S.panelMode], ['shape', S.badgeShape], ['pfilter', S.photoFilter]].forEach(([id, v]) => document.querySelectorAll('#' + id + ' .chip').forEach((b) => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-pressed', b.dataset.v === v); }));
   document.querySelectorAll('#theme .sw').forEach((b) => b.classList.toggle('on', b.dataset.v === S.theme));
   document.querySelectorAll('[data-for]').forEach((e) => e.classList.toggle('hide', !e.dataset.for.split(' ').includes(S.tpl)));
   $('#photosec').classList.toggle('hide', S.tpl === 'pattern' || S.tpl === 'badges');
@@ -642,7 +687,7 @@ function syncUI() {
 function bindChips(id, key, extra) {
   $('#' + id).addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (!b) return; S[key] = b.dataset.v; if (extra) extra(b.dataset.v); if (key === 'fmt') fit(); syncUI(); });
 }
-bindChips('tpl', 'tpl'); bindChips('fmt', 'fmt'); bindChips('pfilter', 'photoFilter'); bindChips('theme', 'theme');
+bindChips('tpl', 'tpl'); bindChips('panelMode', 'panelMode'); bindChips('fmt', 'fmt'); bindChips('pfilter', 'photoFilter'); bindChips('theme', 'theme');
 bindChips('shape', 'badgeShape', (v) => { if (Object.values(SHAPE_DEFAULTS).includes(S.badgeText)) S.badgeText = SHAPE_DEFAULTS[v]; });
 $('#theme').innerHTML = Object.entries(THEMES).map(([k, v]) => `<button class="sw" data-v="${k}" title="${v.name}" aria-label="${v.name}" style="background:${v.bg}"><i style="background:${v.fg}"></i></button>`).join('');
 TEXTS.forEach((k) => $('#' + k).addEventListener('input', (e) => { S[k] = e.target.value; dirty = true; }));
@@ -660,13 +705,16 @@ for (let i = 0; i < 3; i++) {
   const d = document.createElement('div'); d.className = 'ph'; d.tabIndex = 0; d.setAttribute('role', 'button'); d.setAttribute('aria-label', 'Photo ' + (i + 1));
   d.innerHTML = '<canvas width="120" height="150"></canvas><span>Photo ' + (i + 1) + '</span><input type="file" accept="image/*" hidden>'; phWrap.appendChild(d);
   const inp = d.querySelector('input');
-  const load = (f) => { if (!f || !f.type.startsWith('image/')) return; const im = new Image(); im.onload = () => { photoSrc[i] = im; photoVer[i]++; thumb(i); dirty = true; }; im.src = URL.createObjectURL(f); };
+  const load = (f) => { if (!f || !f.type.startsWith('image/')) return; const im = new Image(); im.onload = () => { photoSrc[i] = im; photoVer[i]++; if (S.photoFilter === 'color') { S.photoFilter = 'bw'; syncUI(); } thumb(i); dirty = true; }; im.src = URL.createObjectURL(f); };
   d.addEventListener('click', () => inp.click()); d.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => load(inp.files[0]));
   d.addEventListener('dragover', (e) => { e.preventDefault(); d.classList.add('drag'); }); d.addEventListener('dragleave', () => d.classList.remove('drag'));
   d.addEventListener('drop', (e) => { e.preventDefault(); d.classList.remove('drag'); load(e.dataTransfer.files[0]); });
   thumb(i);
 }
+
+/* the three default portraits (Unsplash, black and white, high contrast; see photos/CREDITS.md) */
+['photos/p1.jpg', 'photos/p2.jpg', 'photos/p3.jpg'].forEach((u, i) => { const im = new Image(); im.onload = () => { if (!photoSrc[i]) { photoSrc[i] = im; photoVer[i]++; thumb(i); dirty = true; } }; im.src = u; });
 
 /* export */
 const status = (m) => ($('#status').textContent = m);
@@ -690,15 +738,15 @@ $('#rec').addEventListener('click', () => {
   step();
 });
 
-/* hash: #tpl=grid&fmt=square&theme=ink&seed=3&t=2.5&anim=0 (handy for stills) */
+/* hash: #tpl=badges&fmt=square&theme=ink&seed=3&t=2.5&anim=0 (handy for stills) */
 new URLSearchParams(location.hash.slice(1)).forEach((v, k) => {
   if (k === 'tpl' && TPL[v]) S.tpl = v; else if (k === 'fmt' && FMT[v]) S.fmt = v; else if (k === 'theme' && THEMES[v]) S.theme = v;
   else if (k === 'seed') S.seed = +v || 1; else if (k === 't') frozenT = +v; else if (k === 'anim') S.anim = v !== '0';
   else if (k === 'shape' && SHAPE_RATIO[v]) { S.badgeShape = v; S.badgeText = SHAPE_DEFAULTS[v]; }
-  else if (k === 'filter') S.photoFilter = v; else if (k === 'photos') S.photoCount = +v;
+  else if (k === 'filter') S.photoFilter = v; else if (k === 'bg') S.barOn = v !== '0'; else if (k === 'cal') S.callig = v === '1'; else if (k === 'bar' && (v === 'photos' || v === 'badges')) S.panelMode = v; else if (k === 'photos') S.photoCount = +v;
 });
 addEventListener('resize', fit);
-Promise.all([document.fonts.load("172px 'Instrument Serif'"), document.fonts.load("italic 60px 'Instrument Serif'"), document.fonts.load('600 40px Inter'), document.fonts.load('700 40px Inter')]).catch(() => {}).then(() => { dirty = true; });
+Promise.all([document.fonts.load("172px 'Instrument Serif'"), document.fonts.load("italic 60px 'Instrument Serif'"), document.fonts.load('600 40px Inter'), document.fonts.load("100px 'Pinyon Script'"), document.fonts.load("italic 700 100px 'Playfair Display'"), document.fonts.load('700 40px Inter')]).catch(() => {}).then(() => { dirty = true; });
 syncUI(); fit(); requestAnimationFrame(frame);
 </script>
 </body>
