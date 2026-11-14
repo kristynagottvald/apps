@@ -26,13 +26,12 @@ const domClick = (p, sel) => p.evaluate((s) => document.querySelector(s).click()
    Apps that move on their own just wait; the others are driven the way a visitor would use them. */
 const APPS = {
   'conference-post-generator': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 40, run: async (p) => {
-    // the headline post plays on its own, then step through the speaker, badges, pattern and loop grid templates
+    // the headline post plays on its own, then step through the speaker, badges and pattern templates
     const t0 = Date.now(), tpl = (n) => domClick(p, '#tpl button:nth-child(' + n + ')');
     await at(t0, 1300, () => tpl(2));
-    await at(t0, 2500, () => tpl(3));
-    await at(t0, 3700, () => tpl(4));
-    await at(t0, 4900, () => tpl(5));
-    await at(t0, 6000, () => tpl(1));
+    await at(t0, 2700, () => tpl(3));
+    await at(t0, 4000, () => tpl(4));
+    await at(t0, 5000, () => tpl(1));
   } },
   // red lattice on black, then the orange flow and the grey arches as the generator cycles on its own (lines draw in first, then morph)
   'arrow-line-generator': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '?still', ready: 800, q: 48, run: async (p) => {

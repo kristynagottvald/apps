@@ -9,7 +9,7 @@
 <style>
 :root{
   --bg:#0e0e0e; --panel:#171717; --line:#2a2a2a; --text:#f3f2ea; --muted:#9a998d;
-  --yellow:#fff383; --gold:#f9d84a; --ink:#141414;
+  --yellow:#fff383; --ink:#141414;
   --font:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
   --serif:"Instrument Serif",Georgia,serif;
 }
@@ -95,7 +95,6 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
         <button class="chip" data-v="speaker">Speaker</button>
         <button class="chip" data-v="badges">Badges</button>
         <button class="chip" data-v="pattern">Pattern</button>
-        <button class="chip" data-v="grid">Loop grid</button>
       </div>
       <h2>Format</h2>
       <div class="row" id="fmt">
@@ -110,9 +109,9 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
 
     <section id="textsec">
       <h2>Text</h2>
-      <label class="f" data-for="headline grid"><span>Headline, one line per row (wrap a line in *stars* for italic)</span><textarea id="headline" rows="3"></textarea></label>
-      <label class="f" data-for="headline grid pattern badges"><span>Sub line</span><input type="text" id="sub"></label>
-      <label class="f" data-for="headline grid pattern badges speaker"><span>Date and place</span><input type="text" id="date"></label>
+      <label class="f" data-for="headline"><span>Headline, one line per row (wrap a line in *stars* for italic)</span><textarea id="headline" rows="3"></textarea></label>
+      <label class="f" data-for="headline pattern badges"><span>Sub line</span><input type="text" id="sub"></label>
+      <label class="f" data-for="headline pattern badges speaker"><span>Date and place</span><input type="text" id="date"></label>
       <label class="f" data-for="speaker"><span>Tag</span><input type="text" id="chip"></label>
       <label class="f" data-for="speaker"><span>Speaker name</span><input type="text" id="speaker"></label>
       <label class="f" data-for="speaker"><span>Role</span><input type="text" id="role"></label>
@@ -130,20 +129,20 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
         <button class="chip" data-v="shield">Shield</button>
       </div>
       <label class="f"><span>Badge label, two lines max</span><textarea id="badgeText" rows="2"></textarea></label>
-      <label class="chk" data-for="headline speaker grid"><input type="checkbox" id="showBadge"> Show the badge</label>
-      <label class="chk" data-for="badges"><input type="checkbox" id="badgeSet"> Show all five shapes</label>
+      <label class="chk" data-for="headline speaker"><input type="checkbox" id="showBadge"> Show the badge</label>
+      <div class="rng" data-for="badges"><span>Badges shown</span><input type="range" id="badgeCount" min="3" max="5" step="1"><output id="badgeCountO"></output></div>
     </section>
 
     <section id="photosec">
       <h2>Photos</h2>
       <div class="photos" id="photos"></div>
-      <p class="hint">Click or drop an image on a slot. Photos get the outline and the cream mat.</p>
+      <p class="hint">Black and white portraits from Unsplash. Click or drop your own image on a slot to replace one.</p>
       <div class="row" id="pfilter">
-        <button class="chip" data-v="color">Colour</button>
-        <button class="chip" data-v="bw">Black and white</button>
+        <button class="chip" data-v="color">Original</button>
+        <button class="chip" data-v="bw">High-contrast B&amp;W</button>
         <button class="chip" data-v="duo">Yellow duotone</button>
       </div>
-      <div class="rng" data-for="headline grid"><span>Photos shown</span><input type="range" id="photoCount" min="0" max="3" step="1"><output id="photoCountO"></output></div>
+      <div class="rng" data-for="headline"><span>Photos shown</span><input type="range" id="photoCount" min="0" max="3" step="1"><output id="photoCountO"></output></div>
     </section>
 
     <section>
@@ -181,9 +180,8 @@ const ease = (u) => 0.5 - 0.5 * Math.cos(Math.PI * cl(u, 0, 1));
 const mulberry32 = (a) => () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 
 const THEMES = {
-  yellow: { name: 'Yellow', bg: '#fff383', fg: '#141414', accent: '#f9d84a', paper: '#faf4de' },
+  yellow: { name: 'Yellow', bg: '#fff383', fg: '#141414', accent: '#fff383', paper: '#faf4de' },
   ink:    { name: 'Ink',    bg: '#141414', fg: '#fff383', accent: '#fff383', paper: '#faf4de' },
-  gold:   { name: 'Gold',   bg: '#f9d84a', fg: '#141414', accent: '#fff383', paper: '#faf4de' },
   cream:  { name: 'Cream',  bg: '#faf4de', fg: '#141414', accent: '#fff383', paper: '#ffffff' },
 };
 const FMT = {
@@ -198,8 +196,8 @@ const SHAPE_RATIO = { arch: 0.76, circle: 1, scallop: 1, hexagon: 1.1, shield: 0
 const S = {
   tpl: 'headline', fmt: 'landscape', theme: 'yellow', seed: 7,
   headline: 'Thread 2026\nin under\n10 minutes', sub: 'The SMS marketing conference', date: 'May 12–14 · New York',
-  chip: 'Keynote', speaker: 'Jordan Lee', role: 'VP of Growth, Brand Co.', talk: 'What texting taught us about talking to customers',
-  swashT: true, badgeShape: 'arch', badgeText: SHAPE_DEFAULTS.arch, showBadge: true, badgeSet: true,
+  chip: 'Keynote', speaker: 'Maya Chen', role: 'VP of Growth, Brand Co.', talk: 'What texting taught us about talking to customers',
+  swashT: true, badgeShape: 'arch', badgeText: SHAPE_DEFAULTS.arch, showBadge: true, badgeCount: 4,
   photoFilter: 'color', photoCount: 2, density: 7, weight: 5, lines: true, anim: true,
 };
 
@@ -314,7 +312,7 @@ const photoVer = [0, 0, 0];
 const photoCache = {};                           // processed canvases
 function placeholder(i) {
   const c = document.createElement('canvas'); c.width = 600; c.height = 750; const x = c.getContext('2d');
-  const bgs = ['#f9d84a', '#e7dfc4', '#fff383'], skins = ['#c98e6a', '#8a5a3c', '#e8b996'], hairs = ['#2a1a12', '#141414', '#7b4a2a'], shirts = ['#141414', '#faf4de', '#141414'];
+  const bgs = ['#fff383', '#e7dfc4', '#fff383'], skins = ['#c98e6a', '#8a5a3c', '#e8b996'], hairs = ['#2a1a12', '#141414', '#7b4a2a'], shirts = ['#141414', '#faf4de', '#141414'];
   x.fillStyle = bgs[i]; x.fillRect(0, 0, 600, 750);
   x.fillStyle = shirts[i]; x.beginPath(); x.ellipse(300, 790, 270, 250, 0, Math.PI, TAU); x.fill();
   x.fillStyle = skins[i]; x.fillRect(262, 470, 76, 110);
@@ -336,17 +334,17 @@ function getPhoto(i) {
   const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height, k = Math.min(1, 900 / Math.max(sw, sh));
   const c = document.createElement('canvas'); c.width = Math.round(sw * k); c.height = Math.round(sh * k);
   const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(src, 0, 0, c.width, c.height);
-  if (S.photoFilter !== 'color') {
+  if (S.photoFilter !== 'color') try {
     const d = x.getImageData(0, 0, c.width, c.height), px = d.data;
     const lo = [20, 20, 20], hi = [255, 243, 131];
     for (let p = 0; p < px.length; p += 4) {
       let l = (0.299 * px[p] + 0.587 * px[p + 1] + 0.114 * px[p + 2]) / 255;
-      l = cl((l - 0.5) * 1.15 + 0.52, 0, 1);
+      l = cl((l - 0.5) * 1.5 + 0.5, 0, 1);
       if (S.photoFilter === 'bw') { px[p] = px[p + 1] = px[p + 2] = l * 255; }
       else { px[p] = lo[0] + (hi[0] - lo[0]) * l; px[p + 1] = lo[1] + (hi[1] - lo[1]) * l; px[p + 2] = lo[2] + (hi[2] - lo[2]) * l; }
     }
     x.putImageData(d, 0, 0);
-  }
+  } catch (e) { /* tainted canvas on file://: show the photo as is */ }
   return (photoCache[key] = c);
 }
 /* an outlined print: cream mat, dark outline, optional hard shadow */
@@ -532,18 +530,22 @@ function tSpeaker(ctx, c) {
 }
 
 function tBadges(ctx, c) {
-  const { W, H, fu, th, t } = c, lw = 7 * fu, m = Math.min(W, H), stripH = c.land ? 86 * fu : 100 * fu;
-  ctx.fillStyle = th.fg; ctx.fillRect(0, stripH, W, lw); ctx.fillRect(0, H - stripH - lw, W, lw);
-  drawThreadLogo(ctx, 0.0985 * W, stripH / 2 - 918 * 0.05 * fu / 2 + 2, 0.05 * fu, th.fg);
-  if (S.date) sansText(ctx, S.date, W - 0.0985 * W, stripH / 2 + 9 * fu, 30 * fu, th.fg, { wt: 700, align: 'right', ls: 1 * fu });
-  const aw = 190 * fu; drawAttentive(ctx, 0.0985 * W, H - stripH / 2 - (aw * ATT_H / ATT_W) / 2 - 2, aw, th.fg);
-  if (S.sub) sansText(ctx, S.sub, W - 0.0985 * W, H - stripH / 2 + 9 * fu, 30 * fu, th.fg, { wt: 500, align: 'right' });
-  const order = ['arch', 'circle', 'scallop', 'hexagon', 'shield'], midY = H / 2;
-  if (!S.badgeSet) { const bh = Math.min(H - 2 * stripH - 80 * fu, W * 0.8 / SHAPE_RATIO[S.badgeShape]) * 0.92; drawBadge(ctx, th, S.badgeShape, W / 2, midY + 6 * sway(t, 0), bh, 0.015 * sway(t, 0.5), S.badgeText, 0); return; }
-  const others = order.filter((s) => s !== S.badgeShape), pos = [[0.2, 0.32, -0.12], [0.82, 0.31, 0.1], [0.18, 0.69, 0.08], [0.83, 0.69, -0.09]];
-  const sm = m * (c.land ? 0.36 : 0.3), big = c.land ? (H - 2 * stripH) * 0.74 : m * 0.56;
-  others.forEach((s, i) => drawBadge(ctx, th, s, W * pos[i][0], H * pos[i][1] + 7 * sway(t, i * 1.3), sm * (0.9 + (i % 2) * 0.12), pos[i][2] + 0.015 * sway(t, i), SHAPE_DEFAULTS[s], 0));
-  drawBadge(ctx, th, S.badgeShape, W / 2, midY + 6 * sway(t, 0), big, 0.02 * sway(t, 0.5), S.badgeText, 0);
+  const { W, H, fu, th, t, land } = c, pr = panelRect(c, 'bottom');
+  frameLines(ctx, c, land ? pr.x : null);
+  const box = land ? { x: 0, y: 100 * fu, w: pr.x - 60 * fu, h: H - 350 * fu } : { x: 0, y: 110 * fu, w: W - 0.06 * W, h: pr.y - 150 * fu };
+  const hb = headlineBlock(ctx, c, box, { maxFs: 172 * fu * (land ? 1 : 2) });
+  subLines(ctx, c, hb.mx, hb.bottom + 40 * fu);
+  footer(ctx, c);
+  // the badge cluster: the chosen shape leads, the others follow in a fixed order
+  const n = cl(S.badgeCount, 3, 5), base = land ? Math.min(pr.h, pr.w * 1.05) : Math.min(pr.h * 1.3, pr.w * 0.9);
+  const L = { 3: [[0.5, 0.36, 0.64, 0.02], [0.2, 0.78, 0.38, -0.1], [0.8, 0.74, 0.4, 0.09]],
+    4: [[0.46, 0.34, 0.58, 0.02], [0.82, 0.2, 0.34, 0.1], [0.18, 0.76, 0.38, -0.1], [0.72, 0.78, 0.4, 0.07]],
+    5: [[0.45, 0.33, 0.5, 0.02], [0.84, 0.2, 0.3, 0.1], [0.16, 0.74, 0.34, -0.1], [0.5, 0.82, 0.3, 0.05], [0.86, 0.62, 0.3, -0.08]] }[n];
+  const order = ['arch', 'circle', 'scallop', 'hexagon', 'shield'].filter((x) => x !== S.badgeShape);
+  L.forEach((p, i) => {
+    const shape = i ? order[i - 1] : S.badgeShape, bh = base * p[2];
+    drawBadge(ctx, th, shape, pr.x + pr.w * p[0], pr.y + pr.h * p[1] + 6 * fu * sway(t, i * 1.3), bh, p[3] + 0.015 * sway(t, i), i ? SHAPE_DEFAULTS[shape] : S.badgeText, 10 * fu);
+  });
 }
 
 function tPattern(ctx, c) {
@@ -560,49 +562,7 @@ function tPattern(ctx, c) {
   lines.forEach((l, i) => sansText(ctx, l, W / 2, py + pad + logoH + 46 * fu + i * 60 * fu, 42 * fu, th.fg, { wt: i ? 700 : 500, align: 'center' }));
 }
 
-function tGrid(ctx, c) {
-  const { W, H, fu, th, t, land } = c, rnd = mulberry32(S.seed * 31 + 5);
-  const cols = land ? 6 : (W < 1200 ? 3 : 4), rows = Math.max(2, Math.round(H / (W / cols))), tw = W / cols, tth = H / rows;
-  const card = land ? { x: 0.055 * W, y: 0.12 * H, w: 0.5 * W, h: 0.76 * H }
-    : { x: 0.07 * W, y: H * (S.fmt === 'story' ? 0.4 : S.fmt === 'portrait' ? 0.36 : 0.3), w: 0.86 * W, h: H * (S.fmt === 'story' ? 0.52 : S.fmt === 'portrait' ? 0.56 : 0.62) };
-  const cand = [], tiles = [];
-  for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
-    const cx = (q + 0.5) * tw, cy = (r + 0.5) * tth, hidden = cx > card.x - tw * 0.4 && cx < card.x + card.w + tw * 0.45 && cy > card.y - tth * 0.4 && cy < card.y + card.h + tth * 0.4;
-    const tl = { q, r, cx, cy, seed: Math.floor(rnd() * 1e6), kind: rnd(), fill: Math.floor(rnd() * 4), z: rnd(), jx: (rnd() - 0.5) * 0.12, jy: (rnd() - 0.5) * 0.12, flip: rnd() > 0.5, rot: Math.floor(rnd() * 4) };
-    tiles.push(tl); if (!hidden) cand.push(tl);
-  }
-  const fills = [th.bg, th.accent, th.paper, th.fg], on = (f) => (f === DARK || f === th.fg && th.fg === DARK ? YEL : (f === th.bg && th.bg === DARK ? YEL : DARK));
-  const photoT = cand.slice().sort((a, b) => a.z - b.z).slice(0, S.photoCount); photoT.forEach((p) => { p.kind = -1; });
-  const ov = 0.14;
-  tiles.slice().sort((a, b) => a.z - b.z).forEach((tl) => {
-    const iw = tw * (1 + ov), ih = tth * (1 + ov), x = tl.cx - iw / 2 + tl.jx * tw, y = tl.cy - ih / 2 + tl.jy * tth;
-    const f = tl.kind < 0 ? th.accent : fills[(tl.q + tl.r * 2 + tl.fill + (tl.kind >= 0.8 ? 1 : 0)) % 4];
-    ctx.save(); ctx.beginPath(); ctx.rect(x, y, iw, ih); ctx.clip();
-    ctx.fillStyle = f; ctx.fillRect(x, y, iw, ih);
-    if (tl.kind >= 0 && tl.kind < 0.5) loops(ctx, x, y, iw, ih, { seed: tl.seed, n: Math.max(3, Math.round(S.density * 0.7)), color: on(f), t, mirror: tl.flip, wt: S.weight / 5 });
-    else if (tl.kind >= 0.5 && tl.kind < 0.8) { // quarter-circle motif from the colour-grid reference
-      const rr = mulberry32(tl.seed), pal = fills.filter((p) => p !== f), cw = iw / 2, chh = ih / 2;
-      for (let a = 0; a < 2; a++) for (let b = 0; b < 2; b++) {
-        ctx.fillStyle = pal[Math.floor(rr() * pal.length)]; ctx.beginPath();
-        ctx.ellipse(x + a * cw + (rr() > 0.5 ? 0 : cw), y + b * chh + (rr() > 0.5 ? 0 : chh), cw, chh, 0, 0, TAU); ctx.fill();
-      }
-    } else if (tl.kind >= 0.8) { ctx.save(); ctx.translate(tl.cx, tl.cy); ctx.rotate(tl.rot * Math.PI / 2); if (tl.flip) ctx.scale(-1, 1); const k = Math.min(iw, ih) * 0.9 / 1587; drawSwash(ctx, -1587 * k / 2, -918 * k / 2, k, on(f), 0); ctx.restore(); }
-    ctx.restore();
-    ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(2, 3 * fu); ctx.strokeRect(x, y, iw, ih);
-  });
-  photoT.forEach((p, i) => { const pw = Math.min(tth * 0.69, tw * 0.8); photoFrame(ctx, i, p.cx, p.cy + 4 * sway(t, i), pw, pw * 1.25, (i % 2 ? 0.07 : -0.07) + 0.012 * sway(t, i * 1.3), th, 8 * fu); });
-  // headline card
-  ctx.save(); ctx.fillStyle = DARK; ctx.fillRect(card.x + 16 * fu, card.y + 16 * fu, card.w, card.h);
-  ctx.fillStyle = th.paper; ctx.fillRect(card.x, card.y, card.w, card.h); ctx.strokeStyle = DARK; ctx.lineWidth = 6 * fu; ctx.strokeRect(card.x, card.y, card.w, card.h); ctx.restore();
-  const cc = { ...c, th: { ...th, fg: DARK } }, pad = card.w * 0.075, footH = 130 * fu;
-  const hb = headlineBlock(ctx, cc, { x: card.x, y: card.y + 20 * fu, w: card.w - pad, h: card.h - footH - 30 * fu }, { maxFs: 172 * fu * (land ? 0.85 : 1.5), mx: card.x + pad });
-  subLines(ctx, cc, hb.mx, hb.bottom + 36 * fu);
-  const fy = card.y + card.h - footH / 2, aw = 200 * fu; drawAttentive(ctx, card.x + pad, fy - (aw * ATT_H / ATT_W) / 2, aw, DARK);
-  drawThreadLogo(ctx, card.x + pad + aw + 40 * fu, fy - 918 * 0.075 * fu / 2, 0.075 * fu, DARK);
-  if (S.showBadge) drawBadge(ctx, th, S.badgeShape, card.x + card.w + (land ? 0.005 * W : -0.02 * W), card.y + (land ? 0.07 * card.h : 0), land ? H * 0.34 : tth * 0.95, 0.1 + 0.015 * sway(t, 0.9), S.badgeText, 8 * fu);
-}
-
-const TPL = { headline: tHeadline, speaker: tSpeaker, badges: tBadges, pattern: tPattern, grid: tGrid };
+const TPL = { headline: tHeadline, speaker: tSpeaker, badges: tBadges, pattern: tPattern };
 function render(ctx, W, H, t, still) {
   const c = ctxBase(W, H, t, still);
   ctx.save(); ctx.fillStyle = c.th.bg; ctx.fillRect(0, 0, W, H);
@@ -627,7 +587,7 @@ function frame(now) {
   }
   requestAnimationFrame(frame);
 }
-const TEXTS = ['headline', 'sub', 'date', 'chip', 'speaker', 'role', 'talk', 'badgeText'], CHECKS = ['swashT', 'showBadge', 'badgeSet', 'lines', 'anim'], RANGES = ['density', 'weight', 'photoCount'];
+const TEXTS = ['headline', 'sub', 'date', 'chip', 'speaker', 'role', 'talk', 'badgeText'], CHECKS = ['swashT', 'showBadge', 'lines', 'anim'], RANGES = ['density', 'weight', 'photoCount', 'badgeCount'];
 function syncUI() {
   [['tpl', S.tpl], ['fmt', S.fmt], ['shape', S.badgeShape], ['pfilter', S.photoFilter]].forEach(([id, v]) => document.querySelectorAll('#' + id + ' .chip').forEach((b) => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-pressed', b.dataset.v === v); }));
   document.querySelectorAll('#theme .sw').forEach((b) => b.classList.toggle('on', b.dataset.v === S.theme));
@@ -660,13 +620,16 @@ for (let i = 0; i < 3; i++) {
   const d = document.createElement('div'); d.className = 'ph'; d.tabIndex = 0; d.setAttribute('role', 'button'); d.setAttribute('aria-label', 'Photo ' + (i + 1));
   d.innerHTML = '<canvas width="120" height="150"></canvas><span>Photo ' + (i + 1) + '</span><input type="file" accept="image/*" hidden>'; phWrap.appendChild(d);
   const inp = d.querySelector('input');
-  const load = (f) => { if (!f || !f.type.startsWith('image/')) return; const im = new Image(); im.onload = () => { photoSrc[i] = im; photoVer[i]++; thumb(i); dirty = true; }; im.src = URL.createObjectURL(f); };
+  const load = (f) => { if (!f || !f.type.startsWith('image/')) return; const im = new Image(); im.onload = () => { photoSrc[i] = im; photoVer[i]++; if (S.photoFilter === 'color') { S.photoFilter = 'bw'; syncUI(); } thumb(i); dirty = true; }; im.src = URL.createObjectURL(f); };
   d.addEventListener('click', () => inp.click()); d.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
   inp.addEventListener('change', () => load(inp.files[0]));
   d.addEventListener('dragover', (e) => { e.preventDefault(); d.classList.add('drag'); }); d.addEventListener('dragleave', () => d.classList.remove('drag'));
   d.addEventListener('drop', (e) => { e.preventDefault(); d.classList.remove('drag'); load(e.dataTransfer.files[0]); });
   thumb(i);
 }
+
+/* the three default portraits (Unsplash, black and white, high contrast; see photos/CREDITS.md) */
+['photos/p1.jpg', 'photos/p2.jpg', 'photos/p3.jpg'].forEach((u, i) => { const im = new Image(); im.onload = () => { if (!photoSrc[i]) { photoSrc[i] = im; photoVer[i]++; thumb(i); dirty = true; } }; im.src = u; });
 
 /* export */
 const status = (m) => ($('#status').textContent = m);
@@ -690,7 +653,7 @@ $('#rec').addEventListener('click', () => {
   step();
 });
 
-/* hash: #tpl=grid&fmt=square&theme=ink&seed=3&t=2.5&anim=0 (handy for stills) */
+/* hash: #tpl=badges&fmt=square&theme=ink&seed=3&t=2.5&anim=0 (handy for stills) */
 new URLSearchParams(location.hash.slice(1)).forEach((v, k) => {
   if (k === 'tpl' && TPL[v]) S.tpl = v; else if (k === 'fmt' && FMT[v]) S.fmt = v; else if (k === 'theme' && THEMES[v]) S.theme = v;
   else if (k === 'seed') S.seed = +v || 1; else if (k === 't') frozenT = +v; else if (k === 'anim') S.anim = v !== '0';
