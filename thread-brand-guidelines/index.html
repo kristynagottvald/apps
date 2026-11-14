@@ -187,7 +187,8 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 .spec.it{font-style:italic}
 .spec.caps{text-transform:uppercase;letter-spacing:.18em}
 .spec.f-sans.caps{font-weight:700;font-size:clamp(24px,3.6vw,56px)}
-.cur{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--fg);background:var(--bg);color:var(--fg);padding:9px 13px;font:700 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;margin-top:18px}
+.toolrow{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.cur{display:inline-flex;align-items:center;gap:8px;color:var(--fg);padding:0;font:700 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase}
 .cur svg{width:14px;height:14px}
 .tscale{margin-top:clamp(44px,6vw,80px);border-top:1.5px solid var(--fg)}
 .tscale .r{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:baseline;padding:16px 0 14px;border-bottom:1.5px solid var(--fg)}
@@ -463,14 +464,16 @@ footer.end .row a{text-decoration:none}
     <h2 class="display"><span class="slide">Typography</span></h2>
     <p class="lede">Two families do the work. Instrument Serif carries the headlines, stretched 16% wide and tightened up. Inter carries everything small: sub lines, tags, dates. A script, Pinyon, is kept for the one big capital on a badge. Type your own below.</p>
     <div style="margin-top:clamp(28px,4vw,48px)">
+      <div class="toolrow">
       <div class="tools" role="toolbar" aria-label="Type controls">
         <button class="chip" data-f="serif">Serif</button><button class="chip" data-f="sans">Sans</button><button class="chip" data-f="script">Script</button>
         <button class="chip" id="tIt" aria-label="Italic"><i style="font-family:var(--serif);font-size:15px;letter-spacing:0;text-transform:none">I</i></button>
         <button class="chip" id="tWide" aria-label="Stretch 116%">↔ 116%</button>
         <button class="chip" id="tCaps">Caps</button>
       </div>
-      <div class="spec f-serif wide" id="spec" contenteditable="true" spellcheck="false" role="textbox" aria-label="Type specimen, editable">Thread 2026 in under 10 minutes</div>
       <span class="cur"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 1l12 4.4-5 2.2-2.2 5z" fill="currentColor"/></svg>Type Designer</span>
+      </div>
+      <div class="spec f-serif wide" id="spec" contenteditable="true" spellcheck="false" role="textbox" aria-label="Type specimen, editable">Thread 2026 in under 10 minutes</div>
     </div>
     <div class="tscale" id="tscale">
       <div class="r"><div>Headline<small>Instrument Serif · 172 · 116% wide · −3 tracking · 0.88 leading</small></div><div class="samp" style="font:400 var(--b)/.9 var(--serif);letter-spacing:-.0174em"><span style="display:inline-block;transform:scaleX(1.16);transform-origin:0 0">in under</span></div></div>
@@ -1176,15 +1179,16 @@ surface($('#tMo'), { W: 800, H: 520, draw: (ctx, W, H, t, still) => flourish(ctx
 
 /* ---------- 01 framework ---------- */
 const FW = { tpl: 'headline', measure: true, lines: true };
+const MEASURE_RED = '#e5231b';  // measurements sit outside the yellow, ink and cream palette on purpose, so they read as annotation
 function plate(ctx, fu, th, txt, x, y, al) {
   ctx.save(); ctx.setLineDash([]); ctx.font = '700 ' + 19 * fu + 'px Inter, Arial, sans-serif'; setLS(ctx, 3 * fu);
   const w = ctx.measureText(txt).width + 22 * fu, h = 38 * fu, x0 = al === 'c' ? x - w / 2 : x;
-  ctx.fillStyle = th.bg; ctx.fillRect(x0, y - h / 2, w, h); ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.strokeRect(x0, y - h / 2, w, h);
-  ctx.fillStyle = th.fg; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(txt, x0 + 11 * fu, y + 6.5 * fu); ctx.restore();
+  ctx.fillStyle = MEASURE_RED; ctx.fillRect(x0, y - h / 2, w, h);
+  ctx.fillStyle = '#ffffff'; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(txt, x0 + 11 * fu, y + 6.5 * fu); ctx.restore();
 }
 function measures(ctx, W, H, tpl) {
   const fu = Math.max(W / 2000, 0.7), th = THEMES[S.theme], land = W > H;
-  ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.setLineDash([12 * fu, 9 * fu]);
+  ctx.save(); ctx.strokeStyle = MEASURE_RED; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.setLineDash([12 * fu, 9 * fu]);
   const v = (x) => { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }, h = (y) => { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); };
   v(0.0985 * W); if (land && tpl !== 'pattern') v(0.604 * W);
   if (!FW.lines) { v(131 * fu); h(45 * fu); h(H - 47 * fu); }
