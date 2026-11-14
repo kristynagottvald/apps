@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arrow Line Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#000;color:#fff;overflow:hidden;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column}
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}nav.back>span:nth-of-type(2),nav.back>b{display:none}}
+main{flex:1;min-height:0;position:relative;overflow:hidden}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.panel{position:absolute;left:16px;right:16px;bottom:16px;max-width:760px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12)}
+.seg{display:flex;gap:4px}
+button{font:inherit;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+button:hover{border-color:#fff}
+button:focus-visible,input:focus-visible{outline:2px solid #fff;outline-offset:2px}
+button[aria-pressed="true"]{background:#fff;color:#000;border-color:#fff}
+label{display:flex;align-items:center;gap:8px;color:#d8d8d8}
+input[type=range]{width:96px;accent-color:#fff}
+.sp{flex:1}
+@media (max-width:640px){.panel{left:10px;right:10px;bottom:10px}input[type=range]{width:78px}label{flex:1 1 40%}}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Arrow Line Generator</b></nav>
+<main>
+<canvas id="c" role="img" aria-label="Generative arrow lines: curved lines ending in open arrowheads, cycling between red on black, black on orange and black on grey"></canvas>
+<div class="panel">
+  <div class="seg" id="seg">
+    <button data-s="0" aria-pressed="true">1 Lattice</button>
+    <button data-s="1" aria-pressed="false">2 Flow</button>
+    <button data-s="2" aria-pressed="false">3 Arches</button>
+  </div>
+  <button id="auto" aria-pressed="true">Auto cycle</button>
+  <label>Lines <input id="dens" type="range" min="0.5" max="2" step="0.05" value="1"></label>
+  <label>Curve <input id="curve" type="range" min="0.5" max="1.5" step="0.05" value="1"></label>
+  <label>Stroke <input id="sw" type="range" min="0.6" max="2.2" step="0.05" value="1"></label>
+  <span class="sp"></span>
+  <button id="redraw">Redraw</button>
+  <button id="save">Save PNG</button>
+</div>
+</main>
+<script>
+(() => {
+const cv = document.getElementById('c'), g = cv.getContext('2d');
+const HOLD = 4200, MORPH = 1800;
+const L = (a, b, t) => a + (b - a) * t;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => { const x = rgb(a), y = rgb(b); return 'rgb(' + x.map((v, i) => Math.round(L(v, y[i], t))).join(',') + ')'; };
+
+/* The three styles from the references. A curve is [far end, c1, c2, tip] in px, the arrowhead sits on the tip.
+   Sizes (stroke, head) are in "units" = height / 611, the height of the reference frames. */
+const STYLES = [
+  { name: 'Lattice', bg: '#0d0c0f', ink: '#e5462b', n: 15, stroke: 3.2, head: 21, hang: 45, ang: -135, grain: 1,
+    anchor: (i, n, W, H) => { const t = i / (n - 1); return [(.745 - .5 * t) * W, (-.015 + 1 * t) * H]; },
+    curves: (E, W, H) => [
+      [[1.04 * W, E[1] + .105 * H], [E[0] + .62 * (W - E[0]), E[1] + .105 * H], [E[0] + .17 * H, E[1] + .09 * H], E],
+      [[E[0] + .78 * H, E[1] + .86 * H], [E[0] + .42 * H, E[1] + .34 * H], [E[0] + .13 * H, E[1] + .069 * H], E]
+    ] },
+  { name: 'Flow', bg: '#f15439', ink: '#000000', n: 16, stroke: 2, head: 17, hang: 38, ang: -52, grain: 0,
+    anchor: (i, n, W, H) => [.966 * W, (.08 + .065 * 15 * i / (n - 1)) * H],
+    curves: (E, W, H) => {
+      const c = [[-.01 * W, E[1] + .5 * H], [.30 * W, E[1] + .43 * H], [E[0] - .24 * W, E[1] + .27 * H], [E[0] - .11 * W, E[1] + .115 * H]];
+      return [[c[0], c[1], c[2], E], [c[0], c[1], c[2], E]];
+    } },
+  { name: 'Arches', bg: '#939597', ink: '#000000', n: 29, stroke: 2, head: 15, hang: 32, ang: -90, grain: 0,
+    anchor: (i, n, W, H) => [(.013 + .974 * i / (n - 1)) * W, .32 * H],
+    curves: (E, W, H) => [-1, 1].map((s) => [[E[0] + s * .12 * W, E[1] + .86 * H], [E[0] + s * .05 * W, E[1] + .55 * H], [E[0], E[1] + .26 * H], E]) }
+];
+
+const st = { cur: 0, from: 0, to: 0, m: 1, auto: true, hold: 0, intro: 0, dens: 1, curve: 1, sw: 1 };
+let W = 0, H = 0, dpr = 1, last = 0, run = false;
+
+/* paper grain + the two faint folds of the first reference */
+const grain = document.createElement('canvas'); grain.width = grain.height = 256;
+{ const x = grain.getContext('2d'), d = x.createImageData(256, 256);
+  for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() < .5 ? 255 : 0; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = Math.random() * 15; }
+  x.putImageData(d, 0, 0); }
+const gpat = g.createPattern(grain, 'repeat');
+
+/* resolve a style into px geometry for n anchors */
+function build(sIdx, n) {
+  const S = STYLES[sIdx], out = [];
+  for (let i = 0; i < n; i++) {
+    const E = S.anchor(i, n, W, H), cs = S.curves(E, W, H);
+    out.push({ E, cs: cs.map((c) => c.map((p, k) => k === 0 || k === 3 ? p : [E[0] + (p[0] - E[0]) * st.curve, E[1] + (p[1] - E[1]) * st.curve])) });
+  }
+  return out;
+}
+const count = (s) => Math.max(4, Math.round(STYLES[s].n * st.dens));
+
+function bez(c, t) {
+  const u = 1 - t, a = u * u * u, b = 3 * u * u * t, d = 3 * u * t * t, e = t * t * t;
+  return [a * c[0][0] + b * c[1][0] + d * c[2][0] + e * c[3][0], a * c[0][1] + b * c[1][1] + d * c[2][1] + e * c[3][1]];
+}
+
+/* arrowhead direction = the line's own direction at the tip (bisector when two lines meet there) */
+function headAng(cs) {
+  let x = 0, y = 0;
+  for (const c of cs) {
+    let dx = c[3][0] - c[2][0], dy = c[3][1] - c[2][1];
+    if (Math.hypot(dx, dy) < 1e-3) { dx = c[3][0] - c[1][0]; dy = c[3][1] - c[1][1]; }
+    const l = Math.hypot(dx, dy) || 1; x += dx / l; y += dy / l;
+  }
+  return Math.atan2(y, x);
+}
+const lerpAng = (a, b, t) => a + Math.atan2(Math.sin(b - a), Math.cos(b - a)) * t;
+
+function frame() {
+  const u = Math.min(H, W * .75) / 611;
+  const A = STYLES[st.from], B = STYLES[st.to], m = st.m < 1 ? ease(st.m) : 1;
+  const na = count(st.from), nb = count(st.to), M = m >= 1 ? nb : Math.max(na, nb);
+  const ga = m >= 1 ? null : build(st.from, na), gb = build(st.to, nb);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = mix(A.bg, B.bg, m); g.fillRect(0, 0, W, H);
+  const gr = L(A.grain, B.grain, m);
+  if (gr > .01) {
+    g.save(); g.globalAlpha = gr; g.fillStyle = gpat; g.fillRect(0, 0, W, H);
+    g.fillStyle = 'rgba(255,255,255,.035)'; g.fillRect(0, H * .46, W, 3); g.fillRect(W * .047, 0, 3, H);
+    g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(0, H * .46 + 3, W, 2); g.fillRect(W * .047 + 3, 0, 2, H);
+    g.restore();
+  }
+  g.strokeStyle = g.fillStyle = mix(A.ink, B.ink, m);
+  g.lineWidth = Math.max(1.1, L(A.stroke, B.stroke, m) * u * st.sw);
+  g.lineCap = 'butt'; g.lineJoin = 'miter'; g.miterLimit = 10;
+  const hs = L(A.head, B.head, m) * u * Math.sqrt(st.sw), hang = L(A.hang, B.hang, m) * Math.PI / 180;
+  for (let j = 0; j < M; j++) {
+    const ia = ga ? Math.min(na - 1, Math.floor(j * na / M)) : 0, ib = Math.min(nb - 1, Math.floor(j * nb / M));
+    const gp = clamp(st.intro * 1.7 - (j / M) * .7, 0, 1), p = ease(gp);
+    if (gp <= 0) continue;
+    for (let k = 0; k < 2; k++) {
+      const cb = gb[ib].cs[k], c = ga ? cb.map((q, i) => { const r = ga[ia].cs[k][i]; return [L(r[0], q[0], m), L(r[1], q[1], m)]; }) : cb;
+      g.beginPath();
+      const steps = 56, end = Math.round(steps * p);
+      for (let s = 0; s <= end; s++) { const q = bez(c, s / steps); s ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }
+      g.stroke();
+    }
+    if (gp >= 1) {
+      const E = ga ? [L(ga[ia].E[0], gb[ib].E[0], m), L(ga[ia].E[1], gb[ib].E[1], m)] : gb[ib].E;
+      const ang = ga ? lerpAng(headAng(ga[ia].cs), headAng(gb[ib].cs), m) : headAng(gb[ib].cs);
+      const a1 = ang + Math.PI - hang, a2 = ang + Math.PI + hang;
+      g.beginPath();
+      g.moveTo(E[0] + Math.cos(a1) * hs, E[1] + Math.sin(a1) * hs);
+      g.lineTo(E[0], E[1]);
+      g.lineTo(E[0] + Math.cos(a2) * hs, E[1] + Math.sin(a2) * hs);
+      g.stroke();
+    }
+  }
+}
+
+function tick(ts) {
+  const dt = Math.min(64, ts - (last || ts)); last = ts;
+  if (st.intro < 1) st.intro = Math.min(1, st.intro + dt / 2200);
+  if (st.m < 1) { st.m = Math.min(1, st.m + dt / MORPH); if (st.m >= 1) { st.cur = st.from = st.to; } }
+  else if (st.auto && st.intro >= 1) { st.hold += dt; if (st.hold > HOLD) go((st.cur + 1) % STYLES.length); }
+  frame(); sync();
+  if (st.auto || st.m < 1 || st.intro < 1) requestAnimationFrame(tick); else { run = false; last = 0; }
+}
+function kick() { if (!run) { run = true; last = 0; requestAnimationFrame(tick); } }
+
+function go(s) {
+  if (st.m < 1) { st.from = st.to; }
+  if (s === st.to && st.m >= 1) return;
+  st.from = st.m < 1 ? st.to : st.cur; st.to = s; st.cur = s; st.m = 0; st.hold = 0; kick();
+}
+function sync() {
+  document.querySelectorAll('#seg button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.s === st.to)));
+  document.getElementById('auto').setAttribute('aria-pressed', String(st.auto));
+}
+
+function resize() {
+  const r = cv.getBoundingClientRect(); dpr = Math.min(2, window.devicePixelRatio || 1);
+  W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  frame();
+}
+new ResizeObserver(resize).observe(cv);
+
+document.getElementById('seg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { st.hold = 0; go(+b.dataset.s); } });
+document.getElementById('auto').addEventListener('click', () => { st.auto = !st.auto; st.hold = 0; sync(); kick(); });
+document.getElementById('redraw').addEventListener('click', () => { st.m = 1; st.from = st.cur = st.to; st.intro = 0; kick(); });
+document.getElementById('save').addEventListener('click', () => {
+  frame(); const a = document.createElement('a'); a.download = 'arrow-lines-' + STYLES[st.to].name.toLowerCase() + '.png';
+  a.href = cv.toDataURL('image/png'); a.click();
+});
+for (const [id, key] of [['dens', 'dens'], ['curve', 'curve'], ['sw', 'sw']]) {
+  document.getElementById(id).addEventListener('input', (e) => { st[key] = +e.target.value; if (!run) frame(); });
+}
+addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key >= '1' && e.key <= '3') { st.hold = 0; go(+e.key - 1); }
+  else if (e.code === 'Space' && e.target.tagName !== 'BUTTON') { e.preventDefault(); st.auto = !st.auto; sync(); kick(); }
+});
+if (matchMedia('(prefers-reduced-motion:reduce)').matches) { st.intro = 1; st.auto = false; }
+const q = /[?#&]s=(\d)/.exec(location.href); if (q && +q[1] < 3) { st.cur = st.from = st.to = +q[1]; }
+if (/[?#&]still/.test(location.href)) { st.intro = 1; }
+resize(); sync(); kick();
+window.__alg = { st, go };
+})();
+</script>
+</body>
+</html>
