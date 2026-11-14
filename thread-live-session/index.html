@@ -414,7 +414,10 @@ function sSession(ctx, c) {
   const lx = GX + 64, lw = 400, px = lx + lw + 40, pw = W - GX - 64 - px, py = GY0 + 60, ph = GY1 - 60 - py;
   const box = (x, y, w, h) => { ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, w - 2, h - 2); ctx.restore(); };   // outlines only, no fill: the type sits straight on the background
   box(lx, py, lw, 148); const k = 270 / 2485; drawLogo(ctx, lx + lw / 2 - 135, py + 74 - 918 * k / 2 + (still ? 0 : 2 * sway(t, 0.2)), k, th.fg, still ? 0 : 0.012 * sway(t, 0));
-  box(lx, py + 172, lw, 100); sansText(ctx, (S.sKick || '').toUpperCase(), lx + lw / 2, py + 172 + 58, 24, th.fg, { wt: 700, ls: 3.5, align: 'center' });
+  const kh = 64; box(lx, py + 172, lw, kh);
+  // the top and bottom edge of each box run on to the left edge of the screen
+  ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath(); [py + 1, py + 147, py + 173, py + 172 + kh - 1].forEach((y) => { ctx.moveTo(0, y); ctx.lineTo(lx, y); }); ctx.stroke(); ctx.restore();
+  sansText(ctx, (S.sKick || '').toUpperCase(), lx + lw / 2, py + 172 + kh / 2 + 8.5, 24, th.fg, { wt: 700, ls: 3.5, align: 'center' });
   // calligraphy bleeds off the bottom right corner
   flourishPair(ctx, px, py, W - px, ph, { color: th.fg, t, still, fw: penW(), s: 0.62, va: 'bottom', side: 'R', off: 1.5 });
   const lines = parseLines(S.sTitle, 4), fs = fitLines(ctx, lines, pw - 150, ph - 360, 190, 0.92), tx = px;
