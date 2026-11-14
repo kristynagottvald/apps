@@ -1,5 +1,14 @@
 [
   {
+    "id": "conference-post-generator",
+    "title": "Conference Post Generator",
+    "category": "Tools",
+    "url": "conference-post-generator/",
+    "thumbnail": "conference-post-generator/thumb.png",
+    "preview": "conference-post-generator/thumb.webp",
+    "alt": "A yellow and black Thread 2026 conference post with a calligraphy swash headline, then switching between speaker, badge, looping line pattern and overlapping loop grid templates with outlined photos and badges"
+  },
+  {
     "id": "arrow-line-generator",
     "title": "Arrow Line Generator",
     "category": "Motion",
