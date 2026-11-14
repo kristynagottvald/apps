@@ -163,7 +163,7 @@ const THEMES = {
 };
 const LAYOUTS = ['soon', 'intro', 'live', 'session', 'statement'];
 const S = {
-  layout: 'soon', themes: { soon: 'yellow', intro: 'ink', live: 'yellow', session: 'yellow', statement: 'cream' },
+  layout: 'soon', themes: { soon: 'yellow', intro: 'ink', live: 'yellow', session: 'cream', statement: 'cream' },
   lines: true, anim: true, auto: false, weight: 5,
   soonHead: 'Stream starts\n*soon*', soonTag: 'Live on LinkedIn',
   introTag: 'Episode 1', introSub: 'SMS marketing, answered live', tickL: 'Feat. Maya Chen of Northwind', tickR: 'Jordan Ellis of Lumen & Co', host1: 'Maya Chen', host2: 'Jordan Ellis',
@@ -408,23 +408,31 @@ function sLive(ctx, c) {
   ctx.restore();
 }
 
-/* ===== 4. session title card (breakout style) ===== */
+/* ===== 4. session title card: the brand guidelines grid ===== */
+/* a 6 x 5 grid of hairline cells; the title block and a hard-shadow yellow card sit over it, and the free cells light up one after another */
 function sSession(ctx, c) {
-  const { th, t, still } = c; grid(ctx, c);
-  const lx = GX + 64, lw = 400, px = lx + lw + 40, pw = W - GX - 64 - px, py = GY0 + 60, ph = GY1 - 60 - py;
-  const box = (x, y, w, h) => { ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, w - 2, h - 2); ctx.restore(); };   // outlines only, no fill: the type sits straight on the background
-  box(lx, py, lw, 148); const k = 270 / 2485; drawLogo(ctx, lx + lw / 2 - 135, py + 74 - 918 * k / 2 + (still ? 0 : 2 * sway(t, 0.2)), k, th.fg, still ? 0 : 0.012 * sway(t, 0));
-  const kh = 64; box(lx, py + 172, lw, kh);
-  // the top and bottom edge of each box run on to the left edge of the screen
-  ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath(); [py + 1, py + 147, py + 173, py + 172 + kh - 1].forEach((y) => { ctx.moveTo(0, y); ctx.lineTo(lx, y); }); ctx.stroke(); ctx.restore();
-  sansText(ctx, (S.sKick || '').toUpperCase(), lx + lw / 2, py + 172 + kh / 2 + 8.5, 24, th.fg, { wt: 700, ls: 3.5, align: 'center' });
-  // calligraphy bleeds off the bottom right corner
-  flourishPair(ctx, px, py, W - px, ph, { color: th.fg, t, still, fw: penW(), s: 0.62, va: 'bottom', side: 'R', off: 1.5 });
-  const lines = parseLines(S.sTitle, 4), fs = fitLines(ctx, lines, pw - 150, ph - 360, 190, 0.92), tx = px;
-  lines.forEach((l, i) => slide(ctx, l.s, tx, py + 10 + fs * 0.78 + i * fs * 0.92 + (still ? 0 : 2 * sway(t, i * 0.8)), fs, l.it, th.fg));
-  const ry = py + ph - 150; ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(px, ry); ctx.lineTo(px + pw * 0.5, ry); ctx.stroke(); ctx.restore();
-  serifText(ctx, S.sSpeaker || '', px, ry + 60, 54, th.fg, { it: true }); sansText(ctx, (S.sRole || '').toUpperCase(), px, ry + 100, 19, th.fg, { wt: 600, ls: 3.5 });
-  attentive(ctx, th);
+  const { th, t, still } = c, x0 = GX, cw = (W - 2 * GX) / 6, y0 = GY0, rh = (GY1 - GY0) / 5, X = (i) => x0 + i * cw, Y = (j) => y0 + j * rh;
+  const hi = th.bg === YEL ? th.paper : YEL, line = (x1, y1, x2, y2) => { ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); };
+  const free = [[1, 5], [2, 5], [3, 0], [3, 1], [4, 0], [4, 1]];   // cells not covered by the title block or the card
+  free.forEach(([r, col], k) => { const u = ((((t - 2 * k) % PERIOD) + PERIOD) % PERIOD) / 2; if (u < 1) { ctx.save(); ctx.globalAlpha = Math.sin(Math.PI * u); ctx.fillStyle = hi; ctx.fillRect(X(col), Y(r), cw, rh); ctx.restore(); } });
+  ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath();
+  for (let i = 0; i <= 6; i++) { const edge = i === 0 || i === 6; line(X(i), edge ? 0 : y0, X(i), edge ? H : GY1); }
+  for (let j = 0; j <= 5; j++) { const edge = j === 0 || j === 5; line(edge ? 0 : x0, Y(j), edge ? W : W - GX, Y(j)); }
+  ctx.stroke(); ctx.restore();
+  // the title block hides the cells under it and keeps its right and bottom edge
+  ctx.save(); ctx.fillStyle = th.bg; ctx.fillRect(X(0) + 1, Y(0) + 1, 5 * cw - 1, 3 * rh - 1); ctx.strokeStyle = th.fg; ctx.lineWidth = 2; ctx.beginPath(); line(X(5), Y(0), X(5), Y(3)); line(X(0), Y(3), X(5), Y(3)); ctx.stroke(); ctx.restore();
+  const lines = parseLines(S.sTitle, 4), fs = fitLines(ctx, lines, 5 * cw - 100, 3 * rh - 50, 190, 0.9);
+  lines.forEach((l, i) => slide(ctx, l.s, X(0) + 46, Y(0) + 26 + fs * 0.8 + i * fs * 0.9 + (still ? 0 : 2 * sway(t, i * 0.8)), fs, l.it, th.fg));
+  // logo in the top right cell, label and Attentive in the bottom left cells
+  const lk = 190 / 2485; drawLogo(ctx, X(5) + (cw - 190) / 2, Y(0) + rh / 2 - 918 * lk / 2, lk, th.fg, still ? 0 : 0.012 * sway(t, 0));
+  tag(ctx, (S.sKick || '').toUpperCase(), X(0) + 36, GY1 - 172, 60, 22, th.fg, { pad: 28, ls: 4.5, fill: th.bg });
+  drawAttentive(ctx, X(0) + 36, GY1 - 76, 170, th.fg);
+  // the card: yellow, hard black shadow, speaker in the serif, swash T bottom left
+  const kx = X(2), ky = Y(3), kw = 4 * cw, kh = 2 * rh, sx = 10;
+  ctx.save(); ctx.fillStyle = DARK; ctx.fillRect(kx + sx, ky + sx, kw, kh); ctx.fillStyle = hi; ctx.fillRect(kx, ky, kw, kh); ctx.strokeStyle = DARK; ctx.lineWidth = 2; ctx.strokeRect(kx + 1, ky + 1, kw - 2, kh - 2); ctx.restore();
+  serifText(ctx, S.sSpeaker || '', kx + 48, ky + 48 + 66, 84, DARK);
+  sansText(ctx, (S.sRole || '').toUpperCase(), kx + 52, ky + 48 + 66 + 50, 20, DARK, { wt: 600, ls: 4 });
+  const sk = 0.075; ctx.save(); ctx.translate(kx + 50 - 673 * sk, ky + kh - 48 - 918 * sk - 5 * sk); ctx.scale(sk, sk); fillStroke(ctx, pSwash, DARK, 10.5); ctx.restore();
 }
 
 /* ===== 5. statement card ===== */
