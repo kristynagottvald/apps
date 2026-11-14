@@ -75,12 +75,17 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .cr .form{font:600 2.4cqw var(--sans);color:var(--lime);white-space:nowrap}
 .cr .stage{position:absolute;right:-10cqw;top:2cqw;width:62cqw;aspect-ratio:1;container-type:inline-size}
 .cr .stage>*{pointer-events:none}
-.cr .bl{position:absolute;width:60%;background:var(--card);border-radius:6px;padding:2.6cqw 4.6cqw;color:#fff;z-index:3}
+.cr .bl{position:absolute;width:60%;height:13.4%;display:flex;align-items:center;background:var(--card);border-radius:6px;padding:0 4.6cqw;color:#fff;z-index:3;opacity:0;left:8%;top:28%;transform:scale(.8);transform-origin:50% 100%;transition:left 1.9s cubic-bezier(.22,.8,.3,1),top 1.9s cubic-bezier(.22,.8,.3,1),transform .7s cubic-bezier(.34,1.56,.64,1),opacity .5s}
+.cr .bl[data-s="1"]{left:8%;top:20.4%;opacity:1;transform:none}
+.cr .bl[data-s="0"]{left:18%;top:5%;opacity:1;transform:none}
+.cr .bl[data-s="x"]{left:18%;top:-10.4%;opacity:0;transform:scale(.97);transition:left 1.9s,top 1.9s cubic-bezier(.22,.8,.3,1),transform .6s,opacity .9s .2s}
+.cr .bl[data-s="r"]{transition:none}
+@media(prefers-reduced-motion:reduce){.cr .bl{transition:none}}
 .cr .bl strong{display:block;font:400 3.6cqw/1.1 var(--sans);letter-spacing:-.02em}.cr .bl strong i{font:italic 400 3.8cqw var(--serif)}
 .ad .cr .bl .sw{display:block}
 .cr .bl p{white-space:nowrap;font:400 1.85cqw/1.4 var(--sans);color:rgba(255,255,255,.75);margin-top:.5cqw}
-.cr .box{position:absolute;left:0;right:0;top:7%;bottom:0;background:var(--purple);border-radius:32px;overflow:hidden}
-.cr .mail{position:absolute;z-index:2;left:25%;top:36%;width:50%;aspect-ratio:1.5;border-radius:3px;overflow:hidden;background:#a393f5}
+.cr .box{position:absolute;left:0;right:0;top:15%;bottom:0;background:var(--purple);border-radius:32px;overflow:hidden}
+.cr .mail{position:absolute;z-index:2;left:25%;top:33%;width:50%;aspect-ratio:1.5;border-radius:3px;overflow:hidden;background:#a393f5}
 .cr .mail .el{position:absolute}
 .cr .mail .bar2{background:var(--purple);border-radius:99px}
 .cr .mail .tag{background:var(--deep);color:#fff;border-radius:2px;font:600 1.2cqw/1 var(--sans);display:flex;align-items:center;justify-content:center}
@@ -210,7 +215,7 @@ tfoot td{font-weight:600;border-top:1px solid rgba(255,255,255,.25)}
     <a class="cr" id="adCr" href="https://kristynagottvald.github.io/sandbox/location-hero/?utm_source=linkedin&amp;utm_medium=paid_social&amp;utm_campaign=location_hero" aria-label="Direct mail that lands in your city in days. Opens the landing page">
      <div class="l"><div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.200 7 13 7 13s7-7.800 7-13a7 7 0 0 0-7-7zm0 9.500a2.500 2.500 0 1 1 0-5 2.500 2.500 0 0 1 0 5z"/></svg><span>Mailing in <em class="sw" id="crCity"></em></span></div>
       <h4><span class="sw" id="crH"></span></h4><div class="form">Start sending</div></div>
-     <div class="stage"><div class="bl" style="left:18%;top:4%"><strong class="sw" id="b1h"></strong><p class="sw" id="b1p"></p></div><div class="bl" style="left:8%;top:25%"><strong class="sw" id="b2h"></strong><p class="sw" id="b2p"></p></div>
+     <div class="stage"><div class="bl" id="bl1" data-s="h"><div><strong class="sw" id="b1h"></strong><p class="sw" id="b1p"></p></div></div><div class="bl" id="bl2" data-s="h"><div><strong class="sw" id="b2h"></strong><p class="sw" id="b2p"></p></div></div><div class="bl" id="bl3" data-s="h"><div><strong class="sw" id="b3h"></strong><p class="sw" id="b3p"></p></div></div>
       <div class="box"></div>
       <div class="mail"><div class="el bar2" style="left:7.7%;top:9%;width:34%;height:4.2%"></div><div class="el bar2" style="left:7.7%;top:16.5%;width:24%;height:4.2%"></div><div class="el tag" style="left:70%;top:8.5%;width:22%;height:10%">Lob</div>
        <div class="el bar2" style="left:7.7%;top:37%;width:34%;height:3.6%"></div><div class="el bar2" style="left:7.7%;top:45%;width:26%;height:3.6%"></div><div class="el bar2" style="left:7.7%;top:53%;width:30%;height:3.6%"></div>
@@ -266,11 +271,11 @@ const $=id=>document.getElementById(id);
 const LIVE='https://kristynagottvald.github.io/sandbox/location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero';
 /* one entry per market: ad copy (matches the landing page) and the sample campaign numbers */
 const M=[
- {k:'sd',city:'San Diego, CA',region:'Southern California',short:'San Diego',days:'2.0',scf:'Avg. First-Class time in your SCF, 919–921',hoods:'Gaslamp, La Jolla and North Park',intro:'Your next customer is already in San Diego. Print at our Southern California facility and land in Gaslamp, La Jolla and North Park mailboxes in days.',bar:'Reach 21,340 San Diego homes in days',impr:148200,ctr:.0094,cpc:7.84,lp:.88,cv:.062,homes:21340},
- {k:'mia',city:'Miami, FL',region:'South Florida',short:'Miami',days:'2.3',scf:'Avg. First-Class time in your SCF, 331–332',hoods:'Brickell, Wynwood and Coral Gables',intro:'Your next customer is already in Miami. Print at our Florida facility and land in Brickell, Wynwood and Coral Gables mailboxes in days.',bar:'Reach 24,760 Miami homes in days',impr:131500,ctr:.0081,cpc:8.41,lp:.86,cv:.051,homes:24760},
- {k:'nsh',city:'Nashville, TN',region:'Middle Tennessee',short:'Nashville',days:'2.1',scf:'Avg. First-Class time in your SCF, 370–372',hoods:'East Nashville, Gulch and Germantown',intro:'Your next customer is already in Nashville. Print at our Tennessee facility and land in East Nashville, Gulch and Germantown mailboxes in days.',bar:'Reach 19,880 Nashville homes in days',impr:96800,ctr:.0102,cpc:7.12,lp:.89,cv:.068,homes:19880},
- {k:'cmh',city:'Columbus, OH',region:'Central Ohio',short:'Columbus',days:'2.0',scf:'Avg. First-Class time in your SCF, 430–432',hoods:'Short North, German Village and Clintonville',intro:'Your next customer is already in Columbus. Print at our Ohio facility and land in Short North, German Village and Clintonville mailboxes in days.',bar:'Reach 22,410 Columbus homes in days',impr:88400,ctr:.0107,cpc:6.95,lp:.9,cv:.071,homes:22410},
- {k:'mci',city:'Kansas City, MO',region:'Kansas City Metro',short:'Kansas City',days:'2.4',scf:'Avg. First-Class time in your SCF, 640–641',hoods:'Westport, Crossroads and Brookside',intro:'Your next customer is already in Kansas City. Print at our Midwest facility and land in Westport, Crossroads and Brookside mailboxes in days.',bar:'Reach 17,950 Kansas City homes in days',impr:71300,ctr:.0088,cpc:7.3,lp:.87,cv:.057,homes:17950}];
+ {k:'sd',from:'Carlsbad, CA',fromSub:'36 mi from your delivery zone, 92101',city:'San Diego, CA',region:'Southern California',short:'San Diego',days:'2.0',scf:'Avg. First-Class time in your SCF, 919–921',hoods:'Gaslamp, La Jolla and North Park',intro:'Your next customer is already in San Diego. Print at our Southern California facility and land in Gaslamp, La Jolla and North Park mailboxes in days.',bar:'Reach 21,340 San Diego homes in days',impr:148200,ctr:.0094,cpc:7.84,lp:.88,cv:.062,homes:21340},
+ {k:'mia',from:'Orlando, FL',fromSub:'235 mi from your delivery zone, 33131',city:'Miami, FL',region:'South Florida',short:'Miami',days:'2.3',scf:'Avg. First-Class time in your SCF, 331–332',hoods:'Brickell, Wynwood and Coral Gables',intro:'Your next customer is already in Miami. Print at our Florida facility and land in Brickell, Wynwood and Coral Gables mailboxes in days.',bar:'Reach 24,760 Miami homes in days',impr:131500,ctr:.0081,cpc:8.41,lp:.86,cv:.051,homes:24760},
+ {k:'nsh',from:'Memphis, TN',fromSub:'210 mi from your delivery zone, 37203',city:'Nashville, TN',region:'Middle Tennessee',short:'Nashville',days:'2.1',scf:'Avg. First-Class time in your SCF, 370–372',hoods:'East Nashville, Gulch and Germantown',intro:'Your next customer is already in Nashville. Print at our Tennessee facility and land in East Nashville, Gulch and Germantown mailboxes in days.',bar:'Reach 19,880 Nashville homes in days',impr:96800,ctr:.0102,cpc:7.12,lp:.89,cv:.068,homes:19880},
+ {k:'cmh',from:'Dayton, OH',fromSub:'72 mi from your delivery zone, 43215',city:'Columbus, OH',region:'Central Ohio',short:'Columbus',days:'2.0',scf:'Avg. First-Class time in your SCF, 430–432',hoods:'Short North, German Village and Clintonville',intro:'Your next customer is already in Columbus. Print at our Ohio facility and land in Short North, German Village and Clintonville mailboxes in days.',bar:'Reach 22,410 Columbus homes in days',impr:88400,ctr:.0107,cpc:6.95,lp:.9,cv:.071,homes:22410},
+ {k:'mci',from:'Wichita, KS',fromSub:'200 mi from your delivery zone, 64105',city:'Kansas City, MO',region:'Kansas City Metro',short:'Kansas City',days:'2.4',scf:'Avg. First-Class time in your SCF, 640–641',hoods:'Westport, Crossroads and Brookside',intro:'Your next customer is already in Kansas City. Print at our Midwest facility and land in Westport, Crossroads and Brookside mailboxes in days.',bar:'Reach 17,950 Kansas City homes in days',impr:71300,ctr:.0088,cpc:7.3,lp:.87,cv:.057,homes:17950}];
 const state={s:1,m:0,f:-1,metric:'clicks'}; // m = viewer market in the feed, f = market filter on the dashboard (-1 all)
 
 /* ---------- navigation ---------- */
@@ -287,10 +292,10 @@ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(+b.dataset.go
 /* ---------- 1: feed and ad ---------- */
 $('geo').innerHTML=M.map((m,i)=>`<option value="${i}">${m.city}</option>`).join('');
 $('geo').onchange=e=>setMarket(+e.target.value);
-const swEls=['adIntro','crCity','crH','b1h','b1p','b2h','b2p','barT'].map($);
+const swEls=['adIntro','crCity','crH','b1h','b1p','b2h','b2p','b3h','b3p','barT'].map($);
 function paintAd(){const m=M[state.m];
  $('adIntro').innerHTML=m.intro+' <span class="mr" style="color:rgba(0,0,0,.6)">…more</span>';$('crCity').textContent=m.region;
- $('crH').innerHTML=`Direct mail<br>that lands in<br><i>${m.short}</i><br>in days`;$('b1h').innerHTML=`${m.days} day <i>delivery time</i>`;$('b1p').textContent=m.scf;$('b2h').innerHTML=`<i>${m.homes.toLocaleString('en-US')}</i> homes in your zone`;$('b2p').textContent=m.hoods;$('barT').textContent=m.bar;
+ $('crH').innerHTML=`Direct mail<br>that lands in<br><i>${m.short}</i><br>in days`;$('b1h').innerHTML=`${m.days} day <i>delivery time</i>`;$('b1p').textContent=m.scf;$('b2h').innerHTML=`Sending from <i>${m.from}</i>`;$('b2p').textContent=m.fromSub;$('b3h').innerHTML=`<i>${m.homes.toLocaleString('en-US')}</i> homes in your zone`;$('b3p').textContent=m.hoods;$('barT').textContent=m.bar;
  $('geo').value=state.m;$('utmCity').textContent=m.city}
 function setMarket(i,instant){state.m=i;if(instant){paintAd();return}
  swEls.forEach(e=>e.classList.add('out'));setTimeout(()=>{paintAd();swEls.forEach(e=>e.classList.remove('out'))},300);
@@ -370,7 +375,18 @@ function drawChart(days){
 
 /* ---------- start ---------- */
 paintAd();
-window.__pp={go,setMarket:i=>setMarket(i)};
+/* the three blurbs drift up one after another, like the landing page */
+const BL=[1,2,3].map(n=>$('bl'+n));
+const bl={timer:null,st:null,order:[0,1,2],
+ reset(e){e.dataset.s='r';void e.offsetWidth;e.dataset.s='h';void e.offsetWidth},
+ instant(){BL.forEach(e=>{e.dataset.s='r'});void BL[0].offsetWidth;this.order=[0,1,2];BL[0].dataset.s='0';BL[1].dataset.s='1';BL[2].dataset.s='h'},
+ step(){const [top,low,nxt]=this.order;BL[top].dataset.s='x';BL[low].dataset.s='0';this.reset(BL[nxt]);BL[nxt].dataset.s='1';
+  const gone=top;this.order=[low,nxt,gone];setTimeout(()=>{if(this.order[2]===gone)this.reset(BL[gone])},2200)},
+ intro(){this.order=[0,1,2];BL.forEach(e=>{e.dataset.s='h'});setTimeout(()=>{BL[0].dataset.s='0'},150);setTimeout(()=>{BL[1].dataset.s='1'},650)},
+ start(first){this.stop();this.st=setTimeout(()=>{this.step();this.timer=setInterval(()=>this.step(),3400)},first)},
+ stop(){clearTimeout(this.st);clearInterval(this.timer)}};
+if(new URLSearchParams(location.search).has('hold')){bl.instant()}else{bl.intro();bl.start(2600)}
+window.__pp={go,setMarket:i=>setMarket(i),bl};
 const h=location.hash.slice(1),start={ad:1,page:2,perf:3}[h]||1;
 go(start,true);
 </script>

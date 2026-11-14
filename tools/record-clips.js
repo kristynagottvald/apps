@@ -121,11 +121,12 @@ const APPS = {
       await at(t0, 700, () => p.evaluate(() => gc.play({ speed: 2.4, clip: true })));
       await sleep(5600);
     } },
-  // the feed with the sponsored ad (viewer in San Diego), switch the viewer's metro to Miami so the creative follows, click the ad through to the landing page, then on to the performance dashboard
+  // the feed with the sponsored ad (viewer in San Diego), the blurbs drift up, switch the viewer's metro to Miami so the creative follows, click the ad through to the landing page, then on to the performance dashboard
   'paid-ad-pipeline': { vp: [1280, 769], http: true, crop: [0, 49, 1280, 720], ready: 1200, q: 55,
-    setup: async (p) => { await p.evaluate(() => window.scrollTo(0, 330)); },
+    setup: async (p) => { await p.evaluate(() => { window.scrollTo(0, 330); __pp.bl.stop(); __pp.bl.instant(); }); },
     run: async (p) => {
       const t0 = Date.now();
+      await p.evaluate(() => __pp.bl.start(900));   // the blurbs drift up while the feed is on screen
       await at(t0, 1500, () => p.evaluate(() => __pp.setMarket(1)));
       await at(t0, 2800, () => domClick(p, '#adCr'));
       await at(t0, 4600, () => domClick(p, '#tog button[data-s="3"]'));
