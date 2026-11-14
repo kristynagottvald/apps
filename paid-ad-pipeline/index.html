@@ -68,7 +68,7 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .ad .cr .sw,.ad .tx .sw{transition:opacity .3s,transform .3s,filter .3s;display:inline-block}
 .ad .out{opacity:0!important;filter:blur(4px)}
 .ad .cr{background:var(--ink)}
-.cr .l{position:absolute;left:8cqw;top:0;bottom:0;width:39cqw;display:flex;flex-direction:column;justify-content:center}
+.cr .l{position:absolute;left:5.5cqw;top:0;bottom:0;width:41cqw;display:flex;flex-direction:column;justify-content:center}
 .cr .chip{display:inline-flex;align-items:center;gap:1.2cqw;white-space:nowrap;font:600 1.35cqw var(--sans);letter-spacing:.12em;text-transform:uppercase}
 .cr .chip svg{width:2.2cqw;height:2.2cqw;fill:var(--lime)}.cr .chip em{font-style:normal;color:var(--lime)}
 .cr h4{font:400 5.4cqw/1.04 var(--sans);letter-spacing:-.045em;margin:4cqw 0 3.6cqw;white-space:nowrap}
@@ -297,7 +297,7 @@ $('geo').onchange=e=>setMarket(+e.target.value);
 const swEls=['adIntro','crCity','crH','b1h','b1p','b2h','b2p','b3h','b3p','barT'].map($);
 function paintAd(){const m=M[state.m];
  $('adIntro').innerHTML=m.intro+' <span class="mr" style="color:rgba(0,0,0,.6)">…more</span>';$('crCity').textContent=m.region;
- $('crH').innerHTML=`Direct mail<br>reaches<br><i>${m.short}</i><br>in days`;$('b1h').innerHTML=`${m.days} day <i>delivery time</i>`;$('b1p').textContent=m.scf;$('b2h').innerHTML=`Sending from <i>${m.from}</i>`;$('b2p').textContent=m.fromSub;$('b3h').innerHTML=`<i>${m.homes.toLocaleString('en-US')}</i> homes in your zone`;$('b3p').textContent=m.hoods;$('barT').textContent=m.bar;
+ $('crH').innerHTML=`Direct mail<br>that reaches<br><i>${m.short}</i><br>in days`;$('b1h').innerHTML=`${m.days} day <i>delivery time</i>`;$('b1p').textContent=m.scf;$('b2h').innerHTML=`Sending from <i>${m.from}</i>`;$('b2p').textContent=m.fromSub;$('b3h').innerHTML=`<i>${m.homes.toLocaleString('en-US')}</i> homes in your zone`;$('b3p').textContent=m.hoods;$('barT').textContent=m.bar;
  $('geo').value=state.m;$('utmCity').textContent=m.city}
 function setMarket(i,instant){state.m=i;if(instant){paintAd();return}
  swEls.forEach(e=>e.classList.add('out'));setTimeout(()=>{paintAd();swEls.forEach(e=>e.classList.remove('out'))},300);
