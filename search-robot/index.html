@@ -17,20 +17,24 @@ nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;t
 nav.back span{color:#6e6e6e}
 nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:640px){nav.back{padding:0 16px}nav.back>span:nth-of-type(2),nav.back>b{display:none}}
+nav.back .ctl{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:0}
+nav.back button{font:inherit;color:#fff;background:transparent;border:1px solid #4a4a4a;border-radius:8px;padding:4px 12px;cursor:pointer}
+nav.back button:hover{border-color:#fff}
+nav.back button:focus-visible{outline:2px solid #79BFF4;outline-offset:2px}
+nav.back #pp{min-width:64px}
+nav.back input[type=range]{width:240px;min-width:60px;accent-color:#79BFF4;cursor:pointer}
+@media (max-width:640px){nav.back .ctl{flex:1}nav.back input[type=range]{flex:1;width:auto}}
 main{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;padding:20px 16px 14px;gap:12px}
 .stage{flex:1;min-height:0;width:100%;display:flex;justify-content:center}
 svg{height:100%;max-width:100%;aspect-ratio:308/229;display:block;cursor:pointer}
 .rp{fill:none}
 svg text{font-family:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:500;font-size:4.8px}
-.panel{flex:none}
-button{font:inherit;color:#173259;background:transparent;border:1px solid rgba(23,50,89,.35);border-radius:8px;padding:6px 14px;cursor:pointer}
-button:hover{border-color:#173259}
-button:focus-visible{outline:2px solid #397ED3;outline-offset:2px}
-.clip .panel{display:none}.clip main{padding:14px 16px}
+.clip main{padding:14px 16px}
 </style>
 </head>
 <body>
-<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Search Robot</b></nav>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Search Robot</b>
+<div class="ctl"><button id="pp" type="button" aria-label="Pause">Pause</button><input id="tl" type="range" min="0" max="1000" value="0" aria-label="Timeline"><button id="replay" type="button">Replay</button></div></nav>
 <main>
 <div class="stage">
 <svg id="art" viewBox="0 0 308 229" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A robot presents a support search: the query 'sander is scratching' is typed into a search card, matching questions appear, and the context lands as sticky notes on a graph beside it.">
@@ -239,7 +243,6 @@ button:focus-visible{outline:2px solid #397ED3;outline-offset:2px}
 <g id="s5"><rect x="209.127" y="88.1611" width="59.7004" height="14.0471" rx="3.60064" fill="#F9E898"/><text x="214.29" y="97.06" fill="#173259" textLength="49.5" lengthAdjust="spacingAndGlyphs">Does not remove paint</text></g>
 </svg>
 </div>
-<div class="panel"><button id="replay" type="button">Replay</button></div>
 </main>
 <script>
 (function(){
@@ -306,27 +309,34 @@ function render(tt){
   $('spk').setAttribute('transform',tf(249.8,125,0,0,0,Math.max(sp,0)*tw));
   /* robot: the head turns to the card, then to the graph; arms lift as things are sent */
   var h1=eio(clamp((t-1.2)/.5))*(1-eio(clamp((t-2.9)/.5))), h2=eio(clamp((t-3.3)/.5))*(1-eio(clamp((t-7)/.7)));
-  var ha=-3*h1+7*h2, hx=3*h2, bob=.5*Math.sin(2*Math.PI*t/T*4);
-  for(i=0;i<hds.length;i++)hds[i].setAttribute('transform','translate('+hx+' '+bob+') rotate('+ha+' 145 160)');
+  var fl=1-2*eio(clamp((t-3.4)/.45))+2*eio(clamp((t-7)/.45));
+  var ha=0, hx=0, bob=0;
+  for(i=0;i<hds.length;i++)hds[i].setAttribute('transform','translate('+hx+' '+bob+') translate(139 0) scale('+fl+' 1) translate(-139 0) rotate('+ha+' 145 160)');
   var la=-4*pulse(2.1,1.3)-3*pulse(3.0,.9)+1.2*Math.sin(2*Math.PI*t/T*3);
   for(i=0;i<las.length;i++)las[i].setAttribute('transform','rotate('+la+' 66 158)');
   var ra=1.2*Math.sin(2*Math.PI*t/T*3+1)-5*(pulse(3.4,.45)+pulse(3.8,.45)+pulse(4.1,.45)+pulse(4.4,.45)+pulse(4.7,.45)+pulse(5.0,.45)+pulse(5.9,.5));
   $('ra').setAttribute('transform','rotate('+ra+' 172 162)');
 }
 /* clock */
-var raf=0,base=0,from=0,speed=1,loop=true;
-function frame(now){
-  var tt=from+(now-base)/1000*speed;
-  if(loop)tt%=T; else if(tt>=T)tt=T-.001;
-  render(tt);
-  if(loop||tt<T-.002)raf=requestAnimationFrame(frame); else raf=0;
-}
-function play(o){o=o||{};from=o.from||0;speed=o.speed||1;loop=o.loop!==false;base=performance.now();if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(frame)}
-function seek(x){if(raf){cancelAnimationFrame(raf);raf=0}render(x)}
-window.__rb={play:play,seek:seek,T:T};
+var cur=0,speed=1,loop=true,playing=false,last=0,raf=0,sl=$('tl'),pp=$('pp');
+function btn(){pp.textContent=playing?'Pause':'Play';pp.setAttribute('aria-label',pp.textContent)}
+function show(){render(cur);sl.value=cur/T*1000;btn()}
+function tick(now){raf=0;if(!playing)return;cur+=(now-last)/1000*speed;last=now;
+  if(cur>=T){if(loop)cur%=T;else{cur=T-.001;playing=false}}
+  show();if(playing)raf=requestAnimationFrame(tick)}
+function resume(){if(cur>=T-.01)cur=0;playing=true;last=performance.now();if(!raf)raf=requestAnimationFrame(tick);btn()}
+function pause(){playing=false;btn()}
+function play(o){o=o||{};cur=o.from||0;speed=o.speed||1;loop=o.loop!==false;resume()}
+function seek(x){pause();cur=x;show()}
+window.__rb={play:play,seek:seek,pause:pause,T:T};
+pp.addEventListener('click',function(){playing?pause():resume()});
 $('replay').addEventListener('click',function(){play({from:0})});
-$('art').addEventListener('click',function(){play({from:0})});
-render(0);
+$('art').addEventListener('click',function(){playing?pause():resume()});
+var was=false;
+sl.addEventListener('pointerdown',function(){was=playing});
+sl.addEventListener('input',function(){playing=false;cur=sl.value/1000*T;render(cur);btn()});
+sl.addEventListener('change',function(){if(was)resume();was=false});
+show();
 if(!CLIP&&!reduce)play({from:0});
 })();
 </script>
