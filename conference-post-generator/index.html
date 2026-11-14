@@ -548,7 +548,7 @@ function tSpeaker(ctx, c) {
   const w100 = nameLines.map((s) => measureSlide(ctx, s, 100, false) / 100);
   ctx.save(); ctx.font = serifFont(60 * fu, true);
   const talk = (S.talk ? wrapText(ctx, S.talk, rightB - mx) : []).slice(0, 3); ctx.restore();
-  const extraH = (S.chip ? 100 * fu : 0) + (S.role ? 100 * fu : 0) + talk.length * 62 * fu + 40 * fu;
+  const extraH = (S.chip ? 100 * fu : 0) + (S.role ? 150 * fu : 0) + talk.length * 62 * fu + 40 * fu;
   let fs = 300 * fu * (land ? 0.8 : 1);
   for (; fs > 30; fs *= 0.97) { if (Math.max(...w100) * fs + mx <= rightB && (nameLines.length - 1) * fs + 0.7 * fs + extraH <= botY - topY) break; }
   const stack = (nameLines.length - 1) * fs + 0.7 * fs + extraH;
@@ -556,13 +556,13 @@ function tSpeaker(ctx, c) {
   if (S.chip) {
     ctx.save(); ctx.strokeStyle = th.fg; ctx.lineWidth = Math.max(1.5, 2 * fu); ctx.lineJoin = 'miter'; ctx.strokeRect(mx + 1, y + 1, tw - 2, tagH - 2);
     ctx.fillStyle = th.fg; ctx.font = tagFont; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; setLS(ctx, tagSp); ctx.fillText(tag, mx + tagPad, y + tagH / 2 + tagFs * 0.375); ctx.restore();
-    if (S.date) sansText(ctx, dateTxt(), mx + tw + 36 * fu, y + tagH / 2 + 15 * fu, 40 * fu, th.fg, { wt: 700, ls: 4 * fu });
+    if (S.date) { ctx.save(); ctx.fillStyle = th.fg; ctx.font = tagFont; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; setLS(ctx, tagSp); ctx.fillText(dateTxt(), mx + tw + 30 * fu, y + tagH / 2 + tagFs * 0.375); ctx.restore(); }  // same type as the tag
     y += 100 * fu;
   }
   y += 0.7 * fs;
   nameLines.forEach((s, i) => slide(ctx, s, mx, y + i * fs + 2 * fu * sway(t, i * 0.8), fs, false, th.fg));
   y += (nameLines.length - 1) * fs + 62 * fu;
-  if (S.role) { y += 40 * fu; sansText(ctx, S.role, mx, y, 38 * fu, th.fg, { wt: 600 }); y += 30 * fu; }
+  if (S.role) { y += 40 * fu; sansText(ctx, S.role, mx, y, 38 * fu, th.fg, { wt: 600 }); y += 78 * fu; }
   talk.forEach((l, i) => serifText(ctx, l, mx, y + 54 * fu + i * 62 * fu, 60 * fu, th.fg, { it: true }));
   y += talk.length * 62 * fu + 40 * fu;
   footer(ctx, c);
