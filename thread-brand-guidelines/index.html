@@ -18,7 +18,7 @@
 *{box-sizing:border-box;margin:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{background:var(--cream);color:var(--ink);font:500 16px/1.4 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:var(--cream);color:var(--ink);font:500 16px/1.4 var(--sans);-webkit-font-smoothing:antialiased;overflow:hidden;display:flex;flex-direction:column;height:100vh;height:100dvh}
 button,input,textarea,select{font:inherit;color:inherit}
 a{color:inherit}
 :focus-visible{outline:2px solid currentColor;outline-offset:3px}
@@ -39,21 +39,16 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 .t-paper{--bg:var(--paper);--fg:var(--ink)}
 
 /* ---------- Site header ---------- */
-.site{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:20px;height:56px;padding:0 clamp(14px,2.4vw,32px);background:var(--cream);color:var(--ink);border-bottom:1.5px solid var(--ink)}
+.site{position:relative;flex:none;z-index:50;display:flex;align-items:center;gap:20px;height:64px;padding:0 clamp(14px,2.4vw,32px);background:var(--cream);color:var(--ink);border-bottom:1.5px solid var(--ink)}
 .site .logo{display:flex;align-items:center;text-decoration:none;flex:none}
-.site .logo svg{height:24px;width:auto;display:block}
+.site .logo svg{height:40px;width:auto;display:block}
 .site .links{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .site .links::-webkit-scrollbar{display:none}
 .site .links a{flex:none;text-decoration:none;font:700 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;padding:9px 11px;border:1.5px solid transparent;white-space:nowrap}
 .site .links a:hover{border-color:var(--ink)}
 .site .links a.on{background:var(--ink);color:var(--yellow);border-color:var(--ink)}
 .site .prog{position:absolute;left:0;bottom:-1.5px;height:3px;background:var(--ink);width:100%;transform-origin:0 0;transform:scaleX(0)}
-@media (max-width:760px){.site .logo svg{height:20px}}
-
-/* ---------- Hero: the real generator post, 16:9 ---------- */
-.hero{background:var(--yellow);display:flex;justify-content:center;overflow:hidden}
-#hero{display:block;height:auto;width:min(100%,calc((100vh - 106px) * 1.7778));min-width:min(100%,760px)}
-@media (max-width:719px){#hero{width:100%;min-width:0}}
+@media (max-width:760px){.site .logo svg{height:30px}}
 
 /* ---------- Common section scaffolding ---------- */
 .sec{position:relative;background:var(--bg);color:var(--fg);padding:clamp(84px,10vw,150px) 0 clamp(84px,10vw,140px);overflow:hidden;scroll-margin-top:56px}
@@ -111,8 +106,24 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:760px){.gi .card{grid-column:2/7;grid-row:4/8;box-shadow:6px 6px 0 var(--ink)}.gi .big{grid-column:1/7}.gi .pt{display:none}}
 
 /* ---------- Mosaic ---------- */
-.mosaic{background:var(--paper);padding:clamp(14px,1.4vw,22px) clamp(14px,1.4vw,22px) clamp(30px,3vw,50px);scroll-margin-top:56px}
-.mosaic .mg{display:grid;gap:clamp(5px,.55vw,9px);grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(9,1fr);aspect-ratio:1990/1070;max-width:1700px;margin:0 auto}
+.home{position:absolute;inset:0;background:var(--paper);padding:clamp(6px,.8vw,12px);overflow-y:auto;overflow-x:hidden}
+.home .mg{display:grid;gap:clamp(5px,.55vw,9px);grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(9,minmax(0,1fr));height:100%;min-height:440px}
+#app{position:relative;flex:1;min-height:0;overflow:hidden}
+.panel{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;background:var(--bg);color:var(--fg)}
+.panel.open{display:block}
+.panel>.sec{min-height:100%}
+.ghost{position:absolute;inset:0;z-index:40;pointer-events:none;will-change:clip-path;transition:clip-path .85s var(--ease),opacity .3s}
+.sec .wrap .in>*{opacity:0;transform:translateY(18px);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.sec.in .wrap .in>*{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.sec.in .wrap .in>*:nth-child(2){transition-delay:.08s}.sec.in .wrap .in>*:nth-child(3){transition-delay:.16s}.sec.in .wrap .in>*:nth-child(4){transition-delay:.24s}.sec.in .wrap .in>*:nth-child(5){transition-delay:.32s}.sec.in .wrap .in>*:nth-child(n+6){transition-delay:.4s}
+.intro{padding:clamp(40px,5vw,72px) 0;display:flex;flex-direction:column}
+.intro>.wrap{flex:1;display:flex;flex-direction:column;width:100%}
+.intro .in{flex:1;display:flex;flex-direction:column;max-width:none}
+.intro .tag{align-self:flex-start}
+.intro .gi{flex:1;grid-template-rows:repeat(7,minmax(0,1fr));grid-auto-rows:auto;min-height:440px}
+.gi .big .slide{font-size:clamp(26px,min(5.4vw,8.4vh),92px)}
+.gi .card{background:var(--cream)}
+.gi .card p{font-size:clamp(17px,min(2.5vw,4.2vh),38px)}
 .tile{position:relative;overflow:hidden;display:block;text-decoration:none;padding:clamp(10px,1.6vw,26px);background:var(--bg);color:var(--fg);isolation:isolate;transition:transform .5s var(--ease)}
 .tile:hover,.tile:focus-visible{transform:translate(-3px,-3px);box-shadow:6px 6px 0 var(--ink)}
 .tile h3{font:400 clamp(20px,3.5vw,56px)/.94 var(--serif);letter-spacing:-.0174em;width:calc(100%/1.16);transform:scaleX(1.16);transform-origin:0 0}
@@ -149,10 +160,10 @@ nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
 .bd canvas{right:-4%;bottom:-6%;width:84%}
 .mo canvas{left:0;right:0;bottom:0;width:100%}
 @media (max-width:760px){
-  .mosaic .mg{aspect-ratio:auto;grid-template-columns:1fr 1fr;grid-template-rows:none;grid-auto-rows:190px}
+  .home .mg{height:auto;grid-template-columns:1fr 1fr;grid-template-rows:none;grid-auto-rows:190px}
   .tile h3{font-size:30px}
   .fr,.vo,.lg,.ty,.bd,.co,.sm,.im,.mo{grid-area:auto}
-  .fr,.vo,.im,.mo{grid-column:1/3}.sm{display:none}
+  .fr,.vo,.im,.mo,.sm{grid-column:1/3}
   .vo .q1,.vo .q2{font-size:110px}.ty .aa{font-size:110px}
 }
 
@@ -329,21 +340,35 @@ footer.end .row a{text-decoration:none}
 <nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Thread Brand Guidelines</b></nav>
 
 <header class="site" id="site">
-  <a class="logo" href="#top" aria-label="Thread 2026 Brand Guidelines, top"><svg class="wm" role="img" aria-hidden="true"></svg></a>
+  <a class="logo" href="#home" aria-label="Thread 2026 Brand Guidelines, back to the tiles"><svg class="wm" role="img" aria-hidden="true"></svg></a>
   <nav class="links" id="links" aria-label="Guidelines">
     <a href="#framework">Framework</a><a href="#voice">Voice &amp; Tone</a><a href="#logo">Logo</a><a href="#typography">Typography</a><a href="#color">Color</a><a href="#imagery">Imagery</a><a href="#badges">Badges</a><a href="#motion">Motion</a><a href="#in-use">In use</a>
   </nav>
   <i class="prog" id="prog"></i>
 </header>
 
-<main id="top">
-<!-- ============ HERO ============ -->
-<section class="hero" aria-label="Thread 2026 Brand Guidelines">
-  <canvas id="hero" role="img" aria-label="Thread 2026 Brand Guidelines, the conference post in yellow and black with a calligraphy swash headline and outlined portraits"></canvas>
+<main id="app">
+<!-- ============ MOSAIC ============ -->
+<section class="home" id="home" aria-label="Thread 2026 Brand Guidelines. Pick a tile.">
+  <div class="mg">
+    <a class="tile t-ink fr" href="#framework" data-sec="framework"><h3>Framework</h3>
+      <div class="art"><svg viewBox="0 0 200 140" fill="none" stroke="currentColor" stroke-width="1.6" preserveAspectRatio="none" aria-hidden="true">
+        <path class="dr" pathLength="1" d="M26 0V140"/><path class="dr" pathLength="1" d="M0 14H200"/><path class="dr" pathLength="1" d="M0 126H200"/><path class="dr" pathLength="1" d="M122 14V126"/>
+        <rect x="122" y="14" width="78" height="112" fill="currentColor" stroke="none"/></svg></div></a>
+    <a class="tile t-yellow vo" href="#voice" data-sec="voice"><h3>Voice &amp; Tone</h3><span class="q1" aria-hidden="true">“</span><span class="q2" aria-hidden="true">”</span></a>
+    <a class="tile t-cream lg" href="#logo" data-sec="logo"><h3>Logo</h3><div class="art"><svg class="sw" role="img" aria-label="Thread swash T"></svg></div></a>
+    <a class="tile t-ink ty" href="#typography" data-sec="typography"><h3>Typography</h3><span class="aa" aria-hidden="true">Aa</span></a>
+    <a class="tile t-yellow bd" href="#badges" data-sec="badges"><h3>Badges</h3><canvas id="tBd" aria-hidden="true"></canvas></a>
+    <a class="tile t-ink co" href="#color" data-sec="color"><h3>Color</h3><div class="sqs" aria-hidden="true"><i></i><i></i><i></i></div></a>
+    <a class="tile t-yellow small sm" href="#intro" data-sec="intro" aria-label="About these guidelines"><svg class="sw" aria-hidden="true" style="color:#141414"></svg></a>
+    <a class="tile t-sand im" href="#imagery" data-sec="imagery"><h3>Imagery</h3><div class="mini mini2 art" aria-hidden="true"><img src="photos/p2.jpg" alt=""></div><div class="mini art" aria-hidden="true"><img src="photos/p1.jpg" alt=""></div></a>
+    <a class="tile t-yellow mo" href="#motion" data-sec="motion"><h3>Motion</h3><canvas id="tMo" aria-hidden="true"></canvas></a>
+  </div>
 </section>
 
+
 <!-- ============ INTRO ============ -->
-<section class="sec t-cream intro" id="intro">
+<section class="sec t-yellow intro" id="intro">
   <i class="hl v"></i><i class="hl h top"></i>
   <div class="wrap"><div class="in" style="max-width:none">
     <span class="tag">Brand Guidelines</span>
@@ -358,26 +383,8 @@ footer.end .row a{text-decoration:none}
   </div></div>
 </section>
 
-<!-- ============ MOSAIC ============ -->
-<section class="mosaic" id="mosaic" aria-label="Guideline sections">
-  <div class="mg">
-    <a class="tile t-ink fr" href="#framework"><h3>Framework</h3>
-      <div class="art"><svg viewBox="0 0 200 140" fill="none" stroke="currentColor" stroke-width="1.6" preserveAspectRatio="none" aria-hidden="true">
-        <path class="dr" pathLength="1" d="M26 0V140"/><path class="dr" pathLength="1" d="M0 14H200"/><path class="dr" pathLength="1" d="M0 126H200"/><path class="dr" pathLength="1" d="M122 14V126"/>
-        <rect x="122" y="14" width="78" height="112" fill="currentColor" stroke="none"/></svg></div></a>
-    <a class="tile t-yellow vo" href="#voice"><h3>Voice &amp; Tone</h3><span class="q1" aria-hidden="true">“</span><span class="q2" aria-hidden="true">”</span></a>
-    <a class="tile t-cream lg" href="#logo"><h3>Logo</h3><div class="art"><svg class="sw" role="img" aria-label="Thread swash T"></svg></div></a>
-    <a class="tile t-ink ty" href="#typography"><h3>Typography</h3><span class="aa" aria-hidden="true">Aa</span></a>
-    <a class="tile t-yellow bd" href="#badges"><h3>Badges</h3><canvas id="tBd" aria-hidden="true"></canvas></a>
-    <a class="tile t-ink co" href="#color"><h3>Color</h3><div class="sqs" aria-hidden="true"><i></i><i></i><i></i></div></a>
-    <a class="tile t-yellow small sm" href="#top" aria-label="Back to top"><svg class="sw" aria-hidden="true" style="color:#141414"></svg></a>
-    <a class="tile t-sand im" href="#imagery"><h3>Imagery</h3><div class="mini mini2 art" aria-hidden="true"><img src="photos/p2.jpg" alt=""></div><div class="mini art" aria-hidden="true"><img src="photos/p1.jpg" alt=""></div></a>
-    <a class="tile t-yellow mo" href="#motion"><h3>Motion</h3><canvas id="tMo" aria-hidden="true"></canvas></a>
-  </div>
-</section>
-
 <!-- ============ 01 FRAMEWORK ============ -->
-<section class="sec t-cream" id="framework">
+<section class="sec t-ink" id="framework">
   <i class="hl v"></i><i class="hl h top"></i><i class="hl h bot"></i>
   <div class="wrap"><div class="in">
     <span class="tag">01 · Framework</span>
@@ -489,7 +496,7 @@ footer.end .row a{text-decoration:none}
 </section>
 
 <!-- ============ 05 COLOR ============ -->
-<section class="sec t-cream" id="color">
+<section class="sec t-ink" id="color">
   <i class="hl v"></i><i class="hl h top"></i><i class="hl h bot"></i>
   <div class="wrap"><div class="in">
     <span class="tag">05 · Color</span>
@@ -561,7 +568,7 @@ footer.end .row a{text-decoration:none}
 </section>
 
 <!-- ============ 08 MOTION ============ -->
-<section class="sec t-ink" id="motion">
+<section class="sec t-yellow" id="motion">
   <i class="hl v"></i><i class="hl h top"></i><i class="hl h bot"></i>
   <div class="wrap"><div class="in">
     <span class="tag">08 · Motion</span>
@@ -609,11 +616,6 @@ footer.end .row a{text-decoration:none}
 </section>
 </main>
 
-<footer class="end">
-  <div><span class="slide" style="display:block">Thread 2026<br>Brand Guidelines</span></div>
-  <div><p>Built from the Conference Post Generator, so every specimen on this page is drawn by the same code that makes the posts.</p>
-  <div class="row" style="margin-top:14px"><a class="chip" href="../conference-post-generator/">Open the generator</a><a class="chip" href="#top">Back to top</a></div></div>
-</footer>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -925,7 +927,7 @@ function drawBadge(ctx, th, shape, cx, cy, h, rot, label, shadow) {
   let fs = fs0; ctx.font = serifFont(fs, false); setLS(ctx, 0);
   const maxW = w * (shape === 'shield' ? 0.58 : shape === 'circle' || shape === 'scallop' ? 0.66 : 0.78);
   lines.forEach((l) => { const mw = ctx.measureText(l).width; if (mw > maxW) fs = Math.min(fs, fs0 * maxW / mw); });
-  const gap = fs * 1.0, top = dv + (y + h - dv) * (shape === 'shield' ? 0.3 : 0.36) - ((lines.length - 1) * gap) / 2;
+  const gap = fs * 1.0, top = dv + (y + h - dv) * (shape === 'shield' ? 0.34 : 0.43) - ((lines.length - 1) * gap) / 2;
   lines.forEach((l, i) => serifText(ctx, l, 0, top + i * gap + fs * 0.34, fs, ink, { align: 'center' }));
   ctx.restore();
 }
@@ -1136,6 +1138,7 @@ const surfaces = []; let clock = 0, last = performance.now();
 const io = new IntersectionObserver((es) => es.forEach((e) => { const s = e.target._s; s.vis = e.isIntersecting; if (s.vis) { s.fit(); s.dirty = true; } }), { rootMargin: '140px' });
 function surface(cv, o) {
   const s = { cv, ctx: cv.getContext('2d'), W: o.W, H: o.H, o, vis: false, dirty: true, k: 1 };
+  s.home = !!cv.closest('#home');
   s.fit = () => { const r = cv.getBoundingClientRect(); if (!r.width) return; const dpr = Math.min(devicePixelRatio || 1, 2), w = Math.round(r.width * dpr), h = Math.round(w * s.H / s.W); if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } s.k = cv.width / s.W; s.dirty = true; };
   s.size = (W, H) => { s.W = W; s.H = H; cv.style.aspectRatio = W + '/' + H; s.fit(); };
   cv.style.aspectRatio = s.W + '/' + s.H; cv._s = s; surfaces.push(s); io.observe(cv); s.fit(); return s;
@@ -1143,7 +1146,7 @@ function surface(cv, o) {
 function loop(now) {
   const dt = Math.min(0.1, (now - last) / 1000); last = now; if (!reduce) clock += dt;
   for (const s of surfaces) {
-    if (!s.vis) continue; const o = s.o, own = !!o.clock;
+    if (!s.vis || (s.home && !homeOn)) continue; const o = s.o, own = !!o.clock;
     const t = frozen != null ? frozen : own ? o.clock(dt) : reduce ? STILL_T : clock;
     const animated = frozen == null && (own || (o.anim !== false && !reduce));
     if (!animated && !s.dirty) continue;
@@ -1152,22 +1155,55 @@ function loop(now) {
   }
   requestAnimationFrame(loop);
 }
-addEventListener('resize', () => { surfaces.forEach((s) => s.fit()); heroFmt(); });
+addEventListener('resize', () => surfaces.forEach((s) => s.fit()));
 
-/* ---------- hero: the real headline template ---------- */
-const hero = surface($('#hero'), { W: 2000, H: 1125, draw: (ctx, W, H, t, still) => withS({ ...POST, headline: 'Thread 2026\nBrand\nGuidelines', sub: 'How the conference looks, feels and sounds', theme: 'yellow' }, () => render(ctx, W, H, t, still)) });
-function heroFmt() { const n = innerWidth < 720; if ((hero.W < hero.H) !== n) hero.size(...(n ? [1600, 2000] : [2000, 1125])); }
-
-/* ---------- header, reveal, scroll spy ---------- */
-const links = $$('#links a'), secs = links.map((a) => $(a.getAttribute('href'))); let curSec = -2;
-function spy() {
-  const y = innerHeight * 0.4; let cur = -1; secs.forEach((s, i) => { if (s.getBoundingClientRect().top < y) cur = i; });
-  if (cur !== curSec) { curSec = cur; links.forEach((a, i) => a.classList.toggle('on', i === cur)); if (cur >= 0) { const c = $('#links'), a = links[cur]; c.scrollLeft = a.offsetLeft - c.clientWidth / 2 + a.offsetWidth / 2; } }
-  const m = document.documentElement; $('#prog').style.transform = 'scaleX(' + Math.min(1, scrollY / ((m.scrollHeight - innerHeight) || 1)) + ')';
+/* ---------- hero tiles and section panels ----------
+   The tile mosaic is the hero. Clicking a tile grows a copy of it to fill the stage, then the section fades in;
+   the Thread logo in the header shrinks it back into its slot. Nav links open (or replay) a section. */
+const app = $('#app'), home = $('#home'), links = $$('#links a'), panels = {};
+let cur = null, busy = false, homeOn = true;
+$$('#app > section.sec').forEach((sec) => { const P = document.createElement('div'); P.className = 'panel ' + ([...sec.classList].find((c) => c.startsWith('t-')) || ''); P.id = 'p-' + sec.id; app.insertBefore(P, sec); P.appendChild(sec); panels[sec.id] = P; });
+const rectOf = (id) => { const a = app.getBoundingClientRect(), t = $('.tile[data-sec="' + id + '"]'); if (t) { const b = t.getBoundingClientRect(); return { l: b.left - a.left, t: b.top - a.top, w: b.width, h: b.height }; } const w = a.width * 0.3, h = a.height * 0.3; return { l: (a.width - w) / 2, t: (a.height - h) / 2, w, h }; };
+const clipOf = (r) => 'inset(' + r.t + 'px ' + (app.clientWidth - r.l - r.w) + 'px ' + (app.clientHeight - r.t - r.h) + 'px ' + r.l + 'px)';
+const FULLCLIP = 'inset(0px 0px 0px 0px)';
+/* a plain block of the tile's colour; its clip-path grows from the tile to the whole stage, so nothing but colour has to move */
+function makeGhost(id) {
+  const t = $('.tile[data-sec="' + id + '"]'), g = document.createElement('div'); g.className = 'ghost'; g.setAttribute('aria-hidden', 'true');
+  g.style.background = t ? getComputedStyle(t).backgroundColor : getComputedStyle(panels[id]).backgroundColor; return g;
 }
-addEventListener('scroll', spy, { passive: true }); spy();
-const rev = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); if (e.target.id === 'voice') startTone(); } }), { threshold: 0.12 });
-$$('.sec').forEach((s) => { if (frozen != null || reduce) s.classList.add('in'); else rev.observe(s); });
+function showPanel(id, fade) {
+  const P = panels[id], sec = P.firstElementChild; P.classList.add('open'); P.scrollTop = 0; sec.classList.remove('in');
+  P.style.opacity = 1;
+  void sec.offsetWidth; sec.classList.add('in'); if (id === 'voice') { toneStarted = true; animTone(); }
+}
+function hidePanel(id) { const P = panels[id]; P.classList.remove('open'); P.firstElementChild.classList.remove('in'); }
+function markNav() { links.forEach((a) => a.classList.toggle('on', a.dataset.sec === cur)); $('#prog').style.transform = 'scaleX(0)'; if (cur) { try { history.replaceState(null, '', '#' + cur); } catch (e) {} const a = links.find((x) => x.dataset.sec === cur), c = $('#links'); if (a) c.scrollLeft = a.offsetLeft - c.clientWidth / 2 + a.offsetWidth / 2; } else { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} } }
+function openSec(id, instant) {
+  if (!panels[id] || busy) return;
+  if (id === cur) { const sec = panels[id].firstElementChild; sec.classList.remove('in'); void sec.offsetWidth; sec.classList.add('in'); if (id === 'voice') animTone(); return; }  // same link again: replay it
+  const prev = cur; cur = id; markNav();
+  if (instant) { if (prev) hidePanel(prev); showPanel(id); home.style.visibility = 'hidden'; homeOn = false; return; }
+  busy = true; homeOn = true; home.style.visibility = 'visible';
+  const g = makeGhost(id); g.style.transition = 'none'; g.style.clipPath = clipOf(rectOf(id)); g.style.opacity = 0; app.appendChild(g); g.getBoundingClientRect();
+  g.style.transition = ''; g.style.opacity = 1; g.style.clipPath = FULLCLIP;                       // 1. the colour grows to fill the stage
+  setTimeout(() => { if (prev) hidePanel(prev); showPanel(id); g.remove(); home.style.visibility = 'hidden'; homeOn = false; busy = false; }, 900);  // 2. same colour underneath, so the swap is invisible and the content fades up
+}
+function closeHome() {
+  if (!cur || busy) return; busy = true; const id = cur; cur = null; markNav(); homeOn = true;
+  panels[id].firstElementChild.classList.remove('in');                                             // 1. content fades out
+  setTimeout(() => {
+    home.style.visibility = 'visible'; const g = makeGhost(id); g.style.transition = 'none'; g.style.clipPath = FULLCLIP; app.appendChild(g); g.getBoundingClientRect();
+    hidePanel(id); g.style.transition = ''; g.style.clipPath = clipOf(rectOf(id));               // 2. the colour shrinks into its tile
+    setTimeout(() => { g.style.opacity = 0; }, 800); setTimeout(() => { g.remove(); busy = false; }, 1150);
+  }, 380);
+}
+links.forEach((a) => { a.dataset.sec = a.getAttribute('href').slice(1); });
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('.tile[data-sec], #links a, .site .logo'); if (!t) return;
+  e.preventDefault(); if (t.classList.contains('logo')) closeHome(); else openSec(t.dataset.sec);
+});
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closeHome(); });
+app.addEventListener('scroll', (e) => { const P = e.target; if (P.classList && P.classList.contains('panel')) $('#prog').style.transform = 'scaleX(' + Math.min(1, P.scrollTop / ((P.scrollHeight - P.clientHeight) || 1)) + ')'; }, true);
 
 /* ---------- intro grid ---------- */
 $('#gi').insertAdjacentHTML('beforeend', '<i></i>'.repeat(42));
@@ -1225,7 +1261,7 @@ function animTone() {
   const step = (n) => { const u = Math.min(1, (n - t0) / dur); $('#tone').value = Math.round(ease(u) * 100); paintTone(); if (u < 1) toneRaf = requestAnimationFrame(step); };
   toneRaf = requestAnimationFrame(step);
 }
-function startTone() { if (toneStarted) return; toneStarted = true; animTone(); }
+
 $('#vxs').innerHTML = VX.map((v, i) => '<button class="chip" data-i="' + i + '">' + v[0] + '</button>').join('');
 $('#vxs').addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) { setVx(+b.dataset.i); toneStarted = true; animTone(); } });
 $('#tone').addEventListener('input', () => { cancelAnimationFrame(toneRaf); paintTone(); });
@@ -1298,7 +1334,7 @@ function drawPairs() {
   $('#pgrid').innerHTML = pairs.map(([fg, bg]) => '<button data-fg="' + fg + '" data-bg="' + bg + '" class="' + (SHIPS.includes(fg + '|' + bg) ? 'ok ' : '') + (pSel[0] === fg && pSel[1] === bg ? 'sel' : '') + '" style="background:' + COL[bg][1] + ';color:' + COL[fg][1] + '" aria-label="' + COL[fg][0] + ' on ' + COL[bg][0] + '">Aa<small>' + COL[fg][0] + ' on ' + COL[bg][0] + '</small></button>').join('');
   const fg = COL[pSel[0]], bg = COL[pSel[1]], r = contrast(fg[1], bg[1]), same = pSel[0] === pSel[1];
   const v = same ? 'Same colour' : r >= 7 ? 'AAA' : r >= 4.5 ? 'AA' : r >= 3 ? 'Large text only' : 'Fails';
-  const pv = $('#pview'); pv.style.background = bg[1]; pv.style.color = fg[1]; pv.style.borderColor = '#141414';
+  const pv = $('#pview'); pv.style.background = bg[1]; pv.style.color = fg[1]; pv.style.borderColor = fg[1];
   pv.innerHTML = '<span class="aa">Aa</span><span style="font:500 15px/1.35 Inter,sans-serif">Thread 2026 in under 10 minutes</span><span class="verdict">' + v + '</span><div class="meta">' + fg[0] + ' on ' + bg[0] + ' · ' + r.toFixed(1) + ':1' + (SHIPS.includes(pSel.join('|')) ? '<br>In the system' : '') + '</div>';
 }
 $('#pgrid').addEventListener('click', (e) => { const b = e.target.closest('[data-fg]'); if (b) { pSel = [b.dataset.fg, b.dataset.bg]; drawPairs(); } });
@@ -1393,8 +1429,10 @@ surface($('#uBd'), { W: 420, H: 420, draw: (ctx, W, H, t) => drawBadge(ctx, THEM
 new IntersectionObserver((es) => { US.vis = es[0].isIntersecting; }).observe($('#use'));
 setInterval(() => { if (US.vis && !US.picked && frozen == null && !reduce) { const k = Object.keys(THS); setUse(k[(k.indexOf(US.th) + 1) % 3]); } }, 3400);
 
+{ const id = HP.get('open') || location.hash.slice(1); if (panels[id]) openSec(id, true); }
+
 /* ---------- go: wait for the brand fonts so the canvases don't draw in a fallback ---------- */
-Promise.all([document.fonts.load("172px 'Instrument Serif'"), document.fonts.load("italic 60px 'Instrument Serif'"), document.fonts.load('600 40px Inter'), document.fonts.load('700 40px Inter'), document.fonts.load("100px 'Pinyon Script'")]).catch(() => {}).then(() => document.fonts.ready).then(() => { surfaces.forEach((s) => s.fit()); heroFmt(); flourCache.clear(); }).finally(() => { heroFmt(); requestAnimationFrame(loop); });
+Promise.all([document.fonts.load("172px 'Instrument Serif'"), document.fonts.load("italic 60px 'Instrument Serif'"), document.fonts.load('600 40px Inter'), document.fonts.load('700 40px Inter'), document.fonts.load("100px 'Pinyon Script'")]).catch(() => {}).then(() => document.fonts.ready).then(() => { surfaces.forEach((s) => s.fit()); flourCache.clear(); }).finally(() => { requestAnimationFrame(loop); });
 </script>
 </body>
 </html>

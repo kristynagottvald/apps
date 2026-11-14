@@ -26,6 +26,8 @@ nav.back,.hero{position:relative;z-index:1}
 .chip svg{width:14px;height:14px;fill:var(--lime)}
 .chip em{font-style:normal;color:var(--lime)}
 h1{font-weight:400;font-size:calc(clamp(34px,4.4vw,58px) - 2px);line-height:1.04;letter-spacing:-2px;margin:30px 0 34px;white-space:nowrap}
+h1 br.mo{display:none}
+h1 .nb{white-space:nowrap}
 h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:clamp(34px,4.4vw,58px);line-height:0}
 .sw{display:inline-block;transition:opacity .35s,transform .35s,filter .35s}
 .sw.out{opacity:0;transform:translateY(10px);filter:blur(6px)}
@@ -68,11 +70,11 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:
 .el{position:absolute}
 .bar{background:var(--purple);border-radius:99px}
 .tag{background:var(--deep);color:#fff;border-radius:6px;font:600 1.2cqw/1 var(--sans);display:flex;align-items:center;justify-content:center}
-.qr{background:var(--deep);border-radius:6px;display:grid;place-items:center}
+.qr{background:var(--lav2);border-radius:6px;display:grid;place-items:center}
 .qr svg{width:66%;height:66%}
 .scan{background:var(--deep);color:#fff;border-radius:6px;font:italic 400 1.4cqw/1.15 var(--serif);display:flex;align-items:center;padding:0 5%}
 .ph{object-fit:cover;border-radius:0}
-@media(max-width:900px){.hero{grid-template-columns:1fr;padding:24px 20px 28px}.stage{justify-self:center}.sub{min-height:0}h1{white-space:normal}}
+@media(max-width:900px){.hero{grid-template-columns:minmax(0,1fr);padding:24px 26px 28px}.stage{justify-self:center}.sub{min-height:0}h1{white-space:normal;font-size:clamp(28px,10vw,56px);letter-spacing:-.05em;margin:24px 0 26px}h1 i{font-size:1.06em}h1 br.dk{display:none}h1 br.mo{display:inline}}
 @media(prefers-reduced-motion:reduce){.sw,.bl,.bi{transition:none}}
 </style>
 </head>
@@ -104,11 +106,11 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:
     <div class="mail"><div class="pc">
         <div class="el bar" style="left:7.7%;top:9%;width:34%;height:4.2%"></div>
         <div class="el bar" style="left:7.7%;top:16.5%;width:24%;height:4.2%"></div>
-        <div class="el tag" style="left:70%;top:8.5%;width:22%;height:10%">// co.</div>
+        <div class="el tag" style="left:64%;top:8.5%;width:28%;height:10%">YOUR BRAND</div>
         <div class="el bar" style="left:7.7%;top:37%;width:34%;height:3.6%"></div>
         <div class="el bar" style="left:7.7%;top:45%;width:26%;height:3.6%"></div>
         <div class="el bar" style="left:7.7%;top:53%;width:30%;height:3.6%"></div>
-        <div class="el qr" style="left:7.7%;top:70%;width:11.4%;height:17%"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="square"><path d="M2 7V2h5M17 2h5v5M22 17v5h-5M7 22H2v-5"/><rect x="6.5" y="6.5" width="4" height="4"/><rect x="13.5" y="6.5" width="4" height="4"/><rect x="6.5" y="13.5" width="4" height="4"/><path d="M13.5 13.5h2v2h-2zM16.5 16.5h1.500v1.500h-1.500zM13.5 17h1v1h-1z" fill="#fff" stroke="none"/></svg></div>
+        <div class="el qr" style="left:7.7%;top:70%;width:11.4%;height:17%"><svg viewBox="0 0 24 24" fill="none" stroke="#1f2250" stroke-width="1.4" stroke-linecap="square"><path d="M2 7V2h5M17 2h5v5M22 17v5h-5M7 22H2v-5"/><rect x="6.5" y="6.5" width="4" height="4"/><rect x="13.5" y="6.5" width="4" height="4"/><rect x="6.5" y="13.5" width="4" height="4"/><path d="M13.5 13.5h2v2h-2zM16.5 16.5h1.500v1.500h-1.500zM13.5 17h1v1h-1z" fill="#1f2250" stroke="none"/></svg></div>
         <div class="el scan" style="left:20.6%;top:70%;width:28%;height:17%">Scan to accept your offer</div>
         <img class="el ph" src="photo.jpg" alt="Family in front of their home" style="left:52%;top:27%;width:48%;height:73%">
       </div></div>
@@ -116,23 +118,23 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:
 </main>
 <script>
 const CITIES=[
- {city:'San Diego, CA',region:'Southern California',h:'Direct mail that<br>lands in <i>San Diego</i><br>in days',sub:"Print at our Southern California facility and reach every Gaslamp, La Jolla and North Park mailbox fast.",
+ {city:'San Diego, CA',region:'Southern California',h:'Direct mail <span class="nb">that<br class="dk"> reaches</span><br class="mo"> <i>San Diego</i><br class="dk"> in days',sub:"Print at our Southern California facility and reach every Gaslamp, La Jolla and North Park mailbox fast.",
   b:[['2.0 day <i>delivery time</i>','Avg. First-Class time in your SCF, 919–921'],
      ['Sending from <i>Carlsbad, CA</i>','36 mi from your delivery zone, 92101'],
      ['<i>21,340</i> homes in your zone','Gaslamp, La Jolla and North Park routes']]},
- {city:'Miami, FL',region:'South Florida',h:'Direct mail that<br>lands in <i>Miami</i><br>in days',sub:"Print at our Florida facility and reach every Brickell, Wynwood and Coral Gables mailbox fast.",
+ {city:'Miami, FL',region:'South Florida',h:'Direct mail <span class="nb">that<br class="dk"> reaches</span><br class="mo"> <i>Miami</i><br class="dk"> in days',sub:"Print at our Florida facility and reach every Brickell, Wynwood and Coral Gables mailbox fast.",
   b:[['2.3 day <i>delivery time</i>','Avg. First-Class time in your SCF, 331–332'],
      ['Sending from <i>Orlando, FL</i>','235 mi from your delivery zone, 33131'],
      ['<i>24,760</i> homes in your zone','Brickell, Wynwood and Coral Gables routes']]},
- {city:'Nashville, TN',region:'Middle Tennessee',h:'Direct mail that<br>lands in <i>Nashville</i><br>in days',sub:"Print at our Tennessee facility and reach every East Nashville, Gulch and Germantown mailbox fast.",
+ {city:'Nashville, TN',region:'Middle Tennessee',h:'Direct mail <span class="nb">that<br class="dk"> reaches</span><br class="mo"> <i>Nashville</i><br class="dk"> in days',sub:"Print at our Tennessee facility and reach every East Nashville, Gulch and Germantown mailbox fast.",
   b:[['2.1 day <i>delivery time</i>','Avg. First-Class time in your SCF, 370–372'],
      ['Sending from <i>Memphis, TN</i>','210 mi from your delivery zone, 37203'],
      ['<i>19,880</i> homes in your zone','East Nashville, Gulch and Germantown routes']]},
- {city:'Columbus, OH',region:'Central Ohio',h:'Direct mail that<br>lands in <i>Columbus</i><br>in days',sub:"Print at our Ohio facility and reach every Short North, German Village and Clintonville mailbox fast.",
+ {city:'Columbus, OH',region:'Central Ohio',h:'Direct mail <span class="nb">that<br class="dk"> reaches</span><br class="mo"> <i>Columbus</i><br class="dk"> in days',sub:"Print at our Ohio facility and reach every Short North, German Village and Clintonville mailbox fast.",
   b:[['2.0 day <i>delivery time</i>','Avg. First-Class time in your SCF, 430–432'],
      ['Sending from <i>Dayton, OH</i>','72 mi from your delivery zone, 43215'],
      ['<i>22,410</i> homes in your zone','Short North, German Village and Clintonville routes']]},
- {city:'Kansas City, MO',region:'Greater Kansas City',h:'Direct mail that<br>lands in <i>Kansas City</i><br>in days',sub:"Print at our Midwest facility and reach every Westport, Crossroads and Brookside mailbox fast.",
+ {city:'Kansas City, MO',region:'Greater Kansas City',h:'Direct mail <span class="nb">that<br class="dk"> reaches</span><br class="mo"> <i>Kansas City</i><br class="dk"> in days',sub:"Print at our Midwest facility and reach every Westport, Crossroads and Brookside mailbox fast.",
   b:[['2.4 day <i>delivery time</i>','Avg. First-Class time in your SCF, 640–641'],
      ['Sending from <i>Wichita, KS</i>','200 mi from your delivery zone, 64105'],
      ['<i>17,950</i> homes in your zone','Westport, Crossroads and Brookside routes']]}];
@@ -175,7 +177,7 @@ if(new URLSearchParams(location.search).has('hold')){bl.instant()}else{bl.intro(
 /* dot grid on the bottom 30% of the page: full size dots at the bottom, shrinking away towards the top */
 (function(){const c=$('dotbg'),x=c.getContext('2d');
  function draw(){const d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#161945';
-  const g=22;for(let y=g/2;y<h;y+=g){const r=g*.48*Math.pow(y/h,1.1);if(r<.5)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}}
+  const g=w<700?9:13;for(let y=g/2;y<h;y+=g){const r=g*.44*Math.pow(y/h,1.1);if(r<.5)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}}
  draw();addEventListener('resize',draw)})();
 </script>
 </body>

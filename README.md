@@ -12,9 +12,9 @@ The home page is the best way to browse. Every project is a tile that plays a 6 
 
 | Category | What it is | Projects |
 | --- | --- | --- |
-| **Motion** | Looping brand animations, explainers and screens, mostly pure CSS/JS/canvas | Search Robot, Thread Live Session, Grid Alphabet, Arrow Line Generator, Brand Audit Engine, Agentic Storefront Walkthrough, ILG Pixel Globe, Human / Tech Motion Loop, Workout Year in Review Reels, Clearco Logistics Motion, Grubclub Order, Stop Building Demos, Clearco Terrain, Clearco Target Frame |
+| **Motion** | Looping brand animations, explainers and screens, mostly pure CSS/JS/canvas | Sander Troubleshoot, NLP Diagram, Thread Live Session, Grid Alphabet, Arrow Line Generator, Brand Audit Engine, Agentic Storefront Walkthrough, ILG Pixel Globe, Human / Tech Motion Loop, Workout Year in Review Reels, Clearco Logistics Motion, Grubclub Order, Stop Building Demos, Clearco Terrain, Clearco Target Frame |
 | **Interactive Engine** | Generators with live controls for producing on-brand assets and motion variants | Grubclub Holiday Grid, Postmark Awards Motion Engine, Postmark Awards Ribbon Engine, Grubclub End Card Maker, Lifecycle Image Studio, Banner Template Studio, Blog Banner Studio |
-| **Tools** | Small utilities for brand and marketing production | Thread Brand Guidelines, Location Hero, Conference Post Generator |
+| **Tools** | Small utilities for brand and marketing production | Thread Brand Guidelines, Thread Conference Landing Page, Location Hero, Conference Post Generator |
 | **Landing Page** | Campaign landing page concepts | Clearco Attribution Guide, Clearco Logistics Guide |
 | **Email** | Email design concepts | Grubclub Offer Emails |
 | **Mockup** | Product and analytics UI mockups | Video Synopsis, A/B Test: PSC Page Variants |

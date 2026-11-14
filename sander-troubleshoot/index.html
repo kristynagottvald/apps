@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sander Troubleshoot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#fff;color:#0c346c;overflow:hidden;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column}
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}nav.back>span:nth-of-type(2),nav.back>b{display:none}}
+nav.back .ctl{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:0}
+nav.back button{font:inherit;color:#fff;background:transparent;border:1px solid #4a4a4a;border-radius:8px;padding:4px 12px;cursor:pointer}
+nav.back button:hover{border-color:#fff}
+nav.back button:focus-visible{outline:2px solid #79BFF4;outline-offset:2px}
+nav.back #pp{min-width:64px}
+nav.back input[type=range]{width:240px;min-width:60px;accent-color:#79BFF4;cursor:pointer}
+@media (max-width:640px){nav.back .ctl{flex:1}nav.back input[type=range]{flex:1;width:auto}}
+main{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;padding:20px 16px 14px}
+.stage{flex:1;min-height:0;width:100%;display:flex;justify-content:center;align-items:center}
+.clip main{padding:14px 16px}
+
+/* ---------- the composition: a 411.454 x 216.498 frame, scaled to fit ---------- */
+#box{position:relative;flex:none;cursor:pointer}
+#frame{position:absolute;left:0;top:0;width:411.454px;height:216.498px;transform-origin:0 0;background:#397ed3;border-radius:8px;overflow:hidden;font-family:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:600;color:#0c346c;line-height:1.3}
+#frame .abs{position:absolute}
+#frame img{display:block;max-width:none}
+#frame p{margin:0}
+.card{position:absolute;background:#fff;border:.6px solid #0c346c;overflow:hidden}
+/* product picker (back card) */
+#bc{left:36.2px;top:67.9px;width:119.5px;height:253px;border-radius:4.78px}
+#bc .ttl{position:absolute;left:6.5px;top:6.8px;width:88.7px;padding:3.72px 0 0 4.66px;font-size:6.513px;white-space:nowrap;letter-spacing:-.02em}
+#bc .rows{position:absolute;left:11.17px;top:28.86px;width:89.42px;display:flex;flex-direction:column;gap:3.281px}
+#bc .row{display:flex;gap:3.281px;align-items:stretch}
+.tile{position:relative;background:#f2f2f3;border-radius:3.281px;padding:2.188px 2.188px 4.375px;display:flex;flex-direction:column;gap:4.375px;overflow:visible}
+.tile .im{position:relative;flex:none;width:38.83px;height:38.83px;background:#fff;border-radius:3.281px;overflow:hidden}
+.tile .im img{position:absolute;object-fit:cover}
+.tile .tt{padding:0 2.188px 0 1.094px;font-size:4.375px;width:38.83px}
+.tile.fix{height:60.43px}
+.tile.w1{width:43.2px;flex:none}.tile.fl{flex:1 1 0;min-width:0}
+.tile .tt.bot{margin-top:auto}
+.tile .sel{position:absolute;inset:-.1px;border:.547px solid #397ed3;border-radius:3.281px;opacity:0}
+.tile .ok{position:absolute;right:1.37px;top:1.64px;width:4.922px;height:4.922px}
+.tile .ring{position:absolute;inset:0;border:.7px solid #79BFF4;border-radius:3.281px;opacity:0}
+/* troubleshooting (front card) */
+#fc{left:121.5px;top:32.3px;width:131.5px;height:224.8px;border-radius:5.53px;border-width:.69px}
+#fc .in{display:flex;flex-direction:column;gap:11.068px;padding:11.068px 8.3px 0}
+#fc .head{display:flex;gap:3.473px;align-items:flex-start;font-size:8.336px}
+#fc .head img{width:10.623px;height:10.623px;flex:none}
+#sf{width:max-content;border:1.042px solid #ceeaff;border-radius:17.366px}
+#sf .inner{width:113.57px;display:flex;align-items:center;gap:4.168px;padding:4.168px 5.557px 4.168px 4.168px;border:.695px solid #0c346c;border-radius:17.366px;background:#fff}
+#sf .ic{position:relative;width:8.336px;height:8.336px;flex:none}
+#sf .ic img{position:absolute;inset:-12.5%;width:125%;height:125%}
+#sf .qwrap{display:flex;align-items:center;gap:1.389px;flex:1;min-width:0}
+#sf .qt{position:relative;font-size:5.912px;font-weight:500;line-height:1.5;white-space:nowrap;letter-spacing:-.01em;margin-left:2.8px}
+#sf .qt i{position:absolute;top:50%;left:0;width:.5px;height:7.5px;margin-top:-3.75px;background:#397ed3;opacity:0}
+#sf .clr{width:5.557px;height:5.557px;flex:none}
+#fc .lab{font-size:5.557px;color:#676875;margin-bottom:5.557px}
+#fc .bts{display:flex;flex-direction:column;gap:2.779px;width:113.57px}
+.bt{position:relative;background:#f2f2f3;border-radius:4.168px;padding:4.515px 12.503px 4.862px 5.557px;font-size:5.557px;letter-spacing:-.012em}
+.bt span{position:relative;z-index:1}
+.bt .sel{position:absolute;inset:-.35px;border:.695px solid #397ed3;border-radius:4.168px;background:#ceeaff;opacity:0}
+.bt .ck{position:absolute;z-index:1;right:2.779px;top:50%;margin-top:-3.126px;width:6.252px;height:6.252px}
+.nw{white-space:nowrap}
+/* worker */
+#pl,#wk{position:absolute;left:0;top:0;width:411.454px;height:216.498px}
+#worker{left:235.13px;top:51.45px;width:179.666px;height:167.792px}
+#plank{left:239.42px;top:155.54px;width:182.964px;height:68.678px}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Sander Troubleshoot</b>
+<div class="ctl"><button id="pp" type="button" aria-label="Pause">Pause</button><input id="tl" type="range" min="0" max="1000" value="0" aria-label="Timeline"><button id="replay" type="button">Replay</button></div></nav>
+<main>
+<div class="stage">
+<div id="box" role="img" aria-label="A support troubleshooter: a product picker with Prep tools chosen sits behind a search card where 'sander is scratching' is typed, matching questions appear and 'Sander scratches into wood surface' is picked, while a worker in goggles sands a board.">
+<div id="frame">
+
+<!-- worker, behind the cards -->
+<div id="pl"><img id="plank" class="abs" src="assets/v432.svg" alt=""></div>
+<div id="wk">
+<img id="worker" class="abs" src="assets/worker.svg" alt="">
+<img class="abs" style="left:333.5px;top:101.6px;width:5.043px;height:4.279px;transform:rotate(14.06deg)" src="assets/v410.svg" alt="">
+<img class="abs" style="left:338.7px;top:84.7px;width:3.466px;height:3.466px;transform:rotate(-34deg)" src="assets/v411.svg" alt="">
+<img class="abs" style="left:338.9px;top:88.66px;width:3.2px;height:3.28px" src="assets/v415.svg" alt="">
+<img class="abs" style="left:353.5px;top:89.5px;width:3.466px;height:3.466px;transform:rotate(-13.86deg)" src="assets/v412.svg" alt="">
+<img class="abs" style="left:352.6px;top:92.06px;width:3.2px;height:3.28px" src="assets/v416.svg" alt="">
+</div>
+
+<!-- product picker -->
+<div id="bc" class="card">
+<p class="ttl">What product do you have?</p>
+<div class="rows">
+ <div class="row">
+  <div class="tile w1 t"><div class="im"><img src="assets/paint-sprayer.webp" alt="" style="left:3px;top:3px;width:32.8px;height:32.8px"></div><p class="tt">Paint and stain sprayer</p></div>
+  <div class="tile fl t"><div class="im"><img src="assets/polisher.webp" alt="" style="left:3px;top:1.4px;width:35.8px;height:35.8px"></div><p class="tt bot">Polisher</p></div>
+ </div>
+ <div class="row">
+  <div class="tile w1 fix" id="prep"><div class="im"><img src="assets/prep-tools.webp" alt="" style="left:3px;top:3px;width:32.8px;height:32.8px"></div><p class="tt">Prep tools</p><i class="sel" id="psel"></i><img class="ok" id="pok" src="assets/success.svg" alt=""><i class="ring" id="pring"></i></div>
+  <div class="tile fl fix t"><div class="im"><img src="assets/roller.webp" alt="" style="left:3px;top:3.3px;width:33.3px;height:33.3px;transform:rotate(-90deg)"></div><p class="tt">Roller</p></div>
+ </div>
+ <div class="row">
+  <div class="tile fl fix t"><div class="im"><img src="assets/prep-find.webp" alt="" style="left:-.3px;top:-.3px;width:39.4px;height:39.4px"></div><p class="tt bot">Find the prep tool you need</p></div>
+  <div class="tile fl fix t"><div class="im"><img src="assets/heat-gun.webp" alt="" style="left:3px;top:3px;width:32.8px;height:32.8px"></div><p class="tt bot">Heat gun support</p></div>
+ </div>
+</div>
+</div>
+
+<!-- troubleshooting -->
+<div id="fc" class="card"><div class="in">
+ <div class="head"><img id="spk" src="assets/sparkles.svg" alt=""><p>How can we help?</p></div>
+ <div id="sf"><div class="inner">
+  <span class="ic"><img src="assets/search.svg" alt=""></span>
+  <span class="qwrap"><span class="qt"><span id="qt">sander is scratching</span><i id="caret"></i></span></span>
+  <img class="clr" id="clr" src="assets/clear.svg" alt="">
+ </div></div>
+ <div>
+  <p class="lab" id="mlab">Matches</p>
+  <div class="bts">
+   <div class="bt" id="b0"><span>What is the warranty on the sander?</span></div>
+   <div class="bt" id="b1"><i class="sel" id="bsel"></i><span class="nw">Sander scratches into wood surface</span><img class="ck" id="bck" src="assets/icon.svg" alt=""></div>
+   <div class="bt" id="b2"><span>What surfaces can the sander be operated on?</span></div>
+   <div class="bt" id="b3"><span>Does not remove paint</span></div>
+  </div>
+ </div>
+ <div class="bts"><div class="bt" id="b4"><span>See more options</span></div></div>
+</div></div>
+
+<!-- the answer, flying to the product it belongs to -->
+<div id="chip" class="abs bt" style="left:0;top:0;opacity:0;background:#ceeaff;border:.695px solid #397ed3;padding:3.2px 5.5px;white-space:nowrap;z-index:5"><span>Prep tools</span></div>
+
+</div>
+</div>
+</div>
+</main>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+var clamp=function(x){return x<0?0:x>1?1:x};
+var eio=function(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+var eob=function(x){var c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+var T=9, R0=.7, R1=1.2;                      /* cycle length, reset starts / ends (s) */
+var qs=location.hash+location.search, CLIP=/clip/.test(qs);
+if(CLIP)document.documentElement.classList.add('clip');
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var W=411.454,H=216.498;
+
+/* fit the frame to the stage */
+var box=$('box'),frame=$('frame'),stage=document.querySelector('.stage');
+function fit(){var r=stage.getBoundingClientRect(),s=Math.min(r.width/W,r.height/H);if(!(s>0))return;
+  box.style.width=W*s+'px';box.style.height=H*s+'px';frame.style.transform='scale('+s+')'}
+fit();window.addEventListener('resize',fit);if(window.ResizeObserver)new ResizeObserver(fit).observe(stage);
+
+var t=0;
+function tf(dx,dy,s,rot){return 'translate('+dx+'px,'+dy+'px) rotate('+(rot||0)+'deg) scale('+s+')'}
+/* one element: appears over [start, start+dur] with a rise and a pop; during the reset it fades out like the robot's page */
+function enter(el,start,dur,dx,dy,s0,ease){
+  var rst=clamp((t-R0)/(R1-R0)), a=t<R1?1:clamp((t-start)/dur), e=(ease||eio)(a), o=t<R1?1-rst:clamp(a*4);
+  el.style.opacity=o;
+  el.style.transform=tf(dx*(1-e),dy*(1-e),s0+(1-s0)*e,0);
+}
+function fade(el,o){el.style.opacity=o}
+var tiles=document.querySelectorAll('.t,#prep'),bts=[],i;for(i=0;i<5;i++)bts.push($('b'+i));
+var pulse=function(s,d){return Math.sin(Math.PI*clamp((t-s)/d))};
+/* the chip: leaves the picked answer, arcs to the Prep tools tile */
+var CHIP={from:[137,118],to:[69,190],start:5.5,dur:.7,arc:16};
+function render(tt){
+  t=tt;
+  var rst=clamp((t-R0)/(R1-R0)), pre=t<R1;
+  /* picker card + tiles */
+  enter($('bc'),1.3,.6,-14,6,.97);
+  for(i=0;i<tiles.length;i++){var tl=tiles[i];
+    if(tl.id==='prep'){var a=pre?1:clamp((t-1.6)/.4);tl.style.opacity=pre?1:a;tl.style.transform=tf(0,3*(1-eio(a)),.9+.1*eob(a),0);}
+    else{var a2=pre?1:clamp((t-(1.5+i*.08))/.4);tl.style.opacity=pre?1:a2;tl.style.transform=tf(0,3*(1-eio(a2)),.9+.1*eob(a2),0);}
+  }
+  /* worker */
+  var wa=pre?1:clamp((t-1.6)/.9), we=eob(wa), wdx=60*(1-we), wo=pre?1-rst:clamp(wa*4);
+  var ph=2*Math.PI*22/T*t, sx=1.1*Math.sin(ph), sy=.35*Math.sin(2*ph), sr=.45*Math.sin(ph+.8);
+  $('pl').style.opacity=wo;$('pl').style.transform='translate('+wdx*.6+'px,0)';
+  $('wk').style.opacity=wo;$('wk').style.transformOrigin='330px 170px';
+  $('wk').style.transform='translate('+(wdx+sx)+'px,'+sy+'px) rotate('+sr+'deg)';
+  /* front card */
+  enter($('fc'),2.2,.6,0,10,.96);
+  /* sparkle twinkle */
+  var tw=pre?0:pulse(2.8,.7);
+  $('spk').style.transform='rotate('+(tw*50)+'deg) scale('+(1+.35*tw)+')';
+  /* typing, quantised like the robot's */
+  var u=t<R0?1:t<R1?1-rst:t<3?0:clamp((t-3)/1.2);u=Math.round(u*20)/20;
+  var q=$('qt');q.style.clipPath='inset(0 '+((1-u)*100)+'% 0 0)';
+  var car=$('caret');car.style.left=(u*100)+'%';
+  car.style.opacity=(t>=2.95&&t<4.8&&(u<1||Math.floor(t*5)%2===0))?1:0;
+  $('clr').style.opacity=pre?1-rst:clamp((t-4.2)/.2);
+  /* matches */
+  for(i=-1;i<5;i++){var el=i<0?$('mlab'):bts[i], st=4.3+(i+1)*.1,
+    a3=pre?1:clamp((t-st)/.3); el.style.opacity=pre?1-rst:a3; el.style.transform='translate(0,'+(3*(1-eio(a3)))+'px)';}
+  /* the answer is picked */
+  var sel=pre?1-rst:eio(clamp((t-5.1)/.3)); fade($('bsel'),sel);
+  var ck=pre?1-rst:eob(clamp((t-5.2)/.35)); $('bck').style.transform='scale('+Math.max(ck,0)+')';
+  /* chip */
+  var cp=clamp((t-CHIP.start)/CHIP.dur), ce=eio(cp);
+  var cx=CHIP.from[0]+(CHIP.to[0]-CHIP.from[0])*ce, cy=CHIP.from[1]+(CHIP.to[1]-CHIP.from[1])*ce-CHIP.arc*Math.sin(Math.PI*cp);
+  var cs=.8+.2*ce;
+  var chip=$('chip');chip.style.opacity=(pre||cp<=0||cp>=1)?0:clamp(cp*8)*(1-clamp((cp-.85)/.15));
+  chip.style.transform='translate('+cx+'px,'+cy+'px) translate(-50%,-50%) rotate('+(-8*(1-ce))+'deg) scale('+cs+')';
+  /* Prep tools is chosen */
+  var ps=pre?1-rst:eio(clamp((t-(CHIP.start+CHIP.dur-.05))/.3)); fade($('psel'),ps);
+  var pk=pre?1-rst:eob(clamp((t-(CHIP.start+CHIP.dur))/.35)); $('pok').style.transform='scale('+Math.max(pk,0)+')';
+  var rk=clamp((t-(CHIP.start+CHIP.dur))/.55), ring=$('pring');
+  if(!pre&&rk>0&&rk<1){ring.style.opacity=.9*(1-rk);ring.style.transform='scale('+(1+.3*eio(rk))+')'}else ring.style.opacity=0;
+}
+/* clock */
+var cur=0,speed=1,loop=true,playing=false,last=0,raf=0,sl=$('tl'),pp=$('pp');
+function btn(){pp.textContent=playing?'Pause':'Play';pp.setAttribute('aria-label',pp.textContent)}
+function show(){render(cur);sl.value=cur/T*1000;btn()}
+function tick(now){raf=0;if(!playing)return;cur+=(now-last)/1000*speed;last=now;
+  if(cur>=T){if(loop)cur%=T;else{cur=T-.001;playing=false}}
+  show();if(playing)raf=requestAnimationFrame(tick)}
+function resume(){if(cur>=T-.01)cur=0;playing=true;last=performance.now();if(!raf)raf=requestAnimationFrame(tick);btn()}
+function pause(){playing=false;btn()}
+function play(o){o=o||{};cur=o.from||0;speed=o.speed||1;loop=o.loop!==false;resume()}
+function seek(x){pause();cur=x;show()}
+window.__rb={play:play,seek:seek,pause:pause,T:T};
+pp.addEventListener('click',function(){playing?pause():resume()});
+$('replay').addEventListener('click',function(){play({from:0})});
+box.addEventListener('click',function(){playing?pause():resume()});
+var was=false;
+sl.addEventListener('pointerdown',function(){was=playing});
+sl.addEventListener('input',function(){playing=false;cur=sl.value/1000*T;render(cur);btn()});
+sl.addEventListener('change',function(){if(was)resume();was=false});
+show();
+if(!CLIP&&!reduce)play({from:0});
+})();
+</script>
+</body>
+</html>
