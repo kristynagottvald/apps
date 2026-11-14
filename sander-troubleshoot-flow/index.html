@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sander Troubleshoot Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%;background:#fff;color:#1E3156;font:400 16px/1.45 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;min-height:100vh}
+/* ---------- Back nav (shared across all sandbox projects) ---------- */
+nav.back{box-sizing:border-box;flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 "Inter","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;white-space:nowrap}
+nav.back a{color:#8d8d8d;text-decoration:none}
+nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}
+nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){nav.back{padding:0 16px}nav.back>span:nth-of-type(2),nav.back>b{display:none}}
+nav.back .ctl{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:0}
+nav.back button{font:inherit;color:#fff;background:transparent;border:1px solid #4a4a4a;border-radius:8px;padding:4px 12px;cursor:pointer}
+nav.back button:hover{border-color:#fff}
+nav.back button:focus-visible{outline:2px solid #79BFF4;outline-offset:2px}
+nav.back #pp{min-width:64px}
+nav.back input[type=range]{width:240px;min-width:60px;accent-color:#79BFF4;cursor:pointer}
+
+main{flex:1;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:40px;align-items:center;max-width:1240px;width:100%;margin:0 auto;padding:36px 24px}
+.art{border-radius:20px;overflow:hidden;aspect-ratio:8/5;position:relative;border:1px solid #1E3156;box-shadow:0 1px 0 #1E3156}
+.art svg{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity .25s}
+.art svg.out{opacity:0}
+.panel{display:flex;flex-direction:column;gap:18px;min-width:0}
+.crumbs{display:flex;gap:6px;flex-wrap:wrap;font-size:13px;color:#5b6b88;min-height:22px}
+.crumbs span{background:#D3E9FD;color:#1E3156;border-radius:999px;padding:2px 10px}
+.prog{display:flex;gap:6px}
+.prog i{height:5px;flex:1;border-radius:3px;background:#D3E9FD}
+.prog i.on{background:#4B7CCD}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#E76E4E}
+h1{font-size:clamp(26px,3.2vw,38px);line-height:1.12;font-weight:600;letter-spacing:-.02em}
+.lead{color:#3c4d6d}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{font:inherit;font-weight:500;text-align:left;background:#fff;border:1.5px solid #1E3156;border-radius:12px;padding:14px 16px;color:#1E3156;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:background .15s,transform .15s}
+.opt:hover{background:#D3E9FD;transform:translateX(3px)}
+.opt:focus-visible,.nv button:focus-visible{outline:3px solid #89BDEF;outline-offset:2px}
+.opt svg{flex:none}
+ol.steps{padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:10px}
+ol.steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;background:#F4F8FD;border-radius:12px;padding:12px 14px}
+ol.steps li::before{content:counter(s);flex:none;width:26px;height:26px;border-radius:50%;background:#4B7CCD;color:#fff;font-size:14px;font-weight:600;display:grid;place-items:center}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:600;border-radius:12px;padding:12px 18px;cursor:pointer;border:1.5px solid #1E3156;background:#fff;color:#1E3156}
+.btn.pri{background:#1E3156;color:#fff}
+.btn:hover{background:#D3E9FD;color:#1E3156}.btn.pri:hover{background:#4B7CCD;color:#fff}
+.nv{display:flex;gap:14px;align-items:center;font-size:14px}
+.nv button{font:inherit;color:#4B7CCD;background:none;border:0;cursor:pointer;padding:2px 0;text-decoration:underline;text-underline-offset:3px}
+.nv .sp{margin-left:auto}
+.sty{font-size:13px;color:#5b6b88}.sty a{color:#4B7CCD}
+.fade{animation:in .3s both;display:flex;flex-direction:column;gap:14px}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (max-width:860px){main{grid-template-columns:1fr;gap:22px;padding:20px 16px}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}.art svg{transition:none}.opt{transition:none}}
+</style>
+<style id="roles"></style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Sander Troubleshoot Flow</b></nav>
+<main>
+<div class="art" id="art" role="presentation"></div>
+<section class="panel" id="panel" aria-live="polite"></section>
+</main>
+<script>
+/* ====== ART: sander troubleshooting scenes, drawn from roles so every look is just a token set ====== */
+const BR = { navy: '#1E3156', blue: '#4B7CCD', orange: '#E76E4E', yellow: '#F6E9A2', light: '#D3E9FD', med: '#89BDEF', white: '#FFFFFF' };
+const N = BR.navy, B = BR.blue, O = BR.orange, Y = BR.yellow, LB = BR.light, MB = BR.med, W = '#FFFFFF';
+/* a role is [fill, stroke]. HT = halftone dots, ST = stripes (both drawn in the outline colour). */
+const VARIANTS = {
+  mono: { label: 'Monochrome', note: 'White faces, navy and grey people. Colour only on the screen and the tool.',
+    bg: '#F6F5F3', sw: 2.6, exo: 1,
+    skin: [W, N], skin2: ['HT', N], hair: [N, N], top: [N, N], top2: ['HT', N],
+    ui: [W, N], bar: ['HT', N], soft: ['#EEEEEE', 'none'], ui1: [B, 'none'], ui2: [O, 'none'],
+    obj: [O, N], obj2: [B, N], paper: ['HT', N], tag: [Y, N], ext: [N, 'none'], ext2: ['HT', 'none'] },
+  line: { label: 'Fill and line', note: 'Flat colour fills with no outline, beside parts that are outline only.',
+    bg: W, sw: 2.4, exo: 1,
+    skin: [W, N], skin2: [W, N], hair: [N, 'none'], top: [B, 'none'], top2: [W, N],
+    ui: [W, N], bar: [LB, N], soft: [LB, 'none'], ui1: [B, 'none'], ui2: [O, 'none'],
+    obj: [O, 'none'], obj2: [W, N], paper: [W, N], tag: [Y, 'none'], ext: [LB, 'none'], ext2: [MB, 'none'] },
+  pale: { label: 'Pale and brand', note: 'A pale blue ground with the Mavenoid palette as accents.',
+    bg: LB, sw: 2.5, exo: 1,
+    skin: [W, N], skin2: [W, N], hair: [N, N], top: [W, N], top2: [B, N],
+    ui: [W, N], bar: [MB, N], soft: ['#EAF3FE', 'none'], ui1: [B, N], ui2: [Y, N],
+    obj: [O, N], obj2: [B, N], paper: ['HT', N], tag: [O, N], ext: [N, N], ext2: ['HT', N] },
+  bold: { label: 'Bold yellow', note: 'A loud yellow ground, heavy outlines, blue and orange accents.',
+    bg: Y, sw: 3.5, exo: 1,
+    skin: [W, N], skin2: [W, N], hair: [N, N], top: [B, N], top2: ['ST', N],
+    ui: [W, N], bar: ['HT', N], soft: [LB, 'none'], ui1: [B, N], ui2: [O, N],
+    obj: [O, N], obj2: [W, N], paper: ['HT', N], tag: [B, N], ext: [N, N], ext2: ['ST', N] }
+};
+const ROLES = ['skin', 'skin2', 'hair', 'top', 'top2', 'ui', 'bar', 'soft', 'ui1', 'ui2', 'obj', 'obj2', 'paper', 'tag', 'ext', 'ext2'];
+const ROLE_CSS = ROLES.map(r => `.sc .r-${r}{fill:var(--${r}-f);stroke:var(--${r}-s)}`).join('') +
+  '.sc [class*="r-"]{stroke-width:var(--sw);stroke-linejoin:round;stroke-linecap:round}' +
+  '.sc .ln{fill:none;stroke:var(--line);stroke-width:var(--sw);stroke-linecap:round;stroke-linejoin:round}' +
+  '.sc .fl{fill:var(--line);stroke:none}.sc .ex{opacity:var(--exo)}.sc .bgr{fill:var(--bg)}' +
+  '.sc text{font-family:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:500;fill:var(--line);stroke:none}' +
+  '.sc .tw{fill:#fff}.sc .gl{fill:none;stroke:var(--glass);stroke-width:var(--sw)}';
+
+let UID = 0;
+/* tokens -> inline style for one svg. texture:false swaps halftone/stripes for flat tints */
+function tokenStyle(v, uid, texture) {
+  const m = { HT: texture ? `url(#ht-${uid})` : '#D5DBE6', ST: texture ? `url(#st-${uid})` : W };
+  let s = `--bg:${v.bg};--line:${v.line || N};--sw:${v.sw};--exo:${v.exo};--glass:${O};`;
+  ROLES.forEach(r => { const [f, st] = v[r]; s += `--${r}-f:${m[f] || f};--${r}-s:${m[st] || st};`; });
+  return s;
+}
+const defs = (uid) => `<defs>
+<pattern id="ht-${uid}" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="${'#fff'}" opacity="0"/><circle cx="1.4" cy="1.4" r="1" fill="var(--line)"/><circle cx="3.9" cy="3.9" r="1" fill="var(--line)"/></pattern>
+<pattern id="st-${uid}" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(-62)"><rect width="22" height="22" fill="#fff"/><rect width="9" height="22" fill="var(--line)"/></pattern>
+</defs>`;
+
+/* ---- pieces ---- */
+const P = (role, d, x = '') => `<path class="r-${role}" d="${d}" ${x}/>`;
+function ext(x, y, w, h, dx = 120, dy = 150) {
+  return `<g class="ex">` + P('ext', `M${x} ${y}L${x} ${y + h}L${x - dx} ${y + h + dy}L${x - dx} ${y + dy}Z`) +
+    P('ext2', `M${x} ${y + h}L${x + w} ${y + h}L${x + w - dx} ${y + h + dy}L${x - dx} ${y + h + dy}Z`) + `</g>`;
+}
+function win(x, y, w, h, inner) {
+  return ext(x, y, w, h) + `<rect class="r-ui" x="${x}" y="${y}" width="${w}" height="${h}" rx="12"/>` +
+    P('bar', `M${x} ${y + 32}L${x} ${y + 12}Q${x} ${y} ${x + 12} ${y}L${x + w - 12} ${y}Q${x + w} ${y} ${x + w} ${y + 12}L${x + w} ${y + 32}Z`) +
+    `<path class="ln" d="M${x} ${y + 32}H${x + w}"/>` + [0, 1, 2].map(i => `<circle class="fl" cx="${x + 20 + i * 17}" cy="${y + 16}" r="4.2"/>`).join('') + inner;
+}
+function tag(x, y) {
+  return `<g><rect class="r-tag" x="${x}" y="${y}" width="112" height="36" rx="18"/><circle class="bgr" cx="${x + 18}" cy="${y + 18}" r="5.5" style="stroke:var(--line);stroke-width:var(--sw)"/>` +
+    `<path class="ln" d="M${x + 38} ${y + 24}C${x + 44} ${y + 8} ${x + 50} ${y + 8} ${x + 54} ${y + 22}C${x + 58} ${y + 8} ${x + 66} ${y + 8} ${x + 70} ${y + 22}C${x + 76} ${y + 12} ${x + 88} ${y + 10} ${x + 98} ${y + 14}" style="stroke-width:2"/></g>`;
+}
+function hand() {
+  return P('skin2', 'M-20 -4C-22 -22 18 -26 22 -6C26 12 16 22 0 22C-14 22 -19 10 -20 -4Z') +
+    `<path class="ln" d="M-7 -2V10M3 -2V12M12 -2V10" style="stroke-width:2"/>`;
+}
+function sander() {   // orbital sander seen from the side, base at y=0
+  return P('paper', 'M-64 0H64V9Q64 11 62 11H-62Q-64 11 -64 9Z') +
+    P('obj2', 'M-60 -12H60Q62 -12 62 -10V0H-62V-10Q-62 -12 -60 -12Z') +
+    P('obj2', 'M54 -50H80Q86 -50 86 -44V-20Q86 -14 80 -14H54Z') + `<path class="ln" d="M66 -42V-22M74 -42V-22" style="stroke-width:2"/>` +
+    P('obj', 'M-50 -12C-50 -50 -32 -64 -8 -64H24C48 -64 56 -46 56 -12Z') +
+    P('obj', 'M-26 -62C-30 -90 -4 -98 10 -96C32 -94 34 -76 30 -62Z') +
+    `<circle class="r-ui" cx="-30" cy="-32" r="6.5"/>`;
+}
+function head(o) {
+  const hairBack = { bob: 'M-54 44C-72 -30 -44 -86 4 -86C54 -86 70 -30 54 44L46 76H-46Z', long: 'M-56 70C-74 -30 -46 -86 4 -86C56 -86 74 -30 56 70L60 170H-60Z', short: '' }[o.hair];
+  const hairFront = { bob: 'M-44 -10C-44 -50 -22 -68 6 -68C32 -68 46 -50 46 -22C32 -30 12 -40 -4 -54C-12 -36 -30 -24 -44 -10Z',
+    long: 'M-44 -8C-42 -52 -22 -68 4 -68C30 -68 46 -52 44 -8C32 -34 12 -48 0 -56C-12 -42 -30 -26 -44 -8Z',
+    short: 'M-46 -4C-52 -60 -22 -80 8 -78C42 -76 58 -52 46 -8C36 -26 22 -42 4 -48C-10 -32 -28 -20 -46 -4Z' }[o.hair];
+  const sm = o.smile ? 'M-12 28Q2 42 16 27' : 'M-10 31Q2 37 14 30';
+  return (hairBack ? P('hair', hairBack) : '') +
+    P('skin2', 'M-15 40V94C-15 110 15 110 15 94V40Z') +
+    P('skin', 'M-42 -8C-42 -50 -24 -68 2 -68C28 -68 44 -50 44 -12C44 30 26 54 0 54C-26 54 -42 28 -42 -8Z') +
+    `<g class="ln" style="stroke-width:calc(var(--sw)*.8)"><path d="M-28 -12L-8 -18M10 -18L30 -13"/><path d="M2 -4L-4 16L7 16"/><path d="${sm}"/></g>` +
+    `<circle class="fl" cx="-16" cy="-4" r="3.4"/><circle class="fl" cx="18" cy="-4" r="3.4"/>` +
+    (o.glasses ? `<circle class="gl" cx="-16" cy="-3" r="11"/><circle class="gl" cx="18" cy="-3" r="11"/><path class="gl" d="M-5 -4Q1 -8 7 -4"/>` : '') +
+    P('hair', hairFront) + (o.hair === 'short' ? '' : '');
+}
+function body() {
+  return P('top', 'M-104 330V168C-104 118 -60 90 0 90C60 90 104 118 104 168V330Z') +
+    P('top2', 'M-30 92C-14 112 14 112 30 92L22 84C10 98 -10 98 -22 84Z');
+}
+/* the person holding the sander up on the right, in scene coordinates */
+function holder(o, mirror) {
+  const g = `<g transform="translate(185 148) scale(1.1)">${body()}${head(o)}</g>` +
+    P('top2', 'M232 500H300C316 444 342 404 358 346L316 328C292 380 262 430 232 500Z') +
+    `<g transform="translate(346 440) rotate(-6) scale(1.25)">${sander()}</g>` +
+    `<g transform="translate(333 326) rotate(-8)">${hand()}</g>`;
+  return mirror ? `<g transform="translate(805 0) scale(-1 1)">${g}</g>` : g;
+}
+const chip = (x, y, w, h, role, label, tw, on) => `<rect class="r-${role}" x="${x}" y="${y}" width="${w}" height="${h}" rx="10"/><text class="${tw ? 'tw' : ''}" x="${x + 16}" y="${y + h / 2 + 5.5}" font-size="16">${label}</text>` +
+  (on ? `<circle cx="${x + w - 22}" cy="${y + h / 2}" r="10" fill="#fff"/><path d="M${x + w - 27} ${y + h / 2}l4 4 7-8" fill="none" stroke="${B}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>` : '');
+const tick = (x, y, s = 1) => `<path d="M${x} ${y}l${6 * s} ${6 * s} ${12 * s}-${14 * s}" fill="none" stroke="#fff" stroke-width="${3 * s}" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+const SCENES = {
+  ask: { label: 'Ask', alt: 'A person holds up an orbital sander next to a support screen asking what the sander is doing, with scratching selected',
+    svg: () => tag(300, 44) + win(420, 76, 340, 300,
+      chip(444, 122, 250, 46, 'soft', 'What is your sander doing?') +
+      chip(444, 186, 292, 42, 'ui1', 'Scratching the surface', true, true) +
+      chip(444, 238, 292, 42, 'soft', 'Vibrating or wobbling') +
+      chip(444, 290, 292, 42, 'soft', 'Won’t start')) +
+      `<g><rect class="r-ui" x="712" y="318" width="76" height="76" rx="12"/><circle class="ln" cx="750" cy="356" r="25"/><circle class="ln" cx="750" cy="356" r="13"/>` +
+      P('ui2', 'M752 354L774 330L786 328L784 340L760 362Z') + `<circle class="fl" cx="750" cy="356" r="3.4"/></g>` +
+      holder({ hair: 'bob' }) },
+  check: { label: 'Check', alt: 'A person with glasses holds up a worn sanding pad next to a checklist screen',
+    svg: () => tag(318, 40) + win(430, 66, 330, 320,
+      `<text x="456" y="124" font-size="19">Check the pad</text>` +
+      [['Pad is worn or clogged', true], ['Grit matches the job', true], ['Dust holes line up', false]].map((r, i) => {
+        const y = 146 + i * 62;
+        return `<rect class="r-soft" x="452" y="${y}" width="286" height="50" rx="10"/><rect class="${r[1] ? 'r-ui1' : 'r-ui'}" x="466" y="${y + 13}" width="24" height="24" rx="6"/>` +
+          (r[1] ? tick(471, y + 26, .8) : '') + `<text x="504" y="${y + 31}" font-size="16">${r[0]}</text>`;
+      }).join('')) +
+      `<g transform="translate(185 148) scale(1.1)">${body()}${head({ hair: 'short', glasses: true })}</g>` +
+      P('top2', 'M226 500H292C300 450 306 420 316 392L276 378C256 420 240 456 226 500Z') +
+      `<g transform="translate(332 318)"><circle class="r-obj" r="80"/><circle class="r-paper" r="62"/><circle class="r-obj2" r="40"/>` +
+      [0, 1, 2, 3, 4, 5].map(i => { const a = i * Math.PI / 3 + .5; return `<circle class="bgr" cx="${(Math.cos(a) * 24).toFixed(1)}" cy="${(Math.sin(a) * 24).toFixed(1)}" r="6.5" style="stroke:var(--line);stroke-width:2"/>`; }).join('') +
+      `<circle class="r-ui" r="9"/><path class="ln" d="M-48 -34L-20 -52M30 -56L52 -36M-56 12L-40 34M40 30L56 10" style="stroke-width:2.4"/></g>` +
+      `<g transform="translate(322 394) rotate(-12)">${hand()}</g>` },
+  solved: { label: 'Solved', alt: 'A smiling person holds up the sander beside a rising bar chart and a big check mark',
+    svg: () => tag(420, 36) + win(36, 96, 330, 290,
+      `<text x="60" y="152" font-size="19">Finish quality</text>` +
+      `<path class="ln" d="M60 346H340" style="stroke-width:2"/>` +
+      [[70, 60], [150, 110], [230, 170]].map(b => `<rect class="r-ui1" x="${b[0]}" y="${346 - b[1]}" width="56" height="${b[1]}"/>`).join('') +
+      `<path class="ln" d="M70 300C84 262 124 252 150 252M160 238C176 190 214 178 236 190M240 176C258 130 296 118 312 130" style="stroke-width:2.2;stroke-dasharray:7 7"/>`) +
+      `<g><rect class="r-ui1" x="296" y="56" width="92" height="92" rx="8"/><path d="M322 102l16 18 34-44" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></g>` +
+      holder({ hair: 'long', smile: true }, true) }
+};
+
+/* returns one standalone svg. opts: { variant: key | tokens object, texture, id } */
+function sceneSVG(scene, v, texture = true) {
+  const uid = ++UID, S = SCENES[scene];
+  return `<svg class="sc" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" style="${tokenStyle(v, uid, texture)}" role="img" aria-label="${S.alt}">` +
+    defs(uid) + `<rect class="bgr" width="800" height="500"/>${S.svg()}</svg>`;
+}
+
+
+/* ---------- the flow ---------- */
+const FLOW = {
+  start: { scene: 'ask', q: 'What is your sander doing?', hint: 'Pick the closest match and we will narrow it down.', opts: [['It scratches the surface', 'scr1'], ['It vibrates or wobbles', 'vib1'], ['It won’t start', 'pow1'], ['It leaves dust everywhere', 'dst1']] },
+  scr1: { scene: 'check', q: 'Take the sanding pad off. What does it look like?', opts: [['Worn, torn or clogged', 'fix_pad'], ['It looks fine', 'scr2']] },
+  scr2: { scene: 'ask', q: 'Which grit are you using?', hint: 'The number is printed on the back of the paper.', opts: [['Coarse, under 80', 'fix_grit'], ['Medium or fine, 80 and up', 'scr3']] },
+  scr3: { scene: 'check', q: 'Is there grit or debris trapped between the pad and the surface?', opts: [['Yes, I can see some', 'fix_clean'], ['No, both are clean', 'fix_press']] },
+  vib1: { scene: 'check', q: 'Is the pad flat and firmly stuck to the plate?', opts: [['No, it lifts or has gaps', 'fix_seat'], ['Yes, it sits flat', 'vib2']] },
+  vib2: { scene: 'ask', q: 'Does it still shake when it runs in the air, with no load?', opts: [['Yes, it shakes by itself', 'fix_service'], ['No, only while sanding', 'fix_press']] },
+  pow1: { scene: 'ask', q: 'Does another device work in the same outlet?', opts: [['No, the outlet is dead', 'fix_outlet'], ['Yes, the outlet works', 'pow2']] },
+  pow2: { scene: 'check', q: 'Can you see damage on the cable, plug or switch?', opts: [['Yes, something looks damaged', 'fix_service'], ['No, it all looks fine', 'fix_service']] },
+  dst1: { scene: 'check', q: 'Is the dust bag or canister full?', opts: [['Yes, it is full', 'fix_bag'], ['No, it is nearly empty', 'dst2']] },
+  dst2: { scene: 'check', q: 'Do the holes in the paper line up with the holes in the pad?', opts: [['No, they are off', 'fix_holes'], ['Yes, they line up', 'fix_clean']] },
+};
+const FIX = {
+  fix_pad: ['Replace the sanding pad', 'A worn or clogged pad drags grit across the surface instead of cutting it.', ['Unplug the sander.', 'Peel off the old paper and check the hook-and-loop face for glazing or tears.', 'Fit a fresh sheet, press it down flat, and test on scrap wood.']],
+  fix_grit: ['Step up the grit', 'Coarse paper leaves deep scratches that finer paper then has to remove.', ['Start with 80 grit only for stripping paint or rough wood.', 'Work through 120, then 180, never skipping more than one step.', 'Wipe the dust off between each change of grit.']],
+  fix_clean: ['Clean the pad and the surface', 'A single loose grain under the pad can scratch the whole panel.', ['Unplug, then brush the pad and plate with a dry brush.', 'Wipe the workpiece with a tack cloth.', 'Tap the paper on the bench to knock out trapped dust, or swap it.']],
+  fix_press: ['Let the sander do the work', 'Pressing down slows the orbit and makes swirls, scratches and shaking.', ['Rest the weight of the tool on the surface and nothing more.', 'Keep the pad flat and move slowly with the grain.', 'Lift the sander off before you switch it off.']],
+  fix_seat: ['Re-seat the pad', 'A pad that is not flat unbalances the orbit and shakes the tool.', ['Unplug the sander and remove the pad screws.', 'Clean the plate and refit the pad so it sits flat.', 'Tighten the screws evenly, then run it in the air to test.']],
+  fix_outlet: ['Check the power first', 'If another device is dead in that outlet, the sander is not the problem.', ['Try a different outlet or reset the breaker.', 'Test the extension cord with another tool.', 'Plug the sander straight into the wall and try again.']],
+  fix_bag: ['Empty the dust bag', 'A full bag blocks the airflow, so dust spills back out of the pad.', ['Unplug and unclip the bag or canister.', 'Tap it out and clear the filter.', 'Refit it until it clicks, and empty it when it is half full.']],
+  fix_holes: ['Line up the dust holes', 'Misaligned holes stop the dust being pulled up through the pad.', ['Take the paper off the pad.', 'Match the paper holes to the pad holes before you press it down.', 'Switch on and check that dust is being drawn through.']],
+  fix_service: ['This one needs a service', 'The motor, brushes or wiring may be worn, and that is not a safe home fix.', ['Unplug the sander and stop using it.', 'Keep the model number and purchase date handy.', 'Contact support and we will arrange a repair or replacement.']],
+};
+const STYLE = (() => { const m = /[?&#]style=(\w+)/.exec(location.search + location.hash); return m && VARIANTS[m[1]] ? m[1] : 'pale'; })();
+document.getElementById('roles').textContent = ROLE_CSS;
+const artEl = document.getElementById('art'), panel = document.getElementById('panel');
+let path = [], cur = 'start', shown = null;
+const esc = (s) => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const arrow = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>';
+
+function scene(name) {
+  if (shown === name) return; shown = name;
+  const old = artEl.firstElementChild;
+  artEl.insertAdjacentHTML('beforeend', sceneSVG(name, VARIANTS[STYLE]));
+  if (old) { old.classList.add('out'); setTimeout(() => old.remove(), 260); }
+}
+function depth() { return path.length; }
+function render() {
+  const prog = '<div class="prog" aria-hidden="true">' + [0, 1, 2, 3].map(i => `<i class="${i <= Math.min(depth(), 3) ? 'on' : ''}"></i>`).join('') + '</div>';
+  const crumbs = `<div class="crumbs">${path.map(p => `<span>${esc(p.label)}</span>`).join('')}</div>`;
+  let body = '';
+  if (cur === 'done') {
+    scene('solved');
+    body = `<div class="eyebrow">Solved</div><h1>Sanding smooth again</h1><p class="lead">Glad that sorted it. Keep the sander flat, use a fresh sheet and let it do the work.</p><div class="row"><button class="btn pri" data-act="restart">Troubleshoot another issue</button></div>`;
+  } else if (cur === 'help') {
+    scene('ask');
+    body = `<div class="eyebrow">Next step</div><h1>Let’s get you to a person</h1><p class="lead">That did not fix it, so a support agent can take a closer look. Share the model number and what you tried: ${path.map(p => esc(p.label).toLowerCase()).join(' → ')}.</p><div class="row"><button class="btn pri" data-act="restart">Start again</button></div>`;
+  } else if (FIX[cur]) {
+    const f = FIX[cur]; scene('check');
+    body = `<div class="eyebrow">Try this fix</div><h1>${f[0]}</h1><p class="lead">${f[1]}</p><ol class="steps">${f[2].map(s => `<li>${s}</li>`).join('')}</ol><p class="lead" style="font-weight:600;color:#1E3156">Did that fix it?</p><div class="row"><button class="btn pri" data-act="yes">Yes, it works now</button><button class="btn" data-act="no">No, still a problem</button></div>`;
+  } else {
+    const n = FLOW[cur]; scene(n.scene);
+    body = `<div class="eyebrow">${cur === 'start' ? 'Sander troubleshooting' : 'Question ' + (depth() + 1)}</div><h1>${n.q}</h1>${n.hint ? `<p class="lead">${n.hint}</p>` : ''}<div class="opts">${n.opts.map((o, i) => `<button class="opt" data-i="${i}">${o[0]}${arrow}</button>`).join('')}</div>`;
+  }
+  const nv = `<div class="nv">${path.length ? '<button data-act="back">← Back</button>' : ''}${path.length ? '<button class="sp" data-act="restart">Start over</button>' : ''}</div>`;
+  panel.innerHTML = `<div class="fade">${prog}${crumbs}</div><div class="fade">${body}</div>${nv}<p class="sty">Art style: ${VARIANTS[STYLE].label}. <a href="../variant-tryon-engine/#style=${STYLE}">Try other styles</a></p>`;
+}
+panel.addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.i != null) { const o = FLOW[cur].opts[+b.dataset.i]; path.push({ from: cur, label: o[0] }); cur = o[1]; }
+  else if (b.dataset.act === 'back') { cur = path.pop().from; }
+  else if (b.dataset.act === 'restart') { path = []; cur = 'start'; }
+  else if (b.dataset.act === 'yes') cur = 'done';
+  else if (b.dataset.act === 'no') cur = 'help';
+  render(); panel.querySelector('button')?.focus({ preventScroll: true });
+});
+render();
+</script>
+</body>
+</html>
