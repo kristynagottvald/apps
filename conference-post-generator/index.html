@@ -58,6 +58,13 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
 .rng input{accent-color:var(--yellow);width:100%}
 .rng output{color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
 .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.phc{display:flex;flex-direction:column;gap:5px;min-width:0}
+.pbtns{display:flex;gap:4px}
+.mini{flex:1;border:1px solid #444;background:#222;border-radius:6px;padding:5px 0;font-size:11.5px;font-weight:600;cursor:pointer}
+.mini:hover:not(:disabled){border-color:#888}
+.mini:disabled{opacity:.4;cursor:default}
+.ph.empty{border-style:dashed;cursor:default}
+.ph.front{border-color:var(--yellow)}
 .ph{position:relative;aspect-ratio:4/5;border-radius:8px;overflow:hidden;border:1px solid #3a3a3a;cursor:pointer;background:#222}
 .ph canvas{width:100%;height:100%;display:block}
 .ph span{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);font-size:11px;text-align:center;padding:4px 0}
@@ -145,7 +152,8 @@ input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--yello
     <section id="photosec">
       <h2>Photos</h2>
       <div class="photos" id="photos"></div>
-      <p class="hint">Black and white portraits from Unsplash. Click or drop your own image on a slot to replace one.</p>
+      <p class="hint">Click a photo to bring it to the front of the stack. Upload or drop your own image, delete one, or reset to the originals.</p>
+      <div class="row"><button class="btn" id="phReset">Reset photos</button></div>
       <div class="row" id="pfilter">
         <button class="chip" data-v="color">Original</button>
         <button class="chip" data-v="bw">High-contrast B&amp;W</button>
@@ -345,8 +353,6 @@ function flourish(ctx, x, y, w, h, o) {
 }
 
 /* ===== photos ===== */
-const photoSrc = [null, null, null];           // user uploads (Image)
-const photoVer = [0, 0, 0];
 const photoCache = {};                           // processed canvases
 function placeholder(i) {
   const c = document.createElement('canvas'); c.width = 600; c.height = 750; const x = c.getContext('2d');
@@ -365,10 +371,13 @@ function placeholder(i) {
   return c;
 }
 const placeholders = [0, 1, 2].map(placeholder);
+let PH = [];  // photo entries in stack order: the first visible one is the front of the stack
+const vis = () => PH.filter((e) => e.on);
 function getPhoto(i) {
-  const key = i + '|' + S.photoFilter + '|' + photoVer[i];
+  const ent = vis()[i]; if (!ent) return null;
+  const key = ent.id + '|' + S.photoFilter + '|' + ent.ver;
   if (photoCache[key]) return photoCache[key];
-  const src = photoSrc[i] || placeholders[i];
+  const src = ent.img;
   const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height, k = Math.min(1, 900 / Math.max(sw, sh));
   const c = document.createElement('canvas'); c.width = Math.round(sw * k); c.height = Math.round(sh * k);
   const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(src, 0, 0, c.width, c.height);
@@ -387,7 +396,8 @@ function getPhoto(i) {
 }
 /* an outlined print: cream mat, dark outline, optional hard shadow */
 function photoFrame(ctx, i, cx, cy, w, h, rot, th, shadow) {
-  const img = getPhoto(i), mat = Math.max(8, w * 0.04), ol = Math.max(3, w * 0.014);
+  const img = getPhoto(i); if (!img) return;
+  const mat = Math.max(8, w * 0.04), ol = Math.max(3, w * 0.014);
   ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
   if (shadow) { ctx.fillStyle = DARK; ctx.fillRect(-w / 2 - mat + shadow, -h / 2 - mat + shadow, w + 2 * mat, h + 2 * mat); }
   ctx.fillStyle = th.paper; ctx.fillRect(-w / 2 - mat, -h / 2 - mat, w + 2 * mat, h + 2 * mat);
@@ -558,7 +568,7 @@ function tHeadline(ctx, c) {
     flourish(ctx, cr.x, cr.y, cr.w, cr.h, { color: S.barOn ? DARK : th.fg, t, still: c.still, fw: 1.2 * S.weight / 5 * fu, off: S.seed * 0.9, side: land ? null : 'R', ext: !land && !S.barOn ? 215 * fu : 0 });  // bar off: let the strokes finish; bar on: stay inside it
     ctx.restore();
   }
-  const n = S.photoCount;
+  const n = Math.min(S.photoCount, vis().length);
   if (S.panelMode === 'badges') barBadges(ctx, c, pr, t);
   else if (n) photoCluster(ctx, c, pr, n, t, !land);
   frameLines(ctx, c, land ? pr.x : null);
@@ -712,26 +722,45 @@ CHECKS.forEach((k) => $('#' + k).addEventListener('change', (e) => { S[k] = e.ta
 RANGES.forEach((k) => $('#' + k).addEventListener('input', (e) => { S[k] = +e.target.value; $('#' + k + 'O').textContent = S[k]; dirty = true; }));
 $('#shuffle').addEventListener('click', () => { S.seed = Math.floor(Math.random() * 9999) + 1; dirty = true; });
 
-/* photo slots */
+/* photo slots: each photo has its own upload and delete buttons; clicking a photo brings it to the front of the stack */
 const phWrap = $('#photos');
-function thumb(i) {
-  const c = phWrap.children[i].querySelector('canvas'), x = c.getContext('2d'), s = photoSrc[i] || placeholders[i], sw = s.naturalWidth || s.width, sh = s.naturalHeight || s.height, k = Math.max(120 / sw, 150 / sh);
+const DEFAULT_URLS = ['photos/p1.jpg', 'photos/p2.jpg', 'photos/p3.jpg'], defImgs = [null, null, null];
+PH = [0, 1, 2].map((id) => ({ id, img: placeholders[id], ver: 0, on: true, custom: false }));
+function drawThumb(c, s) {
+  const x = c.getContext('2d'), sw = s.naturalWidth || s.width, sh = s.naturalHeight || s.height, k = Math.max(120 / sw, 150 / sh);
   x.clearRect(0, 0, 120, 150); x.drawImage(s, (120 - sw * k) / 2, (150 - sh * k) / 2, sw * k, sh * k);
 }
-for (let i = 0; i < 3; i++) {
-  const d = document.createElement('div'); d.className = 'ph'; d.tabIndex = 0; d.setAttribute('role', 'button'); d.setAttribute('aria-label', 'Photo ' + (i + 1));
-  d.innerHTML = '<canvas width="120" height="150"></canvas><span>Photo ' + (i + 1) + '</span><input type="file" accept="image/*" hidden>'; phWrap.appendChild(d);
-  const inp = d.querySelector('input');
-  const load = (f) => { if (!f || !f.type.startsWith('image/')) return; const im = new Image(); im.onload = () => { photoSrc[i] = im; photoVer[i]++; if (S.photoFilter === 'color') { S.photoFilter = 'bw'; syncUI(); } thumb(i); dirty = true; }; im.src = URL.createObjectURL(f); };
-  d.addEventListener('click', () => inp.click()); d.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
-  inp.addEventListener('change', () => load(inp.files[0]));
-  d.addEventListener('dragover', (e) => { e.preventDefault(); d.classList.add('drag'); }); d.addEventListener('dragleave', () => d.classList.remove('drag'));
-  d.addEventListener('drop', (e) => { e.preventDefault(); d.classList.remove('drag'); load(e.dataTransfer.files[0]); });
-  thumb(i);
+function loadInto(ent, f) {
+  if (!f || !f.type.startsWith('image/')) return; const im = new Image();
+  im.onload = () => { ent.img = im; ent.custom = true; ent.on = true; ent.ver++; if (S.photoFilter === 'color') { S.photoFilter = 'bw'; syncUI(); } renderPhotoSlots(); dirty = true; };
+  im.src = URL.createObjectURL(f);
 }
-
+function renderPhotoSlots() {
+  phWrap.innerHTML = ''; const first = vis()[0];
+  PH.forEach((ent, pos) => {
+    const col = document.createElement('div'); col.className = 'phc';
+    const d = document.createElement('div'); d.className = 'ph' + (ent.on ? '' : ' empty') + (ent === first ? ' front' : '');
+    d.innerHTML = '<canvas width="120" height="150"></canvas><span>' + (ent.on ? (ent === first ? 'Front' : 'Photo ' + (pos + 1)) : 'Empty') + '</span>';
+    if (ent.on) { drawThumb(d.querySelector('canvas'), ent.img); d.tabIndex = 0; d.setAttribute('role', 'button'); d.setAttribute('aria-label', 'Bring photo ' + (pos + 1) + ' to the front'); }
+    const toFront = () => { if (!ent.on || ent === first) return; PH.splice(PH.indexOf(ent), 1); PH.unshift(ent); renderPhotoSlots(); dirty = true; };
+    d.addEventListener('click', toFront); d.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toFront(); } });
+    d.addEventListener('dragover', (e) => { e.preventDefault(); d.classList.add('drag'); }); d.addEventListener('dragleave', () => d.classList.remove('drag'));
+    d.addEventListener('drop', (e) => { e.preventDefault(); d.classList.remove('drag'); loadInto(ent, e.dataTransfer.files[0]); });
+    const btns = document.createElement('div'); btns.className = 'pbtns';
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true; inp.addEventListener('change', () => loadInto(ent, inp.files[0]));
+    const up = document.createElement('button'); up.className = 'mini'; up.textContent = 'Upload'; up.setAttribute('aria-label', 'Upload photo ' + (pos + 1)); up.addEventListener('click', () => inp.click());
+    const del = document.createElement('button'); del.className = 'mini'; del.textContent = 'Delete'; del.disabled = !ent.on; del.setAttribute('aria-label', 'Delete photo ' + (pos + 1));
+    del.addEventListener('click', () => { ent.on = false; renderPhotoSlots(); dirty = true; });
+    btns.append(up, del, inp); col.append(d, btns); phWrap.appendChild(col);
+  });
+}
+$('#phReset').addEventListener('click', () => {
+  PH = [0, 1, 2].map((id) => ({ id, img: defImgs[id] || placeholders[id], ver: Date.now() % 1e6 + id, on: true, custom: false }));
+  renderPhotoSlots(); dirty = true;
+});
+renderPhotoSlots();
 /* the three default portraits (Unsplash, black and white, high contrast; see photos/CREDITS.md) */
-['photos/p1.jpg', 'photos/p2.jpg', 'photos/p3.jpg'].forEach((u, i) => { const im = new Image(); im.onload = () => { if (!photoSrc[i]) { photoSrc[i] = im; photoVer[i]++; thumb(i); dirty = true; } }; im.src = u; });
+DEFAULT_URLS.forEach((u, i) => { const im = new Image(); im.onload = () => { defImgs[i] = im; const ent = PH.find((e) => e.id === i); if (ent && !ent.custom) { ent.img = im; ent.ver++; renderPhotoSlots(); dirty = true; } }; im.src = u; });
 
 /* export */
 const status = (m) => ($('#status').textContent = m);
