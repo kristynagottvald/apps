@@ -122,11 +122,12 @@ const APPS = {
       await sleep(5600);
     } },
   'location-hero': { vp: [1280, 769], crop: [0, 49, 1280, 720],
-    // hold on San Francisco, then switch the hero copy, blurbs and mailpiece to Miami
-    ready: 600,
+    // park on the first two blurbs, let them drift up and a third pop in, and switch the copy to Miami halfway
+    setup: async (p) => { await p.evaluate(() => { lp.stop(); lp.set(0); bl.stop(); bl.instant(); }); },
+    ready: 1200,
     run: async (p) => {
       const t0 = Date.now();
-      await p.evaluate(() => { lp.stop(); lp.set(0); });
+      await p.evaluate(() => { bl.instant(); bl.start(1500); });
       await at(t0, 3200, () => p.evaluate(() => lp.set(1)));
       await sleep(5600);
     } },
