@@ -312,7 +312,7 @@ function fit(o){const w=o.vp.clientWidth,mob=w<760,vw=mob?(o.vp.dataset.split?38
  o.fr.style.width=vw+'px';o.fr.style.height=vh+'px';o.fr.style.transform=`scale(${sc})`;o.vp.style.height=(vh*sc)+'px'}
 function syncFrame(o){try{const d=o.fr.contentDocument,w=o.fr.contentWindow;if(!d||!d.head)return;
  if(!d.getElementById('ppx')){const s=d.createElement('style');s.id='ppx';s.textContent='nav.back{display:none!important}';d.head.appendChild(s)}
- const lp=w.eval('typeof lp!=="undefined"?lp:null');if(!lp)return;lp.stop();lp.set(state.m)}catch(e){/* cross-origin (file://): leave the page as it is */}}
+ const lp=w.eval('typeof lp!=="undefined"?lp:null');if(!lp)return;lp.stop();lp.set((o===FR[1]&&state.f>=0)?state.f:state.m)}catch(e){/* cross-origin (file://): leave the page as it is */}}
 function loadPage(o){fit(o);if(!o.on){o.on=true;o.fr.onload=()=>{syncFrame(o);setTimeout(()=>syncFrame(o),400)};o.fr.src='../location-hero/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=location_hero'}else syncFrame(o)}
 /* dot grid in the purple visual: a darker purple, dots grow towards the bottom and shrink to nothing in the top 22%, full size by the bottom of the visible part */
 function drawAdDots(){const c=$('adots'),x=c.getContext('2d'),d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#3425dc';
@@ -334,7 +334,7 @@ const METRICS={impr:['Impressions per day',fmt],clicks:['Clicks per day',fmt],le
 function drawDash(){
  const ids=state.f<0?M.map((_,i)=>i):[state.f],{days,t}=agg(ids),lab=state.f<0?'All markets':M[state.f].city;
  $('mk').innerHTML=`<button data-f="-1" class="${state.f<0?'on':''}">All markets</button>`+M.map((m,i)=>`<button data-f="${i}" class="${state.f===i?'on':''}">${m.short}</button>`).join('');
- $('mk').querySelectorAll('button').forEach(b=>b.onclick=()=>{state.f=+b.dataset.f;drawDash()});
+ $('mk').querySelectorAll('button').forEach(b=>b.onclick=()=>{state.f=+b.dataset.f;drawDash();if(FR[1].on)syncFrame(FR[1])});
  const ctr=t.clicks/t.impr,cpc=t.spend/t.clicks,cvr=t.leads/t.lpv,cpl=t.spend/t.leads;
  const K=[['Impressions',fmt(t.impr),'+9.1%',0,''],['Clicks',fmt(t.clicks),'+12.4%',0,''],['Click-through rate',pct(ctr),'+0.06 pts',0,''],['Cost per click',usd(cpc),'−4.8%',0,''],
   ['Landing page views',fmt(t.lpv),'+11.7%',0,''],['Leads (email submitted)',fmt(t.leads),'+18.3%',1,'hl'],['Conversion rate',pct(cvr,1),'+0.4 pts',0,''],['Cost per lead',usd(cpl),'−11.2%',0,'']];
@@ -353,7 +353,7 @@ function drawDash(){
  $('tbl').innerHTML=`<thead><tr><th>Market</th><th>Impr.</th><th>Clicks</th><th>CTR</th><th>CPC</th><th>Leads</th><th>Conv. rate</th><th>CPL</th><th>Homes in zone</th><th>Delivery</th></tr></thead><tbody>`+
   rows.map(r=>`<tr data-i="${r.i}" class="${state.f===r.i?'on':''}"><td><b>${r.m.city}</b></td><td>${fmt(r.a.impr)}</td><td>${fmt(r.a.clicks)}</td><td>${pct(r.ctr)}</td><td>${usd(r.cpc)}</td><td>${fmt(r.a.leads)}<span class="bgbar" style="width:${r.a.leads/maxL*48}px"></span></td><td>${pct(r.cvr,1)}</td><td>${usd(r.cpl)}</td><td>${fmt(r.m.homes)}</td><td>${r.m.days} days</td></tr>`).join('')+
   `</tbody><tfoot><tr><td>All markets</td><td>${fmt(all.impr)}</td><td>${fmt(all.clicks)}</td><td>${pct(all.clicks/all.impr)}</td><td>${usd(all.spend/all.clicks)}</td><td>${fmt(all.leads)}</td><td>${pct(all.leads/all.lpv,1)}</td><td>${usd(all.spend/all.leads)}</td><td>${fmt(M.reduce((a,m)=>a+m.homes,0))}</td><td>2.2 days</td></tr></tfoot>`;
- $('tbl').querySelectorAll('tbody tr').forEach(r=>r.onclick=()=>{const i=+r.dataset.i;state.f=state.f===i?-1:i;drawDash()});
+ $('tbl').querySelectorAll('tbody tr').forEach(r=>r.onclick=()=>{const i=+r.dataset.i;state.f=state.f===i?-1:i;drawDash();if(FR[1].on)syncFrame(FR[1])});
  // breakdowns
  const FN=[['Marketing',.38],['Operations',.17],['Sales',.14],['Business development',.11],['Founders &amp; owners',.09],['Other',.11]];
  $('fn').innerHTML=FN.map(f=>`<div><span>${f[0]}</span><span><i style="width:${f[1]/.38*100}%"></i></span><b>${Math.round(f[1]*100)}%</b></div>`).join('');
