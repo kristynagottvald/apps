@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Location Hero</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,wght@1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,wght@1,400&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#1f2250;--deep:#171a42;--purple:#4233f4;--lav:#a393f5;--lav2:#e6e3fb;--lime:#e4ee5c;--pink:#d95fe8;--yel:#fde8a1;--yel2:#fbc93d;--w:#fff;
+:root{--ink:#1f2250;--deep:#171a42;--card:#2b2d83;--purple:#4233f4;--lav2:#e6e3fb;--lime:#e4ee5c;--pink:#d95fe8;--yel:#fde8a1;--yel2:#fbc93d;
 --sans:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;--serif:"Newsreader",Georgia,"Times New Roman",serif}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%}
@@ -15,113 +15,109 @@ body{background:var(--ink);color:#fff;font-family:var(--sans);-webkit-font-smoot
 nav.back{flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 var(--sans);white-space:nowrap;overflow:hidden}
 nav.back a{color:#8d8d8d;text-decoration:none}nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
 nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:640px){nav.back{padding:0 16px}}
-.top{display:flex;justify-content:center;gap:16px;align-items:center;padding:20px 56px 0;height:62px}
-.logo{font:700 28px/1 var(--sans);letter-spacing:-.04em}
-.top a{color:#fff;font-size:14px;font-weight:500;text-decoration:none;opacity:.85}
-.hero{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;padding:8px 56px 32px;max-width:1360px;width:100%;margin:0 auto}
-.chip{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;padding:7px 12px 7px 10px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.tog{margin-left:auto;display:flex;gap:6px;flex:none}
+.tog button{font:500 12px var(--sans);color:rgba(255,255,255,.7);background:none;border:1px solid rgba(255,255,255,.22);border-radius:99px;padding:6px 13px;cursor:pointer}
+.tog button.on{background:#fff;color:var(--ink);border-color:#fff}
+@media(max-width:640px){nav.back{padding:0 16px}nav.back .x{display:none}}
+.hero{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center;padding:28px 56px 36px;max-width:1360px;width:100%;margin:0 auto}
+.chip{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
 .chip svg{width:14px;height:14px;fill:var(--lime)}
 .chip em{font-style:normal;color:var(--lime)}
-.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(228,238,92,.6);animation:pulse 2s infinite}
-@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(228,238,92,0)}100%{box-shadow:0 0 0 0 rgba(228,238,92,0)}}
-h1{font-weight:400;font-size:clamp(34px,4.3vw,58px);line-height:1.22;letter-spacing:-.01em;margin:30px 0 28px}
+h1{font-weight:400;font-size:clamp(34px,4.4vw,58px);line-height:1.18;letter-spacing:-.02em;margin:30px 0 34px;white-space:nowrap}
 h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em}
 .sw{display:inline-block;transition:opacity .35s,transform .35s,filter .35s}
 .sw.out{opacity:0;transform:translateY(10px);filter:blur(6px)}
-.sub{font-size:17px;line-height:1.5;color:rgba(255,255,255,.72);max-width:470px;min-height:76px}
-.form{display:flex;margin-top:26px;max-width:520px;padding:6px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
-.form input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:400 15px var(--sans);padding:0 14px}
+.sub{font-size:17px;line-height:1.55;color:rgba(255,255,255,.72);max-width:470px;min-height:78px}
+.form{display:flex;margin-top:28px;max-width:520px;padding:6px;border-radius:99px;background:rgba(255,255,255,.08)}
+.form input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:400 15px var(--sans);padding:0 20px}
 .form input::placeholder{color:rgba(255,255,255,.5)}
-.form button{border:0;background:var(--lime);color:var(--ink);font:600 15px var(--sans);padding:14px 22px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.form button{border:0;background:var(--lime);color:var(--ink);font:600 15px var(--sans);padding:14px 24px;border-radius:99px;cursor:pointer;white-space:nowrap}
 .form button:hover{filter:brightness(1.06)}
-.proof{display:flex;gap:26px;margin-top:34px;font-size:13px;color:rgba(255,255,255,.6)}
-.proof b{display:block;font:400 26px/1.1 var(--sans);color:#fff;letter-spacing:-.02em;margin-bottom:3px}
-.proof b i{font:italic 400 26px var(--serif)}
-.tog{display:flex;gap:6px}
-.tog button{font:500 12px var(--sans);color:rgba(255,255,255,.7);background:none;border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:6px 12px;cursor:pointer}
-.tog button.on{background:#fff;color:var(--ink);border-color:#fff}
+.g2{display:flex;gap:12px;margin-top:32px}
+.g2 svg{width:84px;height:auto;display:block}
 
 /* illustration */
-.stage{position:relative;background:var(--purple);border-radius:10px;aspect-ratio:560/560;width:100%;max-width:600px;justify-self:end;overflow:hidden;container-type:inline-size}
-.art{position:absolute;inset:0;transform-origin:0 0}
-.blurbs{position:absolute;left:5.5%;right:5.5%;top:4.5%;display:grid;grid-template-columns:1fr 1fr;gap:3%}
-.bl{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:6px;padding:2cqw 2.4cqw;color:#fff;transition:opacity .35s,transform .35s,filter .35s}
+.stage{position:relative;aspect-ratio:1/1;width:100%;max-width:600px;justify-self:end;container-type:inline-size}
+.blurbs div.bl{position:absolute;width:50%;background:var(--card);border-radius:20px;padding:2.6cqw 3cqw;color:#fff;transition:opacity .35s,transform .35s,filter .35s}
+#b1{left:0;top:0}#b2{right:0;top:15%}
 .bl.out{opacity:0;transform:translateY(8px);filter:blur(5px)}
-.bl small{display:block;font:600 1.5cqw/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--lime);margin-bottom:1.2cqw}
-.bl strong{display:block;font:400 3.4cqw/1.1 var(--sans);letter-spacing:-.02em}
-.bl strong i{font:italic 400 3.9cqw var(--serif)}
-.bl p{font:400 1.8cqw/1.35 var(--sans);color:rgba(255,255,255,.78);margin-top:1.2cqw}
-.plat{position:absolute;left:11%;top:50%;width:73%;height:58%;background:#fff;border-radius:6px 6px 0 0}
-.side{position:absolute;left:0;top:0;bottom:0;width:11.5%;background:#f1effd}
+.bl small{display:block;font:600 1.5cqw/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--lime);margin-bottom:1.4cqw}
+.bl strong{display:block;font:400 3.6cqw/1.1 var(--sans);letter-spacing:-.02em}
+.bl strong i{font:italic 400 3.8cqw var(--serif)}
+.bl p{font:400 1.85cqw/1.4 var(--sans);color:rgba(255,255,255,.75);margin-top:1.2cqw}
+.box{position:absolute;left:0;right:0;top:42%;bottom:0;background:var(--purple);border-radius:32px;overflow:hidden}
+.plat{position:absolute;left:11%;top:30%;width:73%;height:92%;background:#fff;border-radius:16px 16px 0 0}
+.side{position:absolute;left:0;top:0;bottom:0;width:11.5%;background:#f1effd;border-radius:16px 0 0 0}
 .side i{position:absolute;left:23%;top:5%;width:46%;aspect-ratio:1;background:var(--purple);border-radius:50%}
-.t{position:absolute;border-radius:4px}
-.t1{left:16.5%;top:11%;width:36%;height:30%;background:var(--lav2)}
+.t{position:absolute;border-radius:10px}
+.t1{left:16.5%;top:9%;width:36%;height:26%;background:var(--lav2)}
 .t1 small,.t3 small{position:absolute;left:8%;top:9%;font:600 1.05cqw var(--sans);letter-spacing:.1em;color:#2a2b5c}
 .t1 b{position:absolute;left:0;right:0;top:34%;text-align:center;font:400 3.3cqw var(--sans);letter-spacing:-.01em;color:var(--ink)}
 .t1 span{position:absolute;left:0;right:0;top:63%;text-align:center;font:400 1.55cqw var(--sans);color:var(--ink)}
-.t2{left:56%;top:11%;width:38%;height:30%;background:var(--yel)}
-.t2 i{position:absolute;bottom:0;width:6%;background:var(--yel2)}
-.t3{left:16.5%;top:46%;width:77.5%;height:60%;background:var(--pink)}
+.t2{left:56%;top:9%;width:38%;height:26%;background:var(--yel)}
+.t2 i{position:absolute;bottom:0;width:6%;background:var(--yel2);border-radius:3px 3px 0 0}
+.t3{left:16.5%;top:40%;width:77.5%;height:60%;background:var(--pink)}
 .t3 svg{position:absolute;left:0;bottom:0;width:100%;height:80%}
-
-.mail{position:absolute;left:38.5%;top:31%;width:50%;aspect-ratio:1.665;display:flex;border-radius:3px;overflow:hidden;box-shadow:0 .6cqw 2cqw rgba(20,10,120,.25)}
+.mail{position:absolute;left:38.5%;top:35%;width:50%;aspect-ratio:1.665;border-radius:10px;overflow:hidden;box-shadow:0 .8cqw 2.4cqw rgba(20,10,120,.3)}
 .mail img{display:block;width:100%;height:100%;object-fit:cover}
-.crop{position:absolute;left:38.5%;top:31%;width:50%;aspect-ratio:1.665;pointer-events:none}
-.crop:before{content:"";position:absolute;inset:-7% -5%;background:linear-gradient(#9d95ff,#9d95ff) 0 0/8% 1px,linear-gradient(#9d95ff,#9d95ff) 0 0/1px 14%,linear-gradient(#9d95ff,#9d95ff) 100% 0/8% 1px,linear-gradient(#9d95ff,#9d95ff) 100% 0/1px 14%,linear-gradient(#9d95ff,#9d95ff) 0 100%/8% 1px,linear-gradient(#9d95ff,#9d95ff) 0 100%/1px 14%,linear-gradient(#9d95ff,#9d95ff) 100% 100%/8% 1px,linear-gradient(#9d95ff,#9d95ff) 100% 100%/1px 14%;background-repeat:no-repeat}
-
-@media(max-width:900px){.hero{grid-template-columns:1fr;padding:8px 20px 28px}.top{padding:20px 20px 0}.stage{justify-self:center}.sub{min-height:0}}
-@media(prefers-reduced-motion:reduce){.sw,.bl.chip .dot{animation:none}}
+.crop{position:absolute;left:38.5%;top:35%;width:50%;aspect-ratio:1.665;pointer-events:none}
+.crop:before{content:"";position:absolute;inset:-8% -5%;background:linear-gradient(#9d95ff,#9d95ff) 0 0/8% 1px,linear-gradient(#9d95ff,#9d95ff) 0 0/1px 14%,linear-gradient(#9d95ff,#9d95ff) 100% 0/8% 1px,linear-gradient(#9d95ff,#9d95ff) 100% 0/1px 14%,linear-gradient(#9d95ff,#9d95ff) 0 100%/8% 1px,linear-gradient(#9d95ff,#9d95ff) 0 100%/1px 14%,linear-gradient(#9d95ff,#9d95ff) 100% 100%/8% 1px,linear-gradient(#9d95ff,#9d95ff) 100% 100%/1px 14%;background-repeat:no-repeat}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding:24px 20px 28px}.stage{justify-self:center}.sub{min-height:0}h1{white-space:normal}}
+@media(prefers-reduced-motion:reduce){.sw,.bl{transition:none}}
 </style>
 </head>
 <body>
-<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Location Hero</b></nav>
-<header class="top"><div class="tog" role="group" aria-label="Preview location"><button class="on" data-i="0">San Francisco</button><button data-i="1">Miami</button></div></header>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span class="x">/</span><a class="x" href="../">Back to all projects</a><span>/</span><b>Location Hero</b>
+<div class="tog" role="group" aria-label="Preview location"><button class="on" data-i="0">San Francisco</button><button data-i="1">Miami</button></div></nav>
 <main class="hero">
   <section>
-    <div class="chip"><span class="dot"></span><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg><span>Mailing near <em class="sw" id="city">San Francisco, CA</em></span></div>
-    <h1><span class="sw" id="h1">Direct mail that lands in <i>San Francisco</i> in days</span></h1>
-    <p class="sub sw" id="sub">Print at our Bay Area facility and hit every Mission, SoMa and Sunset mailbox fast. Automated mail that's timed for conversion.</p>
+    <div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg><span>Mailing near <em class="sw" id="city">San Francisco, CA</em></span></div>
+    <h1><span class="sw" id="h1">Direct mail that<br>lands in <i>San Francisco</i><br>in days</span></h1>
+    <p class="sub sw" id="sub">Print at our Bay Area facility and reach every Mission, SoMa and Sunset mailbox fast. Automated mail that's timed for conversion.</p>
     <form class="form" onsubmit="return false"><input type="email" placeholder="What's your work email?" aria-label="Work email"><button>Get started for free</button></form>
-    <div class="proof"><div><b>2.7<i> days</i></b>avg. delivery speed</div><div><b>250,000</b>mail pieces sent</div><div><b>87%</b>faster lead time</div></div>
+    <div class="g2" id="g2" aria-label="G2 awards"></div>
   </section>
 
   <div class="stage" id="stage">
     <div class="blurbs">
-      <div class="bl sw0" id="b1"><small id="b1k">USPS mailing data</small><strong id="b1h">1.9 <i>day</i> delivery</strong><p id="b1p">Avg. First-Class time in your SCF, 940–941</p></div>
-      <div class="bl sw0" id="b2"><small id="b2k">Your print location</small><strong id="b2h">Concord, <i>CA</i></strong><p id="b2p">42 mi from your delivery zone, 94110 · 18,420 homes</p></div>
+      <div class="bl" id="b1"><small id="b1k"></small><strong id="b1h"></strong><p id="b1p"></p></div>
+      <div class="bl" id="b2"><small id="b2k"></small><strong id="b2h"></strong><p id="b2p"></p></div>
     </div>
-    <div class="plat">
+    <div class="box"><div class="plat">
       <div class="side"><i></i></div>
       <div class="t t1"><small>MAIL SEND</small><b>250,000</b><span>mail pieces sent</span></div>
       <div class="t t2"><i style="left:12%;height:26%"></i><i style="left:26%;height:42%"></i><i style="left:40%;height:56%"></i><i style="left:54%;height:74%"></i><i style="left:68%;height:92%"></i></div>
       <div class="t t3"><small style="color:#fff">AUDIENCE ENGAGEMENT</small><svg viewBox="0 0 300 100" preserveAspectRatio="none"><polyline fill="none" stroke="#fff" stroke-width="1.5" vector-effect="non-scaling-stroke" points="20,92 60,78 100,84 140,58 180,70 220,34 260,52 300,40"/><g fill="#fff"><circle cx="60" cy="78" r="2.5"/><circle cx="100" cy="84" r="2.5"/><circle cx="140" cy="58" r="2.5"/><circle cx="180" cy="70" r="2.5"/></g></svg></div>
-    </div>
+    </div></div>
     <div class="mail"><img src="mailpiece.png" alt="Direct mail postcard with a family in front of their home and a scan to accept your offer code"></div>
     <div class="crop"></div>
   </div>
 </main>
 <script>
 const CITIES=[
- {city:'San Francisco, CA',h:'Direct mail that lands in <i>San Francisco</i> in days',sub:"Print at our Bay Area facility and reach every Mission, SoMa and Sunset mailbox fast. Automated mail that's timed for conversion.",
+ {city:'San Francisco, CA',h:'Direct mail that<br>lands in <i>San Francisco</i><br>in days',sub:"Print at our Bay Area facility and reach every Mission, SoMa and Sunset mailbox fast. Automated mail that's timed for conversion.",
   b1:['USPS mailing data','1.9 <i>day</i> delivery','Avg. First-Class time in your SCF, 940–941'],
   b2:['Your print location','Concord, <i>CA</i>','42 mi from your delivery zone, 94110 · 18,420 homes']},
- {city:'Miami, FL',h:'Direct mail that lands in <i>Miami</i> in days',sub:"Print at our Florida facility and reach every Brickell, Wynwood and Coral Gables mailbox fast. Automated mail that's timed for conversion.",
+ {city:'Miami, FL',h:'Direct mail that<br>lands in <i>Miami</i><br>in days',sub:"Print at our Florida facility and reach every Brickell, Wynwood and Coral Gables mailbox fast. Automated mail that's timed for conversion.",
   b1:['USPS mailing data','2.3 <i>day</i> delivery','Avg. First-Class time in your SCF, 331–332'],
   b2:['Your print location','Orlando, <i>FL</i>','235 mi from your delivery zone, 33131 · 24,760 homes']}];
 const $=id=>document.getElementById(id);
+// G2 style badges
+const BADGES=[['Leader','','#ff492c','#ff9d1c','#ffd21f'],['Best','Est. ROI','#5a3fc0','#7c5fe0','#5a3fc0'],['Fastest','Implementation','#1c7ff2','#3b9bff','#1c7ff2'],['Easiest','Admin','#f5b50a','#ffd21f','#f5b50a']];
+$('g2').innerHTML=BADGES.map(([a,b,c1,c2,c3],n)=>{
+ const t=b?`<text x="42" y="46" text-anchor="middle" font-size="${b.length>8?8:11}" font-weight="700">${a}</text><text x="42" y="${b.length>8?57:59}" text-anchor="middle" font-size="${b.length>8?8:11}" font-weight="700">${b}</text>`:`<text x="42" y="52" text-anchor="middle" font-size="12" font-weight="700">${a}</text>`;
+ return `<svg viewBox="0 0 84 100" role="img" aria-label="G2 ${a} ${b}"><path d="M2 2h80v70L42 96 2 72z" fill="${c3}"/><path d="M2 2h80v62L42 88 2 64z" fill="${c2}"/><path d="M2 2h80v54L42 80 2 56z" fill="${c1}"/><path d="M2 2h80v50L42 76 2 52z" fill="#fff"/><g font-family="Inter,Arial,sans-serif" fill="#111"><text x="30" y="14" text-anchor="middle" font-size="5.2" font-weight="600">SUMMER 2026</text>${t}<text x="42" y="${b?68:62}" text-anchor="middle" font-size="4.6" font-weight="600" fill="#555">MID-MARKET</text></g><rect x="62" y="6" width="14" height="14" rx="3" fill="#ff492c"/><text x="69" y="16.5" text-anchor="middle" font-family="Inter,Arial" font-size="9" font-weight="700" fill="#fff">G</text></svg>`}).join('');
 const sw=['city','h1','sub','b1','b2'];
 const lp={i:0,timer:null,
  apply(i){const c=CITIES[i];$('city').textContent=c.city;$('h1').innerHTML=c.h;$('sub').textContent=c.sub;
   [['b1',c.b1],['b2',c.b2]].forEach(([k,v])=>{$(k+'k').textContent=v[0];$(k+'h').innerHTML=v[1];$(k+'p').textContent=v[2]});
-  
   document.querySelectorAll('.tog button').forEach((b,j)=>b.classList.toggle('on',j===i));},
- set(i){if(i===this.i&&this.ready)return;this.i=i;this.ready=true;sw.forEach(k=>$(k).classList.add('out'));
+ set(i){if(i===this.i)return;this.i=i;sw.forEach(k=>$(k).classList.add('out'));
   setTimeout(()=>{this.apply(i);sw.forEach(k=>$(k).classList.remove('out'))},350);},
  stop(){clearInterval(this.timer);this.timer=null},
  auto(){this.stop();this.timer=setInterval(()=>this.set(1-this.i),3400)}};
 document.querySelectorAll('.tog button').forEach(b=>b.onclick=()=>{lp.stop();lp.set(+b.dataset.i)});
-lp.apply(0);lp.ready=true;
+lp.apply(0);
 if(!new URLSearchParams(location.search).has('hold'))lp.auto();
 </script>
 </body>
