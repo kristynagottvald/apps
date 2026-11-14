@@ -41,13 +41,13 @@ const APPS = {
     await at(t0, 4000, () => to('#community', -120));
     await at(t0, 5200, () => p.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' })));
   } },
-  // starts on the hero post, then scrolls the way a visitor would: the colour mosaic, the badges and the motion timeline, and back up to the hero
+  // starts on the tile mosaic hero, then opens the Badges tile (it grows to fill the screen), the Thread logo shrinks it back, and the Motion tile opens and shrinks back
   'thread-brand-guidelines': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1800, q: 55, run: async (p) => {
-    const t0 = Date.now(), to = (sel, off) => p.evaluate(([s, o]) => window.scrollTo({ top: document.querySelector(s).getBoundingClientRect().top + scrollY - 56 + o, behavior: 'smooth' }), [sel, off]);
-    await at(t0, 900, () => to('#mosaic', 24));
-    await at(t0, 2500, () => to('#badges', 600));
-    await at(t0, 3900, () => to('#motion', 640));
-    await at(t0, 5200, () => p.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' })));
+    const t0 = Date.now(), k = (sel) => domClick(p, sel);
+    await at(t0, 900, () => k('.tile[data-sec="badges"]'));
+    await at(t0, 2900, () => k('.site .logo'));
+    await at(t0, 4300, () => k('.tile[data-sec="motion"]'));
+    await at(t0, 5900, () => k('.site .logo'));
   } },
   // the starting soon countdown, then the intro title, the audience question, the session title and the statement card, switched the way a visitor would with the screen chips
   'thread-live-session': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 50, run: async (p) => {
