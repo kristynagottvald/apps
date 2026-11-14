@@ -66,8 +66,8 @@ const STYLES = [
   { name: 'Lattice', bg: '#0d0c0f', ink: '#e5462b', n: 15, stroke: 3.2, head: 21, hang: 45, ang: -135, grain: 1,
     anchor: (i, n, W, H) => { const t = i / (n - 1); return [(.745 - .5 * t) * W, (-.015 + 1 * t) * H]; },
     curves: (E, W, H) => [
-      [[1.04 * W, E[1] + .105 * H], [E[0] + .62 * (W - E[0]), E[1] + .105 * H], [E[0] + .18 * H, E[1] + .055 * H], E],
-      [[E[0] + .78 * H, E[1] + .86 * H], [E[0] + .42 * H, E[1] + .34 * H], [E[0] + .13 * H, E[1] + .07 * H], E]
+      [[1.04 * W, E[1] + .105 * H], [E[0] + .62 * (W - E[0]), E[1] + .105 * H], [E[0] + .17 * H, E[1] + .09 * H], E],
+      [[E[0] + .78 * H, E[1] + .86 * H], [E[0] + .42 * H, E[1] + .34 * H], [E[0] + .13 * H, E[1] + .069 * H], E]
     ] },
   { name: 'Flow', bg: '#f15439', ink: '#000000', n: 16, stroke: 2, head: 17, hang: 38, ang: -52, grain: 0,
     anchor: (i, n, W, H) => [.966 * W, (.08 + .065 * 15 * i / (n - 1)) * H],
@@ -106,6 +106,18 @@ function bez(c, t) {
   return [a * c[0][0] + b * c[1][0] + d * c[2][0] + e * c[3][0], a * c[0][1] + b * c[1][1] + d * c[2][1] + e * c[3][1]];
 }
 
+/* arrowhead direction = the line's own direction at the tip (bisector when two lines meet there) */
+function headAng(cs) {
+  let x = 0, y = 0;
+  for (const c of cs) {
+    let dx = c[3][0] - c[2][0], dy = c[3][1] - c[2][1];
+    if (Math.hypot(dx, dy) < 1e-3) { dx = c[3][0] - c[1][0]; dy = c[3][1] - c[1][1]; }
+    const l = Math.hypot(dx, dy) || 1; x += dx / l; y += dy / l;
+  }
+  return Math.atan2(y, x);
+}
+const lerpAng = (a, b, t) => a + Math.atan2(Math.sin(b - a), Math.cos(b - a)) * t;
+
 function frame() {
   const u = Math.min(H, W * .75) / 611;
   const A = STYLES[st.from], B = STYLES[st.to], m = st.m < 1 ? ease(st.m) : 1;
@@ -122,8 +134,8 @@ function frame() {
   }
   g.strokeStyle = g.fillStyle = mix(A.ink, B.ink, m);
   g.lineWidth = Math.max(1.1, L(A.stroke, B.stroke, m) * u * st.sw);
-  g.lineCap = 'round'; g.lineJoin = 'miter';
-  const hs = L(A.head, B.head, m) * u * Math.sqrt(st.sw), hang = L(A.hang, B.hang, m) * Math.PI / 180, ang = L(A.ang, B.ang, m) * Math.PI / 180;
+  g.lineCap = 'butt'; g.lineJoin = 'miter'; g.miterLimit = 10;
+  const hs = L(A.head, B.head, m) * u * Math.sqrt(st.sw), hang = L(A.hang, B.hang, m) * Math.PI / 180;
   for (let j = 0; j < M; j++) {
     const ia = ga ? Math.min(na - 1, Math.floor(j * na / M)) : 0, ib = Math.min(nb - 1, Math.floor(j * nb / M));
     const gp = clamp(st.intro * 1.7 - (j / M) * .7, 0, 1), p = ease(gp);
@@ -137,11 +149,12 @@ function frame() {
     }
     if (gp >= 1) {
       const E = ga ? [L(ga[ia].E[0], gb[ib].E[0], m), L(ga[ia].E[1], gb[ib].E[1], m)] : gb[ib].E;
+      const ang = ga ? lerpAng(headAng(ga[ia].cs), headAng(gb[ib].cs), m) : headAng(gb[ib].cs);
+      const a1 = ang + Math.PI - hang, a2 = ang + Math.PI + hang;
       g.beginPath();
-      for (const sgn of [-1, 1]) {
-        const a = ang + Math.PI + sgn * hang;
-        g.moveTo(E[0] + Math.cos(a) * hs, E[1] + Math.sin(a) * hs); g.lineTo(E[0], E[1]);
-      }
+      g.moveTo(E[0] + Math.cos(a1) * hs, E[1] + Math.sin(a1) * hs);
+      g.lineTo(E[0], E[1]);
+      g.lineTo(E[0] + Math.cos(a2) * hs, E[1] + Math.sin(a2) * hs);
       g.stroke();
     }
   }
