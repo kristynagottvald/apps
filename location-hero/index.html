@@ -11,7 +11,7 @@
 --sans:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;--serif:"Newsreader",Georgia,"Times New Roman",serif}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%}
-body{background:var(--ink);color:#fff;font-family:var(--sans);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh}
+body{position:relative;background:var(--ink);color:#fff;font-family:var(--sans);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh}
 nav.back{flex:none;display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 var(--sans);white-space:nowrap;overflow:hidden}
 nav.back a{color:#8d8d8d;text-decoration:none}nav.back a:hover,nav.back a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:3px}
 nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidden;text-overflow:ellipsis}
@@ -19,6 +19,8 @@ nav.back span{color:#6e6e6e}nav.back b{font-weight:500;color:#fff;overflow:hidde
 .tog button{font:500 12px var(--sans);color:rgba(255,255,255,.7);background:none;border:1px solid rgba(255,255,255,.22);border-radius:99px;padding:6px 13px;cursor:pointer}
 .tog button.on{background:#fff;color:var(--ink);border-color:#fff}
 @media(max-width:640px){nav.back{padding:0 16px}nav.back .x{display:none}}
+.dotbg{position:absolute;left:0;right:0;bottom:0;width:100%;height:30%;pointer-events:none;z-index:0}
+nav.back,.hero{position:relative;z-index:1}
 .hero{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center;padding:28px 56px 36px;max-width:1360px;width:100%;margin:0 auto}
 .chip{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
 .chip svg{width:14px;height:14px;fill:var(--lime)}
@@ -75,6 +77,7 @@ h1 i{font-family:var(--serif);font-style:italic;letter-spacing:-.01em;font-size:
 </style>
 </head>
 <body>
+<canvas class="dotbg" id="dotbg" aria-hidden="true"></canvas>
 <nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span class="x">/</span><a class="x" href="../">Back to all projects</a><span>/</span><b>Location Hero</b>
 <div class="tog" id="tog" role="group" aria-label="Preview location"></div></nav>
 <main class="hero">
@@ -169,6 +172,11 @@ $('tog').innerHTML=CITIES.map((c,i)=>`<button data-i="${i}">${c.city.split(',')[
 document.querySelectorAll('.tog button').forEach(b=>b.onclick=()=>{lp.stop();lp.set(+b.dataset.i)});
 lp.apply(0);
 if(new URLSearchParams(location.search).has('hold')){bl.instant()}else{bl.intro();bl.start(2400);lp.auto()}
+/* dot grid on the bottom 30% of the page: full size dots at the bottom, shrinking away towards the top */
+(function(){const c=$('dotbg'),x=c.getContext('2d');
+ function draw(){const d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#161945';
+  const g=22;for(let y=g/2;y<h;y+=g){const r=g*.48*Math.pow(y/h,1.1);if(r<.5)continue;for(let px=g/2;px<w;px+=g){x.beginPath();x.arc(px,y,r,0,6.2832);x.fill()}}}
+ draw();addEventListener('resize',draw)})();
 </script>
 </body>
 </html>

@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thread 2026 Landing Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Pinyon+Script&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#fff383;--ink:#141414;--cream:#faf4de;--paper:#fff;
+--sans:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;--serif:"Instrument Serif",Georgia,serif;--script:"Pinyon Script","Instrument Serif",serif;
+--gut:clamp(16px,3vw,40px);--ease:cubic-bezier(.45,0,.55,1)}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--cream);color:var(--ink);font:500 16px/1.4 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+nav.back{display:flex;align-items:center;gap:8px;height:49px;padding:0 20px;background:#000;border-bottom:1px solid #1c1c1c;font:400 13px/1.35 var(--sans);color:#fff}
+nav.back a{color:#8d8d8d;text-decoration:none}nav.back a:hover{color:#fff;text-decoration:underline;text-underline-offset:3px}
+nav.back span{color:#6e6e6e}nav.back b{font-weight:500}
+.wide{display:block;width:calc(100%/1.16);transform:scaleX(1.16);transform-origin:0 0;letter-spacing:-.0174em}
+.cap{font:700 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase}
+.btn{display:inline-block;border:1.5px solid var(--ink);background:var(--ink);color:var(--yellow);padding:13px 20px;font:700 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;text-decoration:none;box-shadow:5px 5px 0 var(--ink);transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
+.btn.y{background:var(--yellow);color:var(--ink);border-color:var(--yellow);box-shadow:5px 5px 0 var(--cream)}
+.btn.o{background:transparent;color:inherit;border-color:currentColor;box-shadow:none}
+.btn.o:hover{background:var(--ink);color:var(--yellow);box-shadow:none;transform:none}
+/* header */
+header.site{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:26px;height:60px;padding:0 var(--gut);background:var(--cream);border-bottom:1.5px solid var(--ink)}
+header.site .logo svg{height:24px;width:auto;display:block}
+header.site .links{display:flex;gap:4px}
+header.site .links a{text-decoration:none;padding:9px 11px;border:1.5px solid transparent;font:700 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase}
+header.site .links a:hover{border-color:var(--ink)}
+header.site .r{margin-left:auto;display:flex;align-items:center;gap:14px}
+header.site .r a.t{font:700 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;text-decoration:none}
+header.site .btn{padding:11px 16px;box-shadow:none}
+@media (max-width:760px){header.site .links,header.site .r a.t{display:none}}
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:clamp(14px,2vw,26px);padding:clamp(14px,2vw,26px) var(--gut)}
+.frame{border:1.5px solid var(--ink);background:var(--yellow);box-shadow:10px 10px 0 var(--ink);padding:clamp(14px,2vw,26px);display:flex;flex-direction:column;gap:clamp(14px,1.8vw,22px)}
+.art{position:relative;flex:1;min-height:260px;border:1.5px solid var(--ink);background:var(--yellow);overflow:hidden;display:grid;place-items:center}
+.art canvas{position:absolute;inset:0;width:100%;height:100%}
+.art svg{position:relative;width:min(62%,560px);height:auto;color:var(--ink);filter:drop-shadow(6px 6px 0 var(--cream))}
+.count{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1.5px solid var(--ink);border-left:1.5px solid var(--ink)}
+.count div{border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);background:var(--cream);padding:6px 12px 10px}
+.count b{display:block;font:400 clamp(44px,6.4vw,104px)/.95 var(--serif);letter-spacing:-.0174em;font-variant-numeric:tabular-nums}
+.count span{font:700 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase}
+.side{display:grid;grid-template-rows:auto 1fr;gap:clamp(14px,2vw,26px)}
+.dark{background:var(--ink);color:var(--yellow);padding:clamp(20px,2.4vw,34px);display:flex;flex-direction:column;justify-content:space-between;gap:26px;border:1.5px solid var(--ink);position:relative;overflow:hidden}
+.dark h1{font:400 clamp(44px,5.4vw,86px)/.92 var(--serif)}
+.dark h1 em{font-style:italic}
+.dark p{font-size:15px;max-width:26em;color:var(--cream)}
+.dark .stripes{position:absolute;right:-10px;bottom:-10px;width:55%;pointer-events:none}
+.dark .btn{align-self:flex-start;position:relative}
+.trailer{position:relative;border:1.5px solid var(--ink);background:var(--yellow);min-height:240px;display:grid;place-items:center;box-shadow:8px 8px 0 var(--ink);overflow:hidden;text-decoration:none}
+.trailer img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.4);mix-blend-mode:multiply}
+.trailer .play{position:relative;width:86px;height:86px;background:var(--ink);color:var(--yellow);display:grid;place-items:center;box-shadow:5px 5px 0 var(--cream);transition:transform .25s var(--ease)}
+.trailer:hover .play{transform:scale(1.08)}
+.trailer .play svg{width:30px}
+.trailer .lab{position:absolute;left:14px;top:14px;background:var(--cream);border:1.5px solid var(--ink);padding:8px 10px}
+@media (max-width:960px){.hero{grid-template-columns:1fr}}
+/* sections */
+.sec{padding:clamp(60px,8vw,120px) var(--gut)}
+.live{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:clamp(22px,4vw,60px);align-items:start;border-top:1.5px solid var(--ink)}
+.live h2{font:400 clamp(40px,5.4vw,84px)/.94 var(--serif)}
+.live .more{display:inline-block;margin-top:20px}
+.sess{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,32px)}
+.ses img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;filter:grayscale(1) contrast(1.4);border:1.5px solid var(--ink);box-shadow:8px 8px 0 var(--ink);background:var(--yellow)}
+.ses .tm{margin:22px 0 8px}
+.ses h3{font:400 clamp(30px,3.4vw,50px)/1 var(--serif)}
+.ses .acts{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap}
+.ses .acts button{background:none;border:0;border-bottom:1.5px solid var(--ink);padding:0 0 3px;cursor:pointer;font:700 10.5px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+.ses .acts button[aria-pressed=true]{background:var(--yellow)}
+@media (max-width:860px){.live,.sess{grid-template-columns:1fr}}
+/* ticker */
+.tick{background:var(--yellow);border-block:1.5px solid var(--ink);overflow:hidden;white-space:nowrap}
+.tick div{display:inline-flex;gap:34px;padding:14px 0;animation:tk 34s linear infinite;will-change:transform}
+.tick span{font:700 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;display:inline-flex;align-items:center;gap:34px}
+.tick span::after{content:"";width:9px;height:9px;background:var(--ink);transform:rotate(45deg)}
+@keyframes tk{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.tick div{animation:none}}
+/* tracks */
+.tracks{background:var(--paper)}
+.hd{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap}
+.hd h2{font:400 clamp(44px,6.4vw,104px)/.92 var(--serif);width:calc(100%/1.16);flex:0 1 auto}
+.hd h2 span{display:block;transform:scaleX(1.16);transform-origin:0 0;letter-spacing:-.0174em;white-space:nowrap}
+.hd a{font:700 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase}
+.tg{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.8vw,24px);margin-top:clamp(30px,4vw,56px)}
+.tr{text-decoration:none;display:block}
+.tr .ph{aspect-ratio:1.25;border:1.5px solid var(--ink);display:grid;place-items:center;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.tr:hover .ph,.tr:focus-visible .ph{transform:translate(-4px,-4px);box-shadow:8px 8px 0 var(--ink)}
+@property --d{syntax:"<number>";inherits:true;initial-value:1.5}
+.tr .ph{--side:var(--yellow);--line:var(--ink);--front:var(--yellow);--d:1.5;transition:transform .3s var(--ease),box-shadow .3s var(--ease),--d .5s var(--ease)}
+.tr .ph.c2{--side:var(--ink);--line:var(--yellow);--front:var(--ink)}
+.tr .ph.c3{--front:var(--cream)}
+.tr:hover .ph,.tr:focus-visible .ph{--d:2.1}
+.tr .ph svg{width:68%;height:auto;overflow:visible}
+.tr .ph svg use{stroke-linejoin:round}
+.tr .ph svg .x{fill:var(--side);stroke:var(--line);stroke-width:.55;transform:translate(calc(var(--d) * var(--k) * 1px),calc(var(--d) * var(--k) * 1px))}
+.tr .ph svg .f{fill:var(--front);stroke:var(--line);stroke-width:3.4}
+.c1{background:var(--yellow)}.c2{background:var(--ink);color:var(--yellow)}.c3{background:var(--cream)}.c4{background:var(--yellow)}
+@media (max-width:760px){.hd h2 span{white-space:normal}}
+@media (max-width:900px){.tg{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.tg{grid-template-columns:1fr}}
+/* two cards */
+.two{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:clamp(14px,2vw,26px);padding:clamp(14px,2vw,26px) var(--gut) clamp(40px,5vw,70px)}
+.cd{min-height:380px;padding:clamp(22px,3vw,40px);display:flex;flex-direction:column;justify-content:space-between;gap:30px;border:1.5px solid var(--ink);position:relative;overflow:hidden}
+.cd h2{max-width:11em;font:400 clamp(38px,4.6vw,72px)/.94 var(--serif)}
+.cd p{max-width:24em;font-size:15.5px}
+.cd .btn{align-self:flex-start}
+.cd.k{background:var(--ink);color:var(--yellow)}.cd.k p{color:var(--cream)}
+.cd.y{background:var(--yellow);box-shadow:10px 10px 0 var(--ink)}
+.cd .grid{position:absolute;right:0;top:0;width:40%;height:100%;opacity:.55;pointer-events:none}
+.cd>*{position:relative}.cd>.grid{position:absolute}
+@media (max-width:860px){.two{grid-template-columns:1fr}.cd .grid{width:80%;opacity:.35}}
+/* footer */
+footer{display:flex;align-items:center;gap:26px;flex-wrap:wrap;padding:22px var(--gut);border-top:1.5px solid var(--ink);font:700 10.5px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+footer svg{height:22px;width:auto}
+footer a{text-decoration:none}footer a:hover{text-decoration:underline;text-underline-offset:4px}
+footer .r{margin-left:auto;display:flex;gap:16px}
+</style>
+</head>
+<body>
+<nav class="back" aria-label="Sandbox"><a href="../">Sandbox</a><span>/</span><a href="../">Back to all projects</a><span>/</span><b>Thread 2026 Landing Page</b></nav>
+
+<header class="site">
+  <a class="logo" href="#top" aria-label="Thread 2026"><svg class="wm" viewBox="673 5 2485 918" role="img" aria-hidden="true"></svg></a>
+  <div class="links"><a href="#agenda">Agenda</a><a href="#tracks">Tracks</a><a href="#community">Community</a><a href="#about">About</a></div>
+  <div class="r"><a class="t" href="#">English</a><a class="t" href="#">Sign in</a><a class="btn" href="#register">Register</a></div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="frame" aria-label="Countdown to Thread 2026">
+    <div class="art"><canvas id="bg" aria-hidden="true"></canvas><svg class="sw" viewBox="673 5 1587 918" role="img" aria-label="Thread"></svg></div>
+    <div class="count" id="count" role="timer" aria-label="Time until Thread 2026 begins">
+      <div><b data-u="d">00</b><span>Days</span></div><div><b data-u="h">00</b><span>Hours</span></div>
+      <div><b data-u="m">00</b><span>Minutes</span></div><div><b data-u="s">00</b><span>Seconds</span></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="dark" id="register">
+      <h1><span class="wide">Let’s talk.<br>It’s <em>Thread</em><br>May 12–14</span></h1>
+      <p>The SMS marketing conference. Three days of talks, workshops and good company in New York, and every keynote streamed live.</p>
+      <svg class="stripes" viewBox="0 0 200 120" fill="none" stroke="#fff383" stroke-width="1.5" aria-hidden="true"><path d="M0 120 200 20M0 120 200 50M0 120 200 80M0 120 200 108"/></svg>
+      <a class="btn y" href="#register">Register</a>
+    </div>
+    <a class="trailer" href="#about" aria-label="Watch Thread 2026 in under 10 minutes">
+      <img src="photos/p2.jpg" alt="" >
+      <span class="lab cap">Thread 2026 in under 10 minutes</span>
+      <span class="play"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M7 3v24l20-12z" fill="currentColor"/></svg></span>
+    </a>
+  </div>
+</section>
+
+<section class="sec live" id="agenda">
+  <div><h2><span class="wide">Join us online for livestreamed keynotes</span></h2><a class="cap more" href="#agenda">View all content</a></div>
+  <div class="sess">
+    <article class="ses"><img src="photos/p1.jpg" alt="Black and white photo for the opening keynote" >
+      <div class="tm cap">10:00 AM – 11:00 AM ET</div><h3>Thread keynote</h3>
+      <div class="acts"><button type="button">Add to calendar</button><button type="button" aria-pressed="false" class="sv">Save to My Thread</button></div></article>
+    <article class="ses"><img src="photos/p3.jpg" alt="Black and white photo for the marketer keynote" >
+      <div class="tm cap">11:00 AM – 12:00 PM ET</div><h3>Marketer keynote</h3>
+      <div class="acts"><button type="button">Add to calendar</button><button type="button" aria-pressed="false" class="sv">Save to My Thread</button></div></article>
+  </div>
+</section>
+
+<div class="tick" aria-hidden="true"><div id="tk"></div></div>
+
+<section class="sec tracks" id="tracks">
+  <div class="hd"><h2><span>What are you building for?</span></h2><a href="#tracks">View all content</a></div>
+  <div class="tg">
+    <a class="tr" href="#tracks"><div class="ph c1"><svg viewBox="0 0 130 100" data-art role="img" aria-hidden="true"><rect x="30" y="5" width="60" height="80"/><circle cx="60" cy="38" r="16"/><path fill="none" d="M42 66h36"/></svg></div><h3>Growth</h3><p>Grow a compliant list and turn first texts into first orders.</p></a>
+    <a class="tr" href="#tracks"><div class="ph c2"><svg viewBox="0 0 130 100" data-art role="img" aria-hidden="true"><path fill="none" d="M10 45h25l12-30 18 60 12-30h33"/><circle cx="10" cy="45" r="4"/><circle cx="110" cy="45" r="4"/></svg></div><h3>Lifecycle</h3><p>Flows, triggers and timing that feel like a text from a friend.</p></a>
+    <a class="tr" href="#tracks"><div class="ph c3"><svg viewBox="0 0 130 100" data-art role="img" aria-hidden="true"><path d="M60 5 110 45 60 85 10 45Z"/><path d="M60 22 90 45 60 68 30 45Z"/><path fill="none" d="M60 5v80M10 45h100"/></svg></div><h3>Creative</h3><p>Copy, MMS and short links that earn a reply.</p></a>
+    <a class="tr" href="#tracks"><div class="ph c4"><svg viewBox="0 0 130 100" data-art role="img" aria-hidden="true"><rect x="8" y="8" width="104" height="74"/><path fill="none" d="M8 30h104M40 30v52"/><path fill="none" d="M52 46h46M52 58h30"/></svg></div><h3>Compliance</h3><p>Consent, carriers and the rules, explained in plain English.</p></a>
+  </div>
+</section>
+
+<section class="two" id="community">
+  <div class="cd k"><svg class="grid" viewBox="0 0 300 380" fill="none" stroke="#fff383" stroke-width="1.2" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40H300M0 120H300M0 200H300M0 280H300M0 360H300M50 0V380M130 0V380M210 0V380M290 0V380"/></svg>
+    <h2><span class="wide">Connect with marketers</span></h2><p>Join the Thread community of SMS marketers around the world: meetups, office hours and a very active group chat.</p><a class="btn y" href="#community">Find a community</a></div>
+  <div class="cd y" id="about"><h2><span class="wide">Thread is open to everyone online</span></h2><p>Stay informed and get answers to your top questions, wherever you are.</p><a class="btn" href="#about">Learn about Thread</a></div>
+</section>
+</main>
+
+<footer>
+  <svg class="wm" viewBox="673 5 2485 918" aria-label="Thread 2026"></svg>
+  <a href="#">Thread 2025</a><a href="#">Privacy &amp; terms</a><a href="#">Code of conduct</a><a href="#">FAQ</a>
+  <div class="r"><a href="#">LinkedIn</a><a href="#">Instagram</a><a href="#">YouTube</a></div>
+</footer>
+
+<script>
+const LOGO_WORD='M1911.08 428.196C1921.72 392.888 1906.25 387.084 1878.19 387.084C1874.32 387.084 1872.87 386.116 1872.87 383.214C1872.87 380.312 1874.32 379.345 1878.19 379.345C1895.12 379.345 1918.82 381.763 1934.3 381.763H1944.94C1962.84 381.763 1988.95 379.345 2008.3 379.345C2012.65 379.345 2014.11 380.312 2014.11 383.214C2014.11 386.116 2012.65 387.084 2008.79 387.084C1976.38 387.084 1951.71 392.888 1941.07 428.196L1851.11 722.272C1840.47 757.581 1858.36 763.385 1890.28 763.385C1894.64 763.385 1896.09 764.352 1896.09 767.254C1896.09 770.156 1894.64 771.123 1889.8 771.123C1870.94 771.123 1844.33 768.705 1826.92 768.705H1815.8C1800.32 768.705 1777.1 771.123 1760.17 771.123C1756.31 771.123 1754.85 770.156 1754.85 767.254C1754.85 764.352 1756.31 763.385 1759.69 763.385C1788.23 763.385 1810.48 757.581 1821.6 722.272L1863.68 583.94C1867.07 573.783 1860.78 565.077 1850.14 565.077H1722.93C1712.29 565.077 1701.17 573.783 1697.78 583.94L1655.22 722.272C1644.58 757.581 1660.05 763.385 1688.59 763.385C1691.98 763.385 1693.43 764.352 1693.43 767.254C1693.43 770.156 1691.98 771.123 1688.11 771.123C1671.18 771.123 1647.96 768.705 1632.48 768.705H1621.36C1603.95 768.705 1577.34 771.123 1558.48 771.123C1553.64 771.123 1552.19 770.156 1552.19 767.254C1552.19 764.352 1553.64 763.385 1558 763.385C1589.92 763.385 1615.07 757.581 1625.71 722.272L1715.19 428.196C1726.32 392.888 1708.42 387.084 1676.02 387.084C1672.15 387.084 1670.21 386.116 1670.21 383.214C1670.21 380.312 1672.15 379.345 1676.5 379.345C1695.36 379.345 1721.96 381.763 1739.38 381.763H1750.5C1765.98 381.763 1789.2 379.345 1806.12 379.345C1810.48 379.345 1811.93 380.312 1811.93 383.214C1811.93 386.116 1810.48 387.084 1806.61 387.084C1778.07 387.084 1755.82 392.888 1745.18 428.196L1711.32 539.926C1707.94 550.083 1714.23 558.305 1724.87 558.305H1852.07C1862.71 558.305 1873.84 550.083 1877.22 539.926L1911.08 428.196ZM1960.6 768.705C1944.64 768.705 1919.97 771.123 1902.56 771.123C1898.21 771.123 1896.76 770.156 1896.76 767.254C1896.76 764.352 1898.21 763.385 1902.08 763.385C1931.58 763.385 1954.8 757.581 1965.44 722.272L2055.4 428.196C2066.04 392.888 2050.08 387.084 2020.09 387.084C2016.71 387.084 2014.77 386.116 2014.77 383.214C2014.77 380.312 2016.71 379.345 2020.58 379.345C2038.47 379.345 2062.66 381.763 2078.62 381.763H2146.82C2207.28 381.763 2236.3 404.98 2236.3 445.125C2236.3 484.303 2209.7 555.887 2120.22 573.299C2108.61 575.234 2102.32 582.489 2106.19 592.163C2118.77 628.922 2130.37 666.649 2139.56 711.631C2146.33 745.972 2156.01 763.385 2186.48 763.385C2189.87 763.385 2190.83 763.868 2190.83 765.803C2190.83 769.189 2187.93 771.123 2183.58 771.123C2122.63 770.64 2118.77 761.934 2110.54 720.821L2083.94 594.098C2081.04 579.587 2073.3 577.169 2061.69 577.169C2043.31 577.169 2038.47 580.555 2032.67 599.902L1995.43 722.272C1984.3 757.581 2000.75 763.385 2030.25 763.385C2034.12 763.385 2035.57 764.352 2035.57 767.254C2035.57 770.156 2034.12 771.123 2029.77 771.123C2012.36 771.123 1988.17 768.705 1971.73 768.705H1960.6ZM2050.57 540.893C2045.25 557.338 2049.12 571.848 2076.69 571.848C2166.17 571.848 2204.86 493.976 2204.86 448.027C2204.86 412.718 2181.64 389.018 2134.24 389.018C2107.64 389.018 2096.03 393.371 2088.29 418.523L2050.57 540.893ZM2408.98 771.123C2399.3 771.123 2389.14 768.705 2366.9 768.705H2242.59C2226.63 768.705 2201.96 771.123 2184.55 771.123C2180.2 771.123 2178.74 770.156 2178.74 767.254C2178.74 764.352 2180.2 763.385 2184.07 763.385C2213.57 763.385 2236.79 757.581 2247.43 722.272L2337.39 428.196C2348.03 392.888 2332.07 387.084 2302.08 387.084C2298.7 387.084 2296.76 386.116 2296.76 383.214C2296.76 380.312 2298.7 379.345 2302.57 379.345C2320.46 379.345 2344.65 381.763 2360.61 381.763H2483.46C2503.78 381.763 2515.38 379.345 2524.09 379.345C2532.31 379.345 2532.8 384.182 2530.38 391.92C2526.03 407.398 2521.19 422.392 2517.8 437.386C2514.9 452.38 2512.97 467.374 2510.55 486.721C2510.06 491.558 2508.13 494.46 2505.23 494.46C2502.33 494.46 2501.84 492.042 2502.33 487.205C2510.06 407.882 2504.74 388.535 2457.34 388.535H2400.27C2385.76 388.535 2376.57 396.757 2372.7 410.3L2331.59 544.279C2328.68 554.436 2334.49 563.142 2344.65 563.142L2398.33 562.658C2434.61 563.142 2447.67 541.377 2456.86 510.421C2458.31 506.552 2459.76 505.585 2462.18 506.068C2464.6 507.036 2465.08 508.97 2464.11 513.323C2458.79 530.252 2450.09 551.05 2444.28 568.946L2446.22 563.626C2440.9 581.038 2436.06 603.771 2431.22 620.7C2429.77 625.053 2428.32 626.504 2425.42 625.537C2423 625.053 2422.52 623.118 2423.97 619.249C2433.16 588.293 2432.68 569.43 2396.4 569.43H2343.2C2332.55 569.43 2321.43 577.652 2318.53 587.326L2274.03 732.913C2267.26 755.646 2269.19 761.934 2289.51 761.934H2346.1C2388.18 761.934 2407.04 745.489 2467.98 658.91C2471.37 654.074 2474.27 651.171 2476.21 651.171C2479.11 651.171 2479.11 654.074 2476.21 658.427C2467.5 673.421 2460.73 682.611 2449.6 700.99C2433.64 726.141 2428.81 739.684 2423 758.548C2420.58 766.287 2417.2 771.123 2408.98 771.123ZM2448.32 767.254C2448.32 764.352 2449.77 763.385 2452.67 763.385C2476.37 763.385 2498.14 759.032 2518.94 728.076L2753.52 376.443C2754.49 374.992 2756.42 374.024 2757.87 374.024H2762.23C2763.68 374.024 2764.64 374.992 2764.64 376.443L2753.52 719.854C2752.55 757.097 2767.55 763.385 2790.76 763.385C2793.67 763.385 2795.12 764.352 2795.12 767.254C2795.12 770.156 2793.67 771.123 2790.28 771.123C2776.74 771.123 2757.39 768.705 2744.81 768.705H2731.75C2715.31 768.705 2690.16 771.123 2671.78 771.123C2667.43 771.123 2665.97 770.156 2665.97 767.254C2665.97 764.352 2667.43 763.385 2671.29 763.385C2702.25 763.385 2723.05 757.097 2724.02 719.854L2726.43 655.041C2726.92 644.4 2718.21 635.694 2707.57 635.694H2608.42C2597.78 635.694 2584.23 642.949 2578.43 651.655L2527.64 728.076C2506.84 759.032 2519.9 763.385 2549.41 763.385C2553.28 763.385 2554.73 764.352 2554.73 767.254C2554.73 770.156 2553.28 771.123 2548.92 771.123C2532.96 771.123 2512.65 768.705 2495.72 768.705C2482.66 768.705 2466.22 771.123 2453.16 771.123C2449.77 771.123 2448.32 770.156 2448.32 767.254ZM2604.55 612.477C2598.26 621.667 2602.13 628.922 2612.77 628.922H2707.57C2718.21 628.922 2727.4 620.216 2727.89 609.575L2733.21 439.804C2733.69 429.164 2728.85 427.712 2723.05 436.902L2604.55 612.477ZM2844.11 768.705C2828.15 768.705 2803.48 771.123 2786.07 771.123C2781.71 771.123 2780.26 770.156 2780.26 767.254C2780.26 764.352 2781.71 763.385 2785.58 763.385C2815.09 763.385 2838.3 757.581 2848.94 722.272L2938.91 428.196C2949.55 392.888 2933.59 387.084 2903.6 387.084C2900.21 387.084 2898.28 386.116 2898.28 383.214C2898.28 380.312 2900.21 379.345 2904.08 379.345C2921.98 379.345 2946.16 381.763 2962.12 381.763H3020.17C3103.36 381.763 3158.01 425.294 3158.01 506.552C3158.01 605.222 3080.63 768.705 2905.05 768.705H2844.11ZM2874.1 745.005C2874.1 759.515 2884.74 761.45 2902.63 761.45C3044.83 761.45 3125.12 614.412 3125.12 509.454C3125.12 436.902 3085.46 389.018 3018.23 389.018C2991.15 389.018 2979.54 393.371 2971.8 419.006L2877 727.592C2875.06 734.848 2874.1 740.652 2874.1 745.005Z';
+const LOGO_SWASH='M1297.63 203.139L1295.37 199.379C1306.9 191.357 1320.94 185.09 1337.49 180.578C1354.03 175.564 1371.83 173.058 1390.88 173.058C1421.97 173.058 1447.28 178.071 1466.84 188.098C1486.89 198.126 1501.68 211.412 1511.21 227.957C1521.24 244.502 1526.25 262.3 1526.25 281.352C1526.25 299.401 1521.74 317.7 1512.71 336.251C1503.69 354.801 1490.4 371.847 1472.85 387.389C1455.81 402.932 1434.25 415.466 1408.18 424.991C1382.61 434.016 1352.78 438.528 1318.69 438.528C1264.54 438.528 1219.42 429.754 1183.32 412.207C1147.72 394.659 1120.9 371.596 1102.85 343.019C1084.8 313.94 1075.78 283.106 1075.78 250.518C1075.78 222.442 1082.54 194.115 1096.08 165.537C1109.62 136.458 1129.92 109.886 1157 85.8209C1184.57 61.7556 1219.17 42.4532 1260.78 27.9137C1302.89 12.8729 1352.53 5.35245 1409.68 5.35245C1448.29 5.35245 1486.39 10.6168 1523.99 21.1454C1562.1 31.6739 1599.95 45.2106 1637.55 61.7556C1675.15 77.7991 1712.76 95.0961 1750.36 113.646C1788.46 132.197 1826.31 149.744 1863.92 166.289C1901.52 182.333 1939.37 195.619 1977.47 206.147C2015.58 216.676 2053.68 221.94 2091.78 221.94C2133.9 221.94 2169.75 214.42 2199.33 199.379C2228.91 184.338 2247.71 164.033 2255.73 138.464L2260.99 139.216C2252.97 166.289 2233.67 187.597 2203.09 203.139C2173 218.681 2135.65 226.453 2091.03 226.453C2053.93 226.453 2017.08 221.94 1980.48 212.916C1943.88 203.39 1907.28 191.357 1870.68 176.818C1834.59 162.278 1797.99 146.987 1760.89 130.943C1723.79 114.398 1686.18 98.8562 1648.08 84.3168C1609.98 69.7773 1571.12 57.9954 1531.51 48.9709C1491.91 39.445 1451.3 34.6821 1409.68 34.6821C1362.55 34.6821 1318.94 40.4477 1278.83 51.979C1239.22 63.009 1204.63 78.5511 1175.05 98.6056C1145.47 118.66 1122.4 142.475 1105.86 170.049C1089.81 197.123 1081.79 226.954 1081.79 259.542C1081.79 293.134 1091.82 323.215 1111.87 349.787C1132.43 375.858 1160.51 396.414 1196.1 411.455C1232.2 426.495 1273.31 434.016 1319.44 434.016C1357.04 434.016 1391.13 427.248 1421.72 413.711C1452.3 400.174 1476.61 381.874 1494.66 358.812C1512.71 335.248 1521.74 309.428 1521.74 281.352C1521.74 249.766 1509.7 224.447 1485.64 205.395C1462.07 186.344 1430.49 176.818 1390.88 176.818C1372.33 176.818 1354.78 179.074 1338.24 183.586C1322.2 188.098 1308.66 194.616 1297.63 203.139ZM1093.83 749.873C1138.45 749.873 1180.31 743.105 1219.42 729.568C1258.52 715.53 1295.37 696.729 1329.97 673.165C1364.56 649.1 1397.4 622.026 1428.48 591.944C1459.57 561.863 1489.4 530.277 1517.98 497.187C1546.55 463.596 1574.38 430.506 1601.45 397.918C1628.53 364.828 1655.1 333.994 1681.17 305.417C1698.72 286.365 1716.77 270.071 1735.32 256.534C1753.87 242.997 1770.66 231.968 1785.7 223.444H1824.06C1812.02 225.951 1797.74 231.215 1781.19 239.237C1764.65 247.259 1747.85 257.286 1730.8 269.319C1714.26 281.352 1699.22 294.888 1685.68 309.929C1660.61 337.003 1637.8 365.831 1617.25 396.414C1597.19 426.997 1577.39 458.081 1557.83 489.667C1538.78 520.751 1518.23 551.334 1496.17 581.416C1474.61 611.498 1449.79 639.824 1421.72 666.397C1380.6 705.503 1332.47 734.832 1277.32 754.385C1222.68 774.44 1165.27 784.467 1105.11 784.467C1043.94 784.467 992.801 775.443 951.69 757.394C911.079 739.345 880.496 714.778 859.941 683.694C839.385 652.108 829.107 616.762 829.107 577.656C829.107 550.081 836.126 523.007 850.164 496.435C864.202 469.863 884.257 446.049 910.327 424.991C936.899 403.433 968.736 386.387 1005.84 373.853C1042.94 360.817 1084.3 354.3 1129.92 354.3C1176.55 354.3 1214.4 360.567 1243.48 373.101C1273.06 385.635 1294.87 401.929 1308.91 421.983C1322.95 441.536 1329.97 462.593 1329.97 485.155C1329.97 504.708 1324.7 524.511 1314.17 544.566C1304.15 564.119 1289.11 582.419 1269.05 599.465C1249 616.01 1224.43 629.296 1195.35 639.323C1166.27 649.35 1133.18 654.364 1096.08 654.364C1063.99 654.364 1038.42 650.604 1019.37 643.083C1000.32 635.062 986.534 625.034 978.011 613.002C969.488 600.468 965.226 587.683 965.226 574.648C965.226 558.604 973.248 541.808 989.292 524.261C1005.34 506.713 1029.4 491.923 1061.49 479.89C1094.08 467.356 1134.69 461.089 1183.32 461.089C1224.93 461.089 1263.29 466.103 1298.38 476.13C1333.98 485.656 1364.81 499.443 1390.88 517.492C1417.45 535.541 1438.01 556.849 1452.55 581.416C1467.59 605.983 1475.11 633.056 1475.11 662.636C1475.11 689.71 1468.09 718.287 1454.05 748.369C1440.52 778.952 1418.96 807.279 1389.38 833.35C1359.8 859.922 1321.69 881.48 1275.07 898.025C1228.94 914.57 1173.54 922.843 1108.87 922.843C1044.69 922.843 986.033 914.319 932.889 897.273C879.744 880.227 833.619 856.162 794.513 825.077C755.908 793.993 726.077 757.143 705.02 714.527C683.963 671.912 673.434 625.034 673.434 573.896C673.434 522.757 684.214 475.879 705.772 433.264C726.829 390.648 756.66 353.798 795.265 322.714C834.371 291.128 880.496 266.812 933.641 249.766C986.785 232.72 1045.19 224.196 1108.87 224.196C1135.94 224.196 1163.51 226.453 1191.59 230.965C1220.17 235.477 1247.49 242.747 1273.56 252.774C1299.63 262.3 1322.7 274.583 1342.75 289.624C1362.81 304.163 1378.1 321.962 1388.63 343.019L1384.11 344.523C1373.58 323.967 1358.54 306.42 1338.99 291.88C1319.44 277.341 1296.88 265.559 1271.31 256.534C1245.74 247.008 1218.91 239.989 1190.84 235.477C1163.26 230.965 1135.94 228.709 1108.87 228.709C1045.69 228.709 987.788 237.232 935.145 254.278C882.502 270.823 836.878 294.638 798.273 325.722C760.17 356.305 730.59 392.654 709.532 434.768C688.475 476.882 677.947 523.258 677.947 573.896C677.947 624.533 688.475 670.909 709.532 713.023C730.59 755.137 760.17 791.486 798.273 822.069C836.878 852.652 882.502 876.216 935.145 892.761C987.788 909.807 1045.69 918.33 1108.87 918.33C1173.04 918.33 1227.94 910.058 1273.56 893.513C1319.19 877.469 1356.54 856.412 1385.62 830.341C1414.7 804.271 1436 776.445 1449.54 746.865C1463.58 717.285 1470.6 689.208 1470.6 662.636C1470.6 633.557 1463.33 607.236 1448.79 583.672C1434.25 559.607 1413.69 538.8 1387.12 521.253C1361.05 503.705 1330.47 490.168 1295.37 480.642C1260.78 471.117 1223.18 466.354 1182.57 466.354C1134.94 466.354 1095.33 472.37 1063.74 484.403C1032.16 495.934 1008.59 509.972 993.052 526.517C977.51 543.062 969.739 558.855 969.739 573.896C969.739 586.43 973.75 598.462 981.771 609.993C990.294 621.525 1003.83 631.051 1022.38 638.571C1040.93 646.091 1065.5 649.852 1096.08 649.852C1132.18 649.852 1164.27 644.838 1192.34 634.811C1220.92 624.784 1244.99 611.748 1264.54 595.705C1284.59 579.661 1299.63 561.863 1309.66 542.31C1320.19 522.757 1325.45 503.705 1325.45 485.155C1325.45 463.095 1318.43 442.539 1304.4 423.487C1290.86 404.436 1269.55 388.893 1240.47 376.861C1211.9 364.828 1175.05 358.812 1129.92 358.812C1084.8 358.812 1043.94 365.329 1007.34 378.365C971.243 390.899 940.158 407.694 914.088 428.752C888.017 449.809 867.962 473.373 853.924 499.443C840.388 525.013 833.619 551.084 833.619 577.656C833.619 617.765 845.15 650.604 868.213 676.173C891.777 701.742 923.112 720.544 962.218 732.576C1001.83 744.107 1045.69 749.873 1093.83 749.873Z';
+const sp=d=>'<path d="'+d+'" fill="currentColor" stroke="currentColor" stroke-width="10.5" stroke-linejoin="round"/>';
+document.querySelectorAll('svg.wm').forEach(s=>s.innerHTML=sp(LOGO_SWASH)+sp(LOGO_WORD));
+document.querySelectorAll('svg.sw').forEach(s=>s.innerHTML=sp(LOGO_SWASH));
+/* countdown to the next May 12, 9:00 ET */
+const nextEvent=()=>{const n=new Date();let y=n.getFullYear(),t=Date.UTC(y,4,12,13);if(t<n)t=Date.UTC(y+1,4,12,13);return t};
+const EV=nextEvent(),cnt=document.getElementById('count'),pad=v=>String(v).padStart(2,'0');
+function tick(){let s=Math.max(0,Math.floor((EV-Date.now())/1000));const v={d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),s:s%60};
+ for(const k in v)cnt.querySelector('[data-u='+k+']').textContent=pad(v[k])}
+tick();setInterval(tick,1000);
+/* tracks: each illustration is stacked as stepped copies behind a heavy front, like the badge capitals */
+document.querySelectorAll('svg[data-art]').forEach((s,n)=>{const g=s.innerHTML,id='art'+n;let u='';
+ for(let k=7;k>=1;k--)u+='<use href="#'+id+'" class="x" style="--k:'+k+'"/>';
+ s.innerHTML='<defs><g id="'+id+'" transform="translate(-4 -4)">'+g+'</g></defs>'+u+'<use href="#'+id+'" class="f"/>'});
+/* ticker */
+const w=['Thread 2026','May 12–14','New York','The SMS marketing conference'];
+document.getElementById('tk').innerHTML=Array(16).fill(w).flat().map(t=>'<span>'+t+'</span>').join('');
+/* save toggles */
+document.querySelectorAll('.sv').forEach(b=>b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);b.textContent=on?'Saved ✓':'Save to My Thread'}));
+/* hairline grid behind the swash; cells under the cursor light up cream */
+(()=>{const c=document.getElementById('bg'),x=c.getContext('2d'),reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;let W,H,mx=-1,my=-1,t0=performance.now();
+ const N=12;
+ function size(){const r=c.getBoundingClientRect(),d=devicePixelRatio||1;W=c.width=r.width*d;H=c.height=r.height*d}
+ function draw(now){const t=(now-t0)/1000;x.clearRect(0,0,W,H);const cw=W/N,rows=Math.round(H/cw),ch=H/rows;
+  for(let i=0;i<N;i++)for(let j=0;j<rows;j++){const cx=(i+.5)*cw,cy=(j+.5)*ch;let a=reduce?0:Math.max(0,Math.sin(t*.9-(i+j)*.55))**8*.55;
+   if(mx>=0){const dd=Math.hypot(cx-mx,cy-my)/cw;a=Math.max(a,Math.max(0,1-dd/2.2))}
+   if(a>.02){x.fillStyle='rgba(250,244,222,'+a+')';x.fillRect(i*cw,j*ch,cw,ch)}}
+  x.strokeStyle='#141414';x.lineWidth=1.5*(devicePixelRatio||1);x.beginPath();
+  for(let i=1;i<N;i++){x.moveTo(i*cw,0);x.lineTo(i*cw,H)}for(let j=1;j<rows;j++){x.moveTo(0,j*ch);x.lineTo(W,j*ch)}x.stroke();
+  if(!reduce)requestAnimationFrame(draw)}
+ c.parentElement.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect(),d=devicePixelRatio||1;mx=(e.clientX-r.left)*d;my=(e.clientY-r.top)*d});
+ c.parentElement.addEventListener('pointerleave',()=>{mx=my=-1});
+ addEventListener('resize',size);size();requestAnimationFrame(draw)})();
+</script>
+</body>
+</html>

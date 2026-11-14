@@ -9,6 +9,24 @@
     "alt": "A blue frame with a product picker with Prep tools chosen, a search card where 'sander is scratching' is typed and 'Sander scratches into wood surface' is picked from the matches, and an illustrated worker in goggles sanding a board"
   },
   {
+    "id": "thread-brand-visuals",
+    "title": "Thread Brand Visuals",
+    "category": "Motion",
+    "url": "thread-brand-visuals/",
+    "thumbnail": "thread-brand-visuals/thumb.png",
+    "preview": "thread-brand-visuals/thumb.webp",
+    "alt": "Three animated Thread brand visuals side by side: a yellow 3D calligraphic number with a ribbon extrusion, a dark frame of yellow hairlines and blocks drawing on, and black calligraphy loops writing on a yellow ground, each with a caption underneath"
+  },
+  {
+    "id": "thread-conference-landing",
+    "title": "Thread Conference Landing Page",
+    "category": "Tools",
+    "url": "thread-conference-landing/",
+    "thumbnail": "thread-conference-landing/thumb.png",
+    "preview": "thread-conference-landing/thumb.webp",
+    "alt": "A yellow and black landing page for the Thread 2026 SMS marketing conference with a countdown over a hairline grid, a dark register card, livestreamed keynotes and four track cards"
+  },
+  {
     "id": "asterisk",
     "title": "Asterisk",
     "category": "Motion",
@@ -73,12 +91,12 @@
   },
   {
     "id": "conference-post-generator",
-    "title": "Conference Post Generator",
+    "title": "Conference Post Creator",
     "category": "Tools",
     "url": "conference-post-generator/",
     "thumbnail": "conference-post-generator/thumb.png",
     "preview": "conference-post-generator/thumb.webp",
-    "alt": "A yellow and black Thread 2026 conference post with a calligraphy swash headline, looping line panel and black and white portraits in outlined frames, then switching to the speaker, badges and looping line pattern templates"
+    "alt": "A cream and yellow Thread 2026 post with a calligraphy swash headline, tickets on sale now, and 3D calligraphic badges on the right, then switching to the headline, speaker and looping line pattern templates"
   },
   {
     "id": "arrow-line-generator",

@@ -37,13 +37,23 @@ const APPS = {
     await at(t0, 700, () => p.evaluate(() => __rb.play({ from: 0, speed: 1.4, loop: false })));
     await sleep(5600);
   } },
-  // starts on the hero post, then scrolls the way a visitor would: the colour mosaic, the badges and the motion timeline, and back up to the hero
-  'thread-brand-guidelines': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1800, q: 55, run: async (p) => {
-    const t0 = Date.now(), to = (sel, off) => p.evaluate(([s, o]) => window.scrollTo({ top: document.querySelector(s).getBoundingClientRect().top + scrollY - 56 + o, behavior: 'smooth' }), [sel, off]);
-    await at(t0, 900, () => to('#mosaic', 24));
-    await at(t0, 2500, () => to('#badges', 600));
-    await at(t0, 3900, () => to('#motion', 640));
+  // the three Thread brand visuals side by side, all moving on their own: the 3D digits turning 2 0 2 6, the frame lines drawing on and re-cutting, the calligraphy writing on and off (one 8 s loop, played at 1.33x)
+  'thread-brand-visuals': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1500, q: 55, run: async (p) => { await sleep(5600); } },
+  // the landing page: hero with the live countdown and the hairline grid lighting up, then a scroll through the keynotes, tracks and community cards and back up
+  'thread-conference-landing': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1500, q: 55, run: async (p) => {
+    const t0 = Date.now(), to = (sel, off) => p.evaluate(([s, o]) => window.scrollTo({ top: document.querySelector(s).getBoundingClientRect().top + scrollY - 60 + o, behavior: 'smooth' }), [sel, off]);
+    await at(t0, 1000, () => to('#agenda', 0));
+    await at(t0, 2600, () => to('#tracks', 0));
+    await at(t0, 4000, () => to('#community', -120));
     await at(t0, 5200, () => p.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' })));
+  } },
+  // starts on the tile mosaic hero, then opens the Badges tile (it grows to fill the screen), the Thread logo shrinks it back, and the Motion tile opens and shrinks back
+  'thread-brand-guidelines': { vp: [1280, 769], crop: [0, 49, 1280, 720], ready: 1800, q: 55, run: async (p) => {
+    const t0 = Date.now(), k = (sel) => domClick(p, sel);
+    await at(t0, 900, () => k('.tile[data-sec="badges"]'));
+    await at(t0, 2900, () => k('.site .logo'));
+    await at(t0, 4300, () => k('.tile[data-sec="motion"]'));
+    await at(t0, 5900, () => k('.site .logo'));
   } },
   // the starting soon countdown, then the intro title, the audience question, the session title and the statement card, switched the way a visitor would with the screen chips
   'thread-live-session': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 50, run: async (p) => {
@@ -56,13 +66,14 @@ const APPS = {
   // a block letter on the 12x12 grid: starts on a finished S, then the cells wave through the letters of SANDBOX and back to S
   'grid-alphabet': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '#w=SANDBOX&clip', ready: 500, q: 55, run: async (p) => { const t0 = Date.now(); await at(t0, 700, () => p.evaluate(() => __ga.start())); await sleep(5600); } },
   'conference-post-generator': { vp: [1280, 769], setup: cropOf('#cv'), ready: 1200, q: 40, run: async (p) => {
-    // the headline post plays on its own, then step through the speaker, badges and pattern templates
+    // it opens on the badges post (16:9, cream); step through the headline, speaker and pattern templates and come back to the badges
     const t0 = Date.now(), tpl = (n) => domClick(p, '#tpl button:nth-child(' + n + ')');
-    await at(t0, 1300, () => tpl(2));
-    await at(t0, 2700, () => tpl(3));
-    await at(t0, 4000, () => tpl(4));
-    await at(t0, 5000, () => tpl(1));
+    await at(t0, 1300, () => tpl(1));
+    await at(t0, 2600, () => tpl(2));
+    await at(t0, 3900, () => tpl(4));
+    await at(t0, 5100, () => tpl(3));
   } },
+
   // red lattice on black, then the orange flow and the grey arches as the generator cycles on its own (lines draw in first, then morph)
   'arrow-line-generator': { vp: [1280, 769], crop: [0, 49, 1280, 720], hash: '?still', ready: 800, q: 48, run: async (p) => {
     const t0 = Date.now(), go = (n) => p.evaluate((k) => __alg.go(k), n);
