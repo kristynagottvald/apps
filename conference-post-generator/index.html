@@ -580,7 +580,7 @@ function tSpeaker(ctx, c) {
   const sq = S.fmt === 'square' || S.fmt === 'portrait';  // feed and portrait: big badge on the left, the print overlaps it on the right, text stays still
   if (sq) {
     const bar = th.accent !== th.bg, bh = pr.h * 0.72, bw = bh * SHAPE_RATIO[S.badgeShape], ph = pr.h * 0.66, pw = ph * 0.8, cy = pr.y + pr.h * 0.54, bdy = bar ? pr.h * 0.13 : 0, pdy = bar ? -pr.h * 0.03 : pr.h * 0.05;  // visible bar: print moves up, badge drops to overlap the bar's bottom edge
-    if (S.showBadge) drawBadge(ctx, th, S.badgeShape, W * 0.36, cy + bdy + 5 * sway(t, 1.2), bh, -0.08 + 0.015 * sway(t, 0.9), S.badgeText, 10 * fu);
+    if (S.showBadge) drawBadge(ctx, th, S.badgeShape, W * 0.36, cy + bdy + 5 * sway(t, 1.2), bh, -0.17 + 0.015 * sway(t, 0.9), S.badgeText, 10 * fu);
     photoFrame(ctx, 0, W * 0.36 + bw / 2 + pw * 0.47, cy + pdy + 4 * sway(t, 0.4), pw, ph, 0.06 + 0.012 * sway(t, 0.2), th, 12 * fu);
   } else {
     const ph = pr.h * (land ? 0.56 : 0.74), pw = ph * 0.8, dx = land ? 0 : -0.045 * W, dy = land ? 0 : 0.07 * pr.h;  // stacked: print and badge sit lower and a little left
